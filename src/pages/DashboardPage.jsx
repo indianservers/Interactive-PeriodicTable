@@ -1,4 +1,4 @@
-import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star } from 'lucide-react';
+import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star, FlaskConical } from 'lucide-react';
 import { getCategoryInfo } from '../data/categories.js';
 import { useElements } from '../hooks/useElements.js';
 
@@ -109,9 +109,10 @@ export const DashboardPage = ({ onNavigate, onSelectElement }) => {
       {/* More tools */}
       <div>
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">More Tools</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <QuickActionCard icon={Atom} title="Atom Visualizer" desc="Electron shell diagrams" color="#06b6d4" onClick={() => onNavigate('atom')} />
           <QuickActionCard icon={Zap} title="3D Molecules" desc="Three.js molecule viewer" color="#a78bfa" onClick={() => onNavigate('molecule')} />
+          <QuickActionCard icon={FlaskConical} title="Chemistry Lab" desc="50 study tools and charts" color="#2dd4bf" onClick={() => onNavigate('lab')} />
           <QuickActionCard icon={Star} title="Favorites" desc="Your saved elements" color="#fbbf24" onClick={() => onNavigate('favorites')} />
         </div>
       </div>

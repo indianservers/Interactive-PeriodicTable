@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Table2, TrendingUp, GitCompare,
-  Atom, Box, BookOpen, Heart, Settings, X
+  Atom, Box, BookOpen, Heart, Settings, X, FlaskConical
 } from 'lucide-react';
 
 const navGroups = [
@@ -18,6 +18,7 @@ const navGroups = [
     items: [
       { id: 'atom', label: 'Atom Visualizer', icon: Atom },
       { id: 'molecule', label: '3D Molecules', icon: Box },
+      { id: 'lab', label: 'Chemistry Lab', icon: FlaskConical },
     ],
   },
   {

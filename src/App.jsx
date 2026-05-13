@@ -8,6 +8,7 @@ import { AtomVisualizerPage } from './pages/AtomVisualizerPage.jsx';
 import { QuizPage } from './pages/QuizPage.jsx';
 import { FavoritesPage } from './pages/FavoritesPage.jsx';
 import { SettingsPage } from './pages/SettingsPage.jsx';
+import { ChemistryLabPage } from './pages/ChemistryLabPage.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -19,6 +20,9 @@ function App() {
   const [favorites, setFavorites] = useLocalStorage('cu-favorites', []);
   const [compact, setCompact] = useLocalStorage('cu-compact', false);
   const [reducedMotion, setReducedMotion] = useLocalStorage('cu-reduced-motion', false);
+  const [highContrast, setHighContrast] = useLocalStorage('cu-high-contrast', false);
+  const [colorTheme, setColorTheme] = useLocalStorage('cu-color-theme', 'study');
+  const [language, setLanguage] = useLocalStorage('cu-language', 'en');
 
   // Cross-page element state
   const [atomViewerElement, setAtomViewerElement] = useState(null);
@@ -89,6 +93,8 @@ function App() {
         );
       case 'quiz':
         return <QuizPage />;
+      case 'lab':
+        return <ChemistryLabPage />;
       case 'favorites':
         return (
           <FavoritesPage
@@ -106,6 +112,12 @@ function App() {
             onCompactToggle={() => setCompact(c => !c)}
             reducedMotion={reducedMotion}
             onReducedMotionToggle={() => setReducedMotion(m => !m)}
+            highContrast={highContrast}
+            onHighContrastToggle={() => setHighContrast(v => !v)}
+            colorTheme={colorTheme}
+            onColorThemeChange={setColorTheme}
+            language={language}
+            onLanguageChange={setLanguage}
             onResetData={handleResetData}
           />
         );
@@ -115,7 +127,7 @@ function App() {
   };
 
   return (
-    <div className={reducedMotion ? 'no-motion' : ''}>
+    <div className={`${reducedMotion ? 'no-motion' : ''} ${highContrast ? 'high-contrast' : ''} theme-${colorTheme}`}>
       <AppShell
         currentPage={currentPage}
         onNavigate={navigate}

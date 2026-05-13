@@ -1,4 +1,4 @@
-import { Trash2, Moon, Sun, Minimize2, Maximize2, Wind } from 'lucide-react';
+import { Trash2, Moon, Sun, Minimize2, Maximize2, Wind, Contrast, Languages, Palette } from 'lucide-react';
 
 const ToggleRow = ({ label, desc, enabled, onToggle, icon: Icon }) => (
   <div className="flex items-center justify-between py-4 border-b border-white/5 last:border-0">
@@ -26,6 +26,9 @@ export const SettingsPage = ({
   isDark, onThemeToggle,
   compact, onCompactToggle,
   reducedMotion, onReducedMotionToggle,
+  highContrast, onHighContrastToggle,
+  colorTheme, onColorThemeChange,
+  language, onLanguageChange,
   onResetData,
 }) => (
   <div className="p-4 md:p-6 max-w-lg mx-auto">
@@ -55,6 +58,41 @@ export const SettingsPage = ({
           onToggle={onReducedMotionToggle}
           icon={Wind}
         />
+        <ToggleRow
+          label="High Contrast"
+          desc="Increase borders, text contrast, and focus visibility"
+          enabled={highContrast}
+          onToggle={onHighContrastToggle}
+          icon={Contrast}
+        />
+        <div className="py-4 border-b border-white/5">
+          <div className="flex items-center gap-3 mb-2">
+            <Palette size={16} className="text-gray-400" />
+            <div>
+              <p className="text-sm font-medium text-gray-200">Color Theme</p>
+              <p className="text-xs text-gray-500 mt-0.5">Study, neon, classic, or print palette</p>
+            </div>
+          </div>
+          <select value={colorTheme} onChange={e => onColorThemeChange(e.target.value)} className="input text-sm">
+            <option value="study">Study</option>
+            <option value="neon">Neon</option>
+            <option value="classic">Classic</option>
+            <option value="print">Print</option>
+          </select>
+        </div>
+        <div className="py-4">
+          <div className="flex items-center gap-3 mb-2">
+            <Languages size={16} className="text-gray-400" />
+            <div>
+              <p className="text-sm font-medium text-gray-200">Language</p>
+              <p className="text-xs text-gray-500 mt-0.5">Hindi/English toggle for supported study panels</p>
+            </div>
+          </div>
+          <select value={language} onChange={e => onLanguageChange(e.target.value)} className="input text-sm">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </div>
       </div>
 
       <div className="glass rounded-2xl p-5">

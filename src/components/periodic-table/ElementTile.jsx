@@ -32,6 +32,15 @@ export const ElementTile = memo(({ element, isSelected, isHovered, isFiltered, c
   return (
     <button
       onClick={() => onClick(element)}
+      onKeyDown={event => {
+        const keys = ['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'];
+        if (!keys.includes(event.key)) return;
+        const tiles = Array.from(document.querySelectorAll('.element-tile:not([disabled])'));
+        const index = tiles.indexOf(event.currentTarget);
+        const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowDown' ? 18 : -18;
+        tiles[Math.max(0, Math.min(tiles.length - 1, index + step))]?.focus();
+        event.preventDefault();
+      }}
       onMouseEnter={() => onHover?.(element)}
       onFocus={() => onHover?.(element)}
       onMouseLeave={() => onHover?.(null)}

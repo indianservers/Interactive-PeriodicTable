@@ -1,0 +1,16 @@
+{
+  "name": "Interactive Periodic Table",
+  "short_name": "Periodic Table",
+  "description": "Interactive chemistry learning app with periodic table, molecules, quiz, and lab tools.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/periodic-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -5,9 +5,19 @@ import { generateQuiz, generateQuizQuestion } from '../../utils/quizHelpers.js';
 import { useLocalStorage } from '../../hooks/useLocalStorage.js';
 import { quizTypes } from '../../data/quizQuestions.js';
 
-export const QuizMode = () => {
+const levelSettings = {
+  beginner: { count: 8, time: 20, label: 'Beginner' },
+  intermediate: { count: 10, time: 15, label: 'Intermediate' },
+  advanced: { count: 12, time: 10, label: 'Advanced' },
+};
+
+const dayKey = () => new Date().toISOString().slice(0, 10);
+
+export const QuizMode = ({ level = 'beginner' }) => {
+  const settings = levelSettings[level] || levelSettings.beginner;
   const [bestScore, setBestScore] = useLocalStorage('cu-quiz-best', 0);
   const [quizHistory, setQuizHistory] = useLocalStorage('cu-quiz-history', []);
+  const [streak, setStreak] = useLocalStorage('cu-quiz-streak', { count: 0, best: 0, lastDate: null });
   const [quiz, setQuiz] = useState(null);
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -22,23 +32,23 @@ export const QuizMode = () => {
       ? null
       : [selectedType];
     const questions = types
-      ? Array.from({ length: 10 }, () => generateQuizQuestion(elements, types[0]))
-      : generateQuiz(elements, 10);
+      ? Array.from({ length: settings.count }, () => generateQuizQuestion(elements, types[0]))
+      : generateQuiz(elements, settings.count);
     setQuiz(questions);
     setCurrentQ(0);
     setSelected(null);
     setScore(0);
     setFinished(false);
-  }, [selectedType]);
+  }, [selectedType, settings.count]);
 
   const startMixed = useCallback(() => {
-    const questions = generateQuiz(elements, 10);
+    const questions = generateQuiz(elements, settings.count);
     setQuiz(questions);
     setCurrentQ(0);
     setSelected(null);
     setScore(0);
     setFinished(false);
-  }, []);
+  }, [settings.count]);
 
   const handleAnswer = (option) => {
     if (selected !== null) return;
@@ -51,7 +61,13 @@ export const QuizMode = () => {
     if (currentQ + 1 >= quiz.length) {
       const finalScore = score + (selected === quiz[currentQ].answer ? 1 : 0);
       if (finalScore > bestScore) setBestScore(finalScore);
-      setQuizHistory(h => [{ score: finalScore, date: new Date().toISOString(), total: quiz.length }, ...h].slice(0, 10));
+      const today = dayKey();
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      setStreak(s => {
+        const nextCount = s.lastDate === today ? s.count : s.lastDate === yesterday ? s.count + 1 : 1;
+        return { count: nextCount, best: Math.max(s.best || 0, nextCount), lastDate: today };
+      });
+      setQuizHistory(h => [{ score: finalScore, date: new Date().toISOString(), total: quiz.length, level: settings.label }, ...h].slice(0, 10));
       setFinished(true);
     } else {
       setCurrentQ(q => q + 1);
@@ -61,7 +77,7 @@ export const QuizMode = () => {
 
   useEffect(() => {
     if (!quiz || finished || selected !== null) return;
-    setTimeLeft(15);
+    setTimeLeft(settings.time);
     clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setTimeLeft(t => {
@@ -74,7 +90,7 @@ export const QuizMode = () => {
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, [currentQ, quiz, finished]);
+  }, [currentQ, quiz, finished, settings.time]);
 
   if (!quiz) {
     return (
@@ -82,9 +98,9 @@ export const QuizMode = () => {
         <div className="text-center">
           <div className="text-4xl mb-2">🧪</div>
           <h3 className="text-xl font-bold text-white mb-1">Quiz Mode</h3>
-          <p className="text-gray-400 text-sm">Test your periodic table knowledge</p>
+          <p className="text-gray-400 text-sm">Test your periodic table knowledge · {settings.label}</p>
           {bestScore > 0 && (
-            <p className="text-indigo-400 text-sm mt-1">Best score: {bestScore}/10</p>
+            <p className="text-indigo-400 text-sm mt-1">Best score: {bestScore} · streak {streak.count}</p>
           )}
         </div>
 
@@ -100,8 +116,8 @@ export const QuizMode = () => {
               <option key={t.id} value={t.id}>{t.label}</option>
             ))}
           </select>
-          <button onClick={startMixed} className="btn-primary w-full py-3 text-base">
-            Start Quiz (10 Questions)
+          <button onClick={startQuiz} className="btn-primary w-full py-3 text-base">
+            Start {settings.label} Quiz ({settings.count} Questions)
           </button>
         </div>
 

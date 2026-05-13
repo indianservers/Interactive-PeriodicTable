@@ -184,6 +184,32 @@
     overflow: hidden;
   }
 
+  .high-contrast .glass,
+  .high-contrast .periodic-hero,
+  .high-contrast .periodic-table-wrap,
+  .high-contrast .element-tile {
+    border-color: rgba(255,255,255,0.34) !important;
+  }
+
+  .high-contrast {
+    color: #ffffff;
+  }
+
+  .theme-neon {
+    --theme-accent: #22d3ee;
+    filter: saturate(1.18);
+  }
+
+  .theme-classic {
+    --theme-accent: #f59e0b;
+    filter: sepia(0.08) saturate(0.95);
+  }
+
+  .theme-print {
+    --theme-accent: #111827;
+    filter: saturate(0.55) contrast(1.08);
+  }
+
   .element-tile:focus-visible {
     @apply outline-none ring-2 ring-indigo-400 ring-offset-1 ring-offset-gray-950;
   }

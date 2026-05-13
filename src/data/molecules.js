@@ -4,6 +4,8 @@
    for educational 3D visualization. Not crystallographic data.
 ────────────────────────────────────────────────────────────────────────────── */
 
+import { EXPANDED_REAL_MOLECULES, EXPANDED_REAL_MOLECULE_LIBRARY } from './generatedMolecules.js';
+
 const mk = (id, el, pos, color, radius, charge) =>
   ({ id, element: el, position: pos, color, radius, ...(charge ? { charge } : {}) });
 
@@ -772,6 +774,7 @@ const ALL_SEED_MOLECULES = [
   fluorine, chlorine, hf, hcl, hbr, water, h2o2, co2, co, so2, so3, no2,
   no, h2so4, hno3, h3po4, carbonicAcid, nacl, nabh4, naoh, koh, nh4cl,
   cacl2, ozone, n2o, ammonia, hydroxyl, alanine, adenine, glucose,
+  ...EXPANDED_REAL_MOLECULES,
 ];
 
 const LEARNING_COLLECTIONS = {
@@ -911,6 +914,7 @@ const LEARNING_COLLECTIONS = {
 
 export const MOLECULE_LIBRARY = {
   ...BASE_MOLECULE_LIBRARY,
+  ...EXPANDED_REAL_MOLECULE_LIBRARY,
   ...LEARNING_COLLECTIONS,
 };
 
