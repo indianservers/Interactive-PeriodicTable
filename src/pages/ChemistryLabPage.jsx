@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import {
   Activity, BadgeCheck, BarChart3, BookOpen, Brain, Boxes, Calculator, Download,
   FlaskConical, GraduationCap, Languages, Mic2, Orbit, Printer, RadioTower,
-  ShieldAlert, Sparkles, Trophy, Zap, Atom, GitCompare, Waves,
+  ShieldAlert, Sparkles, Trophy, Zap, Atom, GitCompare, Waves, Search,
+  CheckCircle, ChevronLeft, ChevronRight, Lightbulb, Target, SlidersHorizontal,
 } from 'lucide-react';
 import { elements } from '../data/elements.js';
 import { ALL_MOLECULES } from '../data/molecules.js';
@@ -83,12 +84,116 @@ const indicatorColor = (indicator, pH) => {
   return item.mid;
 };
 
-const LabCard = ({ title, children }) => (
+const difficultyStyles = {
+  Beginner: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
+  Intermediate: 'bg-amber-500/15 text-amber-300 border-amber-500/25',
+  Advanced: 'bg-rose-500/15 text-rose-300 border-rose-500/25',
+};
+
+const typeStyles = {
+  Simulation: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/25',
+  Calculator: 'bg-violet-500/15 text-violet-300 border-violet-500/25',
+  Visualizer: 'bg-blue-500/15 text-blue-300 border-blue-500/25',
+  Practice: 'bg-pink-500/15 text-pink-300 border-pink-500/25',
+  Reference: 'bg-slate-500/15 text-slate-300 border-slate-500/25',
+};
+
+const BadgePill = ({ children, className = '' }) => (
+  <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${className}`}>
+    {children}
+  </span>
+);
+
+const LAB_EXPERIMENTS = [
+  { id: 'titration', title: 'Titration Simulator', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: Waves, topic: 'pH', teaches: 'How acid and base neutralize each other.', steps: ['Move the NaOH drops slider.', 'Watch the color and pH change.', 'Find the point where the solution becomes neutral.'], tryThis: 'Set drops near the middle and notice the fast pH jump.', result: 'A sharp pH change marks the equivalence region.', safety: 'Real titrations use goggles and careful handling.', realWorld: 'Used to test medicine, water, and food acidity.' },
+  { id: 'electrolysis', title: 'Electrolysis Cell', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Zap, topic: 'Redox', teaches: 'How electricity drives chemical changes.', steps: ['Choose an electrolyte.', 'Identify cathode and anode products.', 'Compare different solutions.'], tryThis: 'Switch from CuSO4 to NaCl(aq).', result: 'Different ions produce different gases or metals.', safety: 'Electrolysis can produce gases; use ventilation in real labs.', realWorld: 'Used in electroplating and metal extraction.' },
+  { id: 'distillation', title: 'Distillation Apparatus', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: FlaskConical, topic: 'Separation', teaches: 'How boiling points separate liquids.', steps: ['Increase heat slowly.', 'Watch vapor move to the condenser.', 'Collect the condensed liquid.'], tryThis: 'Raise heat above 78 percent.', result: 'More volatile liquid vaporizes first.', safety: 'Never seal heated glassware.', realWorld: 'Used for purifying solvents and water.' },
+  { id: 'chromatography', title: 'Chromatography', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: BarChart3, topic: 'Separation', teaches: 'How mixtures split into colored bands.', steps: ['Move the run time slider.', 'Watch colors travel different distances.', 'Compare the final band positions.'], tryThis: 'Run the slider to 100 percent.', result: 'Substances separate because they move at different speeds.', safety: 'Use safe solvents in classroom demos.', realWorld: 'Used in forensics and quality testing.' },
+  { id: 'spectroscopy', title: 'Spectroscopy Viewer', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: RadioTower, topic: 'Light', teaches: 'Each element has a unique light fingerprint.', steps: ['Choose an element.', 'Look at the bright emission lines.', 'Compare line positions.'], tryThis: 'Compare hydrogen and sodium.', result: 'Line positions identify elements.', safety: 'Avoid looking directly into bright discharge lamps.', realWorld: 'Used to study stars and unknown samples.' },
+  { id: 'ph-meter', title: 'pH Meter', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: Activity, topic: 'Acids', teaches: 'pH tells whether a solution is acidic, neutral, or basic.', steps: ['Choose a solution.', 'Read the pH value.', 'Use the bar to classify it.'], tryThis: 'Compare vinegar, water, and ammonia.', result: 'Low pH is acidic; high pH is basic.', safety: 'Do not taste unknown solutions.', realWorld: 'Used in pools, soil, and drinking water tests.' },
+  { id: 'electrochemical-cell', title: 'Electrochemical Cell', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Zap, topic: 'Cells', teaches: 'How metal pairs create voltage.', steps: ['Pick two metals.', 'Read the voltage.', 'Change one metal and compare.'], tryThis: 'Try Zn and Cu.', result: 'A bigger potential difference gives more voltage.', safety: 'Real cells can leak corrosive electrolytes.', realWorld: 'The idea behind batteries.' },
+  { id: 'equilibrium', title: 'Le Chatelier Equilibrium', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: GitCompare, topic: 'Equilibrium', teaches: 'Systems respond to stress by shifting direction.', steps: ['Change reactant level.', 'Change temperature.', 'Read the predicted shift.'], tryThis: 'Increase reactant level above 1.', result: 'Adding reactant often shifts toward products.', safety: 'Equilibrium demos may use irritating gases.', realWorld: 'Important in industrial chemical production.' },
+  { id: 'osmosis', title: 'Osmosis Demo', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: Waves, topic: 'Membranes', teaches: 'Water moves toward higher solute concentration.', steps: ['Set left concentration.', 'Set right concentration.', 'Observe water flow direction.'], tryThis: 'Make the right side more concentrated.', result: 'Water flows toward the side with more solute.', safety: 'Use clean materials in biology demos.', realWorld: 'Explains cells swelling or shrinking.' },
+  { id: 'flame-test', title: 'Flame Test', tab: 'Atoms', type: 'Simulation', difficulty: 'Beginner', icon: Sparkles, topic: 'Emission', teaches: 'Metal ions can color a flame.', steps: ['Choose a metal ion.', 'Observe the flame color.', 'Compare colors.'], tryThis: 'Compare Na and Cu.', result: 'Excited electrons release colored light.', safety: 'Real flame tests require teacher supervision.', realWorld: 'Used for quick ion identification.' },
+  { id: 'molar-mass', title: 'Molar Mass Calculator', tab: 'Basics', type: 'Calculator', difficulty: 'Beginner', icon: Calculator, topic: 'Formulas', teaches: 'How formula mass is calculated from atoms.', steps: ['Enter a formula.', 'Read atom counts.', 'Read total molar mass.'], tryThis: 'Try H2O or Ca(OH)2.', result: 'Molar mass is the sum of atomic masses.', realWorld: 'Needed for measuring chemicals accurately.' },
+  { id: 'stoichiometry', title: 'Stoichiometry Solver', tab: 'Reactions', type: 'Calculator', difficulty: 'Intermediate', icon: Calculator, topic: 'Moles', teaches: 'Balanced equations connect reactant and product amounts.', steps: ['Enter an equation.', 'Enter starting moles.', 'Use coefficients to reason about amounts.'], tryThis: 'Try N2 + H2 -> NH3.', result: 'Coefficients act like mole ratios.', realWorld: 'Used to plan reactions and reduce waste.' },
+  { id: 'dilution', title: 'Molarity / Dilution Calculator', tab: 'Solutions', type: 'Calculator', difficulty: 'Beginner', icon: Calculator, topic: 'Concentration', teaches: 'How dilution changes volume and concentration.', steps: ['Enter C1, V1, and C2.', 'Read the required V2.', 'Compare concentrated vs dilute.'], tryThis: 'Make C2 smaller than C1.', result: 'Diluting lowers concentration and increases volume.', safety: 'Always add acid to water in real prep.', realWorld: 'Used to prepare lab solutions.' },
+  { id: 'weak-acid-ph', title: 'pH / pOH Calculator', tab: 'Solutions', type: 'Calculator', difficulty: 'Intermediate', icon: Calculator, topic: 'Acids', teaches: 'How weak acid strength affects pH.', steps: ['Enter Ka.', 'Read pH and pOH.', 'Compare stronger and weaker acids.'], tryThis: 'Increase Ka.', result: 'Larger Ka means stronger acid and lower pH.', realWorld: 'Used for buffers and acid-base chemistry.' },
+  { id: 'gas-law', title: 'Ideal Gas Law Calculator', tab: 'Basics', type: 'Calculator', difficulty: 'Beginner', icon: Calculator, topic: 'Gases', teaches: 'Pressure, volume, temperature, and moles are linked.', steps: ['Enter P, V, and T.', 'Read moles.', 'Change temperature and compare.'], tryThis: 'Use 1 atm, 22.4 L, 273.15 K.', result: 'Those values are about 1 mole of ideal gas.', realWorld: 'Used in balloons, cylinders, and engines.' },
+  { id: 'empirical-formula', title: 'Empirical Formula Finder', tab: 'Basics', type: 'Calculator', difficulty: 'Intermediate', icon: Calculator, topic: 'Composition', teaches: 'Percent composition can reveal atom ratios.', steps: ['Enter element symbols.', 'Enter percentages.', 'Read the simplest formula.'], tryThis: 'Use C 40, H 6.7, O 53.3.', result: 'The result is the simplest whole-number ratio.', realWorld: 'Used in compound analysis.' },
+  { id: 'oxidation', title: 'Oxidation State Finder', tab: 'Reactions', type: 'Calculator', difficulty: 'Intermediate', icon: Calculator, topic: 'Redox', teaches: 'Atoms can be assigned oxidation numbers.', steps: ['Enter a formula.', 'Read common oxidation guesses.', 'Use them to identify redox changes.'], tryThis: 'Try H2SO4.', result: 'O is usually -2 and H is usually +1.', realWorld: 'Used for balancing redox equations.' },
+  { id: 'electron-config-tool', title: 'Electron Configuration Builder', tab: 'Atoms', type: 'Calculator', difficulty: 'Intermediate', icon: Atom, topic: 'Electrons', teaches: 'Electron configuration shows orbital filling.', steps: ['Enter atomic number.', 'Read the configuration.', 'Notice shell and orbital order.'], tryThis: 'Try atomic number 8.', result: 'Electrons fill lower energy orbitals first.', realWorld: 'Explains bonding and periodic trends.' },
+  { id: 'hess', title: "Reaction Enthalpy (Hess's Law)", tab: 'Reactions', type: 'Calculator', difficulty: 'Advanced', icon: Activity, topic: 'Energy', teaches: 'Reaction enthalpies can be added.', steps: ['Enter two enthalpy values.', 'Add them to get total change.', 'Decide if heat is released or absorbed.'], tryThis: 'Use -286 and 44.', result: 'Negative total means exothermic.', realWorld: 'Used in thermochemistry.' },
+  { id: 'colligative', title: 'Colligative Properties Calculator', tab: 'Solutions', type: 'Calculator', difficulty: 'Advanced', icon: Waves, topic: 'Solutions', teaches: 'Solutes change boiling and freezing points.', steps: ['Set molality.', 'Read boiling elevation.', 'Read freezing depression.'], tryThis: 'Increase molality.', result: 'More solute causes bigger temperature shifts.', realWorld: 'Explains antifreeze and salted roads.' },
+  { id: 'orbital-shape', title: 'Orbital Shape Viewer', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: Orbit, topic: 'Orbitals', teaches: 'Orbitals have different shapes.', steps: ['Choose s, p, d, or f.', 'Observe lobe count.', 'Read the note.'], tryThis: 'Compare s and p.', result: 'Orbital shape affects bonding direction.', realWorld: 'Core idea in molecular structure.' },
+  { id: 'crystal-structure', title: 'Crystal Structure Viewer', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: Boxes, topic: 'Solids', teaches: 'Solids arrange particles in repeating patterns.', steps: ['Pick a structure.', 'Change lattice size.', 'Observe repeating units.'], tryThis: 'Increase lattice size.', result: 'Crystal properties depend on arrangement.', realWorld: 'Important in salts, metals, and minerals.' },
+  { id: 'hybridization', title: 'Hybridization Animator', tab: 'Molecules', type: 'Visualizer', difficulty: 'Advanced', icon: Orbit, topic: 'Bonding', teaches: 'Hybrid orbitals explain common shapes.', steps: ['Choose a hybridization.', 'Observe orbital count.', 'Connect it to geometry.'], tryThis: 'Compare sp2 and sp3.', result: 'Hybridization predicts bond directions.', realWorld: 'Used in organic chemistry.' },
+  { id: 'vsepr', title: 'VSEPR Shape Builder', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: Boxes, topic: 'Shapes', teaches: 'Electron domains determine molecular shape.', steps: ['Set bonded atoms.', 'Set lone pairs.', 'Read the shape and angle.'], tryThis: 'Use 2 bonds and 2 lone pairs.', result: 'Lone pairs bend molecular shapes.', realWorld: 'Explains water shape and polarity.' },
+  { id: 'bond-polarity', title: 'Bond Polarity Visualizer', tab: 'Molecules', type: 'Visualizer', difficulty: 'Beginner', icon: GitCompare, topic: 'Bonds', teaches: 'Electronegativity difference affects bond type.', steps: ['Choose two elements.', 'Read bond prediction.', 'Compare similar and different atoms.'], tryThis: 'Compare H-Cl and Na-Cl.', result: 'Large difference tends toward ionic character.', realWorld: 'Helps predict solubility and reactivity.' },
+  { id: 'mechanism', title: 'Reaction Mechanism Player', tab: 'Reactions', type: 'Visualizer', difficulty: 'Advanced', icon: ChevronRight, topic: 'Organic', teaches: 'Reactions happen in steps.', steps: ['Choose a mechanism.', 'Move through steps.', 'Read each event.'], tryThis: 'Compare SN1 and SN2.', result: 'Mechanism controls product and rate.', realWorld: 'Used in synthesis planning.' },
+  { id: 'imf', title: 'Intermolecular Forces Demo', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: Waves, topic: 'Forces', teaches: 'Attractions between molecules affect properties.', steps: ['Choose a force type.', 'Observe relative strength.', 'Connect to boiling point.'], tryThis: 'Select hydrogen bonding.', result: 'Stronger forces usually mean higher boiling points.', realWorld: 'Explains water behavior.' },
+  { id: 'nuclear-decay', title: 'Nuclear Decay Simulator', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: RadioTower, topic: 'Nuclear', teaches: 'Radioactive nuclei change over time.', steps: ['Choose decay mode.', 'Adjust half-lives.', 'Watch remaining parent material.'], tryThis: 'Move to 4 half-lives.', result: 'Each half-life halves the remaining sample.', safety: 'Real radioactive materials need strict controls.', realWorld: 'Used in dating and medicine.' },
+  { id: 'phase-diagram', title: 'Phase Diagram Explorer', tab: 'Basics', type: 'Visualizer', difficulty: 'Intermediate', icon: BarChart3, topic: 'States', teaches: 'Temperature and pressure determine phase.', steps: ['Change temperature.', 'Change pressure.', 'Read the phase.'], tryThis: 'Raise pressure and temperature.', result: 'Matter can become solid, liquid, gas, or supercritical.', realWorld: 'Used in weather and industrial processes.' },
+  { id: 'mo-diagram', title: 'Molecular Orbital Diagram', tab: 'Molecules', type: 'Visualizer', difficulty: 'Advanced', icon: Orbit, topic: 'Orbitals', teaches: 'Molecular orbitals explain bond order and magnetism.', steps: ['Choose a molecule.', 'Read bond order.', 'Check magnetic behavior.'], tryThis: 'Choose O2.', result: 'O2 is paramagnetic in MO theory.', realWorld: 'Explains observations Lewis structures miss.' },
+  { id: 'rate-lab', title: 'Reaction Rate Lab', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Activity, topic: 'Kinetics', teaches: 'Temperature and concentration affect reaction speed.', steps: ['Change temperature.', 'Change concentration.', 'Watch curve steepness.'], tryThis: 'Increase both sliders.', result: 'Higher temperature and concentration usually increase rate.', safety: 'Fast reactions can heat or foam.', realWorld: 'Used in food, medicine, and manufacturing.' },
+  { id: 'calorimetry', title: 'Calorimetry Experiment', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: FlaskConical, topic: 'Heat', teaches: 'Heat transfer changes final temperature.', steps: ['Set metal temperature.', 'Set metal mass.', 'Read final water temperature.'], tryThis: 'Increase metal mass.', result: 'More hot metal transfers more heat.', safety: 'Hot metals and water can burn.', realWorld: 'Used to measure specific heat.' },
+  { id: 'solubility', title: 'Solubility Lab', tab: 'Solutions', type: 'Simulation', difficulty: 'Intermediate', icon: FlaskConical, topic: 'Ksp', teaches: 'Precipitates form when ion product exceeds Ksp.', steps: ['Choose a salt.', 'Add solute.', 'Watch precipitate status.'], tryThis: 'Increase salt added.', result: 'When Q > Ksp, precipitate forms.', safety: 'Some salts are toxic in real labs.', realWorld: 'Used in water treatment and analysis.' },
+  { id: 'indicator', title: 'Indicator Color Table', tab: 'Solutions', type: 'Reference', difficulty: 'Beginner', icon: Sparkles, topic: 'pH', teaches: 'Indicators change color over pH ranges.', steps: ['Pick an indicator.', 'Set pH.', 'Observe color.'], tryThis: 'Move pH across 7.', result: 'Each indicator has its own transition range.', safety: 'Indicators can stain skin and clothing.', realWorld: 'Used in titrations and quick pH tests.' },
+  { id: 'corrosion', title: 'Galvanic Series / Corrosion Demo', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: ShieldAlert, topic: 'Corrosion', teaches: 'Some metals corrode preferentially.', steps: ['Pick two metals.', 'Compare potentials.', 'Identify which corrodes.'], tryThis: 'Try Zn and Cu.', result: 'The more easily oxidized metal corrodes.', safety: 'Corrosion products may be hazardous.', realWorld: 'Used in sacrificial anodes.' },
+  { id: 'soap', title: 'Soap Making (Saponification)', tab: 'Advanced', type: 'Simulation', difficulty: 'Advanced', icon: FlaskConical, topic: 'Organic', teaches: 'Fats react with base to make soap.', steps: ['Move reaction progress.', 'Observe product formation.', 'Connect to ester hydrolysis.'], tryThis: 'Set progress near 100 percent.', result: 'More progress means more soap product.', safety: 'Real lye is caustic.', realWorld: 'Used to manufacture soap.' },
+  { id: 'fermentation', title: 'Fermentation Simulator', tab: 'Advanced', type: 'Simulation', difficulty: 'Beginner', icon: Activity, topic: 'Biochemistry', teaches: 'Yeast activity depends strongly on temperature.', steps: ['Change temperature.', 'Watch activity.', 'Find the best range.'], tryThis: 'Set temperature near 32 C.', result: 'Activity drops when too cold or too hot.', safety: 'Use clean containers for real fermentation.', realWorld: 'Used in bread and beverages.' },
+  { id: 'polymer', title: 'Polymer Builder', tab: 'Advanced', type: 'Simulation', difficulty: 'Intermediate', icon: Boxes, topic: 'Polymers', teaches: 'Polymers are chains of repeating units.', steps: ['Change chain length.', 'Observe repeating units.', 'Connect length to material properties.'], tryThis: 'Increase polymer length.', result: 'Longer chains often make tougher materials.', realWorld: 'Used in plastics and fibers.' },
+  { id: 'buffer', title: 'Buffer Solution Lab', tab: 'Solutions', type: 'Simulation', difficulty: 'Advanced', icon: ShieldAlert, topic: 'Buffers', teaches: 'Buffers resist pH change.', steps: ['Add acid or base.', 'Compare buffer vs pure water.', 'Read pH response.'], tryThis: 'Add small acid amount.', result: 'Buffer pH changes less than pure water.', safety: 'Buffers still need proper chemical handling.', realWorld: 'Important in blood and biology labs.' },
+  { id: 'recrystallization', title: 'Recrystallization Visualizer', tab: 'Solutions', type: 'Visualizer', difficulty: 'Intermediate', icon: Sparkles, topic: 'Purification', teaches: 'Solubility changes with temperature.', steps: ['Set temperature.', 'Watch supersaturation.', 'Predict crystal formation.'], tryThis: 'Lower temperature.', result: 'Cooling can form crystals from solution.', safety: 'Hot solvents can be flammable.', realWorld: 'Used to purify solids.' },
+  { id: 'bohr', title: 'Bohr Controls and Ion Formation', tab: 'Atoms', type: 'Visualizer', difficulty: 'Beginner', icon: Atom, topic: 'Atoms', teaches: 'Shell electrons help predict common ions.', steps: ['Choose an element.', 'Count shell electrons.', 'Read likely ion pattern.'], tryThis: 'Compare Na and Cl.', result: 'Outer electrons guide simple ion formation.', realWorld: 'Helps explain ionic compounds.' },
+  { id: 'timeline', title: 'Element Discovery Timeline', tab: 'Atoms', type: 'Reference', difficulty: 'Beginner', icon: RadioTower, topic: 'History', teaches: 'Elements were discovered across centuries.', steps: ['Scroll the timeline.', 'Pick an element.', 'Read discoverer and year.'], tryThis: 'Select an ancient element and a modern element.', result: 'Discovery history reflects available tools.', realWorld: 'Connects chemistry to human discovery.' },
+  { id: 'element-pack', title: 'Element Information Pack', tab: 'Atoms', type: 'Reference', difficulty: 'Beginner', icon: BookOpen, topic: 'Elements', teaches: 'One element has uses, safety notes, occurrence, and extraction.', steps: ['Choose an element.', 'Read each information tile.', 'Connect properties to uses.'], tryThis: 'Choose carbon or oxygen.', result: 'Properties explain where and how elements are used.', safety: 'Check safety before handling real substances.', realWorld: 'Useful for assignments and lab prep.' },
+  { id: 'isotopes', title: 'Isotope Explorer and Half-Life Chart', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: RadioTower, topic: 'Isotopes', teaches: 'Isotopes differ by neutron count.', steps: ['Choose an element with isotope data.', 'Read neutron counts.', 'Compare half-lives.'], tryThis: 'Choose C or U.', result: 'Same element can have stable and radioactive isotopes.', safety: 'Radioisotopes require trained handling.', realWorld: 'Used in dating and medical tracers.' },
+  { id: 'formula-builder', title: 'Formula Builder and Molar Mass', tab: 'Basics', type: 'Calculator', difficulty: 'Beginner', icon: Calculator, topic: 'Formulas', teaches: 'Formulas tell atom counts and mass.', steps: ['Enter formula.', 'Read parsed atoms.', 'Read molar mass.'], tryThis: 'Try Ca(OH)2.', result: 'Parentheses multiply grouped atoms.', realWorld: 'Used before every measured reaction.' },
+  { id: 'bond-predictor', title: 'Bond Predictor', tab: 'Molecules', type: 'Practice', difficulty: 'Beginner', icon: GitCompare, topic: 'Bonds', teaches: 'Element pairs can suggest bond type.', steps: ['Enter two symbols.', 'Read prediction.', 'Change one element and compare.'], tryThis: 'Try Na and Cl.', result: 'Metal plus nonmetal often forms ionic compounds.', realWorld: 'Helps predict properties of compounds.' },
+  { id: 'equation-balancer', title: 'Equation Balancer', tab: 'Reactions', type: 'Practice', difficulty: 'Intermediate', icon: FlaskConical, topic: 'Equations', teaches: 'Atoms must be conserved in reactions.', steps: ['Enter an equation.', 'Read balanced output.', 'Check each element count.'], tryThis: 'Try CH4 + O2 -> CO2 + H2O.', result: 'Balanced equations preserve atoms.', realWorld: 'Required for stoichiometry.' },
+  { id: 'abundance', title: 'Abundance and Comparison Charts', tab: 'Atoms', type: 'Visualizer', difficulty: 'Beginner', icon: BarChart3, topic: 'Data', teaches: 'Element data can be compared visually.', steps: ['Choose an element.', 'Pick a second element.', 'Compare properties.'], tryThis: 'Compare C and O.', result: 'Charts make property differences easier to see.', realWorld: 'Useful for studying trends.' },
+  { id: 'trend-graph', title: 'Trend Graph and Animated Arrows', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: Activity, topic: 'Trends', teaches: 'Properties change across periods.', steps: ['Choose an element.', 'Look at its period graph.', 'Notice left-to-right patterns.'], tryThis: 'Choose a period 2 element.', result: 'Electronegativity tends to increase across a period.', realWorld: 'Helps predict reactivity.' },
+  { id: 'safety-valency', title: 'Lab Safety, VSEPR, Lewis, Valency', tab: 'Basics', type: 'Practice', difficulty: 'Beginner', icon: ShieldAlert, topic: 'Safety', teaches: 'Basic safety and structure rules support lab work.', steps: ['Read valency clue.', 'Check Lewis note.', 'Review safety reminder.'], tryThis: 'Choose oxygen.', result: 'Simple rules build first predictions.', safety: 'Always label, ventilate, and use PPE.', realWorld: 'Used before any experiment.' },
+  { id: 'concept-helper', title: 'Concept Helper', tab: 'Basics', type: 'Practice', difficulty: 'Beginner', icon: Brain, topic: 'Revision', teaches: 'Use built-in explanations for common chemistry ideas.', steps: ['Type a short concept question.', 'Read the rule-based explanation.', 'Compare the answer with your notes.'], tryThis: 'Ask about electronegativity.', result: 'Short explanations connect facts to causes.', realWorld: 'Useful for revision.' },
+  { id: 'molecule-links', title: 'Molecule Links, Crystal Lattice, Reactions, Functional Groups', tab: 'Molecules', type: 'Reference', difficulty: 'Advanced', icon: BadgeCheck, topic: 'Connections', teaches: 'Element choices connect to molecules and structures.', steps: ['Choose an element.', 'Review related molecules.', 'Read the reaction/functional group prompts.'], tryThis: 'Choose carbon.', result: 'Elements participate in many molecule families.', realWorld: 'Useful for organic and materials chemistry.' },
+];
+
+const labTabs = ['Start Here', 'Basics', 'Atoms', 'Molecules', 'Reactions', 'Solutions', 'Advanced'];
+const labTypes = ['All', 'Simulation', 'Calculator', 'Visualizer', 'Practice', 'Reference'];
+const labDifficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+const experimentMetaByTitle = Object.fromEntries(LAB_EXPERIMENTS.map(item => [item.title, item]));
+
+const LabCard = ({ title, children }) => {
+  const meta = experimentMetaByTitle[title];
+  const Icon = meta?.icon || FlaskConical;
+  return (
   <div className="rounded-2xl bg-white/[0.035] border border-white/10 p-4">
-    <h4 className="text-sm font-bold text-white mb-3">{title}</h4>
+    <div className="flex items-start gap-3 mb-3">
+      <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
+        <Icon size={17} className="text-cyan-300" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <h4 className="text-sm font-bold text-white">{title}</h4>
+        {meta && (
+          <div className="mt-1 flex flex-wrap gap-1">
+            <BadgePill className={difficultyStyles[meta.difficulty]}>{meta.difficulty}</BadgePill>
+            <BadgePill className={typeStyles[meta.type]}>{meta.type}</BadgePill>
+            <BadgePill className="bg-white/[0.04] text-gray-300 border-white/10">{meta.topic}</BadgePill>
+          </div>
+        )}
+      </div>
+    </div>
+    {meta && (
+      <div className="mb-3 rounded-xl bg-black/15 border border-white/10 p-3">
+        <p className="text-xs text-gray-300"><span className="text-cyan-300 font-semibold">Learn:</span> {meta.teaches}</p>
+        {meta.safety && <p className="text-[11px] text-amber-300 mt-1"><span className="font-semibold">Safety:</span> {meta.safety}</p>}
+      </div>
+    )}
     {children}
   </div>
-);
+  );
+};
 
 const orbitalMeta = {
   s: { lobes: 1, note: 'Spherical orbital with no angular node.' },
@@ -228,7 +333,16 @@ export const ChemistryLabPage = () => {
   const [teacherMode, setTeacherMode] = useLocalStorage('cu-teacher-mode', false);
   const [savedFilters, setSavedFilters] = useLocalStorage('cu-saved-filters', []);
   const [achievements, setAchievements] = useLocalStorage('cu-achievements', ['Explorer']);
-  const [aiQuestion, setAiQuestion] = useState('Why does electronegativity increase across a period?');
+  const [conceptQuestion, setConceptQuestion] = useState('Why does electronegativity increase across a period?');
+  const [guidedMode, setGuidedMode] = useLocalStorage('cu-lab-guided-mode', true);
+  const [learningMode, setLearningMode] = useLocalStorage('cu-lab-learning-mode', true);
+  const [completedExperiments, setCompletedExperiments] = useLocalStorage('cu-lab-completed', []);
+  const [activeLabTab, setActiveLabTab] = useState('Start Here');
+  const [labSearch, setLabSearch] = useState('');
+  const [labTypeFilter, setLabTypeFilter] = useState('All');
+  const [labDifficultyFilter, setLabDifficultyFilter] = useState('All');
+  const [activeExperimentId, setActiveExperimentId] = useState('titration');
+  const [showAdvancedLab, setShowAdvancedLab] = useState(false);
 
   const selected = elements.find(el => el.symbol === selectedSymbol) || elements[5];
   const second = elements.find(el => el.symbol === secondSymbol) || elements[7];
@@ -319,11 +433,37 @@ export const ChemistryLabPage = () => {
     URL.revokeObjectURL(url);
   };
 
-  const aiAnswer = aiQuestion.toLowerCase().includes('electronegativity')
+  const conceptAnswer = conceptQuestion.toLowerCase().includes('electronegativity')
     ? 'Across a period, nuclear charge rises while shielding changes only modestly, so atoms pull bonding electrons more strongly.'
-    : aiQuestion.toLowerCase().includes('isotope')
+    : conceptQuestion.toLowerCase().includes('isotope')
     ? 'Isotopes are atoms of the same element with the same proton count but different neutron counts, so their masses differ.'
     : 'Use atomic number for protons, shell data for Bohr-style structure, and category/phase to predict broad behavior.';
+
+  const recommendedPath = LAB_EXPERIMENTS.filter(item => ['titration', 'molar-mass', 'bohr', 'bond-predictor', 'equation-balancer', 'ph-meter'].includes(item.id));
+  const visibleExperiments = LAB_EXPERIMENTS.filter(item => {
+    const query = labSearch.trim().toLowerCase();
+    const matchesSearch = !query || [item.title, item.topic, item.type, item.difficulty, item.teaches].join(' ').toLowerCase().includes(query);
+    const matchesTab = activeLabTab === 'Start Here' || item.tab === activeLabTab;
+    const matchesType = labTypeFilter === 'All' || item.type === labTypeFilter;
+    const matchesDifficulty = labDifficultyFilter === 'All' || item.difficulty === labDifficultyFilter;
+    return matchesSearch && matchesTab && matchesType && matchesDifficulty;
+  });
+  const activeExperiment = LAB_EXPERIMENTS.find(item => item.id === activeExperimentId) || LAB_EXPERIMENTS[0];
+  const ActiveExperimentIcon = activeExperiment.icon;
+  const activeExperimentIndex = LAB_EXPERIMENTS.findIndex(item => item.id === activeExperiment.id);
+  const completedCount = LAB_EXPERIMENTS.filter(item => completedExperiments.includes(item.id)).length;
+  const progressPercent = Math.round((completedCount / LAB_EXPERIMENTS.length) * 100);
+  const isActiveComplete = completedExperiments.includes(activeExperiment.id);
+  const markActiveComplete = () => {
+    setCompletedExperiments(items => items.includes(activeExperiment.id) ? items : [...items, activeExperiment.id]);
+  };
+  const resetGuidedProgress = () => setCompletedExperiments([]);
+  const moveExperiment = (direction) => {
+    const nextIndex = (activeExperimentIndex + direction + LAB_EXPERIMENTS.length) % LAB_EXPERIMENTS.length;
+    setActiveExperimentId(LAB_EXPERIMENTS[nextIndex].id);
+    setActiveLabTab(LAB_EXPERIMENTS[nextIndex].tab);
+  };
+  const showFullLab = !guidedMode || showAdvancedLab;
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-4">
@@ -335,7 +475,7 @@ export const ChemistryLabPage = () => {
               <h2 className="text-xl font-black">Chemistry Lab</h2>
             </div>
             <p className="text-sm text-gray-400 mt-1 max-w-3xl">
-              Timeline, isotopes, orbitals, formula tools, safety notes, charts, exports, classroom tools, and local AI-style chemistry help in one workspace.
+              Timeline, isotopes, orbitals, formula tools, safety notes, charts, exports, classroom tools, and rule-based chemistry explanations in one workspace.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -350,6 +490,193 @@ export const ChemistryLabPage = () => {
         </div>
       </div>
 
+      <div className="glass rounded-2xl p-4 border-white/10 space-y-4">
+        <div className="flex flex-col xl:flex-row xl:items-center gap-4 justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <Target size={18} className="text-emerald-300" />
+              <h3 className="text-base font-bold text-white">Guided Chemistry Lab</h3>
+            </div>
+            <p className="text-sm text-gray-400 mt-1 max-w-3xl">
+              Pick one experiment at a time, follow simple steps, and use labels to understand what each tool is for.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setGuidedMode(v => !v)} className={`btn-secondary flex items-center gap-2 text-sm ${guidedMode ? 'bg-emerald-500/15 text-emerald-200 border-emerald-500/25' : ''}`}>
+              <Target size={14} /> Guided Mode
+            </button>
+            <button onClick={() => setLearningMode(v => !v)} className={`btn-secondary flex items-center gap-2 text-sm ${learningMode ? 'bg-cyan-500/15 text-cyan-200 border-cyan-500/25' : ''}`}>
+              <Lightbulb size={14} /> Learning Mode
+            </button>
+            <button onClick={() => setShowAdvancedLab(v => !v)} className="btn-secondary flex items-center gap-2 text-sm">
+              <SlidersHorizontal size={14} /> {showFullLab ? 'Hide Advanced' : 'Show Advanced'}
+            </button>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-[1fr_260px] gap-4">
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {labTabs.map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveLabTab(tab)}
+                  className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-colors ${
+                    activeLabTab === tab
+                      ? 'bg-indigo-600/25 border-indigo-500/40 text-indigo-100'
+                      : 'bg-white/[0.035] border-white/10 text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-[1fr_170px_170px] gap-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input value={labSearch} onChange={e => setLabSearch(e.target.value)} placeholder="Search experiments, topics, or labels" className="input text-sm pl-9" />
+              </div>
+              <select value={labTypeFilter} onChange={e => setLabTypeFilter(e.target.value)} className="input text-sm">
+                {labTypes.map(type => <option key={type}>{type}</option>)}
+              </select>
+              <select value={labDifficultyFilter} onChange={e => setLabDifficultyFilter(e.target.value)} className="input text-sm">
+                {labDifficulties.map(level => <option key={level}>{level}</option>)}
+              </select>
+            </div>
+
+            {activeLabTab === 'Start Here' && (
+              <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+                <div className="flex items-center gap-2 text-emerald-200 font-bold text-sm">
+                  <GraduationCap size={16} />
+                  Recommended beginner path
+                </div>
+                <div className="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {recommendedPath.map((item, index) => {
+                    const Icon = item.icon;
+                    const done = completedExperiments.includes(item.id);
+                    return (
+                      <button key={item.id} onClick={() => { setActiveExperimentId(item.id); setActiveLabTab(item.tab); }} className="text-left rounded-xl bg-black/15 border border-white/10 p-3 hover:bg-white/[0.06] transition-colors">
+                        <div className="flex items-center gap-2">
+                          <span className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-xs font-black text-emerald-200">{index + 1}</span>
+                          <Icon size={15} className="text-emerald-300" />
+                          {done && <CheckCircle size={14} className="ml-auto text-emerald-300" />}
+                        </div>
+                        <p className="text-xs font-bold text-white mt-2">{item.title}</p>
+                        <p className="text-[11px] text-gray-400 mt-1">{item.teaches}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2 max-h-80 overflow-y-auto scrollbar-thin pr-1">
+              {visibleExperiments.map(item => {
+                const Icon = item.icon;
+                const active = activeExperiment.id === item.id;
+                const done = completedExperiments.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveExperimentId(item.id)}
+                    className={`text-left rounded-2xl border p-3 transition-colors ${
+                      active ? 'bg-indigo-600/20 border-indigo-500/40' : 'bg-white/[0.035] border-white/10 hover:bg-white/[0.065]'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center">
+                        <Icon size={17} className="text-cyan-300" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-white truncate">{item.title}</p>
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          <BadgePill className={difficultyStyles[item.difficulty]}>{item.difficulty}</BadgePill>
+                          <BadgePill className={typeStyles[item.type]}>{item.type}</BadgePill>
+                        </div>
+                      </div>
+                      {done && <CheckCircle size={15} className="text-emerald-300 flex-shrink-0" />}
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-2 line-clamp-2">{item.teaches}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-4 h-fit">
+            <div className="flex items-start gap-3">
+              <div className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                <ActiveExperimentIcon size={20} className="text-cyan-300" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-black text-white">{activeExperiment.title}</p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  <BadgePill className={difficultyStyles[activeExperiment.difficulty]}>{activeExperiment.difficulty}</BadgePill>
+                  <BadgePill className={typeStyles[activeExperiment.type]}>{activeExperiment.type}</BadgePill>
+                  <BadgePill className="bg-white/[0.04] text-gray-300 border-white/10">{activeExperiment.topic}</BadgePill>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <div className="flex justify-between text-[10px] text-gray-500 mb-1">
+                <span>Guided progress</span>
+                <span>{completedCount}/{LAB_EXPERIMENTS.length} complete</span>
+              </div>
+              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-full rounded-full bg-emerald-400" style={{ width: `${progressPercent}%` }} />
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <div className="rounded-xl bg-black/15 border border-white/10 p-3">
+                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">What this teaches</p>
+                <p className="text-sm text-gray-300 mt-1">{activeExperiment.teaches}</p>
+              </div>
+              {learningMode && (
+                <>
+                  <div className="rounded-xl bg-black/15 border border-white/10 p-3">
+                    <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">How to use</p>
+                    <ol className="mt-2 space-y-1">
+                      {activeExperiment.steps.map((step, index) => (
+                        <li key={step} className="text-xs text-gray-300 flex gap-2">
+                          <span className="w-5 h-5 rounded-md bg-cyan-500/15 text-cyan-200 flex items-center justify-center text-[10px] font-black flex-shrink-0">{index + 1}</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                  <div className="rounded-xl bg-black/15 border border-white/10 p-3 space-y-2 text-xs">
+                    <p className="text-gray-300"><span className="text-cyan-300 font-semibold">Try this:</span> {activeExperiment.tryThis}</p>
+                    <p className="text-gray-300"><span className="text-emerald-300 font-semibold">Result:</span> {activeExperiment.result}</p>
+                    <p className="text-gray-300"><span className="text-violet-300 font-semibold">Why it matters:</span> {activeExperiment.realWorld}</p>
+                    {activeExperiment.safety && <p className="text-amber-300"><span className="font-semibold">Safety:</span> {activeExperiment.safety}</p>}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={() => moveExperiment(-1)} className="btn-secondary text-sm flex items-center justify-center gap-1">
+                <ChevronLeft size={14} /> Previous
+              </button>
+              <button onClick={() => moveExperiment(1)} className="btn-secondary text-sm flex items-center justify-center gap-1">
+                Next <ChevronRight size={14} />
+              </button>
+              <button onClick={markActiveComplete} className={`col-span-2 btn-primary text-sm flex items-center justify-center gap-2 ${isActiveComplete ? 'opacity-80' : ''}`}>
+                <CheckCircle size={15} /> {isActiveComplete ? 'Completed' : 'Mark Complete'}
+              </button>
+              <button onClick={resetGuidedProgress} className="col-span-2 text-xs text-gray-500 hover:text-gray-300 py-1">
+                Reset guided progress
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showFullLab && (
+      <>
       <Section icon={Zap} title="Interactive Simulations">
         <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-3">
           <LabCard title="Titration Simulator">
@@ -1076,17 +1403,18 @@ export const ChemistryLabPage = () => {
           <div className="mt-2 text-[10px] text-gray-500">{savedFilters.join(' · ') || 'No saved filters yet'}</div>
         </Section>
 
-        <Section icon={Download} title="Print, PNG/PDF Export, Offline, Sync">
+        <Section icon={Download} title="Print, Export, Offline">
           <div className="grid grid-cols-2 gap-2">
             <button onClick={() => window.print()} className="btn-secondary text-xs flex items-center gap-1 justify-center"><Printer size={13} /> Print/PDF</button>
             <button onClick={exportJson} className="btn-secondary text-xs flex items-center gap-1 justify-center"><Download size={13} /> Export</button>
           </div>
-          <p className="text-xs text-gray-500 mt-3">Offline/PWA ready UI: local data works without a backend. Backend sync is represented by local progress state until an API is connected.</p>
+          <p className="text-xs text-gray-500 mt-3">The app runs from local datasets, can print through the browser, exports the selected element pack as JSON, and caches assets through the service worker.</p>
         </Section>
 
-        <Section icon={Brain} title="AI Tutor Chat">
-          <textarea value={aiQuestion} onChange={e => setAiQuestion(e.target.value)} className="input min-h-20 text-sm" />
-          <div className="mt-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 p-3 text-xs text-cyan-100">{aiAnswer}</div>
+        <Section icon={Brain} title="Concept Helper">
+          <textarea value={conceptQuestion} onChange={e => setConceptQuestion(e.target.value)} className="input min-h-20 text-sm" />
+          <div className="mt-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 p-3 text-xs text-cyan-100">{conceptAnswer}</div>
+          <p className="text-[10px] text-gray-600 mt-2">Rule-based helper for a small set of built-in chemistry explanations.</p>
         </Section>
       </div>
 
@@ -1106,6 +1434,8 @@ export const ChemistryLabPage = () => {
           </div>
         </div>
       </Section>
+      </>
+      )}
     </div>
   );
 };
