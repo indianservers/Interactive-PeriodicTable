@@ -17,6 +17,7 @@ The app is frontend-only. Element data, molecule data, quiz content, and chemist
 - Quiz and games section with levels, timed questions, daily challenge, flashcards, guess-the-element mode, score history, and streak tracking
 - Chemistry Lab page with formula tools, molar mass, bond prediction, equation balancing, titration, electrolysis, isotope/decay, VSEPR, orbital, redox, pH, gas law, dilution, and other study panels
 - Guided Mode and Learning Mode in Chemistry Lab with experiment icons, difficulty/type/topic labels, search, filters, beginner path, step-by-step instructions, completion progress, safety notes, and focused experiment navigation
+- Syllabus Map page connecting every Chemistry Lab tool to Class 8-12, NEET, JEE Main, and JEE Advanced chemistry tags
 - Theme settings including dark/light mode, compact tiles, reduced motion, high contrast, color themes, and supported English/Hindi study panels
 - PWA manifest and service worker for installable/offline-friendly behavior
 
@@ -140,6 +141,7 @@ Major pages include:
 - `QuizPage.jsx` - quizzes, flashcards, daily challenge, and guessing game
 - `ChemistryLabPage.jsx` - broad collection of chemistry calculators and study simulations
 - `ChemistryLabPage.jsx` also includes a guided experiment catalog and learning layer that simplifies the full lab into one focused experiment at a time
+- `SyllabusPage.jsx` - syllabus coverage map that links lab tools to school and entrance-exam chemistry tracks
 - `FavoritesPage.jsx` - saved elements
 - `SettingsPage.jsx` - appearance, accessibility, language, and data reset controls
 

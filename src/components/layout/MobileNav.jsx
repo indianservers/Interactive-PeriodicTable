@@ -1,11 +1,11 @@
-import { LayoutDashboard, Table2, TrendingUp, BookOpen, Heart } from 'lucide-react';
+import { LayoutDashboard, Table2, FlaskConical, GraduationCap, BookOpen } from 'lucide-react';
 
 const mobileItems = [
   { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
   { id: 'table', label: 'Table', icon: Table2 },
-  { id: 'trends', label: 'Trends', icon: TrendingUp },
+  { id: 'lab', label: 'Lab', icon: FlaskConical },
+  { id: 'syllabus', label: 'Syllabus', icon: GraduationCap },
   { id: 'quiz', label: 'Quiz', icon: BookOpen },
-  { id: 'favorites', label: 'Saved', icon: Heart },
 ];
 
 export const MobileNav = ({ currentPage, onNavigate }) => (

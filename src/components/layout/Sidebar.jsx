@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import {
   LayoutDashboard, Table2, TrendingUp, GitCompare,
-  Atom, Box, BookOpen, Heart, Settings, X, FlaskConical
+  Atom, Box, BookOpen, Heart, Settings, X, FlaskConical, GraduationCap, ChevronDown
 } from 'lucide-react';
 
 const navGroups = [
@@ -24,6 +25,7 @@ const navGroups = [
   {
     label: 'Learn',
     items: [
+      { id: 'syllabus', label: 'Syllabus Map', icon: GraduationCap },
       { id: 'quiz', label: 'Quiz', icon: BookOpen },
       { id: 'favorites', label: 'Favorites', icon: Heart },
     ],
@@ -35,6 +37,7 @@ const bottomItems = [
 ];
 
 export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose }) => {
+  const [labOpen, setLabOpen] = useState(false);
   return (
     <>
       {isOpen && (
@@ -78,18 +81,43 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose }) => {
               </p>
               <div className="space-y-0.5">
                 {group.items.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    onClick={() => { onNavigate(id); onClose(); }}
-                    className={`sidebar-item w-full text-left ${currentPage === id ? 'active' : ''}`}
-                    aria-current={currentPage === id ? 'page' : undefined}
-                  >
-                    <Icon size={16} className="flex-shrink-0" />
-                    <span className="text-sm">{label}</span>
-                    {currentPage === id && (
-                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/60" />
+                  <div key={id}>
+                    <button
+                      onClick={() => {
+                        if (id === 'lab') setLabOpen(open => !open);
+                        else { onNavigate(id); onClose(); }
+                      }}
+                      className={`sidebar-item w-full text-left ${currentPage === id ? 'active' : ''}`}
+                      aria-current={currentPage === id ? 'page' : undefined}
+                      aria-expanded={id === 'lab' ? labOpen : undefined}
+                    >
+                      <Icon size={16} className="flex-shrink-0" />
+                      <span className="text-sm">{label}</span>
+                      {id === 'lab' ? (
+                        <ChevronDown size={14} className={`ml-auto transition-transform ${labOpen ? 'rotate-180' : ''}`} />
+                      ) : currentPage === id && (
+                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/60" />
+                      )}
+                    </button>
+                    {id === 'lab' && labOpen && (
+                      <div className="ml-8 mt-1 space-y-0.5">
+                        {[
+                          ['lab', 'Open Lab'],
+                          ['syllabus', 'Syllabus Tags'],
+                        ].map(([target, subLabel]) => (
+                          <button
+                            key={subLabel}
+                            onClick={() => { onNavigate(target); onClose(); }}
+                            className={`w-full text-left rounded-lg px-3 py-2 text-xs transition-colors ${
+                              currentPage === target ? 'bg-indigo-500/15 text-indigo-200' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                            }`}
+                          >
+                            {subLabel}
+                          </button>
+                        ))}
+                      </div>
                     )}
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>

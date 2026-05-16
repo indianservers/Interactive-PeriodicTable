@@ -70,7 +70,7 @@ export const SettingsPage = ({
             <Palette size={16} className="text-gray-400" />
             <div>
               <p className="text-sm font-medium text-gray-200">Color Theme</p>
-              <p className="text-xs text-gray-500 mt-0.5">Study, neon, classic, or print palette</p>
+              <p className="text-xs text-gray-500 mt-0.5">Choose a visual atmosphere without changing element category colors</p>
             </div>
           </div>
           <select value={colorTheme} onChange={e => onColorThemeChange(e.target.value)} className="input text-sm">
@@ -78,6 +78,11 @@ export const SettingsPage = ({
             <option value="neon">Neon</option>
             <option value="classic">Classic</option>
             <option value="print">Print</option>
+            <option value="aurora">Aurora Glass</option>
+            <option value="midnight">Midnight Lab</option>
+            <option value="mineral">Mineral Core</option>
+            <option value="solar">Solar Flare</option>
+            <option value="arctic">Arctic Crystal</option>
           </select>
         </div>
         <div className="py-4">

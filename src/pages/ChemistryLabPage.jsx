@@ -15,6 +15,7 @@ import {
 } from '../utils/chemistryTools.js';
 import { getCategoryInfo } from '../data/categories.js';
 import { useLocalStorage } from '../hooks/useLocalStorage.js';
+import { getSyllabusTagsForLab, syllabusTrackMap, syllabusTracks } from '../data/syllabus.js';
 
 const Section = ({ icon: Icon, title, children, className = '' }) => (
   <section className={`glass rounded-2xl p-4 border-white/10 ${className}`}>
@@ -98,8 +99,8 @@ const typeStyles = {
   Reference: 'bg-slate-500/15 text-slate-300 border-slate-500/25',
 };
 
-const BadgePill = ({ children, className = '' }) => (
-  <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${className}`}>
+const BadgePill = ({ children, className = '', style }) => (
+  <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${className}`} style={style}>
     {children}
   </span>
 );
@@ -160,13 +161,70 @@ const LAB_EXPERIMENTS = [
 ];
 
 const labTabs = ['Start Here', 'Basics', 'Atoms', 'Molecules', 'Reactions', 'Solutions', 'Advanced'];
+const labFocusTopics = [
+  { id: 'all', label: 'All', desc: 'Show every matching experiment' },
+  { id: 'beginner', label: 'Start Here', desc: 'Only beginner-friendly labs' },
+  { id: 'matter', label: 'Matter', desc: 'States, mixtures, separation, phase' },
+  { id: 'atoms', label: 'Atoms', desc: 'Shells, spectra, isotopes, orbitals' },
+  { id: 'bonding', label: 'Bonding', desc: 'Bonds, shapes, polarity, molecules' },
+  { id: 'reactions', label: 'Reactions', desc: 'Equations, redox, rates, heat' },
+  { id: 'solutions', label: 'Solutions', desc: 'pH, concentration, solubility, buffers' },
+  { id: 'organic', label: 'Organic', desc: 'Mechanisms, polymers, biomolecules' },
+];
 const labTypes = ['All', 'Simulation', 'Calculator', 'Visualizer', 'Practice', 'Reference'];
 const labDifficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 const experimentMetaByTitle = Object.fromEntries(LAB_EXPERIMENTS.map(item => [item.title, item]));
 
+const prerequisiteMap = {
+  titration: 'Know pH, neutralization, and indicators first.',
+  stoichiometry: 'Know mole concept and balanced equations first.',
+  vsepr: 'Know valence electrons and Lewis structures first.',
+  hybridization: 'Know sigma bonds, pi bonds, and VSEPR first.',
+  'weak-acid-ph': 'Know pH and acid dissociation first.',
+  electrolysis: 'Know oxidation, reduction, anode, and cathode first.',
+  'electrochemical-cell': 'Know redox potential and electron flow first.',
+  colligative: 'Know molality and solution concentration first.',
+  mechanism: 'Know nucleophiles, leaving groups, and bond breaking first.',
+};
+
+const commonMistakes = {
+  titration: 'Do not assume pH changes evenly; near equivalence it can jump very quickly.',
+  'molar-mass': 'Remember that atoms inside parentheses are multiplied by the subscript outside.',
+  stoichiometry: 'Always balance the equation before using mole ratios.',
+  dilution: 'Use the same volume units on both sides of C1V1 = C2V2.',
+  vsepr: 'Count lone pairs as electron domains even though they are not atoms.',
+  'bond-polarity': 'A polar bond does not always mean the whole molecule is polar.',
+  equilibrium: 'A catalyst changes speed, not the equilibrium position.',
+  colligative: 'Use molality, not molarity, for boiling and freezing point calculations.',
+  electrolysis: 'Do not mix up electrode sign conventions for electrolytic and galvanic cells.',
+};
+
+const formulaNotes = {
+  'molar-mass': 'Molar mass = sum of each atomic mass x atom count.',
+  'formula-builder': 'Molar mass = sum of each atomic mass x atom count.',
+  stoichiometry: 'Balanced equation coefficients give mole ratios.',
+  dilution: 'C1V1 = C2V2.',
+  'weak-acid-ph': '[H+] approximately equals sqrt(Ka x C) for a weak acid.',
+  'gas-law': 'PV = nRT.',
+  hess: 'Delta H total = sum of adjusted reaction enthalpies.',
+  colligative: 'Delta Tb = Kb x m and Delta Tf = Kf x m.',
+  'rate-lab': 'Rate generally increases with concentration and temperature.',
+  calorimetry: 'q = m c Delta T.',
+  solubility: 'Precipitation is predicted by comparing Q with Ksp.',
+};
+
+const miniQuiz = {
+  titration: { q: 'What marks the equivalence region?', a: 'A sharp pH change as acid and base neutralize.' },
+  'molar-mass': { q: 'Why do parentheses matter in formulas?', a: 'They multiply every atom inside the group.' },
+  stoichiometry: { q: 'What must be done before mole-ratio calculations?', a: 'Balance the chemical equation.' },
+  vsepr: { q: 'What determines molecular shape in VSEPR?', a: 'Bonding pairs and lone-pair electron domains.' },
+  electrolysis: { q: 'What drives a non-spontaneous reaction in electrolysis?', a: 'External electrical energy.' },
+};
+
 const LabCard = ({ title, children }) => {
   const meta = experimentMetaByTitle[title];
   const Icon = meta?.icon || FlaskConical;
+  const syllabusTags = meta ? getSyllabusTagsForLab(meta.id) : { tracks: [] };
   return (
   <div className="rounded-2xl bg-white/[0.035] border border-white/10 p-4">
     <div className="flex items-start gap-3 mb-3">
@@ -180,6 +238,15 @@ const LabCard = ({ title, children }) => {
             <BadgePill className={difficultyStyles[meta.difficulty]}>{meta.difficulty}</BadgePill>
             <BadgePill className={typeStyles[meta.type]}>{meta.type}</BadgePill>
             <BadgePill className="bg-white/[0.04] text-gray-300 border-white/10">{meta.topic}</BadgePill>
+            {syllabusTags.tracks.slice(0, 4).map(trackId => (
+              <BadgePill
+                key={trackId}
+                className="bg-black/15 text-gray-300 border-white/10"
+                style={{ borderColor: `${syllabusTrackMap[trackId]?.color || '#64748b'}66`, color: syllabusTrackMap[trackId]?.color }}
+              >
+                {syllabusTrackMap[trackId]?.label}
+              </BadgePill>
+            ))}
           </div>
         )}
       </div>
@@ -194,6 +261,28 @@ const LabCard = ({ title, children }) => {
   </div>
   );
 };
+
+const Bench = ({ title, children, result }) => (
+  <div className="rounded-2xl bg-black/20 border border-white/10 p-4">
+    <div className="flex items-center gap-2 mb-3">
+      <FlaskConical size={16} className="text-emerald-300" />
+      <h4 className="text-sm font-black text-white">{title}</h4>
+      <span className="ml-auto text-[10px] text-emerald-300 border border-emerald-500/25 bg-emerald-500/10 rounded-full px-2 py-0.5">
+        Live Lab
+      </span>
+    </div>
+    {children}
+    {result && (
+      <div className="mt-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-sm text-emerald-100">
+        {result}
+      </div>
+    )}
+  </div>
+);
+
+const ControlLabel = ({ children }) => (
+  <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-semibold mb-1">{children}</label>
+);
 
 const orbitalMeta = {
   s: { lobes: 1, note: 'Spherical orbital with no angular node.' },
@@ -338,11 +427,21 @@ export const ChemistryLabPage = () => {
   const [learningMode, setLearningMode] = useLocalStorage('cu-lab-learning-mode', true);
   const [completedExperiments, setCompletedExperiments] = useLocalStorage('cu-lab-completed', []);
   const [activeLabTab, setActiveLabTab] = useState('Start Here');
+  const [activeFocusTopic, setActiveFocusTopic] = useState(null);
   const [labSearch, setLabSearch] = useState('');
   const [labTypeFilter, setLabTypeFilter] = useState('All');
   const [labDifficultyFilter, setLabDifficultyFilter] = useState('All');
   const [activeExperimentId, setActiveExperimentId] = useState('titration');
   const [showAdvancedLab, setShowAdvancedLab] = useState(false);
+  const [focusLab, setFocusLab] = useState(false);
+  const [experimentStarted, setExperimentStarted] = useState(false);
+  const [studentPractice, setStudentPractice] = useState(false);
+  const [showManual, setShowManual] = useState(false);
+  const [activeSyllabusFilter, setActiveSyllabusFilter] = useState('all');
+  const [completedSteps, setCompletedSteps] = useLocalStorage('cu-lab-step-checks', {});
+  const [labNotes, setLabNotes] = useLocalStorage('cu-lab-notes', {});
+  const [compareSnapshots, setCompareSnapshots] = useLocalStorage('cu-lab-compare-snapshots', {});
+  const [showQuizAnswer, setShowQuizAnswer] = useState(false);
 
   const selected = elements.find(el => el.symbol === selectedSymbol) || elements[5];
   const second = elements.find(el => el.symbol === secondSymbol) || elements[7];
@@ -442,14 +541,33 @@ export const ChemistryLabPage = () => {
   const recommendedPath = LAB_EXPERIMENTS.filter(item => ['titration', 'molar-mass', 'bohr', 'bond-predictor', 'equation-balancer', 'ph-meter'].includes(item.id));
   const visibleExperiments = LAB_EXPERIMENTS.filter(item => {
     const query = labSearch.trim().toLowerCase();
+    const itemTags = getSyllabusTagsForLab(item.id);
+    const focusMap = {
+      beginner: item.difficulty === 'Beginner',
+      matter: itemTags.units.some(unit => ['matter', 'practical'].includes(unit)),
+      atoms: itemTags.units.some(unit => ['atoms', 'periodic', 'inorganic'].includes(unit)),
+      bonding: itemTags.units.some(unit => ['bonding', 'coordination'].includes(unit)),
+      reactions: itemTags.units.some(unit => ['reactions', 'thermo', 'equilibrium', 'electrochem', 'kinetics'].includes(unit)),
+      solutions: itemTags.units.some(unit => ['acidBase', 'solutions'].includes(unit)),
+      organic: itemTags.units.some(unit => ['organicBasics', 'organicAdvanced', 'biomolecules'].includes(unit)),
+      all: true,
+    };
     const matchesSearch = !query || [item.title, item.topic, item.type, item.difficulty, item.teaches].join(' ').toLowerCase().includes(query);
+    const matchesFocus = activeFocusTopic ? (focusMap[activeFocusTopic] ?? true) : false;
     const matchesTab = activeLabTab === 'Start Here' || item.tab === activeLabTab;
     const matchesType = labTypeFilter === 'All' || item.type === labTypeFilter;
     const matchesDifficulty = labDifficultyFilter === 'All' || item.difficulty === labDifficultyFilter;
-    return matchesSearch && matchesTab && matchesType && matchesDifficulty;
+    const matchesSyllabus = activeSyllabusFilter === 'all' || itemTags.tracks.includes(activeSyllabusFilter);
+    return matchesSearch && matchesFocus && matchesTab && matchesType && matchesDifficulty && matchesSyllabus;
   });
   const activeExperiment = LAB_EXPERIMENTS.find(item => item.id === activeExperimentId) || LAB_EXPERIMENTS[0];
   const ActiveExperimentIcon = activeExperiment.icon;
+  const activeSyllabusTags = getSyllabusTagsForLab(activeExperiment.id);
+  const activeStepsDone = completedSteps[activeExperiment.id] || [];
+  const categoryCompleteCount = activeFocusTopic
+    ? visibleExperiments.filter(item => completedExperiments.includes(item.id)).length
+    : 0;
+  const categoryProgress = visibleExperiments.length ? Math.round((categoryCompleteCount / visibleExperiments.length) * 100) : 0;
   const activeExperimentIndex = LAB_EXPERIMENTS.findIndex(item => item.id === activeExperiment.id);
   const completedCount = LAB_EXPERIMENTS.filter(item => completedExperiments.includes(item.id)).length;
   const progressPercent = Math.round((completedCount / LAB_EXPERIMENTS.length) * 100);
@@ -458,12 +576,477 @@ export const ChemistryLabPage = () => {
     setCompletedExperiments(items => items.includes(activeExperiment.id) ? items : [...items, activeExperiment.id]);
   };
   const resetGuidedProgress = () => setCompletedExperiments([]);
+  const resetActiveExperiment = () => {
+    setExperimentStarted(false);
+    setShowQuizAnswer(false);
+    setCompletedSteps(items => ({ ...items, [activeExperiment.id]: [] }));
+  };
+  const toggleStepDone = (stepIndex) => {
+    setCompletedSteps(items => {
+      const current = items[activeExperiment.id] || [];
+      const next = current.includes(stepIndex)
+        ? current.filter(index => index !== stepIndex)
+        : [...current, stepIndex];
+      return { ...items, [activeExperiment.id]: next };
+    });
+  };
+  const activeResultText = () => {
+    if (activeExperiment.id === 'titration') return `pH ${simTitration.pH.toFixed(2)} - ${simTitration.region}`;
+    if (activeExperiment.id === 'ph-meter') return `${probeSolution}: pH ${probePh.toFixed(1)}`;
+    if (activeExperiment.id === 'molar-mass' || activeExperiment.id === 'formula-builder') return `${formulaInput}: ${mass.toFixed(3)} g/mol`;
+    if (activeExperiment.id === 'stoichiometry') return stoichBalanced.ok ? stoichBalanced.balanced : stoichBalanced.error;
+    if (activeExperiment.id === 'dilution') return `V2 = ${dilutionV2.toFixed(2)} mL`;
+    if (activeExperiment.id === 'gas-law') return `n = ${gasN.toFixed(3)} mol`;
+    if (activeExperiment.id === 'vsepr') return `${vsepr.shape}, ${geometry.angle}`;
+    if (activeExperiment.id === 'rate-lab') return `Rate factor ${rateK.toFixed(2)}`;
+    if (activeExperiment.id === 'solubility') return precipitates ? 'Precipitate forms' : 'No precipitate yet';
+    return activeExperiment.result;
+  };
+  const saveSnapshot = (slot) => {
+    setCompareSnapshots(items => ({
+      ...items,
+      [activeExperiment.id]: {
+        ...(items[activeExperiment.id] || {}),
+        [slot]: {
+          result: activeResultText(),
+          savedAt: new Date().toLocaleString(),
+        },
+      },
+    }));
+  };
+  const exportActiveResult = () => {
+    const payload = {
+      experiment: activeExperiment.title,
+      result: activeResultText(),
+      notes: labNotes[activeExperiment.id] || '',
+      syllabus: activeSyllabusTags.tracks.map(id => syllabusTrackMap[id]?.label).filter(Boolean),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${activeExperiment.id}-lab-result.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const applyActivePreset = (preset) => {
+    if (activeExperiment.id === 'titration') setSimTitrationDrops(preset === 'acidic' ? 10 : preset === 'neutral' ? 500 : 900);
+    else if (activeExperiment.id === 'ph-meter') setProbeSolution(preset === 'acidic' ? 'vinegar' : preset === 'basic' ? 'ammonia' : 'water');
+    else if (activeExperiment.id === 'rate-lab') {
+      setRateTemp(preset === 'fast' ? 75 : 20);
+      setRateConc(preset === 'fast' ? 2.6 : 0.4);
+    } else if (activeExperiment.id === 'solubility') setSaltAdded(preset === 'fast' ? 0.009 : 0.001);
+  };
   const moveExperiment = (direction) => {
     const nextIndex = (activeExperimentIndex + direction + LAB_EXPERIMENTS.length) % LAB_EXPERIMENTS.length;
     setActiveExperimentId(LAB_EXPERIMENTS[nextIndex].id);
     setActiveLabTab(LAB_EXPERIMENTS[nextIndex].tab);
   };
+  const selectFocusTopic = (topicId) => {
+    setActiveFocusTopic(topicId);
+    setActiveLabTab('Start Here');
+    const nextExperiment = LAB_EXPERIMENTS.find(item => {
+      const itemTags = getSyllabusTagsForLab(item.id);
+      if (topicId === 'all') return true;
+      if (topicId === 'beginner') return item.difficulty === 'Beginner';
+      const topicUnits = {
+        matter: ['matter', 'practical'],
+        atoms: ['atoms', 'periodic', 'inorganic'],
+        bonding: ['bonding', 'coordination'],
+        reactions: ['reactions', 'thermo', 'equilibrium', 'electrochem', 'kinetics'],
+        solutions: ['acidBase', 'solutions'],
+        organic: ['organicBasics', 'organicAdvanced', 'biomolecules'],
+      }[topicId] || [];
+      return itemTags.units.some(unit => topicUnits.includes(unit));
+    });
+    if (nextExperiment) setActiveExperimentId(nextExperiment.id);
+    setExperimentStarted(false);
+  };
+  const activeFocusInfo = labFocusTopics.find(topic => topic.id === activeFocusTopic);
   const showFullLab = !guidedMode || showAdvancedLab;
+  const renderGuidedWorkbench = () => {
+    switch (activeExperiment.id) {
+      case 'titration':
+        return (
+          <Bench title="Titration Simulator" result={`pH ${simTitration.pH.toFixed(2)} - ${simTitration.region}`}>
+            <ControlLabel>NaOH drops: {simTitrationDrops}</ControlLabel>
+            <input type="range" min="0" max="1000" value={simTitrationDrops} onChange={e => setSimTitrationDrops(Number(e.target.value))} className="w-full" />
+            <div className="mt-4 h-36 rounded-xl border border-white/10 flex items-end overflow-hidden bg-white/[0.04]">
+              <div className="w-full transition-all" style={{ height: `${Math.min(100, 25 + simTitrationDrops / 10)}%`, background: simTitration.pH < 7 ? '#ef4444' : simTitration.pH < 9 ? '#22c55e' : '#ec4899' }} />
+            </div>
+          </Bench>
+        );
+      case 'electrolysis':
+        return (
+          <Bench title="Electrolysis Cell" result={`${electrolysis.cathode}; ${electrolysis.anode}`}>
+            <ControlLabel>Electrolyte</ControlLabel>
+            <select value={electrolyte} onChange={e => setElectrolyte(e.target.value)} className="input text-sm mb-4">{['CuSO4', 'NaCl(aq)', 'H2O + acid'].map(e => <option key={e}>{e}</option>)}</select>
+            <div className="h-40 rounded-xl bg-blue-500/10 border border-blue-400/20 relative overflow-hidden">
+              <span className="absolute left-12 top-5 bottom-5 w-4 rounded bg-slate-300" />
+              <span className="absolute right-12 top-5 bottom-5 w-4 rounded bg-slate-300" />
+              {Array.from({ length: 24 }, (_, i) => <span key={i} className="absolute w-2 h-2 rounded-full bg-cyan-200 animate-pulse" style={{ left: `${15 + (i % 8) * 9}%`, top: `${20 + Math.floor(i / 8) * 22}%` }} />)}
+            </div>
+          </Bench>
+        );
+      case 'distillation':
+        return (
+          <Bench title="Distillation Apparatus" result={distillHeat > 78 ? 'Ethanol-rich vapor condenses into the collector.' : 'Heat is still below the strong boiling range.'}>
+            <ControlLabel>Heating: {distillHeat}%</ControlLabel>
+            <input type="range" min="0" max="100" value={distillHeat} onChange={e => setDistillHeat(Number(e.target.value))} className="w-full" />
+            <div className="h-40 rounded-xl bg-black/20 border border-white/10 relative mt-4">
+              <span className="absolute left-10 bottom-6 w-20 h-20 rounded-b-3xl border border-cyan-300/30 bg-cyan-500/10" />
+              <span className="absolute left-28 top-16 right-24 h-3 bg-slate-400 rounded" />
+              <span className="absolute right-12 bottom-6 w-14 h-16 rounded-b-xl border border-white/20 bg-white/[0.04]" />
+              {distillHeat > 45 && <span className="absolute left-32 top-14 right-20 border-t border-dashed border-cyan-300 animate-pulse" />}
+            </div>
+          </Bench>
+        );
+      case 'chromatography':
+        return (
+          <Bench title="Chromatography" result="Bands separate because each substance has a different attraction to the paper and solvent.">
+            <ControlLabel>Run time: {chromTime}%</ControlLabel>
+            <input type="range" min="0" max="100" value={chromTime} onChange={e => setChromTime(Number(e.target.value))} className="w-full" />
+            <div className="h-44 rounded-xl bg-yellow-50/90 border border-white/10 relative mt-4">
+              {['#ef4444', '#22c55e', '#3b82f6'].map((color, i) => <span key={color} className="absolute left-1/2 -translate-x-1/2 w-28 h-3 rounded-full" style={{ background: color, bottom: `${12 + chromTime * (0.25 + i * 0.12)}%` }} />)}
+              <span className="absolute left-8 right-8 bottom-5 border-t border-gray-500/40" />
+            </div>
+          </Bench>
+        );
+      case 'spectroscopy':
+        return (
+          <Bench title="Spectroscopy Viewer" result={`Visible emission lines for ${selectedSymbol}.`}>
+            <ControlLabel>Element</ControlLabel>
+            <select value={selectedSymbol} onChange={e => setSelectedSymbol(e.target.value)} className="input text-sm mb-4">{['H', 'He', 'Li', 'Na', 'K', 'Ca', 'Cu'].map(s => <option key={s}>{s}</option>)}</select>
+            <div className="h-28 rounded-xl bg-gradient-to-r from-violet-700 via-green-500 to-red-600 border border-white/10 relative overflow-hidden">
+              {(spectrumLines[selectedSymbol] || [486, 656]).map(nm => <span key={nm} className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_12px_white]" style={{ left: `${((nm - 380) / 370) * 100}%` }} />)}
+            </div>
+          </Bench>
+        );
+      case 'ph-meter':
+        return (
+          <Bench title="pH Meter" result={`${probeSolution} is ${probePh < 7 ? 'acidic' : probePh > 7 ? 'basic' : 'neutral'}.`}>
+            <ControlLabel>Test solution</ControlLabel>
+            <select value={probeSolution} onChange={e => setProbeSolution(e.target.value)} className="input text-sm mb-4">{['water', 'vinegar', 'ammonia', 'cola', 'soap'].map(s => <option key={s}>{s}</option>)}</select>
+            <div className="text-5xl font-black text-white">pH {probePh.toFixed(1)}</div>
+            <MiniBar label="acid to base" value={(probePh / 14) * 100} color={probePh < 7 ? '#ef4444' : probePh > 7 ? '#3b82f6' : '#22c55e'} />
+          </Bench>
+        );
+      case 'electrochemical-cell':
+      case 'corrosion':
+        return (
+          <Bench title={activeExperiment.title} result={activeExperiment.id === 'corrosion' ? `${corrosion} corrodes preferentially in this pair.` : `Cell voltage is ${cellVoltage.toFixed(2)} V.`}>
+            <div className="grid sm:grid-cols-2 gap-3 mb-4">
+              <div><ControlLabel>Metal A</ControlLabel><select value={metalA} onChange={e => setMetalA(e.target.value)} className="input text-sm">{Object.keys(reductionPotentials).map(x => <option key={x}>{x}</option>)}</select></div>
+              <div><ControlLabel>Metal B</ControlLabel><select value={metalB} onChange={e => setMetalB(e.target.value)} className="input text-sm">{Object.keys(reductionPotentials).map(x => <option key={x}>{x}</option>)}</select></div>
+            </div>
+            <div className="h-32 rounded-xl bg-black/20 border border-white/10 flex items-center justify-around">
+              <span className="px-4 py-8 rounded-xl bg-white/[0.06]">{metalA}</span>
+              <span className="text-cyan-300 font-mono text-xl">{cellVoltage.toFixed(2)} V</span>
+              <span className="px-4 py-8 rounded-xl bg-white/[0.06]">{metalB}</span>
+            </div>
+          </Bench>
+        );
+      case 'equilibrium':
+        return (
+          <Bench title="Le Chatelier Equilibrium" result={`The system ${eqShift}.`}>
+            <ControlLabel>Reactant level {eqReactant.toFixed(1)}x</ControlLabel>
+            <input type="range" min="0.2" max="3" step="0.1" value={eqReactant} onChange={e => setEqReactant(Number(e.target.value))} className="w-full mb-3" />
+            <ControlLabel>Temperature {eqTemp} C</ControlLabel>
+            <input type="range" min="0" max="100" value={eqTemp} onChange={e => setEqTemp(Number(e.target.value))} className="w-full" />
+            <div className="mt-4 text-center text-xl text-white font-mono">N2O4 ⇌ 2NO2</div>
+          </Bench>
+        );
+      case 'osmosis':
+        return (
+          <Bench title="Osmosis Demo" result={osmoticFlow}>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div><ControlLabel>Left {osmosisLeft} M</ControlLabel><input type="range" min="0" max="2" step="0.1" value={osmosisLeft} onChange={e => setOsmosisLeft(Number(e.target.value))} className="w-full" /></div>
+              <div><ControlLabel>Right {osmosisRight} M</ControlLabel><input type="range" min="0" max="2" step="0.1" value={osmosisRight} onChange={e => setOsmosisRight(Number(e.target.value))} className="w-full" /></div>
+            </div>
+            <div className="h-28 rounded-xl bg-blue-500/10 border border-blue-400/20 mt-4 grid grid-cols-2 divide-x divide-dashed divide-white/30">
+              <div className="flex items-center justify-center text-gray-200">Left solution</div>
+              <div className="flex items-center justify-center text-gray-200">Right solution</div>
+            </div>
+          </Bench>
+        );
+      case 'flame-test':
+        return (
+          <Bench title="Flame Test" result={`${flameElement} produces its characteristic flame color.`}>
+            <ControlLabel>Metal ion</ControlLabel>
+            <select value={flameElement} onChange={e => setFlameElement(e.target.value)} className="input text-sm mb-4">{Object.keys(flameColors).map(s => <option key={s}>{s}</option>)}</select>
+            <div className="h-40 rounded-xl bg-black border border-white/10 flex items-end justify-center overflow-hidden">
+              <div className="w-32 h-32 rounded-t-full blur-sm" style={{ background: flameColors[flameElement], boxShadow: `0 0 50px ${flameColors[flameElement]}` }} />
+            </div>
+          </Bench>
+        );
+      case 'molar-mass':
+      case 'formula-builder':
+        return (
+          <Bench title={activeExperiment.title} result={`Molar mass = ${mass.toFixed(3)} g/mol`}>
+            <ControlLabel>Formula</ControlLabel>
+            <input value={formulaInput} onChange={e => setFormulaInput(e.target.value)} className="input text-sm mb-3" />
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500 uppercase">Atoms</p><p className="text-sm text-gray-200 font-mono mt-1">{Object.entries(parsed).map(([s, n]) => `${s}:${n}`).join('  ') || 'None'}</p></div>
+              <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500 uppercase">Molar mass</p><p className="text-2xl font-black text-white">{mass.toFixed(3)}</p></div>
+            </div>
+          </Bench>
+        );
+      case 'stoichiometry':
+        return (
+          <Bench title="Stoichiometry Solver" result={stoichBalanced.ok ? stoichBalanced.balanced : stoichBalanced.error}>
+            <ControlLabel>Equation</ControlLabel>
+            <input value={stoichEquation} onChange={e => setStoichEquation(e.target.value)} className="input text-sm mb-3" />
+            <ControlLabel>Starting moles</ControlLabel>
+            <input type="number" value={stoichMoles} onChange={e => setStoichMoles(Number(e.target.value))} className="input text-sm" />
+          </Bench>
+        );
+      case 'dilution':
+        return (
+          <Bench title="Molarity / Dilution Calculator" result={`Required final volume V2 = ${dilutionV2.toFixed(2)} mL`}>
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div><ControlLabel>C1</ControlLabel><input type="number" value={c1} onChange={e => setC1(Number(e.target.value))} className="input text-sm" /></div>
+              <div><ControlLabel>V1</ControlLabel><input type="number" value={v1} onChange={e => setV1(Number(e.target.value))} className="input text-sm" /></div>
+              <div><ControlLabel>C2</ControlLabel><input type="number" value={c2} onChange={e => setC2(Number(e.target.value))} className="input text-sm" /></div>
+            </div>
+          </Bench>
+        );
+      case 'weak-acid-ph':
+        return (
+          <Bench title="pH / pOH Calculator" result={`pH ${weakAcidPh.toFixed(2)}; pOH ${(14 - weakAcidPh).toFixed(2)}`}>
+            <ControlLabel>Ka</ControlLabel>
+            <input type="number" value={ka} onChange={e => setKa(Number(e.target.value))} className="input text-sm" />
+          </Bench>
+        );
+      case 'gas-law':
+        return (
+          <Bench title="Ideal Gas Law Calculator" result={`n = ${gasN.toFixed(3)} mol`}>
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div><ControlLabel>P atm</ControlLabel><input type="number" value={gasP} onChange={e => setGasP(Number(e.target.value))} className="input text-sm" /></div>
+              <div><ControlLabel>V L</ControlLabel><input type="number" value={gasV} onChange={e => setGasV(Number(e.target.value))} className="input text-sm" /></div>
+              <div><ControlLabel>T K</ControlLabel><input type="number" value={gasT} onChange={e => setGasT(Number(e.target.value))} className="input text-sm" /></div>
+            </div>
+          </Bench>
+        );
+      case 'empirical-formula':
+        return (
+          <Bench title="Empirical Formula Finder" result={`Empirical formula: ${empiricalFormula(empRows)}`}>
+            {empRows.map((row, i) => <div key={i} className="grid grid-cols-2 gap-2 mb-2"><input value={row.symbol} onChange={e => setEmpRows(rows => rows.map((r, idx) => idx === i ? { ...r, symbol: e.target.value } : r))} className="input text-sm" /><input type="number" value={row.percent} onChange={e => setEmpRows(rows => rows.map((r, idx) => idx === i ? { ...r, percent: Number(e.target.value) } : r))} className="input text-sm" /></div>)}
+          </Bench>
+        );
+      case 'oxidation':
+        return (
+          <Bench title="Oxidation State Finder" result={oxidationGuess(oxidFormula)}>
+            <ControlLabel>Formula</ControlLabel>
+            <input value={oxidFormula} onChange={e => setOxidFormula(e.target.value)} className="input text-sm" />
+          </Bench>
+        );
+      case 'electron-config-tool':
+        return (
+          <Bench title="Electron Configuration Builder" result={`${configElement.name}: ${configElement.electronConfiguration}`}>
+            <ControlLabel>Atomic number</ControlLabel>
+            <input type="number" min="1" max="118" value={configAtomicNumber} onChange={e => setConfigAtomicNumber(Number(e.target.value))} className="input text-sm mb-3" />
+            <div className="flex flex-wrap gap-1">{configFill.map(part => <span key={part.raw} className="px-2 py-1 rounded bg-white/[0.06] text-xs">{part.raw}</span>)}</div>
+          </Bench>
+        );
+      case 'hess':
+        return (
+          <Bench title="Reaction Enthalpy" result={`Delta H = ${deltaH.toFixed(1)} kJ`}>
+            <div className="grid sm:grid-cols-2 gap-3"><input type="number" value={hessA} onChange={e => setHessA(Number(e.target.value))} className="input text-sm" /><input type="number" value={hessB} onChange={e => setHessB(Number(e.target.value))} className="input text-sm" /></div>
+          </Bench>
+        );
+      case 'colligative':
+        return (
+          <Bench title="Colligative Properties" result={`Boiling elevation ${boilingElevation.toFixed(2)} C; freezing depression ${freezingDepression.toFixed(2)} C`}>
+            <ControlLabel>Molality {molality} m</ControlLabel>
+            <input type="range" min="0" max="5" step="0.1" value={molality} onChange={e => setMolality(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'orbital-shape':
+        return (
+          <Bench title="Orbital Shape Viewer" result={orbital.note}>
+            <ControlLabel>Orbital</ControlLabel>
+            <select value={orbitalType} onChange={e => setOrbitalType(e.target.value)} className="input text-sm mb-4">{Object.keys(orbitalMeta).map(type => <option key={type}>{type}</option>)}</select>
+            <div className="h-40 rounded-xl bg-black/20 border border-white/10 flex items-center justify-center relative overflow-hidden">
+              {Array.from({ length: orbital.lobes }, (_, i) => <span key={i} className="absolute w-20 h-12 rounded-[50%] opacity-80" style={{ background: i % 2 ? '#ef4444' : '#38bdf8', transform: `rotate(${(360 / orbital.lobes) * i}deg) translateX(${orbitalType === 's' ? 0 : 32}px)` }} />)}
+              <span className="absolute w-5 h-5 rounded-full bg-white" />
+            </div>
+          </Bench>
+        );
+      case 'hybridization':
+        return (
+          <Bench title="Hybridization Animator" result={`${hybrid} hybrid orbitals are shown in the model.`}>
+            <ControlLabel>Hybridization</ControlLabel>
+            <select value={hybrid} onChange={e => setHybrid(e.target.value)} className="input text-sm mb-4">{['sp', 'sp2', 'sp3', 'dsp2', 'sp3d'].map(h => <option key={h}>{h}</option>)}</select>
+            <div className="h-44 rounded-xl bg-black/20 border border-white/10 flex items-center justify-center gap-2">
+              {Array.from({ length: hybrid === 'sp' ? 2 : hybrid === 'sp2' ? 3 : hybrid === 'sp3' ? 4 : 5 }, (_, i) => <span key={i} className="w-12 h-20 rounded-[50%] bg-gradient-to-b from-pink-400 to-indigo-500 opacity-75" style={{ transform: `rotate(${i * (180 / (hybrid === 'sp' ? 1 : 4))}deg)` }} />)}
+            </div>
+          </Bench>
+        );
+      case 'vsepr':
+        return (
+          <Bench title="VSEPR Shape Builder" result={`${vsepr.shape}; angle ${geometry.angle}`}>
+            <div className="grid sm:grid-cols-2 gap-3 mb-4">
+              <div><ControlLabel>Bonded atoms: {bondedAtoms}</ControlLabel><input type="range" min="1" max="6" value={bondedAtoms} onChange={e => setBondedAtoms(Number(e.target.value))} className="w-full" /></div>
+              <div><ControlLabel>Lone pairs: {lonePairs}</ControlLabel><input type="range" min="0" max="3" value={lonePairs} onChange={e => setLonePairs(Number(e.target.value))} className="w-full" /></div>
+            </div>
+            <svg viewBox="0 0 100 100" className="w-full h-44 rounded-xl bg-black/20 border border-white/10">
+              {geometry.points.slice(1).map((point, i) => <line key={i} x1={geometry.points[0][0]} y1={geometry.points[0][1]} x2={point[0]} y2={point[1]} stroke="#94a3b8" strokeWidth="2" />)}
+              {geometry.points.map((point, i) => <circle key={i} cx={point[0]} cy={point[1]} r={i === 0 ? 7 : 5} fill={i === 0 ? '#38bdf8' : '#a78bfa'} />)}
+            </svg>
+          </Bench>
+        );
+      case 'bond-polarity':
+      case 'bond-predictor':
+        return (
+          <Bench title={activeExperiment.title} result={`${polarity.type}: ${polarity.note}`}>
+            <div className="grid sm:grid-cols-2 gap-3"><input value={polarityA} onChange={e => setPolarityA(e.target.value)} className="input text-sm" /><input value={polarityB} onChange={e => setPolarityB(e.target.value)} className="input text-sm" /></div>
+          </Bench>
+        );
+      case 'mechanism':
+        return (
+          <Bench title="Reaction Mechanism Player" result={mechanismSteps[Math.min(mechanismStep - 1, mechanismSteps.length - 1)]}>
+            <ControlLabel>Mechanism</ControlLabel>
+            <select value={mechanism} onChange={e => setMechanism(e.target.value)} className="input text-sm mb-3">{Object.keys(mechanismData).map(m => <option key={m}>{m}</option>)}</select>
+            <ControlLabel>Step {mechanismStep}</ControlLabel>
+            <input type="range" min="1" max={mechanismSteps.length} value={mechanismStep} onChange={e => setMechanismStep(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'imf':
+        return (
+          <Bench title="Intermolecular Forces Demo" result={`${imfType} affects melting point, boiling point, and solubility.`}>
+            <ControlLabel>Force type</ControlLabel>
+            <select value={imfType} onChange={e => setImfType(e.target.value)} className="input text-sm">{['London dispersion', 'dipole-dipole', 'hydrogen bonding', 'ion-dipole'].map(type => <option key={type}>{type}</option>)}</select>
+          </Bench>
+        );
+      case 'nuclear-decay':
+      case 'isotopes':
+        return (
+          <Bench title={activeExperiment.title} result={`${decayRemaining.toFixed(2)}% parent isotope remains.`}>
+            <ControlLabel>Half-lives elapsed: {decayHalfLives}</ControlLabel>
+            <input type="range" min="0" max="8" value={decayHalfLives} onChange={e => setDecayHalfLives(Number(e.target.value))} className="w-full" />
+            <MiniBar label="parent isotope remaining" value={decayRemaining} color="#f87171" />
+          </Bench>
+        );
+      case 'phase-diagram':
+        return (
+          <Bench title="Phase Diagram Explorer" result={`Predicted phase: ${phase}`}>
+            <ControlLabel>Temperature {phaseTemp} C</ControlLabel>
+            <input type="range" min="-50" max="450" value={phaseTemp} onChange={e => setPhaseTemp(Number(e.target.value))} className="w-full mb-3" />
+            <ControlLabel>Pressure {phasePressure} atm</ControlLabel>
+            <input type="range" min="0" max="250" value={phasePressure} onChange={e => setPhasePressure(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'mo-diagram':
+        return (
+          <Bench title="Molecular Orbital Diagram" result={`Bond order ${mo.order}; ${mo.magnetic}.`}>
+            <ControlLabel>Molecule</ControlLabel>
+            <select value={moMolecule} onChange={e => setMoMolecule(e.target.value)} className="input text-sm mb-3">{Object.keys(moData).map(m => <option key={m}>{m}</option>)}</select>
+            <div className="space-y-1">{mo.fill.map(row => <div key={row} className="rounded-lg bg-white/[0.05] border border-white/10 px-3 py-2 text-xs font-mono text-gray-200">{row}</div>)}</div>
+          </Bench>
+        );
+      case 'rate-lab':
+        return (
+          <Bench title="Reaction Rate Lab" result={`Rate factor ${rateK.toFixed(2)} from current temperature and concentration.`}>
+            <ControlLabel>Temperature {rateTemp} C</ControlLabel><input type="range" min="0" max="100" value={rateTemp} onChange={e => setRateTemp(Number(e.target.value))} className="w-full mb-3" />
+            <ControlLabel>Concentration {rateConc.toFixed(1)} M</ControlLabel><input type="range" min="0.1" max="3" step="0.1" value={rateConc} onChange={e => setRateConc(Number(e.target.value))} className="w-full" />
+            <svg viewBox="0 0 260 90" className="w-full h-32 mt-4 rounded-xl bg-black/20 border border-white/10"><polyline fill="none" stroke="#22c55e" strokeWidth="3" points={ratePoints.map(p => `${p.x},${p.y}`).join(' ')} /></svg>
+          </Bench>
+        );
+      case 'calorimetry':
+        return (
+          <Bench title="Calorimetry Experiment" result={`Final temperature: ${finalTemp.toFixed(2)} C`}>
+            <ControlLabel>Metal temperature {metalTemp} C</ControlLabel><input type="range" min="25" max="200" value={metalTemp} onChange={e => setMetalTemp(Number(e.target.value))} className="w-full mb-3" />
+            <ControlLabel>Metal mass {metalMass} g</ControlLabel><input type="range" min="5" max="200" value={metalMass} onChange={e => setMetalMass(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'solubility':
+        return (
+          <Bench title="Solubility Lab" result={precipitates ? 'Precipitate forms because Q is greater than Ksp.' : 'No precipitate yet; Q is below Ksp.'}>
+            <ControlLabel>Salt</ControlLabel><select value={salt} onChange={e => setSalt(e.target.value)} className="input text-sm mb-3">{Object.keys(kspData).map(s => <option key={s}>{s}</option>)}</select>
+            <ControlLabel>Salt added {saltAdded} mol</ControlLabel><input type="range" min="0" max="0.01" step="0.0005" value={saltAdded} onChange={e => setSaltAdded(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'indicator':
+        return (
+          <Bench title="Indicator Color Table" result={`${indicator} at pH ${solutionPh}`}>
+            <ControlLabel>Indicator</ControlLabel><select value={indicator} onChange={e => setIndicator(e.target.value)} className="input text-sm mb-3">{Object.keys(indicators).map(i => <option key={i}>{i}</option>)}</select>
+            <ControlLabel>pH {solutionPh}</ControlLabel><input type="range" min="0" max="14" step="0.1" value={solutionPh} onChange={e => setSolutionPh(Number(e.target.value))} className="w-full" />
+            <div className="h-24 rounded-xl border border-white/10 mt-4" style={{ background: indicatorColor(indicator, solutionPh) }} />
+          </Bench>
+        );
+      case 'soap':
+        return (
+          <Bench title="Soap Making" result={`Saponification progress: ${sapProgress}%`}>
+            <ControlLabel>Reaction progress {sapProgress}%</ControlLabel><input type="range" min="0" max="100" value={sapProgress} onChange={e => setSapProgress(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'fermentation':
+        return (
+          <Bench title="Fermentation Simulator" result={`Yeast activity: ${yeastActivity.toFixed(0)}%`}>
+            <ControlLabel>Temperature {yeastTemp} C</ControlLabel><input type="range" min="0" max="60" value={yeastTemp} onChange={e => setYeastTemp(Number(e.target.value))} className="w-full" />
+            <MiniBar label="yeast activity" value={yeastActivity} color="#f59e0b" />
+          </Bench>
+        );
+      case 'polymer':
+        return (
+          <Bench title="Polymer Builder" result={`${polymerLength} repeating units in the chain.`}>
+            <ControlLabel>Chain length {polymerLength}</ControlLabel><input type="range" min="2" max="20" value={polymerLength} onChange={e => setPolymerLength(Number(e.target.value))} className="w-full" />
+            <div className="flex flex-wrap gap-1 mt-4">{Array.from({ length: polymerLength }, (_, i) => <span key={i} className="w-8 h-8 rounded-full bg-cyan-500/30 border border-cyan-300/30" />)}</div>
+          </Bench>
+        );
+      case 'buffer':
+        return (
+          <Bench title="Buffer Solution Lab" result={`Buffer pH ${bufferPh.toFixed(2)} vs pure water pH ${pureWaterPh.toFixed(2)}`}>
+            <ControlLabel>Acid/base added {bufferAdded}</ControlLabel><input type="range" min="-5" max="5" step="0.1" value={bufferAdded} onChange={e => setBufferAdded(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'recrystallization':
+        return (
+          <Bench title="Recrystallization Visualizer" result={`Supersaturation: ${supersaturation.toFixed(1)}%`}>
+            <ControlLabel>Temperature {recrystTemp} C</ControlLabel><input type="range" min="0" max="100" value={recrystTemp} onChange={e => setRecrystTemp(Number(e.target.value))} className="w-full" />
+          </Bench>
+        );
+      case 'bohr':
+      case 'timeline':
+      case 'element-pack':
+      case 'abundance':
+      case 'trend-graph':
+      case 'safety-valency':
+      case 'molecule-links':
+        return (
+          <Bench title={activeExperiment.title} result={`Current element: ${selected.name} (${selected.symbol})`}>
+            <ControlLabel>Element</ControlLabel>
+            <select value={selectedSymbol} onChange={e => setSelectedSymbol(e.target.value)} className="input text-sm mb-4">{elements.map(el => <option key={el.symbol} value={el.symbol}>{el.name} ({el.symbol})</option>)}</select>
+            <div className="grid sm:grid-cols-3 gap-2">
+              <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Shells</p><p className="text-lg font-black text-white">{selected.shells?.join('-')}</p></div>
+              <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Category</p><p className="text-sm text-gray-200">{selected.category}</p></div>
+              <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Discovered</p><p className="text-sm text-gray-200">{selected.yearDiscovered || 'Ancient'}</p></div>
+            </div>
+            <p className="text-xs text-gray-400 mt-3">{selected.summary}</p>
+          </Bench>
+        );
+      case 'concept-helper':
+        return (
+          <Bench title="Concept Helper" result={conceptAnswer}>
+            <ControlLabel>Question</ControlLabel>
+            <textarea value={conceptQuestion} onChange={e => setConceptQuestion(e.target.value)} className="input min-h-24 text-sm" />
+          </Bench>
+        );
+      case 'crystal-structure':
+      default:
+        return (
+          <Bench title={activeExperiment.title} result="Use the controls below to change the model and observe the result.">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div><ControlLabel>Structure</ControlLabel><select value={structureType} onChange={e => setStructureType(e.target.value)} className="input text-sm">{['NaCl', 'CsCl', 'diamond', 'graphite'].map(type => <option key={type}>{type}</option>)}</select></div>
+              <div><ControlLabel>Lattice size {latticeSize}</ControlLabel><input type="range" min="2" max="7" value={latticeSize} onChange={e => setLatticeSize(Number(e.target.value))} className="w-full" /></div>
+            </div>
+            <div className="mt-4 grid grid-cols-5 gap-2 max-w-xs">
+              {Array.from({ length: latticeSize * latticeSize }, (_, i) => <span key={i} className="aspect-square rounded-full border border-white/10" style={{ background: i % 2 ? '#38bdf8' : '#a78bfa' }} />)}
+            </div>
+          </Bench>
+        );
+    }
+  };
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-4">
@@ -516,6 +1099,23 @@ export const ChemistryLabPage = () => {
 
         <div className="grid lg:grid-cols-[1fr_260px] gap-4">
           <div className="space-y-3">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              {labFocusTopics.map(topic => (
+                <button
+                  key={topic.id}
+                  onClick={() => selectFocusTopic(topic.id)}
+                  className={`text-left rounded-xl border p-3 transition-colors ${
+                    activeFocusTopic === topic.id
+                      ? 'bg-emerald-500/15 border-emerald-500/35 text-emerald-100'
+                      : 'bg-white/[0.035] border-white/10 text-gray-400 hover:text-gray-200'
+                  }`}
+                >
+                  <span className="block text-sm font-bold">{topic.label}</span>
+                  <span className="block text-[11px] text-gray-500 mt-0.5">{topic.desc}</span>
+                </button>
+              ))}
+            </div>
+
             <div className="flex flex-wrap gap-2">
               {labTabs.map(tab => (
                 <button
@@ -532,7 +1132,7 @@ export const ChemistryLabPage = () => {
               ))}
             </div>
 
-            <div className="grid md:grid-cols-[1fr_170px_170px] gap-2">
+            <div className="grid md:grid-cols-[1fr_170px_170px_180px] gap-2">
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                 <input value={labSearch} onChange={e => setLabSearch(e.target.value)} placeholder="Search experiments, topics, or labels" className="input text-sm pl-9" />
@@ -542,6 +1142,10 @@ export const ChemistryLabPage = () => {
               </select>
               <select value={labDifficultyFilter} onChange={e => setLabDifficultyFilter(e.target.value)} className="input text-sm">
                 {labDifficulties.map(level => <option key={level}>{level}</option>)}
+              </select>
+              <select value={activeSyllabusFilter} onChange={e => setActiveSyllabusFilter(e.target.value)} className="input text-sm">
+                <option value="all">All syllabus</option>
+                {syllabusTracks.map(track => <option key={track.id} value={track.id}>{track.label}</option>)}
               </select>
             </div>
 
@@ -571,37 +1175,88 @@ export const ChemistryLabPage = () => {
               </div>
             )}
 
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2 max-h-80 overflow-y-auto scrollbar-thin pr-1">
-              {visibleExperiments.map(item => {
-                const Icon = item.icon;
-                const active = activeExperiment.id === item.id;
-                const done = completedExperiments.includes(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveExperimentId(item.id)}
-                    className={`text-left rounded-2xl border p-3 transition-colors ${
-                      active ? 'bg-indigo-600/20 border-indigo-500/40' : 'bg-white/[0.035] border-white/10 hover:bg-white/[0.065]'
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center">
-                        <Icon size={17} className="text-cyan-300" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-white truncate">{item.title}</p>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          <BadgePill className={difficultyStyles[item.difficulty]}>{item.difficulty}</BadgePill>
-                          <BadgePill className={typeStyles[item.type]}>{item.type}</BadgePill>
-                        </div>
-                      </div>
-                      {done && <CheckCircle size={15} className="text-emerald-300 flex-shrink-0" />}
+            {!activeFocusTopic ? (
+              <div className="rounded-2xl bg-white/[0.035] border border-white/10 p-6 text-center">
+                <FlaskConical size={30} className="text-cyan-300 mx-auto" />
+                <p className="text-base font-bold text-white mt-3">Choose a chemistry area to begin</p>
+                <p className="text-sm text-gray-500 mt-1 max-w-lg mx-auto">
+                  Experiments stay hidden until you select a category. This keeps the lab focused for students.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+                  <p className="text-sm font-bold text-emerald-100">{activeFocusInfo?.label}</p>
+                  <p className="text-xs text-gray-400 mt-1">{activeFocusInfo?.desc}</p>
+                  <div className="mt-3">
+                    <div className="flex justify-between text-[10px] text-gray-500 mb-1">
+                      <span>{visibleExperiments.length} related experiments</span>
+                      <span>{categoryCompleteCount}/{visibleExperiments.length} done</span>
                     </div>
-                    <p className="text-[11px] text-gray-500 mt-2 line-clamp-2">{item.teaches}</p>
-                  </button>
-                );
-              })}
-            </div>
+                    <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full rounded-full bg-emerald-400" style={{ width: `${categoryProgress}%` }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2 max-h-80 overflow-y-auto scrollbar-thin pr-1">
+                  {visibleExperiments.map(item => {
+                    const Icon = item.icon;
+                    const active = activeExperiment.id === item.id;
+                    const done = completedExperiments.includes(item.id);
+                    return (
+                      <button
+                    key={item.id}
+                        onClick={() => { setActiveExperimentId(item.id); setExperimentStarted(false); setShowQuizAnswer(false); }}
+                        className={`text-left rounded-2xl border p-3 transition-colors ${
+                          active ? 'bg-indigo-600/20 border-indigo-500/40' : 'bg-white/[0.035] border-white/10 hover:bg-white/[0.065]'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center">
+                            <Icon size={17} className="text-cyan-300" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-bold text-white truncate">{item.title}</p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              <BadgePill className={difficultyStyles[item.difficulty]}>{item.difficulty}</BadgePill>
+                              <BadgePill className={typeStyles[item.type]}>{item.type}</BadgePill>
+                            </div>
+                          </div>
+                          {done && <CheckCircle size={15} className="text-emerald-300 flex-shrink-0" />}
+                        </div>
+                        <p className="text-[11px] text-gray-500 mt-2 line-clamp-2">{item.teaches}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {visibleExperiments.length === 0 && (
+                  <div className="rounded-2xl bg-white/[0.035] border border-white/10 p-6 text-center">
+                    <p className="text-sm font-semibold text-gray-300">No experiment matches this focus.</p>
+                    <p className="text-xs text-gray-500 mt-1">Try clearing search or switching to All.</p>
+                  </div>
+                )}
+
+                <div className={focusLab ? 'fixed inset-4 z-50 overflow-y-auto rounded-2xl bg-gray-950 border border-white/15 p-4 shadow-2xl' : ''}>
+                  {focusLab && (
+                    <div className="flex justify-between items-center mb-3">
+                      <p className="text-sm font-bold text-white">Focus Lab: {activeExperiment.title}</p>
+                      <button onClick={() => setFocusLab(false)} className="btn-secondary text-sm">Close Focus</button>
+                    </div>
+                  )}
+                  {!experimentStarted ? (
+                    <div className="rounded-2xl bg-black/20 border border-white/10 p-5 text-center">
+                      <p className="text-sm font-bold text-white">Ready to begin {activeExperiment.title}?</p>
+                      <p className="text-xs text-gray-500 mt-1">Read the experiment details, then start the live lab bench.</p>
+                      <button onClick={() => setExperimentStarted(true)} className="btn-primary mt-4">Start Experiment</button>
+                    </div>
+                  ) : (
+                    renderGuidedWorkbench()
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-4 h-fit">
@@ -615,6 +1270,15 @@ export const ChemistryLabPage = () => {
                   <BadgePill className={difficultyStyles[activeExperiment.difficulty]}>{activeExperiment.difficulty}</BadgePill>
                   <BadgePill className={typeStyles[activeExperiment.type]}>{activeExperiment.type}</BadgePill>
                   <BadgePill className="bg-white/[0.04] text-gray-300 border-white/10">{activeExperiment.topic}</BadgePill>
+                  {activeSyllabusTags.tracks.map(trackId => (
+                    <BadgePill
+                      key={trackId}
+                      className="bg-black/15 border-white/10"
+                      style={{ borderColor: `${syllabusTrackMap[trackId]?.color || '#64748b'}66`, color: syllabusTrackMap[trackId]?.color }}
+                    >
+                      {syllabusTrackMap[trackId]?.label}
+                    </BadgePill>
+                  ))}
                 </div>
               </div>
             </div>
@@ -631,17 +1295,22 @@ export const ChemistryLabPage = () => {
 
             <div className="mt-4 space-y-3">
               <div className="rounded-xl bg-black/15 border border-white/10 p-3">
-                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">What this teaches</p>
+                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">About Experiment</p>
                 <p className="text-sm text-gray-300 mt-1">{activeExperiment.teaches}</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  <span className="text-cyan-300 font-semibold">Prerequisite:</span> {prerequisiteMap[activeExperiment.id] || 'No special prerequisite. Start with the visible controls and observe the result.'}
+                </p>
               </div>
               {learningMode && (
                 <>
                   <div className="rounded-xl bg-black/15 border border-white/10 p-3">
-                    <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">How to use</p>
+                    <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">What To Do</p>
                     <ol className="mt-2 space-y-1">
                       {activeExperiment.steps.map((step, index) => (
-                        <li key={step} className="text-xs text-gray-300 flex gap-2">
-                          <span className="w-5 h-5 rounded-md bg-cyan-500/15 text-cyan-200 flex items-center justify-center text-[10px] font-black flex-shrink-0">{index + 1}</span>
+                        <li key={step} className="text-xs text-gray-300 flex gap-2 items-start">
+                          <button onClick={() => toggleStepDone(index)} className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black flex-shrink-0 ${activeStepsDone.includes(index) ? 'bg-emerald-500/25 text-emerald-200' : 'bg-cyan-500/15 text-cyan-200'}`}>
+                            {activeStepsDone.includes(index) ? '✓' : index + 1}
+                          </button>
                           <span>{step}</span>
                         </li>
                       ))}
@@ -649,8 +1318,10 @@ export const ChemistryLabPage = () => {
                   </div>
                   <div className="rounded-xl bg-black/15 border border-white/10 p-3 space-y-2 text-xs">
                     <p className="text-gray-300"><span className="text-cyan-300 font-semibold">Try this:</span> {activeExperiment.tryThis}</p>
-                    <p className="text-gray-300"><span className="text-emerald-300 font-semibold">Result:</span> {activeExperiment.result}</p>
-                    <p className="text-gray-300"><span className="text-violet-300 font-semibold">Why it matters:</span> {activeExperiment.realWorld}</p>
+                    <p className="text-gray-300"><span className="text-emerald-300 font-semibold">How it works:</span> {activeExperiment.result}</p>
+                    <p className="text-gray-300"><span className="text-violet-300 font-semibold">Why this is useful:</span> {activeExperiment.realWorld}</p>
+                    <p className="text-gray-300"><span className="text-pink-300 font-semibold">Common mistake:</span> {commonMistakes[activeExperiment.id] || 'Changing too many controls at once makes observations harder to explain.'}</p>
+                    {formulaNotes[activeExperiment.id] && <p className="text-gray-300"><span className="text-blue-300 font-semibold">Formula note:</span> {formulaNotes[activeExperiment.id]}</p>}
                     {activeExperiment.safety && <p className="text-amber-300"><span className="font-semibold">Safety:</span> {activeExperiment.safety}</p>}
                   </div>
                 </>
@@ -658,6 +1329,58 @@ export const ChemistryLabPage = () => {
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={() => setFocusLab(true)} className="btn-secondary text-xs">Focus Lab</button>
+              <button onClick={() => setTeacherMode(!teacherMode)} className="btn-secondary text-xs">{teacherMode ? 'Teacher Demo On' : 'Teacher Demo'}</button>
+              <button onClick={() => setStudentPractice(v => !v)} className="btn-secondary text-xs">{studentPractice ? 'Practice On' : 'Student Practice'}</button>
+              <button onClick={() => setShowManual(v => !v)} className="btn-secondary text-xs">Lab Manual</button>
+            </div>
+
+            {studentPractice && (
+              <div className="mt-4 rounded-xl bg-black/15 border border-white/10 p-3">
+                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Mini Quiz</p>
+                <p className="text-xs text-gray-300 mt-2">{miniQuiz[activeExperiment.id]?.q || `What did changing the controls teach you about ${activeExperiment.topic}?`}</p>
+                <button onClick={() => setShowQuizAnswer(v => !v)} className="btn-secondary text-xs mt-2">{showQuizAnswer ? 'Hide Answer' : 'Show Answer'}</button>
+                {showQuizAnswer && <p className="text-xs text-emerald-200 mt-2">{miniQuiz[activeExperiment.id]?.a || activeExperiment.result}</p>}
+              </div>
+            )}
+
+            {showManual && (
+              <div className="mt-4 rounded-xl bg-black/15 border border-white/10 p-3 space-y-2 text-xs">
+                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Lab Manual</p>
+                <p><span className="text-cyan-300 font-semibold">Aim:</span> {activeExperiment.teaches}</p>
+                <p><span className="text-cyan-300 font-semibold">Apparatus:</span> Interactive controls, observation panel, result display.</p>
+                <p><span className="text-cyan-300 font-semibold">Theory:</span> {activeExperiment.result}</p>
+                <p><span className="text-cyan-300 font-semibold">Procedure:</span> {activeExperiment.steps.join(' ')}</p>
+                <p><span className="text-cyan-300 font-semibold">Viva:</span> {miniQuiz[activeExperiment.id]?.q || 'Explain the result in one sentence.'}</p>
+              </div>
+            )}
+
+            <div className="mt-4 rounded-xl bg-black/15 border border-white/10 p-3">
+              <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold mb-2">Lab Notebook</p>
+              <textarea
+                value={labNotes[activeExperiment.id] || ''}
+                onChange={e => setLabNotes(items => ({ ...items, [activeExperiment.id]: e.target.value }))}
+                className="input min-h-20 text-sm"
+                placeholder="Write observations, measurements, and conclusion..."
+              />
+            </div>
+
+            <div className="mt-4 rounded-xl bg-black/15 border border-white/10 p-3 space-y-2">
+              <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Observe - Measure - Conclude</p>
+              <p className="text-xs text-gray-300"><span className="text-cyan-300 font-semibold">Observe:</span> {activeExperiment.tryThis}</p>
+              <p className="text-xs text-gray-300"><span className="text-emerald-300 font-semibold">Measure:</span> {activeResultText()}</p>
+              <p className="text-xs text-gray-300"><span className="text-violet-300 font-semibold">Conclude:</span> {activeExperiment.result}</p>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <button onClick={() => applyActivePreset('acidic')} className="btn-secondary text-xs">Acidic</button>
+              <button onClick={() => applyActivePreset('neutral')} className="btn-secondary text-xs">Neutral</button>
+              <button onClick={() => applyActivePreset('basic')} className="btn-secondary text-xs">Basic/Fast</button>
+              <button onClick={resetActiveExperiment} className="btn-secondary text-xs">Reset Experiment</button>
+              <button onClick={() => saveSnapshot('A')} className="btn-secondary text-xs">Save A</button>
+              <button onClick={() => saveSnapshot('B')} className="btn-secondary text-xs">Save B</button>
+              <button onClick={() => window.print()} className="btn-secondary text-xs">Print Worksheet</button>
+              <button onClick={exportActiveResult} className="btn-secondary text-xs">Export Result</button>
               <button onClick={() => moveExperiment(-1)} className="btn-secondary text-sm flex items-center justify-center gap-1">
                 <ChevronLeft size={14} /> Previous
               </button>
@@ -671,6 +1394,18 @@ export const ChemistryLabPage = () => {
                 Reset guided progress
               </button>
             </div>
+
+            {compareSnapshots[activeExperiment.id] && (
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                {['A', 'B'].map(slot => (
+                  <div key={slot} className="rounded-xl bg-white/[0.035] border border-white/10 p-2">
+                    <p className="text-gray-500">Snapshot {slot}</p>
+                    <p className="text-gray-200 mt-1">{compareSnapshots[activeExperiment.id]?.[slot]?.result || 'Not saved'}</p>
+                    {compareSnapshots[activeExperiment.id]?.[slot]?.savedAt && <p className="text-[10px] text-gray-600 mt-1">{compareSnapshots[activeExperiment.id][slot].savedAt}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -20,6 +20,7 @@ export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeTog
           isDark={isDark}
           onThemeToggle={onThemeToggle}
           currentPage={currentPage}
+          onNavigate={onNavigate}
         />
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
           {children}

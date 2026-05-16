@@ -9,6 +9,7 @@ import { QuizPage } from './pages/QuizPage.jsx';
 import { FavoritesPage } from './pages/FavoritesPage.jsx';
 import { SettingsPage } from './pages/SettingsPage.jsx';
 import { ChemistryLabPage } from './pages/ChemistryLabPage.jsx';
+import { SyllabusPage } from './pages/SyllabusPage.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -95,6 +96,8 @@ function App() {
         return <QuizPage />;
       case 'lab':
         return <ChemistryLabPage />;
+      case 'syllabus':
+        return <SyllabusPage onNavigate={navigate} />;
       case 'favorites':
         return (
           <FavoritesPage
