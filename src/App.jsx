@@ -107,7 +107,13 @@ function App() {
         return <AtomVisualizerPage initialElement={atomViewerElement} reducedMotion={reducedMotion} />;
       case 'molecule':
         return (
-          <Suspense fallback={<div className="p-8 text-center text-gray-400">Loading 3D viewer…</div>}>
+          <Suspense fallback={
+            <div className="page-transition p-4 md:p-6 max-w-7xl mx-auto space-y-3">
+              <div className="skeleton h-12 rounded-2xl" />
+              <div className="skeleton h-[560px] rounded-2xl" />
+              <p className="text-center text-sm text-gray-400">Loading 3D viewer...</p>
+            </div>
+          }>
             <MoleculeScenePage />
           </Suspense>
         );

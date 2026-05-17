@@ -3,6 +3,7 @@ import { TrendHeatmap, TrendExplanationCard } from '../components/visualizers/Tr
 import { PeriodicTable } from '../components/periodic-table/PeriodicTable.jsx';
 import { ElementDetailsDrawer } from '../components/elements/ElementDetailsDrawer.jsx';
 import { useElements } from '../hooks/useElements.js';
+import { VisualizationToolbar } from '../components/common/VisualizationToolbar.jsx';
 
 export const TrendsPage = ({ favorites, onFavoriteToggle, onViewAtom, onCompare, reducedMotion }) => {
   const { elements } = useElements();
@@ -10,25 +11,47 @@ export const TrendsPage = ({ favorites, onFavoriteToggle, onViewAtom, onCompare,
   const [selectedElement, setSelectedElement] = useState(null);
 
   return (
-    <div className="p-4 md:p-6 space-y-4 max-w-full">
+    <div className="page-transition p-4 md:p-6 space-y-4 max-w-full">
       <div>
         <h2 className="text-lg font-bold text-white mb-1">Periodic Trends</h2>
         <p className="text-sm text-gray-400">Select a property to visualize it as a heatmap across all elements.</p>
       </div>
 
       <div className="glass rounded-2xl p-4 space-y-3">
+        <VisualizationToolbar
+          targetSelector="main svg"
+          title={`trend-${activeTrend}`}
+          extra={
+            <>
+              <span className="rounded-full border border-blue-500/25 bg-blue-500/10 px-2 py-1 text-xs font-semibold text-blue-200">Intermediate · 5 min</span>
+              <span className="rounded-full border border-white/10 bg-white/[0.06] px-2 py-1 text-xs text-gray-200">Approximate values</span>
+            </>
+          }
+        />
         <TrendHeatmap activeTrend={activeTrend} onTrendChange={setActiveTrend} />
+        <div className="flex flex-wrap gap-1 text-[11px]">
+          <span className="rounded-full border border-cyan-500/25 bg-cyan-500/10 px-2 py-1 text-cyan-200">x-axis: group</span>
+          <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-1 text-emerald-200">y-axis: period</span>
+          <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-amber-200">color: property value</span>
+        </div>
         <TrendExplanationCard activeTrend={activeTrend} />
       </div>
 
-      <PeriodicTable
-        filteredElements={elements}
-        selectedElement={selectedElement}
-        onSelectElement={setSelectedElement}
-        compact={false}
-        trendMode={true}
-        activeTrend={activeTrend}
-      />
+      {elements.length > 0 ? (
+        <PeriodicTable
+          filteredElements={elements}
+          selectedElement={selectedElement}
+          onSelectElement={setSelectedElement}
+          compact={false}
+          trendMode={true}
+          activeTrend={activeTrend}
+        />
+      ) : (
+        <div className="glass rounded-2xl p-8 text-center">
+          <div className="skeleton mx-auto h-10 w-48 rounded-xl" />
+          <p className="mt-4 text-sm text-gray-400">Loading trend table...</p>
+        </div>
+      )}
 
       {selectedElement && (
         <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center p-0 lg:p-4">

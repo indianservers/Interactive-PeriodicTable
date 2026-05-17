@@ -3007,7 +3007,7 @@ export const ChemistryLabPage = () => {
                   </>
                 )}
               </div>
-              {learningMode && (
+              {learningMode && !studentPractice && (
                 <>
                   <div className="rounded-xl bg-black/15 border border-white/10 p-3">
                     <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">What To Do</p>
@@ -3055,7 +3055,7 @@ export const ChemistryLabPage = () => {
               <button onClick={exportActiveVisualization} className="btn-secondary text-xs" disabled={!experimentStarted} title={experimentStarted ? 'Export the first SVG visualization' : 'Start the experiment first'}>Export Image</button>
               <button onClick={() => setFocusLab(true)} className="btn-secondary text-xs">Focus Lab</button>
               <button onClick={() => setTeacherMode(!teacherMode)} className="btn-secondary text-xs">{teacherMode ? 'Teacher Demo On' : 'Teacher Demo'}</button>
-              <button onClick={() => setStudentPractice(v => !v)} className="btn-secondary text-xs">{studentPractice ? 'Practice On' : 'Student Practice'}</button>
+              <button onClick={() => setStudentPractice(v => !v)} className={`btn-secondary text-xs ${studentPractice ? 'bg-pink-500/15 text-pink-200 border-pink-500/25' : ''}`}>{studentPractice ? 'Practice Mode On' : 'Practice Mode'}</button>
               <button onClick={() => setShowManual(v => !v)} className="btn-secondary text-xs">Lab Manual</button>
             </div>
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   LayoutDashboard, Table2, TrendingUp, GitCompare,
   Atom, Box, BookOpen, Heart, Settings, X, FlaskConical, GraduationCap,
-  ChevronDown, Trophy, Scale,
+  ChevronDown, Trophy, Scale, Search, Clock,
 } from 'lucide-react';
 
 export const navGroups = [
@@ -40,9 +40,20 @@ const bottomItems = [
 ];
 
 const updatedPages = new Set(['lab', 'balancer', 'study-tools']);
+const pageLabelMap = Object.fromEntries(navGroups.flatMap(group => group.items.map(item => [item.id, item])));
 
-export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePages = [] }) => {
+export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePages = [], recentPages = [] }) => {
   const [labOpen, setLabOpen] = useState(false);
+  const [menuSearch, setMenuSearch] = useState('');
+  const [openGroups, setOpenGroups] = useState(() => Object.fromEntries(navGroups.map(group => [group.label, true])));
+  const query = menuSearch.trim().toLowerCase();
+  const filteredGroups = navGroups
+    .map(group => ({
+      ...group,
+      items: group.items.filter(item => !query || `${item.label} ${item.id} ${group.label}`.toLowerCase().includes(query)),
+    }))
+    .filter(group => group.items.length > 0);
+  const recentItems = recentPages.map(id => pageLabelMap[id]).filter(Boolean).slice(0, 4);
   return (
     <>
       {isOpen && (
@@ -77,14 +88,68 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
           </button>
         </div>
 
+        <div className="px-3 pt-3">
+          <div className="relative">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" />
+            <input
+              value={menuSearch}
+              onChange={event => setMenuSearch(event.target.value)}
+              className="input h-9 rounded-xl pl-8 pr-3 text-xs"
+              placeholder="Search menu"
+            />
+          </div>
+        </div>
+
         {/* Nav groups */}
         <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-4">
-          {navGroups.map(group => (
-            <div key={group.label}>
-              <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest px-3 mb-1.5">
-                {group.label}
-              </p>
+          {!query && recentItems.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest px-3 mb-1.5">Recently Opened</p>
               <div className="space-y-0.5">
+                {recentItems.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => { onNavigate(id); onClose(); }}
+                    className={`sidebar-item w-full text-left ${currentPage === id ? 'active' : ''}`}
+                  >
+                    <Clock size={15} className="flex-shrink-0" />
+                    <span className="text-sm">{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!query && favoritePages.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest px-3 mb-1.5">Bookmarks</p>
+              <div className="space-y-0.5">
+                {favoritePages.map(id => pageLabelMap[id]).filter(Boolean).slice(0, 5).map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => { onNavigate(id); onClose(); }}
+                    className={`sidebar-item w-full text-left ${currentPage === id ? 'active' : ''}`}
+                  >
+                    <Icon size={15} className="flex-shrink-0" />
+                    <span className="text-sm">{label}</span>
+                    <span className="ml-auto text-amber-300">★</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {filteredGroups.map(group => (
+            <div key={group.label}>
+              <button
+                onClick={() => setOpenGroups(groups => ({ ...groups, [group.label]: !groups[group.label] }))}
+                className="mb-1.5 flex w-full items-center justify-between rounded-lg px-3 py-1 text-left text-[10px] font-semibold uppercase tracking-widest text-gray-600 hover:bg-white/5 hover:text-gray-400"
+                aria-expanded={openGroups[group.label]}
+              >
+                <span>{group.label}</span>
+                <ChevronDown size={12} className={`transition-transform ${openGroups[group.label] ? 'rotate-180' : ''}`} />
+              </button>
+              {openGroups[group.label] && <div className="space-y-0.5">
                 {group.items.map(({ id, label, icon: Icon }) => (
                   <div key={id}>
                     <button
@@ -126,9 +191,15 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
                     )}
                   </div>
                 ))}
-              </div>
+              </div>}
             </div>
           ))}
+          {filteredGroups.length === 0 && (
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4 text-center">
+              <p className="text-sm font-semibold text-gray-300">No tools found</p>
+              <p className="mt-1 text-xs text-gray-500">Try table, lab, quiz, or molecule.</p>
+            </div>
+          )}
         </nav>
 
         {/* Bottom */}

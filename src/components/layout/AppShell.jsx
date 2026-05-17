@@ -15,6 +15,7 @@ export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeTog
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         favoritePages={favoritePages}
+        recentPages={recentPages}
       />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
         <Topbar
@@ -32,7 +33,9 @@ export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeTog
           onStudyModeToggle={onStudyModeToggle}
         />
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
-          {children}
+          <div key={currentPage} className="page-transition">
+            {children}
+          </div>
           <footer className="mx-auto mt-6 max-w-7xl px-4 pb-6 text-center text-xs text-gray-500 md:px-6">
             <p>
               Chemistry Universe Tool by{' '}
