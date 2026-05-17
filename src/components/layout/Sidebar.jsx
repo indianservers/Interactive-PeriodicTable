@@ -5,7 +5,7 @@ import {
   ChevronDown, Trophy, Scale,
 } from 'lucide-react';
 
-const navGroups = [
+export const navGroups = [
   {
     label: 'Explore',
     items: [
@@ -39,7 +39,9 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose }) => {
+const updatedPages = new Set(['lab', 'balancer', 'study-tools']);
+
+export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePages = [] }) => {
   const [labOpen, setLabOpen] = useState(false);
   return (
     <>
@@ -96,8 +98,10 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose }) => {
                     >
                       <Icon size={16} className="flex-shrink-0" />
                       <span className="text-sm">{label}</span>
+                      {updatedPages.has(id) && <span className="ml-auto rounded-full border border-amber-500/25 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-300">Updated</span>}
+                      {favoritePages.includes(id) && <span className="text-amber-300" title="Favorite page">★</span>}
                       {id === 'lab' ? (
-                        <ChevronDown size={14} className={`ml-auto transition-transform ${labOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={14} className={`transition-transform ${labOpen ? 'rotate-180' : ''}`} />
                       ) : currentPage === id && (
                         <span className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/60" />
                       )}

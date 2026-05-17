@@ -22,17 +22,23 @@ function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [favorites, setFavorites] = useLocalStorage('cu-favorites', []);
   const [compact, setCompact] = useLocalStorage('cu-compact', false);
+  const [studyMode, setStudyMode] = useLocalStorage('cu-study-mode', false);
   const [reducedMotion, setReducedMotion] = useLocalStorage('cu-reduced-motion', false);
   const [highContrast, setHighContrast] = useLocalStorage('cu-high-contrast', false);
   const [colorTheme, setColorTheme] = useLocalStorage('cu-color-theme', 'study');
   const [language, setLanguage] = useLocalStorage('cu-language', 'en');
+  const [recentPages, setRecentPages] = useLocalStorage('cu-recent-pages', []);
+  const [favoritePages, setFavoritePages] = useLocalStorage('cu-favorite-pages', []);
   const [serviceWorkerUpdate, setServiceWorkerUpdate] = useState(null);
 
   // Cross-page element state
   const [atomViewerElement, setAtomViewerElement] = useState(null);
   const [compareElement, setCompareElement] = useState(null);
 
-  const navigate = useCallback((page) => setCurrentPage(page), []);
+  const navigate = useCallback((page) => {
+    setCurrentPage(page);
+    setRecentPages(prev => [page, ...prev.filter(id => id !== page)].slice(0, 8));
+  }, [setRecentPages]);
 
   useEffect(() => {
     const handleUpdate = (event) => setServiceWorkerUpdate(() => event.detail?.refresh || null);
@@ -55,18 +61,22 @@ function App() {
 
   const handleViewAtom = useCallback((element) => {
     setAtomViewerElement(element);
-    setCurrentPage('atom');
-  }, []);
+    navigate('atom');
+  }, [navigate]);
 
   const handleCompare = useCallback((element) => {
     setCompareElement(element);
-    setCurrentPage('compare');
-  }, []);
+    navigate('compare');
+  }, [navigate]);
 
   const handleSelectElement = useCallback((element) => {
     setAtomViewerElement(element);
-    setCurrentPage('table');
-  }, []);
+    navigate('table');
+  }, [navigate]);
+
+  const toggleFavoritePage = useCallback((page) => {
+    setFavoritePages(prev => prev.includes(page) ? prev.filter(id => id !== page) : [page, ...prev].slice(0, 12));
+  }, [setFavoritePages]);
 
   const handleResetData = () => {
     if (window.confirm('Reset all app data? This clears favorites, quiz scores, and settings.')) {
@@ -86,7 +96,7 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <DashboardPage onNavigate={navigate} onSelectElement={handleSelectElement} />;
+        return <DashboardPage onNavigate={navigate} onSelectElement={handleSelectElement} recentPages={recentPages} favoritePages={favoritePages} />;
       case 'table':
         return <PeriodicTablePage {...commonProps} />;
       case 'trends':
@@ -146,17 +156,24 @@ function App() {
           />
         );
       default:
-        return <DashboardPage onNavigate={navigate} onSelectElement={handleSelectElement} />;
+        return <DashboardPage onNavigate={navigate} onSelectElement={handleSelectElement} recentPages={recentPages} favoritePages={favoritePages} />;
     }
   };
 
   return (
-    <div className={`${reducedMotion ? 'no-motion' : ''} ${highContrast ? 'high-contrast' : ''} theme-${colorTheme}`}>
+    <div className={`${reducedMotion ? 'no-motion' : ''} ${highContrast ? 'high-contrast' : ''} ${compact ? 'app-compact' : ''} ${studyMode ? 'study-mode' : ''} theme-${colorTheme}`}>
       <AppShell
         currentPage={currentPage}
         onNavigate={navigate}
         isDark={isDark}
         onThemeToggle={toggleTheme}
+        compact={compact}
+        studyMode={studyMode}
+        onStudyModeToggle={() => setStudyMode(v => !v)}
+        recentPages={recentPages}
+        favoritePages={favoritePages}
+        onFavoritePageToggle={toggleFavoritePage}
+        onSelectElement={handleViewAtom}
       >
         {renderPage()}
       </AppShell>

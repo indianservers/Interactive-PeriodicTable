@@ -3,7 +3,7 @@ import { Sidebar } from './Sidebar.jsx';
 import { Topbar } from './Topbar.jsx';
 import { MobileNav } from './MobileNav.jsx';
 
-export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeToggle }) => {
+export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeToggle, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, compact = false, studyMode = false, onStudyModeToggle }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const currentYear = new Date().getFullYear();
 
@@ -14,6 +14,7 @@ export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeTog
         onNavigate={onNavigate}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        favoritePages={favoritePages}
       />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
         <Topbar
@@ -22,6 +23,13 @@ export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeTog
           onThemeToggle={onThemeToggle}
           currentPage={currentPage}
           onNavigate={onNavigate}
+          recentPages={recentPages}
+          favoritePages={favoritePages}
+          onFavoritePageToggle={onFavoritePageToggle}
+          onSelectElement={onSelectElement}
+          compact={compact}
+          studyMode={studyMode}
+          onStudyModeToggle={onStudyModeToggle}
         />
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
           {children}

@@ -435,6 +435,58 @@
     background-size: 800px 100%;
     animation: shimmer 1.5s infinite;
   }
+
+  .app-compact .glass,
+  .app-compact .card {
+    border-radius: 0.875rem;
+  }
+
+  .app-compact .p-5 { padding: 1rem; }
+  .app-compact .p-6 { padding: 1.125rem; }
+  .app-compact .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem; }
+
+  .study-mode .study-extra,
+  .study-mode footer {
+    display: none;
+  }
+
+  .study-mode main {
+    font-size: 1.04rem;
+  }
+
+  main svg {
+    shape-rendering: geometricPrecision;
+  }
+
+  main svg line,
+  main svg path,
+  main svg polyline {
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+@media print {
+  nav,
+  aside,
+  header,
+  footer,
+  .btn,
+  .btn-primary,
+  .btn-secondary {
+    display: none !important;
+  }
+
+  main {
+    color: #111827;
+    background: white;
+  }
+
+  .glass,
+  .card {
+    border: 1px solid #d1d5db !important;
+    background: white !important;
+    box-shadow: none !important;
+  }
 }
 
 /* Periodic Table Grid */
