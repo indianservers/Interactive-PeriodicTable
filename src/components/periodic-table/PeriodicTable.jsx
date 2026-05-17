@@ -38,6 +38,50 @@ export const PeriodicTable = ({
   const mainTableElements = elements.filter(e => e.ypos <= 7 && !(e.ypos >= 6 && e.xpos >= 3 && e.xpos <= 17 && (e.atomicNumber >= 57 && e.atomicNumber <= 71 || e.atomicNumber >= 89 && e.atomicNumber <= 103)));
   const lanthanides = elements.filter(e => e.atomicNumber >= 57 && e.atomicNumber <= 71);
   const actinides = elements.filter(e => e.atomicNumber >= 89 && e.atomicNumber <= 103);
+  const visibleElementSet = useMemo(() => new Set((isFiltered ? filteredElements : elements).map(e => e.atomicNumber)), [filteredElements, isFiltered]);
+  const keyboardGrid = useMemo(() => {
+    const rows = new Map();
+    elements.forEach(el => {
+      if (!visibleElementSet.has(el.atomicNumber)) return;
+      const row = el.atomicNumber >= 57 && el.atomicNumber <= 71 ? 8 : el.atomicNumber >= 89 && el.atomicNumber <= 103 ? 9 : el.ypos;
+      const col = el.atomicNumber >= 57 && el.atomicNumber <= 71 ? el.atomicNumber - 54 : el.atomicNumber >= 89 && el.atomicNumber <= 103 ? el.atomicNumber - 86 : el.xpos;
+      if (!rows.has(row)) rows.set(row, []);
+      rows.get(row).push({ el, row, col });
+    });
+    rows.forEach(items => items.sort((a, b) => a.col - b.col));
+    return rows;
+  }, [visibleElementSet]);
+
+  const handleKeyboardNavigate = (event, element) => {
+    const keys = ['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End'];
+    if (!keys.includes(event.key)) return;
+    event.preventDefault();
+    const row = element.atomicNumber >= 57 && element.atomicNumber <= 71 ? 8 : element.atomicNumber >= 89 && element.atomicNumber <= 103 ? 9 : element.ypos;
+    const col = element.atomicNumber >= 57 && element.atomicNumber <= 71 ? element.atomicNumber - 54 : element.atomicNumber >= 89 && element.atomicNumber <= 103 ? element.atomicNumber - 86 : element.xpos;
+    const currentRow = keyboardGrid.get(row) || [];
+    const currentIndex = currentRow.findIndex(item => item.el.atomicNumber === element.atomicNumber);
+    let next = null;
+    if (event.key === 'ArrowRight') next = currentRow[Math.min(currentRow.length - 1, currentIndex + 1)];
+    if (event.key === 'ArrowLeft') next = currentRow[Math.max(0, currentIndex - 1)];
+    if (event.key === 'Home') next = currentRow[0];
+    if (event.key === 'End') next = currentRow[currentRow.length - 1];
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      const rowNumbers = [...keyboardGrid.keys()].sort((a, b) => a - b);
+      const start = rowNumbers.indexOf(row);
+      const direction = event.key === 'ArrowDown' ? 1 : -1;
+      for (let i = start + direction; i >= 0 && i < rowNumbers.length; i += direction) {
+        const candidates = keyboardGrid.get(rowNumbers[i]) || [];
+        if (candidates.length) {
+          next = candidates.reduce((best, item) => Math.abs(item.col - col) < Math.abs(best.col - col) ? item : best, candidates[0]);
+          break;
+        }
+      }
+    }
+    if (next) {
+      document.querySelector(`[data-atomic-number="${next.el.atomicNumber}"]`)?.focus();
+      onHoverElement?.(next.el);
+    }
+  };
 
   const renderGridSlot = (xpos, ypos) => {
     const el = mainTableElements.find(e => e.xpos === xpos && e.ypos === ypos);
@@ -53,6 +97,7 @@ export const PeriodicTable = ({
           trendColor={getTrendColor(el)}
           onClick={onSelectElement}
           onHover={onHoverElement}
+          onNavigate={handleKeyboardNavigate}
         />
       </div>
     );
@@ -107,6 +152,7 @@ export const PeriodicTable = ({
                 trendColor={getTrendColor(el)}
                 onClick={onSelectElement}
                 onHover={onHoverElement}
+                onNavigate={handleKeyboardNavigate}
               />
             </div>
           ))}
@@ -129,6 +175,7 @@ export const PeriodicTable = ({
                 trendColor={getTrendColor(el)}
                 onClick={onSelectElement}
                 onHover={onHoverElement}
+                onNavigate={handleKeyboardNavigate}
               />
             </div>
           ))}

@@ -1,4 +1,4 @@
-export const elements = [
+const baseElements = [
   {
     atomicNumber: 1, symbol: "H", name: "Hydrogen", atomicMass: 1.008,
     category: "reactive nonmetal", group: 1, period: 1, block: "s",
@@ -1180,5 +1180,73 @@ export const elements = [
     commonUses: ["Research only"]
   },
 ];
+
+const biologicalRoleBySymbol = {
+  H: 'Part of water, biomolecules, acids, pH balance, and proton gradients used in ATP synthesis.',
+  He: 'No known biological role; physiologically inert under ordinary conditions.',
+  Li: 'Trace pharmacological role in mood-stabilizing medicines; not an established essential nutrient.',
+  Be: 'No beneficial biological role; beryllium compounds are toxic.',
+  B: 'Important micronutrient for plants; may support bone and membrane metabolism in animals.',
+  C: 'Backbone of carbohydrates, lipids, proteins, nucleic acids, and all organic biomolecules.',
+  N: 'Essential component of amino acids, proteins, nucleic acids, ATP, and nitrogenous bases.',
+  O: 'Required for aerobic respiration and present in water and most biological molecules.',
+  F: 'Fluoride strengthens tooth enamel and helps prevent dental caries in small amounts.',
+  Ne: 'No known biological role; chemically inert noble gas.',
+  Na: 'Major extracellular ion for nerve impulses, osmotic balance, and fluid regulation.',
+  Mg: 'Cofactor for ATP-using enzymes; central atom in chlorophyll and important in muscles.',
+  Al: 'No essential biological role; excess aluminium exposure may be harmful.',
+  Si: 'Trace role in connective tissue, bone, and plant structural support as silica.',
+  P: 'Essential in DNA, RNA, ATP, phospholipids, bones, and cellular signaling.',
+  S: 'Present in cysteine, methionine, coenzymes, disulfide bonds, and many proteins.',
+  Cl: 'Major extracellular ion; maintains osmotic balance and forms stomach acid as HCl.',
+  Ar: 'No known biological role; inert noble gas.',
+  K: 'Major intracellular ion for nerve signals, heart rhythm, muscle contraction, and enzyme activity.',
+  Ca: 'Builds bones and teeth; key in blood clotting, muscle contraction, and cell signaling.',
+  Sc: 'No established biological role.',
+  Ti: 'No established biological role; titanium is biocompatible in implants.',
+  V: 'Trace element in some organisms; may influence enzymes and glucose metabolism.',
+  Cr: 'Trace nutrient associated with glucose metabolism, though essentiality is debated.',
+  Mn: 'Cofactor for enzymes and oxygen-evolving complex in photosynthesis.',
+  Fe: 'Carries oxygen in hemoglobin and myoglobin; essential in cytochromes and redox enzymes.',
+  Co: 'Central metal in vitamin B12, needed for red blood cell formation and nerve function.',
+  Ni: 'Cofactor in some microbial and plant enzymes such as urease.',
+  Cu: 'Cofactor in redox enzymes, iron metabolism, collagen formation, and hemocyanin.',
+  Zn: 'Cofactor for hundreds of enzymes; important for immunity, DNA binding, and wound healing.',
+  Ga: 'No established biological role.',
+  Ge: 'No established biological role.',
+  As: 'No essential role in humans; arsenic compounds are toxic, though trace roles occur in some organisms.',
+  Se: 'Essential trace element in selenoproteins, antioxidant enzymes, and thyroid hormone metabolism.',
+  Br: 'Trace element involved in basement membrane collagen cross-linking.',
+  Kr: 'No known biological role; inert noble gas.',
+  Rb: 'No established essential role; behaves somewhat like potassium biologically.',
+  Sr: 'Can substitute for calcium in bone; not essential for humans.',
+  Mo: 'Cofactor in enzymes such as xanthine oxidase, sulfite oxidase, and nitrate reductase.',
+  I: 'Essential for thyroid hormones T3 and T4, which regulate metabolism and development.',
+  Xe: 'No essential biological role; xenon can act as an anesthetic gas.',
+  Ba: 'No essential biological role; soluble barium salts are toxic.',
+  W: 'Cofactor in some microbial enzymes; no established human role.',
+  Au: 'No essential biological role; gold compounds have some medicinal uses.',
+  Hg: 'No beneficial biological role; mercury is highly toxic, especially as methylmercury.',
+  Pb: 'No beneficial biological role; lead is toxic to nervous system and blood formation.',
+  Bi: 'No essential biological role; bismuth compounds are used in gastrointestinal medicines.',
+  Ra: 'No beneficial biological role; radioactive and bone-seeking.',
+  U: 'No biological role; chemically toxic and radioactive.',
+};
+
+const defaultBiologicalRole = (element) => {
+  if (element.atomicNumber > 92 || element.commonUses?.includes('Research only')) {
+    return 'No known biological role; synthetic or highly radioactive element studied mainly in research.';
+  }
+  if (element.category === 'noble gas') return 'No known biological role; chemically inert under ordinary biological conditions.';
+  if (element.category?.includes('actinide')) return 'No known beneficial biological role; radioactive actinides pose chemical and radiological hazards.';
+  if (element.category?.includes('lanthanide')) return 'No essential human role; some lanthanides are used as biochemical probes or in medical imaging technologies.';
+  if (element.category?.includes('metal')) return 'No established essential human role for this element; exposure effects depend strongly on chemical form and dose.';
+  return 'No specific essential biological role is established for humans; biological relevance depends on compound form and exposure.';
+};
+
+export const elements = baseElements.map(element => ({
+  ...element,
+  biologicalRole: biologicalRoleBySymbol[element.symbol] || defaultBiologicalRole(element),
+}));
 
 export default elements;

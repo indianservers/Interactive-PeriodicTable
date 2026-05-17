@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
@@ -172,6 +172,40 @@ function findMolLocation(molName) {
   return null;
 }
 
+const MoleculeThumb = ({ molecule }) => {
+  const atoms = molecule.atoms.slice(0, 18);
+  const xs = atoms.map(atom => atom.position[0]);
+  const ys = atoms.map(atom => atom.position[1]);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const project = atom => {
+    const x = 12 + ((atom.position[0] - minX) / Math.max(0.1, maxX - minX)) * 76;
+    const y = 14 + ((atom.position[1] - minY) / Math.max(0.1, maxY - minY)) * 48;
+    return [Number.isFinite(x) ? x : 50, Number.isFinite(y) ? 72 - y : 36];
+  };
+  return (
+    <svg viewBox="0 0 100 72" className="w-full h-16 rounded-lg bg-black/20 border border-white/10">
+      {molecule.bonds.slice(0, 18).map((bond, index) => {
+        const a = atoms.find(atom => atom.id === bond.from);
+        const b = atoms.find(atom => atom.id === bond.to);
+        if (!a || !b) return null;
+        const [x1, y1] = project(a);
+        const [x2, y2] = project(b);
+        return <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#64748b" strokeWidth="2" strokeLinecap="round" />;
+      })}
+      {atoms.map(atom => {
+        const [x, y] = project(atom);
+        return (
+          <g key={atom.id}>
+            <circle cx={x} cy={y} r="5" fill={atom.color || '#94a3b8'} />
+            <text x={x} y={y + 2.5} textAnchor="middle" fontSize="5" fontWeight="700" fill="#020617">{atom.element}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
 /* --- Component -------------------------------------------------------------- */
 export const MoleculeScene = ({ height = 520 }) => {
   const mountRef     = useRef(null);
@@ -189,6 +223,7 @@ export const MoleculeScene = ({ height = 520 }) => {
   const [selectedSub, setSelectedSub] = useState('Oxides & Water');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchDrop, setShowSearchDrop] = useState(false);
+  const [cardDensity, setCardDensity] = useState('compact');
 
   // -- 3D state ----------------------------------------------------------------
   const [mol, setMol] = useState(() => {
@@ -212,9 +247,11 @@ export const MoleculeScene = ({ height = 520 }) => {
   const searchResults = isSearching
     ? ALL_MOLECULES.filter(m =>
         m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.formula.toLowerCase().includes(searchQuery.toLowerCase())
+        m.formula.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.iupacName?.toLowerCase().includes(searchQuery.toLowerCase())
       ).slice(0, 12)
     : [];
+  const visibleMoleculeCards = useMemo(() => subMols.slice(0, cardDensity === 'compact' ? 12 : 8), [subMols, cardDensity]);
 
   // -- Navigation handlers -----------------------------------------------------
   const selectMolecule = useCallback((m) => {
@@ -450,6 +487,7 @@ export const MoleculeScene = ({ height = 520 }) => {
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: catColor }} />
                     <span className="text-sm text-gray-200">{m.name}</span>
                     <span className="ml-auto text-xs text-gray-500 font-mono">{m.formula}</span>
+                    {m.iupacName && <span className="sr-only">{m.iupacName}</span>}
                   </button>
                 );
               })}
@@ -550,12 +588,51 @@ export const MoleculeScene = ({ height = 520 }) => {
             <span className="text-xs text-gray-600 italic px-2">Select a subcategory</span>
           )}
         </div>
+        {subMols.length > 0 && (
+          <div className="mt-3">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Visual Browse</p>
+              <div className="flex rounded-lg overflow-hidden border border-white/10">
+                {['compact', 'expanded'].map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setCardDensity(mode)}
+                    className={`px-2.5 py-1 text-[10px] capitalize ${cardDensity === mode ? 'bg-indigo-600 text-white' : 'bg-white/[0.04] text-gray-500 hover:text-gray-300'}`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className={`grid gap-2 ${cardDensity === 'compact' ? 'grid-cols-2 sm:grid-cols-4 xl:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
+              {visibleMoleculeCards.map(item => (
+                <button
+                  key={item.name}
+                  onClick={() => selectMolecule(item)}
+                  className={`rounded-xl border text-left transition-colors hover:bg-white/[0.08] ${
+                    mol.name === item.name ? 'bg-indigo-500/15 border-indigo-400/30' : 'bg-white/[0.035] border-white/10'
+                  } ${cardDensity === 'compact' ? 'p-2' : 'p-3'}`}
+                >
+                  <MoleculeThumb molecule={item} />
+                  <p className="mt-2 text-xs font-bold text-white truncate">{item.name}</p>
+                  {cardDensity === 'expanded' && (
+                    <>
+                      <p className="text-[10px] text-gray-500 font-mono mt-0.5">{item.formula} - {item.atoms.length} atoms</p>
+                      {item.iupacName && <p className="text-[10px] text-cyan-300 mt-1 truncate">{item.iupacName}</p>}
+                    </>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Primary 3D molecule view */}
       <div className="flex items-center gap-3 flex-wrap">
         <span className="text-2xl font-black text-white tracking-tight">{mol.formula}</span>
         <span className="text-sm text-gray-400">{mol.name}</span>
+        {mol.iupacName && <span className="text-xs text-cyan-300">IUPAC: {mol.iupacName}</span>}
         <div className="flex items-center gap-1 text-[10px] flex-shrink-0">
           <span style={{ color: catData?.color || '#94a3b8' }}>{selectedCat}</span>
           <span className="text-gray-700 mx-0.5">&gt;</span>

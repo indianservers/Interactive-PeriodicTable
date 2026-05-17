@@ -11,6 +11,40 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {})
+    let refreshing = false
+
+    const notifyUpdate = registration => {
+      const waitingWorker = registration.waiting
+      if (!waitingWorker) return
+      window.dispatchEvent(new CustomEvent('app-service-worker-update', {
+        detail: {
+          refresh: () => waitingWorker.postMessage({ type: 'SKIP_WAITING' }),
+        },
+      }))
+    }
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return
+      refreshing = true
+      window.location.reload()
+    })
+
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          notifyUpdate(registration)
+        }
+
+        registration.addEventListener('updatefound', () => {
+          const installingWorker = registration.installing
+          if (!installingWorker) return
+          installingWorker.addEventListener('statechange', () => {
+            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              notifyUpdate(registration)
+            }
+          })
+        })
+      })
+      .catch(() => {})
   })
 }

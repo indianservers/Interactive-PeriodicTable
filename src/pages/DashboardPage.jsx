@@ -1,4 +1,4 @@
-import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star, FlaskConical } from 'lucide-react';
+import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star, FlaskConical, Lightbulb } from 'lucide-react';
 import { getCategoryInfo } from '../data/categories.js';
 import { useElements } from '../hooks/useElements.js';
 
@@ -25,8 +25,13 @@ const QuickActionCard = ({ icon: Icon, title, desc, color, onClick }) => (
 );
 
 export const DashboardPage = ({ onNavigate, onSelectElement }) => {
-  const { dailyElement } = useElements();
+  const { elements, dailyElement } = useElements();
   const catInfo = dailyElement ? getCategoryInfo(dailyElement.category) : null;
+  const factElement = elements[(Math.floor(Date.now() / 86400000) + 17) % elements.length];
+  const factCat = factElement ? getCategoryInfo(factElement.category) : null;
+  const fact = factElement?.commonUses?.length
+    ? `${factElement.name} is used in ${factElement.commonUses.slice(0, 2).join(' and ')}.`
+    : `${factElement?.name} was discovered by ${factElement?.discoveredBy || 'early chemists'}${factElement?.yearDiscovered ? ` in ${factElement.yearDiscovered}` : ''}.`;
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-8">
@@ -100,6 +105,30 @@ export const DashboardPage = ({ onNavigate, onSelectElement }) => {
                 {dailyElement.commonUses?.length > 0 && (
                   <p className="text-xs text-indigo-400 mt-2">Uses: {dailyElement.commonUses.slice(0, 3).join(' · ')}</p>
                 )}
+              </div>
+            </div>
+          </button>
+        </div>
+      )}
+
+      {factElement && (
+        <div>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+            <Lightbulb size={13} className="inline mr-1.5 text-cyan-300" />
+            Did You Know?
+          </h2>
+          <button
+            onClick={() => onSelectElement(factElement)}
+            className="w-full text-left glass rounded-2xl p-4 hover:bg-white/[0.07] transition-all border border-white/5 hover:border-white/15"
+          >
+            <div className="flex items-center gap-3">
+              <span className="w-12 h-12 rounded-xl border flex items-center justify-center text-lg font-black"
+                style={{ color: factCat.color, borderColor: `${factCat.color}44`, background: `${factCat.color}18` }}>
+                {factElement.symbol}
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-white">{factElement.name}</p>
+                <p className="text-sm text-gray-300 mt-0.5">{fact}</p>
               </div>
             </div>
           </button>

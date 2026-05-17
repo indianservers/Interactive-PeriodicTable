@@ -15,6 +15,72 @@ export const ionData = {
   CO3: { charge: -2, name: 'carbonate', polyatomic: true }, PO4: { charge: -3, name: 'phosphate', polyatomic: true }, NH4: { charge: 1, name: 'ammonium', polyatomic: true },
 };
 
+export const commonPolyatomicIons = [
+  { formula: 'NH4+', name: 'ammonium', charge: '+1', examples: ['NH4Cl', '(NH4)2SO4'] },
+  { formula: 'OH-', name: 'hydroxide', charge: '-1', examples: ['NaOH', 'Ca(OH)2'] },
+  { formula: 'NO3-', name: 'nitrate', charge: '-1', examples: ['KNO3', 'AgNO3'] },
+  { formula: 'NO2-', name: 'nitrite', charge: '-1', examples: ['NaNO2'] },
+  { formula: 'SO4^2-', name: 'sulfate', charge: '-2', examples: ['CuSO4', 'CaSO4'] },
+  { formula: 'SO3^2-', name: 'sulfite', charge: '-2', examples: ['Na2SO3'] },
+  { formula: 'HSO4-', name: 'hydrogen sulfate', charge: '-1', examples: ['NaHSO4'] },
+  { formula: 'CO3^2-', name: 'carbonate', charge: '-2', examples: ['CaCO3', 'Na2CO3'] },
+  { formula: 'HCO3-', name: 'hydrogen carbonate', charge: '-1', examples: ['NaHCO3'] },
+  { formula: 'PO4^3-', name: 'phosphate', charge: '-3', examples: ['Ca3(PO4)2'] },
+  { formula: 'HPO4^2-', name: 'hydrogen phosphate', charge: '-2', examples: ['Na2HPO4'] },
+  { formula: 'H2PO4-', name: 'dihydrogen phosphate', charge: '-1', examples: ['KH2PO4'] },
+  { formula: 'CH3COO-', name: 'acetate / ethanoate', charge: '-1', examples: ['CH3COONa'] },
+  { formula: 'CN-', name: 'cyanide', charge: '-1', examples: ['KCN'] },
+  { formula: 'MnO4-', name: 'permanganate', charge: '-1', examples: ['KMnO4'] },
+  { formula: 'Cr2O7^2-', name: 'dichromate', charge: '-2', examples: ['K2Cr2O7'] },
+  { formula: 'CrO4^2-', name: 'chromate', charge: '-2', examples: ['K2CrO4'] },
+  { formula: 'ClO-', name: 'hypochlorite', charge: '-1', examples: ['NaClO'] },
+  { formula: 'ClO3-', name: 'chlorate', charge: '-1', examples: ['KClO3'] },
+  { formula: 'ClO4-', name: 'perchlorate', charge: '-1', examples: ['NH4ClO4'] },
+];
+
+export const standardFormationEnthalpies = {
+  H2: 0,
+  O2: 0,
+  N2: 0,
+  Cl2: 0,
+  C: 0,
+  H2O: -285.8,
+  CO2: -393.5,
+  CO: -110.5,
+  CH4: -74.8,
+  NH3: -46.1,
+  NO: 90.3,
+  NO2: 33.2,
+  SO2: -296.8,
+  SO3: -395.7,
+  HCl: -92.3,
+  NaCl: -411.1,
+  CaO: -635.1,
+  CaCO3: -1206.9,
+  H2SO4: -814,
+  HNO3: -207.4,
+  C2H5OH: -277.7,
+  C6H12O6: -1273.3,
+};
+
+export const halfReactions = {
+  Mg: { species: 'Mg2+ + 2e- -> Mg(s)', potential: -2.37, electrons: 2 },
+  Al: { species: 'Al3+ + 3e- -> Al(s)', potential: -1.66, electrons: 3 },
+  Zn: { species: 'Zn2+ + 2e- -> Zn(s)', potential: -0.76, electrons: 2 },
+  Fe: { species: 'Fe2+ + 2e- -> Fe(s)', potential: -0.44, electrons: 2 },
+  Ni: { species: 'Ni2+ + 2e- -> Ni(s)', potential: -0.25, electrons: 2 },
+  Sn: { species: 'Sn2+ + 2e- -> Sn(s)', potential: -0.14, electrons: 2 },
+  Pb: { species: 'Pb2+ + 2e- -> Pb(s)', potential: -0.13, electrons: 2 },
+  H: { species: '2H+ + 2e- -> H2(g)', potential: 0, electrons: 2 },
+  Cu: { species: 'Cu2+ + 2e- -> Cu(s)', potential: 0.34, electrons: 2 },
+  Ag: { species: 'Ag+ + e- -> Ag(s)', potential: 0.8, electrons: 1 },
+};
+
+export const normalizeFormulaText = (formula = '') => {
+  const subscriptMap = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
+  return String(formula).replace(/[₀₁₂₃₄₅₆₇₈₉]/g, ch => subscriptMap[ch] || ch).replace(/\s+/g, '');
+};
+
 export const realIsotopeData = {
   H: [{ label: 'H-1', abundance: '99.985%', halfLife: 'stable' }, { label: 'H-2', abundance: '0.015%', halfLife: 'stable' }, { label: 'H-3', abundance: 'trace', halfLife: '12.32 years', decay: 'beta-' }],
   C: [{ label: 'C-12', abundance: '98.93%', halfLife: 'stable' }, { label: 'C-13', abundance: '1.07%', halfLife: 'stable' }, { label: 'C-14', abundance: 'trace', halfLife: '5730 years', decay: 'beta-' }],
@@ -97,7 +163,7 @@ export const reactionLibrary = {
 };
 
 export const parseFormula = (input) => {
-  const formula = input.replace(/\s+/g, '');
+  const formula = normalizeFormulaText(input);
   const stack = [{}];
   const tokenRe = /([A-Z][a-z]?|\(|\)|\d+)/g;
   const tokens = formula.match(tokenRe) || [];
@@ -169,6 +235,48 @@ export const balanceEquation = (input) => {
     right,
     coefficients: coeffs,
     balanced: `${left.map((c, i) => format(c, coeffs[i])).join(' + ')} -> ${right.map((c, i) => format(c, coeffs[i + left.length])).join(' + ')}`,
+  };
+};
+
+export const calculateReactionEnthalpy = (input) => {
+  const balanced = balanceEquation(input);
+  if (!balanced.ok) return { ok: false, error: balanced.error };
+  const missing = [];
+  const sumSide = (side, offset) => side.reduce((sum, formula, index) => {
+    const normalized = normalizeFormulaText(formula);
+    const value = standardFormationEnthalpies[normalized];
+    if (value === undefined) missing.push(normalized);
+    return sum + (balanced.coefficients[offset + index] || 1) * (value || 0);
+  }, 0);
+  const reactants = sumSide(balanced.left, 0);
+  const products = sumSide(balanced.right, balanced.left.length);
+  if (missing.length) return { ok: false, balanced, error: `Missing formation enthalpy for: ${[...new Set(missing)].join(', ')}` };
+  return {
+    ok: true,
+    ...balanced,
+    reactants,
+    products,
+    deltaH: products - reactants,
+  };
+};
+
+export const buildElectrochemicalCell = (anodeKey, cathodeKey, mode = 'galvanic') => {
+  const anode = halfReactions[anodeKey];
+  const cathode = halfReactions[cathodeKey];
+  if (!anode || !cathode) return { ok: false, error: 'Choose two supported half-reactions.' };
+  const emf = cathode.potential - anode.potential;
+  const spontaneous = emf > 0;
+  return {
+    ok: true,
+    anode,
+    cathode,
+    anodeKey,
+    cathodeKey,
+    emf,
+    mode,
+    spontaneous: mode === 'galvanic' ? spontaneous : !spontaneous,
+    cellDiagram: `${anodeKey}(s) | ${anodeKey} ions || ${cathodeKey} ions | ${cathodeKey}(s)`,
+    electronFlow: `${anodeKey} anode -> ${cathodeKey} cathode`,
   };
 };
 

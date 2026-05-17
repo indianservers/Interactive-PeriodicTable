@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { elements } from '../data/elements.js';
 import { ElectronShellDiagram } from '../components/visualizers/ElectronShellDiagram.jsx';
+import { OrbitalFillingDiagram } from '../components/visualizers/OrbitalFillingDiagram.jsx';
 import { getCategoryInfo } from '../data/categories.js';
 import { formatValue } from '../utils/formatters.js';
 
@@ -61,6 +62,7 @@ export const AtomVisualizerPage = ({ initialElement, reducedMotion }) => {
         </div>
 
         {/* Main visualizer */}
+        <div className="space-y-4 min-w-0">
         <div className="glass rounded-2xl p-6 flex flex-col items-center gap-4">
           <div
             className="w-full max-w-xs aspect-square mx-auto"
@@ -96,6 +98,8 @@ export const AtomVisualizerPage = ({ initialElement, reducedMotion }) => {
           <p className="text-[10px] text-gray-600 text-center">
             This is a simplified Bohr-style educational model, not an exact quantum-mechanical representation.
           </p>
+        </div>
+        <OrbitalFillingDiagram element={selected} reducedMotion={reducedMotion} />
         </div>
       </div>
     </div>

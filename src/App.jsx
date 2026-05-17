@@ -1,4 +1,4 @@
-import { useState, useCallback, Suspense, lazy } from 'react';
+import { useEffect, useState, useCallback, Suspense, lazy } from 'react';
 import { AppShell } from './components/layout/AppShell.jsx';
 import { DashboardPage } from './pages/DashboardPage.jsx';
 import { PeriodicTablePage } from './pages/PeriodicTablePage.jsx';
@@ -10,6 +10,8 @@ import { FavoritesPage } from './pages/FavoritesPage.jsx';
 import { SettingsPage } from './pages/SettingsPage.jsx';
 import { ChemistryLabPage } from './pages/ChemistryLabPage.jsx';
 import { SyllabusPage } from './pages/SyllabusPage.jsx';
+import { ReactionBalancerPage } from './pages/ReactionBalancerPage.jsx';
+import { StudyToolsPage } from './pages/StudyToolsPage.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -24,12 +26,19 @@ function App() {
   const [highContrast, setHighContrast] = useLocalStorage('cu-high-contrast', false);
   const [colorTheme, setColorTheme] = useLocalStorage('cu-color-theme', 'study');
   const [language, setLanguage] = useLocalStorage('cu-language', 'en');
+  const [serviceWorkerUpdate, setServiceWorkerUpdate] = useState(null);
 
   // Cross-page element state
   const [atomViewerElement, setAtomViewerElement] = useState(null);
   const [compareElement, setCompareElement] = useState(null);
 
   const navigate = useCallback((page) => setCurrentPage(page), []);
+
+  useEffect(() => {
+    const handleUpdate = (event) => setServiceWorkerUpdate(() => event.detail?.refresh || null);
+    window.addEventListener('app-service-worker-update', handleUpdate);
+    return () => window.removeEventListener('app-service-worker-update', handleUpdate);
+  }, []);
 
   const handleFavoriteToggle = useCallback((element) => {
     setFavorites(prev => {
@@ -96,6 +105,18 @@ function App() {
         return <QuizPage />;
       case 'lab':
         return <ChemistryLabPage />;
+      case 'balancer':
+        return <ReactionBalancerPage />;
+      case 'study-tools':
+        return (
+          <StudyToolsPage
+            favorites={favorites}
+            onFavoriteToggle={handleFavoriteToggle}
+            onViewAtom={handleViewAtom}
+            onCompare={handleCompare}
+            reducedMotion={reducedMotion}
+          />
+        );
       case 'syllabus':
         return <SyllabusPage onNavigate={navigate} />;
       case 'favorites':
@@ -139,6 +160,15 @@ function App() {
       >
         {renderPage()}
       </AppShell>
+      {serviceWorkerUpdate && (
+        <button
+          onClick={serviceWorkerUpdate}
+          className="fixed bottom-20 left-1/2 z-[90] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-2xl border border-cyan-400/30 bg-gray-950/95 px-4 py-3 text-left text-sm font-semibold text-cyan-50 shadow-2xl shadow-black/40 backdrop-blur-xl transition-colors hover:bg-cyan-950/90 lg:bottom-5 lg:left-auto lg:right-5 lg:translate-x-0"
+          aria-live="polite"
+        >
+          New version available — tap to refresh.
+        </button>
+      )}
     </div>
   );
 }

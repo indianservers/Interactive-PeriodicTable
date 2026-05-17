@@ -650,6 +650,54 @@ const glucose = {
 /* ══════════════════════════════════════════════════════════════════════════════
    LIBRARY EXPORT
 ══════════════════════════════════════════════════════════════════════════════ */
+const sketchMolecule = (name, iupacName, formula, atomSymbols, links, note) => ({
+  name,
+  iupacName,
+  formula,
+  atoms: atomSymbols.map((symbol, index) => {
+    const palette = { C, H, O, N, S, P, F, Cl, Br, I: I2 };
+    const angle = (index / Math.max(1, atomSymbols.length)) * Math.PI * 2;
+    const ringLike = atomSymbols.length >= 6;
+    const pos = ringLike
+      ? [Math.cos(angle) * 1.9, Math.sin(angle) * 1.35, (index % 2) * 0.18]
+      : [index * 1.15 - atomSymbols.length * 0.55, Math.sin(index) * 0.45, 0];
+    return mk(`${symbol}${index + 1}`, symbol, pos, palette[symbol] || '#94a3b8', symbol === 'H' ? 0.28 : 0.46);
+  }),
+  bonds: links.map(([from, to]) => bond(`${atomSymbols[from]}${from + 1}`, `${atomSymbols[to]}${to + 1}`)),
+  labels: [lbl(note || iupacName, `${atomSymbols[0]}1`)],
+});
+
+Object.assign(ethylene, { iupacName: 'ethene' });
+Object.assign(ethanol, { iupacName: 'ethanol' });
+Object.assign(benzene, { iupacName: 'benzene', bondingModel: 'Kekule / delocalized aromatic ring' });
+Object.assign(aceticAcid, { iupacName: 'ethanoic acid' });
+Object.assign(glucose, { iupacName: 'D-glucose' });
+
+const class1112Molecules = [
+  sketchMolecule('Aspirin', '2-acetoxybenzoic acid', 'C9H8O4', ['C','C','C','C','C','C','O','O','C','O','O'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[6,8],[8,9],[2,10]], 'Aromatic ester and carboxylic acid'),
+  sketchMolecule('Salicylic Acid', '2-hydroxybenzoic acid', 'C7H6O3', ['C','C','C','C','C','C','O','O','O'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[2,7],[7,8]], 'Phenolic acid'),
+  sketchMolecule('Benzoic Acid', 'benzenecarboxylic acid', 'C7H6O2', ['C','C','C','C','C','C','C','O','O'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[6,7],[6,8]], 'Aromatic carboxylic acid'),
+  sketchMolecule('Nitrobenzene', 'nitrobenzene', 'C6H5NO2', ['C','C','C','C','C','C','N','O','O'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[6,7],[6,8]], 'Aromatic nitro compound'),
+  sketchMolecule('Chlorobenzene', 'chlorobenzene', 'C6H5Cl', ['C','C','C','C','C','C','Cl'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6]], 'Aryl halide'),
+  sketchMolecule('Bromobenzene', 'bromobenzene', 'C6H5Br', ['C','C','C','C','C','C','Br'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6]], 'Aryl bromide'),
+  sketchMolecule('Ethyl Acetate', 'ethyl ethanoate', 'C4H8O2', ['C','C','O','O','C','C'], [[0,1],[1,2],[1,3],[3,4],[4,5]], 'Ester linkage'),
+  sketchMolecule('Methyl Acetate', 'methyl ethanoate', 'C3H6O2', ['C','C','O','O','C'], [[0,1],[1,2],[1,3],[3,4]], 'Simple ester'),
+  sketchMolecule('Diethyl Ether', 'ethoxyethane', 'C4H10O', ['C','C','O','C','C'], [[0,1],[1,2],[2,3],[3,4]], 'Ether functional group'),
+  sketchMolecule('Dimethyl Ether', 'methoxymethane', 'C2H6O', ['C','O','C'], [[0,1],[1,2]], 'Small ether'),
+  sketchMolecule('Acetyl Chloride', 'ethanoyl chloride', 'C2H3ClO', ['C','C','O','Cl'], [[0,1],[1,2],[1,3]], 'Acid chloride'),
+  sketchMolecule('Acetamide', 'ethanamide', 'C2H5NO', ['C','C','O','N'], [[0,1],[1,2],[1,3]], 'Amide group'),
+  sketchMolecule('Acetonitrile', 'ethanenitrile', 'C2H3N', ['C','C','N'], [[0,1],[1,2]], 'Nitrile group'),
+  sketchMolecule('Nitromethane', 'nitromethane', 'CH3NO2', ['C','N','O','O'], [[0,1],[1,2],[1,3]], 'Nitroalkane'),
+  sketchMolecule('Glycerol', 'propane-1,2,3-triol', 'C3H8O3', ['C','C','C','O','O','O'], [[0,1],[1,2],[0,3],[1,4],[2,5]], 'Trihydric alcohol'),
+  sketchMolecule('Lactic Acid', '2-hydroxypropanoic acid', 'C3H6O3', ['C','C','C','O','O','O'], [[0,1],[1,2],[1,3],[2,4],[2,5]], 'Hydroxy acid'),
+  sketchMolecule('Oxalic Acid', 'ethanedioic acid', 'C2H2O4', ['O','C','O','C','O','O'], [[0,1],[1,2],[1,3],[3,4],[3,5]], 'Dicarboxylic acid'),
+  sketchMolecule('Citric Acid', '2-hydroxypropane-1,2,3-tricarboxylic acid', 'C6H8O7', ['C','C','C','C','O','O','O','O','O','O'], [[0,1],[1,2],[1,3],[0,4],[0,5],[1,6],[2,7],[2,8],[3,9]], 'Triprotic organic acid'),
+  sketchMolecule('Fructose', 'D-fructose', 'C6H12O6', ['C','C','C','C','C','C','O','O','O','O','O','O'], [[0,1],[1,2],[2,3],[3,4],[4,5],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]], 'Ketose sugar'),
+  sketchMolecule('Sucrose', 'beta-D-fructofuranosyl alpha-D-glucopyranoside', 'C12H22O11', ['C','C','C','C','C','O','C','C','C','C','C','O','O','O','O'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[1,12],[7,13],[10,14]], 'Disaccharide glycosidic link'),
+  sketchMolecule('Styrene', 'ethenylbenzene', 'C8H8', ['C','C','C','C','C','C','C','C'], [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[6,7]], 'Vinyl aromatic monomer'),
+  sketchMolecule('Vinyl Chloride', 'chloroethene', 'C2H3Cl', ['C','C','Cl'], [[0,1],[1,2]], 'Haloalkene monomer'),
+];
+
 const BASE_MOLECULE_LIBRARY = {
   'Organic Chemistry': {
     color: '#22c55e',
@@ -682,6 +730,10 @@ const BASE_MOLECULE_LIBRARY = {
       'Cyclic Hydrocarbons': {
         description: 'Ring structures without aromaticity',
         molecules: [cyclohexane, cyclopentane],
+      },
+      'Class 11-12 Essentials': {
+        description: 'High-yield organic molecules with IUPAC names for school and entrance exam practice',
+        molecules: [ethanol, benzene, aceticAcid, glucose, ethylene, ...class1112Molecules],
       },
     },
   },
@@ -774,6 +826,7 @@ const ALL_SEED_MOLECULES = [
   fluorine, chlorine, hf, hcl, hbr, water, h2o2, co2, co, so2, so3, no2,
   no, h2so4, hno3, h3po4, carbonicAcid, nacl, nabh4, naoh, koh, nh4cl,
   cacl2, ozone, n2o, ammonia, hydroxyl, alanine, adenine, glucose,
+  ...class1112Molecules,
   ...EXPANDED_REAL_MOLECULES,
 ];
 

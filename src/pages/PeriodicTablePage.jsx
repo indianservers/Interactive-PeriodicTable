@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Atom, FlaskConical, Layers, MousePointer2, Sparkles, Zap } from 'lucide-react';
+import { Atom, FlaskConical, Layers, MousePointer2, Sparkles, Zap, X } from 'lucide-react';
 import { PeriodicTable } from '../components/periodic-table/PeriodicTable.jsx';
 import { FilterBar } from '../components/periodic-table/FilterBar.jsx';
 import { CategoryLegend } from '../components/periodic-table/CategoryLegend.jsx';
@@ -19,6 +19,7 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
   const [activeTrend, setActiveTrend] = useState('electronegativity');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [hoveredElement, setHoveredElement] = useState(null);
+  const [pinnedElements, setPinnedElements] = useLocalStorage('cu-pinned-compare', []);
 
   const handleSelectElement = useCallback((el) => {
     setSelectedElement(el);
@@ -29,6 +30,27 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
     setDrawerOpen(false);
     setSelectedElement(null);
   };
+
+  const togglePinnedElement = useCallback((element) => {
+    setPinnedElements(items => {
+      const exists = items.some(item => item.atomicNumber === element.atomicNumber);
+      if (exists) return items.filter(item => item.atomicNumber !== element.atomicNumber);
+      return [element, ...items].slice(0, 4);
+    });
+  }, [setPinnedElements]);
+
+  const radarMetrics = [
+    ['EN', 'electronegativity', 4],
+    ['IE', 'ionizationEnergy', 2500],
+    ['Radius', 'atomicRadius', 300],
+    ['Mass', 'atomicMass', 300],
+  ];
+
+  const radarPoints = (element) => radarMetrics.map(([, key, max], index) => {
+    const angle = -Math.PI / 2 + index * ((Math.PI * 2) / radarMetrics.length);
+    const value = Math.max(0.08, Math.min(1, (Number(element[key]) || 0) / max));
+    return [50 + Math.cos(angle) * value * 38, 50 + Math.sin(angle) * value * 38];
+  }).map(point => point.join(',')).join(' ');
 
   return (
     <div className="flex flex-col h-full periodic-page">
@@ -166,6 +188,8 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
                   onClose={handleClose}
                   onFavoriteToggle={onFavoriteToggle}
                   isFavorite={favorites.some(f => f.atomicNumber === selectedElement.atomicNumber)}
+                  onPinToggle={togglePinnedElement}
+                  isPinned={pinnedElements.some(item => item.atomicNumber === selectedElement.atomicNumber)}
                   onViewAtom={el => { onViewAtom(el); handleClose(); }}
                   onCompare={el => { onCompare(el); handleClose(); }}
                   reducedMotion={reducedMotion}
@@ -183,6 +207,8 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
                   onClose={handleClose}
                   onFavoriteToggle={onFavoriteToggle}
                   isFavorite={favorites.some(f => f.atomicNumber === selectedElement.atomicNumber)}
+                  onPinToggle={togglePinnedElement}
+                  isPinned={pinnedElements.some(item => item.atomicNumber === selectedElement.atomicNumber)}
                   onViewAtom={el => { onViewAtom(el); handleClose(); }}
                   onCompare={el => { onCompare(el); handleClose(); }}
                   reducedMotion={reducedMotion}
@@ -192,6 +218,42 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
           </>
         )}
       </div>
+      {pinnedElements.length > 0 && (
+        <div className="sticky bottom-0 z-30 border-t border-white/10 bg-gray-950/94 backdrop-blur-xl p-3">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_220px] gap-3 items-center">
+            <div className="flex gap-2 overflow-x-auto scrollbar-thin">
+              {pinnedElements.map(el => {
+                const cat = getCategoryInfo(el.category);
+                return (
+                  <button key={el.atomicNumber} onClick={() => handleSelectElement(el)} className="min-w-44 rounded-xl bg-white/[0.05] border border-white/10 p-3 text-left">
+                    <div className="flex items-center gap-3">
+                      <span className="w-10 h-10 rounded-lg border flex items-center justify-center font-black" style={{ color: cat.color, borderColor: `${cat.color}55`, background: `${cat.color}18` }}>{el.symbol}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-bold text-white truncate">{el.name}</span>
+                        <span className="block text-[10px] text-gray-500">EN {el.electronegativity ?? 'n/a'} - IE {el.ionizationEnergy ?? 'n/a'}</span>
+                      </span>
+                      <span onClick={event => { event.stopPropagation(); togglePinnedElement(el); }} className="p-1 rounded-lg text-gray-500 hover:text-white hover:bg-white/10">
+                        <X size={14} />
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <svg viewBox="0 0 100 100" className="h-36 w-full rounded-xl bg-black/20 border border-white/10">
+              {[18, 28, 38].map(r => <circle key={r} cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.09)" />)}
+              {radarMetrics.map(([label], index) => {
+                const angle = -Math.PI / 2 + index * ((Math.PI * 2) / radarMetrics.length);
+                return <text key={label} x={50 + Math.cos(angle) * 45} y={53 + Math.sin(angle) * 45} textAnchor="middle" fontSize="6" fill="#94a3b8">{label}</text>;
+              })}
+              {pinnedElements.map(el => {
+                const cat = getCategoryInfo(el.category);
+                return <polygon key={el.atomicNumber} points={radarPoints(el)} fill={`${cat.color}22`} stroke={cat.color} strokeWidth="1.4" />;
+              })}
+            </svg>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

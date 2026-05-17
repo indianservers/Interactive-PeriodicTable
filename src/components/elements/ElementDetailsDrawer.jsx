@@ -1,9 +1,103 @@
 import { useState } from 'react';
-import { X, Heart, Atom, GitCompare, Info, ZoomIn } from 'lucide-react';
+import { X, Heart, Atom, GitCompare, Info, ZoomIn, RadioTower, Download, Pin } from 'lucide-react';
 import { getCategoryInfo } from '../../data/categories.js';
 import { getPhaseBadge } from '../../utils/colorScales.js';
 import { ElementProperties } from './ElementProperties.jsx';
 import { ElectronShellDiagram } from '../visualizers/ElectronShellDiagram.jsx';
+import { likelyIsotopes } from '../../utils/chemistryTools.js';
+
+const abundanceValue = (abundance = '') => {
+  const parsed = Number(String(abundance).replace(/[^\d.]/g, ''));
+  if (Number.isFinite(parsed) && parsed > 0) return Math.min(100, parsed);
+  return abundance === 'trace' ? 2 : abundance === 'synthetic' ? 6 : 12;
+};
+
+const exportElementCard = (element, catInfo) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 720;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#08111f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const gradient = ctx.createLinearGradient(0, 0, 720, 1024);
+  gradient.addColorStop(0, `${catInfo.color}44`);
+  gradient.addColorStop(1, '#020617');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = catInfo.color;
+  ctx.lineWidth = 10;
+  ctx.strokeRect(36, 36, 648, 952);
+  ctx.fillStyle = catInfo.color;
+  ctx.font = '700 42px Arial';
+  ctx.fillText(`#${element.atomicNumber}`, 72, 110);
+  ctx.textAlign = 'center';
+  ctx.font = '900 210px Arial';
+  ctx.fillText(element.symbol, 360, 365);
+  ctx.fillStyle = '#f8fafc';
+  ctx.font = '900 58px Arial';
+  ctx.fillText(element.name, 360, 455);
+  ctx.font = '24px Arial';
+  ctx.fillStyle = '#cbd5e1';
+  ctx.fillText(element.category, 360, 500);
+  ctx.textAlign = 'left';
+  const rows = [
+    ['Atomic mass', `${element.atomicMass} u`],
+    ['Phase', element.phase],
+    ['Group / Period', `${element.group ?? 'f-block'} / ${element.period}`],
+    ['Electron config', element.electronConfiguration],
+    ['Discovered', element.yearDiscovered ? `${element.yearDiscovered}, ${element.discoveredBy}` : element.discoveredBy || 'Ancient'],
+  ];
+  ctx.font = '700 24px Arial';
+  rows.forEach(([label, value], index) => {
+    const y = 610 + index * 58;
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText(label, 80, y);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillText(String(value).slice(0, 42), 285, y);
+  });
+  ctx.font = '20px Arial';
+  ctx.fillStyle = '#cbd5e1';
+  const summary = element.summary || `${element.name} is a ${element.category}.`;
+  const words = summary.split(' ');
+  let line = '';
+  let y = 900;
+  words.forEach(word => {
+    const next = `${line} ${word}`.trim();
+    if (ctx.measureText(next).width > 560) {
+      ctx.fillText(line, 80, y);
+      line = word;
+      y += 28;
+    } else {
+      line = next;
+    }
+  });
+  ctx.fillText(line, 80, y);
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `${element.symbol}-element-card.png`;
+  a.click();
+};
+
+const printElementCardPdf = (element, catInfo) => {
+  const win = window.open('', '_blank', 'width=760,height=980');
+  if (!win) return;
+  win.document.write(`<!doctype html><html><head><title>${element.symbol} card</title><style>
+    body{margin:0;background:#0f172a;color:#f8fafc;font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh}
+    .card{width:560px;min-height:760px;border:8px solid ${catInfo.color};border-radius:28px;padding:36px;background:linear-gradient(145deg,${catInfo.color}44,#020617)}
+    .num{color:${catInfo.color};font-weight:800;font-size:34px}.sym{text-align:center;color:${catInfo.color};font-weight:900;font-size:170px;line-height:1}
+    h1{text-align:center;font-size:48px;margin:0 0 8px}.cat{text-align:center;color:#cbd5e1;margin-bottom:36px}
+    .row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.15);padding:12px 0;font-size:18px}.label{color:#94a3b8}
+    p{color:#cbd5e1;line-height:1.5;margin-top:28px}@media print{body{background:white}.card{break-inside:avoid}}
+  </style></head><body><main class="card">
+    <div class="num">#${element.atomicNumber}</div><div class="sym">${element.symbol}</div><h1>${element.name}</h1><div class="cat">${element.category}</div>
+    <div class="row"><span class="label">Atomic mass</span><span>${element.atomicMass} u</span></div>
+    <div class="row"><span class="label">Phase</span><span>${element.phase}</span></div>
+    <div class="row"><span class="label">Group / Period</span><span>${element.group ?? 'f-block'} / ${element.period}</span></div>
+    <div class="row"><span class="label">Electron config</span><span>${element.electronConfiguration}</span></div>
+    <p>${element.summary || ''}</p>
+  </main><script>window.onload=()=>window.print()</script></body></html>`);
+  win.document.close();
+};
 
 export const ElementDetailsDrawer = ({
   element,
@@ -12,13 +106,17 @@ export const ElementDetailsDrawer = ({
   isFavorite,
   onViewAtom,
   onCompare,
+  onPinToggle,
+  isPinned,
   reducedMotion,
 }) => {
   const [showAtomZoom, setShowAtomZoom] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
   if (!element) return null;
   const catInfo = getCategoryInfo(element.category);
   const phase = getPhaseBadge(element.phase);
   const shellRows = element.shells?.map((count, index) => ({ shell: index + 1, electrons: count })) || [];
+  const isotopes = likelyIsotopes(element);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -67,6 +165,26 @@ export const ElementDetailsDrawer = ({
           <span className="text-[10px] text-gray-600">Bohr-style educational shell diagram</span>
         </div>
 
+        <div className="px-5 pt-2">
+          <div className="grid grid-cols-3 rounded-xl bg-white/[0.04] border border-white/10 p-1">
+            {[
+              ['overview', 'Overview'],
+              ['isotopes', 'Isotopes'],
+              ['biology', 'Biology'],
+            ].map(([id, label]) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                  activeTab === id ? 'bg-indigo-500/20 text-indigo-200' : 'text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Action buttons */}
         <div className="flex gap-2 px-5 py-3">
           <button
@@ -95,7 +213,80 @@ export const ElementDetailsDrawer = ({
             Compare
           </button>
         </div>
+        <div className={`grid ${onPinToggle ? 'grid-cols-3' : 'grid-cols-2'} gap-2 px-5 pb-3`}>
+          {onPinToggle && (
+            <button
+              onClick={() => onPinToggle(element)}
+              className={`flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium border transition-all ${
+                isPinned ? 'bg-amber-500/20 border-amber-500/40 text-amber-200' : 'glass border-white/10 text-gray-300 hover:border-white/20'
+              }`}
+            >
+              <Pin size={14} />
+              {isPinned ? 'Pinned' : 'Pin'}
+            </button>
+          )}
+          <button
+            onClick={() => exportElementCard(element, catInfo)}
+            className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium glass border border-white/10 text-gray-300 hover:border-white/20 transition-all"
+          >
+            <Download size={14} />
+            PNG
+          </button>
+          <button
+            onClick={() => printElementCardPdf(element, catInfo)}
+            className="flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-medium glass border border-white/10 text-gray-300 hover:border-white/20 transition-all"
+          >
+            <Download size={14} />
+            PDF
+          </button>
+        </div>
 
+        {activeTab === 'biology' ? (
+          <div className="px-5 pb-6">
+            <div className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-4">
+              <p className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">Biological Role</p>
+              <p className="text-sm text-emerald-50 leading-relaxed">{element.biologicalRole}</p>
+            </div>
+            <div className="mt-3 rounded-xl bg-white/[0.04] border border-white/10 p-3 text-xs text-gray-400">
+              NEET anchor: connect the element to biomolecules, electrolytes, enzymes, deficiency/toxicity, and body systems where applicable.
+            </div>
+          </div>
+        ) : activeTab === 'isotopes' ? (
+          <div className="px-5 pb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <RadioTower size={14} className="text-cyan-300" />
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Known Isotopes</p>
+            </div>
+            {isotopes.length ? (
+              <div className="space-y-2">
+                {isotopes.map(iso => (
+                  <div key={iso.label} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-black text-white">{iso.label}</span>
+                      <span className="text-[10px] text-gray-500">{iso.protons}p / {iso.neutrons ?? '?'}n</span>
+                    </div>
+                    <div className="mt-2 h-2 rounded-full bg-black/30 overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${abundanceValue(iso.abundance)}%`, background: catInfo.color }}
+                      />
+                    </div>
+                    <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-gray-400">
+                      <span>Abundance: <span className="text-gray-200">{iso.abundance}</span></span>
+                      <span>Half-life: <span className="text-gray-200">{iso.halfLife}</span></span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-gray-500">Decay mode: {iso.decay || 'stable'}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl bg-white/[0.04] border border-white/10 p-4 text-xs text-gray-400">
+                No curated isotope records are loaded for {element.name} yet.
+              </div>
+            )}
+          </div>
+        ) : (
+        <>
         {/* Summary */}
         {element.summary && (
           <div className="mx-5 mb-4 p-3 rounded-xl bg-white/[0.03] border border-white/5">
@@ -124,6 +315,8 @@ export const ElementDetailsDrawer = ({
               ))}
             </div>
           </div>
+        )}
+        </>
         )}
       </div>
 

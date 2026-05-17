@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Table2, TrendingUp, GitCompare,
-  Atom, Box, BookOpen, Heart, Settings, X, FlaskConical, GraduationCap, ChevronDown
+  Atom, Box, BookOpen, Heart, Settings, X, FlaskConical, GraduationCap,
+  ChevronDown, Trophy, Scale,
 } from 'lucide-react';
 
 const navGroups = [
@@ -20,12 +21,14 @@ const navGroups = [
       { id: 'atom', label: 'Atom Visualizer', icon: Atom },
       { id: 'molecule', label: '3D Molecules', icon: Box },
       { id: 'lab', label: 'Chemistry Lab', icon: FlaskConical },
+      { id: 'balancer', label: 'Equation Balancer', icon: Scale },
     ],
   },
   {
     label: 'Learn',
     items: [
       { id: 'syllabus', label: 'Syllabus Map', icon: GraduationCap },
+      { id: 'study-tools', label: 'Study Tools', icon: Trophy },
       { id: 'quiz', label: 'Quiz', icon: BookOpen },
       { id: 'favorites', label: 'Favorites', icon: Heart },
     ],

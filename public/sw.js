@@ -3,7 +3,6 @@ const CORE_ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/periodic-ico
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS)));
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -22,4 +21,10 @@ self.addEventListener('fetch', event => {
       return response;
     }).catch(() => caches.match('/index.html')))
   );
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
