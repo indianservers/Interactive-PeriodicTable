@@ -17,8 +17,8 @@ const formatShells = (value) => {
   return value.join(' - ');
 };
 
-const compareText = (a, b) => {
-  if (a === b && a !== null && a !== undefined) return 'Same';
+const compareText = (values) => {
+  if (values.length > 1 && values.every(value => value === values[0] && value !== null && value !== undefined)) return 'Same';
   return null;
 };
 
@@ -93,13 +93,14 @@ const comparisonGroups = [
   },
 ];
 
-const SearchableElementPicker = ({ selected, onSelect, placeholder, exclude }) => {
+const SearchableElementPicker = ({ selected, onSelect, placeholder, exclude = [] }) => {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
 
   const results = useMemo(() => {
     const q = query.toLowerCase().trim();
-    const source = elements.filter(e => e.atomicNumber !== exclude?.atomicNumber);
+    const excluded = new Set(exclude.map(el => el.atomicNumber));
+    const source = elements.filter(e => !excluded.has(e.atomicNumber));
     if (!q) return source;
     return source.filter(e =>
       e.name.toLowerCase().includes(q) ||
@@ -173,19 +174,16 @@ const SearchableElementPicker = ({ selected, onSelect, placeholder, exclude }) =
   );
 };
 
-const CompareField = ({ label, elementA, elementB, getDisplay, getNumeric }) => {
-  const displayA = getDisplay(elementA);
-  const displayB = getDisplay(elementB);
-  const rawA = getNumeric ? getNumeric(elementA) : null;
-  const rawB = getNumeric ? getNumeric(elementB) : null;
-  const numA = typeof rawA === 'number' ? rawA : null;
-  const numB = typeof rawB === 'number' ? rawB : null;
-  const higherA = numA !== null && numB !== null && numA > numB;
-  const higherB = numA !== null && numB !== null && numB > numA;
-  const maxVal = numA !== null && numB !== null ? Math.max(Math.abs(numA), Math.abs(numB)) : null;
-  const pctA = maxVal ? Math.round((Math.abs(numA) / maxVal) * 100) : null;
-  const pctB = maxVal ? Math.round((Math.abs(numB) / maxVal) * 100) : null;
-  const sameText = compareText(displayA, displayB);
+const CompareField = ({ label, selectedElements, getDisplay, getNumeric }) => {
+  const displays = selectedElements.map(el => getDisplay(el));
+  const numericValues = selectedElements.map(el => {
+    const raw = getNumeric ? getNumeric(el) : null;
+    return typeof raw === 'number' ? raw : null;
+  });
+  const comparableNumbers = numericValues.filter(value => value !== null);
+  const maxVal = comparableNumbers.length ? Math.max(...comparableNumbers.map(value => Math.abs(value))) : null;
+  const highest = comparableNumbers.length ? Math.max(...comparableNumbers) : null;
+  const sameText = compareText(displays);
 
   return (
     <div className="py-3 border-b border-white/5 last:border-0">
@@ -193,32 +191,31 @@ const CompareField = ({ label, elementA, elementB, getDisplay, getNumeric }) => 
         <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{label}</p>
         {sameText && <span className="text-[10px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">{sameText}</span>}
       </div>
-      <div className="grid md:grid-cols-2 gap-3">
-        <div>
-          <p className={`text-xs leading-relaxed break-words ${higherA ? 'text-green-300 font-semibold' : 'text-gray-300'}`}>{displayA}</p>
-          {pctA !== null && (
+      <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${selectedElements.length}, minmax(140px, 1fr))` }}>
+        {selectedElements.map((el, index) => {
+          const numeric = numericValues[index];
+          const pct = maxVal && numeric !== null ? Math.round((Math.abs(numeric) / maxVal) * 100) : null;
+          const highestValue = numeric !== null && highest !== null && numeric === highest && comparableNumbers.length > 1;
+          return (
+        <div key={el.atomicNumber} className="min-w-0">
+          <p className={`text-xs leading-relaxed break-words ${highestValue ? 'text-green-300 font-semibold' : 'text-gray-300'}`}>{displays[index]}</p>
+          {pct !== null && (
             <div className="mt-2 h-1.5 rounded-full bg-white/10 overflow-hidden">
-              <div className="h-full rounded-full bg-indigo-400" style={{ width: `${pctA}%`, opacity: higherA ? 1 : 0.45 }} />
+              <div className="h-full rounded-full" style={{ width: `${pct}%`, opacity: highestValue ? 1 : 0.45, backgroundColor: getCategoryInfo(el.category).color }} />
             </div>
           )}
         </div>
-        <div>
-          <p className={`text-xs leading-relaxed break-words ${higherB ? 'text-green-300 font-semibold' : 'text-gray-300'}`}>{displayB}</p>
-          {pctB !== null && (
-            <div className="mt-2 h-1.5 rounded-full bg-white/10 overflow-hidden">
-              <div className="h-full rounded-full bg-violet-400" style={{ width: `${pctB}%`, opacity: higherB ? 1 : 0.45 }} />
-            </div>
-          )}
-        </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
-const ComparisonGroup = ({ group, elementA, elementB }) => {
+const ComparisonGroup = ({ group, selectedElements }) => {
   const Icon = group.icon;
   return (
-    <div className="glass rounded-xl p-4">
+    <div className="glass rounded-xl p-4 overflow-x-auto scrollbar-thin">
       <div className="flex items-center gap-2 mb-2">
         <Icon size={15} className="text-cyan-300" />
         <h3 className="text-sm font-bold text-white">{group.title}</h3>
@@ -227,8 +224,7 @@ const ComparisonGroup = ({ group, elementA, elementB }) => {
         <CompareField
           key={`${group.title}-${label}`}
           label={label}
-          elementA={elementA}
-          elementB={elementB}
+          selectedElements={selectedElements}
           getDisplay={getDisplay}
           getNumeric={getNumeric}
         />
@@ -238,48 +234,61 @@ const ComparisonGroup = ({ group, elementA, elementB }) => {
 };
 
 export const CompareElements = ({ initialElement }) => {
-  const [elementA, setElementA] = useState(initialElement || null);
-  const [elementB, setElementB] = useState(null);
+  const [selectedElements, setSelectedElements] = useState(initialElement ? [initialElement] : []);
+
+  const addElement = (element) => {
+    if (!element) return;
+    setSelectedElements(items => (
+      items.some(item => item.atomicNumber === element.atomicNumber)
+        ? items
+        : [...items, element]
+    ));
+  };
+
+  const removeElement = (atomicNumber) => {
+    setSelectedElements(items => items.filter(item => item.atomicNumber !== atomicNumber));
+  };
+
+  const clearElements = () => setSelectedElements([]);
 
   const insights = useMemo(() => {
-    if (!elementA || !elementB) return [];
+    if (selectedElements.length < 2) return [];
     const msgs = [];
-    if (elementA.group !== null && elementB.group !== null) {
-      if (elementA.group === elementB.group) msgs.push(`Both are in Group ${elementA.group}.`);
-      else msgs.push(`${elementA.name} is in Group ${elementA.group}, while ${elementB.name} is in Group ${elementB.group}.`);
-    }
-    if (elementA.period === elementB.period) msgs.push(`Both are in Period ${elementA.period}.`);
-    if (elementA.block === elementB.block) msgs.push(`Both are ${elementA.block}-block elements.`);
-    if (elementA.category === elementB.category) msgs.push(`Both are classified as ${elementA.category}.`);
-    if (elementA.phase === elementB.phase) msgs.push(`Both are ${elementA.phase.toLowerCase()} at standard conditions.`);
-    if (elementA.electronegativity !== null && elementB.electronegativity !== null) {
-      const higher = elementA.electronegativity > elementB.electronegativity ? elementA.name : elementB.name;
-      msgs.push(`${higher} has higher electronegativity.`);
-    }
-    if (elementA.atomicRadius !== null && elementB.atomicRadius !== null) {
-      const larger = elementA.atomicRadius > elementB.atomicRadius ? elementA.name : elementB.name;
-      msgs.push(`${larger} has a larger atomic radius.`);
-    }
-    if (elementA.ionizationEnergy !== null && elementB.ionizationEnergy !== null) {
-      const higher = elementA.ionizationEnergy > elementB.ionizationEnergy ? elementA.name : elementB.name;
-      msgs.push(`${higher} has higher first ionization energy.`);
-    }
+    const allSame = (key) => selectedElements.every(el => el[key] === selectedElements[0][key]);
+    const highestBy = (key) => selectedElements
+      .filter(el => typeof el[key] === 'number')
+      .sort((a, b) => b[key] - a[key])[0];
+    if (allSame('group') && selectedElements[0].group !== null) msgs.push(`All selected elements are in Group ${selectedElements[0].group}.`);
+    if (allSame('period')) msgs.push(`All selected elements are in Period ${selectedElements[0].period}.`);
+    if (allSame('block')) msgs.push(`All selected elements are ${selectedElements[0].block}-block elements.`);
+    if (allSame('category')) msgs.push(`All selected elements are classified as ${selectedElements[0].category}.`);
+    if (allSame('phase')) msgs.push(`All selected elements are ${selectedElements[0].phase.toLowerCase()} at standard conditions.`);
+    const mostElectronegative = highestBy('electronegativity');
+    const largestRadius = highestBy('atomicRadius');
+    const highestIonization = highestBy('ionizationEnergy');
+    if (mostElectronegative) msgs.push(`${mostElectronegative.name} has the highest electronegativity in this set.`);
+    if (largestRadius) msgs.push(`${largestRadius.name} has the largest atomic radius in this set.`);
+    if (highestIonization) msgs.push(`${highestIonization.name} has the highest first ionization energy in this set.`);
     return msgs;
-  }, [elementA, elementB]);
+  }, [selectedElements]);
 
   return (
     <div className="h-full flex flex-col">
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center mb-4">
-        <SearchableElementPicker selected={elementA} onSelect={setElementA} placeholder="Search any element for A" exclude={elementB} />
-        <ArrowLeftRight size={16} className="text-gray-500" />
-        <SearchableElementPicker selected={elementB} onSelect={setElementB} placeholder="Search any element for B" exclude={elementA} />
+      <div className="grid md:grid-cols-[1fr_auto] gap-3 items-center mb-4">
+        <SearchableElementPicker selected={null} onSelect={addElement} placeholder="Search and add any element" exclude={selectedElements} />
+        <button onClick={clearElements} disabled={selectedElements.length === 0} className="btn-secondary text-sm disabled:opacity-40">
+          Clear All
+        </button>
       </div>
 
-      {elementA && elementB ? (
+      {selectedElements.length > 0 ? (
         <div className="flex-1 overflow-y-auto scrollbar-thin space-y-4 pr-1">
-          <div className="grid grid-cols-2 gap-3">
-            {[elementA, elementB].map(el => (
+          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
+            {selectedElements.map(el => (
               <div key={el.atomicNumber} className="glass rounded-xl p-3 text-center">
+                <button onClick={() => removeElement(el.atomicNumber)} className="ml-auto mb-1 p-1 rounded-lg hover:bg-white/10 text-gray-400" aria-label={`Remove ${el.name}`}>
+                  <X size={14} />
+                </button>
                 <div className="w-24 h-24 mx-auto"><ElectronShellDiagram element={el} /></div>
                 <p className="text-sm font-bold mt-1" style={{ color: getCategoryInfo(el.category).color }}>{el.symbol}</p>
                 <p className="text-xs text-gray-400">{el.name}</p>
@@ -287,6 +296,13 @@ export const CompareElements = ({ initialElement }) => {
               </div>
             ))}
           </div>
+
+          {selectedElements.length < 2 && (
+            <div className="glass rounded-xl p-4 text-sm text-gray-400 flex items-center gap-2">
+              <ArrowLeftRight size={16} className="text-indigo-300" />
+              Add another element to compare properties side by side.
+            </div>
+          )}
 
           {insights.length > 0 && (
             <div className="glass rounded-xl p-4">
@@ -301,22 +317,24 @@ export const CompareElements = ({ initialElement }) => {
             </div>
           )}
 
-          <div className="glass rounded-xl p-4">
-            <div className="grid grid-cols-[1fr_auto_1fr] gap-2">
-              <p className="text-xs font-bold text-right pr-2" style={{ color: getCategoryInfo(elementA.category).color }}>{elementA.name}</p>
-              <p className="text-[10px] text-gray-500 text-center">vs</p>
-              <p className="text-xs font-bold pl-2" style={{ color: getCategoryInfo(elementB.category).color }}>{elementB.name}</p>
+          {selectedElements.length > 1 && (
+            <div className="glass rounded-xl p-4 overflow-x-auto scrollbar-thin">
+              <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${selectedElements.length}, minmax(140px, 1fr))` }}>
+                {selectedElements.map(el => (
+                  <p key={el.atomicNumber} className="text-xs font-bold text-center" style={{ color: getCategoryInfo(el.category).color }}>{el.name}</p>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-600 text-center mt-1">Showing every available comparison field from the local element dataset.</p>
             </div>
-            <p className="text-[10px] text-gray-600 text-center mt-1">Showing every available comparison field from the local element dataset.</p>
-          </div>
+          )}
 
-          {comparisonGroups.map(group => (
-            <ComparisonGroup key={group.title} group={group} elementA={elementA} elementB={elementB} />
+          {selectedElements.length > 1 && comparisonGroups.map(group => (
+            <ComparisonGroup key={group.title} group={group} selectedElements={selectedElements} />
           ))}
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
-          Select two elements to compare all available properties.
+          Add elements to compare all available properties.
         </div>
       )}
     </div>

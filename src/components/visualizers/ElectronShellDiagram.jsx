@@ -33,7 +33,6 @@ export const ElectronShellDiagram = ({ element, reducedMotion = false }) => {
       viewBox={`0 0 ${svgSize} ${svgSize}`}
       width="100%"
       height="100%"
-      style={{ maxWidth: svgSize, maxHeight: svgSize }}
       aria-label={`Electron shell diagram for ${element.name} with ${maxShells} shells`}
     >
       {/* Background glow */}

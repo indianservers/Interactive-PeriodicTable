@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Activity, BadgeCheck, BarChart3, BookOpen, Brain, Boxes, Calculator, Download,
   FlaskConical, GraduationCap, Languages, Mic2, Orbit, Printer, RadioTower,
@@ -284,6 +284,86 @@ const ControlLabel = ({ children }) => (
   <label className="block text-[10px] uppercase tracking-widest text-gray-500 font-semibold mb-1">{children}</label>
 );
 
+const ElementSearchInput = ({ value, onChange, allowedSymbols, className = '', placeholder = 'Search Elements' }) => {
+  const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
+  const selectedElement = elements.find(el => el.symbol === value);
+  const availableElements = useMemo(() => {
+    const allowed = allowedSymbols ? new Set(allowedSymbols) : null;
+    return elements.filter(el => !allowed || allowed.has(el.symbol));
+  }, [allowedSymbols]);
+  const suggestions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const matches = q
+      ? availableElements.filter(el =>
+          el.name.toLowerCase().includes(q) ||
+          el.symbol.toLowerCase().includes(q) ||
+          String(el.atomicNumber).includes(q) ||
+          el.category.toLowerCase().includes(q)
+        )
+      : availableElements;
+    return matches.slice(0, 8);
+  }, [availableElements, query]);
+
+  useEffect(() => {
+    if (selectedElement) setQuery(`${selectedElement.name} (${selectedElement.symbol})`);
+  }, [selectedElement]);
+
+  const selectElement = (symbol) => {
+    const next = elements.find(el => el.symbol === symbol);
+    if (!next) return;
+    onChange(symbol);
+    setQuery(`${next.name} (${next.symbol})`);
+    setOpen(false);
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+      <input
+        value={query}
+        onChange={e => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && suggestions[0]) {
+            e.preventDefault();
+            selectElement(suggestions[0].symbol);
+          }
+        }}
+        placeholder={placeholder}
+        className="input text-sm pl-9"
+      />
+      {open && (
+        <div className="absolute z-40 mt-2 w-full max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-gray-950 shadow-2xl">
+          <div className="px-3 py-2 text-[10px] uppercase tracking-widest text-gray-500 border-b border-white/10">
+            Available elements
+          </div>
+          {suggestions.length > 0 ? suggestions.map(el => (
+            <button
+              type="button"
+              key={el.symbol}
+              onMouseDown={e => e.preventDefault()}
+              onClick={() => selectElement(el.symbol)}
+              className="w-full px-3 py-2 text-left hover:bg-white/[0.06] flex items-center gap-3"
+            >
+              <span className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-200 flex items-center justify-center text-sm font-black">
+                {el.symbol}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-white truncate">{el.name}</span>
+                <span className="block text-[11px] text-gray-500 truncate">#{el.atomicNumber} - {el.category}</span>
+              </span>
+            </button>
+          )) : (
+            <div className="px-3 py-3 text-xs text-gray-500">No available element matches this search.</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const orbitalMeta = {
   s: { lobes: 1, note: 'Spherical orbital with no angular node.' },
   p: { lobes: 2, note: 'Two opposite lobes with one nodal plane.' },
@@ -429,6 +509,7 @@ export const ChemistryLabPage = () => {
   const [activeLabTab, setActiveLabTab] = useState('Start Here');
   const [activeFocusTopic, setActiveFocusTopic] = useState(null);
   const [labSearch, setLabSearch] = useState('');
+  const [showLabSearchSuggestions, setShowLabSearchSuggestions] = useState(false);
   const [labTypeFilter, setLabTypeFilter] = useState('All');
   const [labDifficultyFilter, setLabDifficultyFilter] = useState('All');
   const [activeExperimentId, setActiveExperimentId] = useState('titration');
@@ -539,6 +620,19 @@ export const ChemistryLabPage = () => {
     : 'Use atomic number for protons, shell data for Bohr-style structure, and category/phase to predict broad behavior.';
 
   const recommendedPath = LAB_EXPERIMENTS.filter(item => ['titration', 'molar-mass', 'bohr', 'bond-predictor', 'equation-balancer', 'ph-meter'].includes(item.id));
+  const labSearchSuggestions = useMemo(() => {
+    const query = labSearch.trim().toLowerCase();
+    const matches = LAB_EXPERIMENTS
+      .filter(item => {
+        if (!query) return true;
+        return [item.title, item.topic, item.type, item.difficulty, item.teaches].join(' ').toLowerCase().includes(query);
+      })
+      .slice(0, 8);
+    const topics = [...new Set(LAB_EXPERIMENTS.map(item => item.topic))]
+      .filter(topic => !query || topic.toLowerCase().includes(query))
+      .slice(0, 4);
+    return { matches, topics };
+  }, [labSearch]);
   const visibleExperiments = LAB_EXPERIMENTS.filter(item => {
     const query = labSearch.trim().toLowerCase();
     const itemTags = getSyllabusTagsForLab(item.id);
@@ -716,7 +810,7 @@ export const ChemistryLabPage = () => {
         return (
           <Bench title="Spectroscopy Viewer" result={`Visible emission lines for ${selectedSymbol}.`}>
             <ControlLabel>Element</ControlLabel>
-            <select value={selectedSymbol} onChange={e => setSelectedSymbol(e.target.value)} className="input text-sm mb-4">{['H', 'He', 'Li', 'Na', 'K', 'Ca', 'Cu'].map(s => <option key={s}>{s}</option>)}</select>
+            <ElementSearchInput value={selectedSymbol} onChange={setSelectedSymbol} allowedSymbols={['H', 'He', 'Li', 'Na', 'K', 'Ca', 'Cu']} className="mb-4" />
             <div className="h-28 rounded-xl bg-gradient-to-r from-violet-700 via-green-500 to-red-600 border border-white/10 relative overflow-hidden">
               {(spectrumLines[selectedSymbol] || [486, 656]).map(nm => <span key={nm} className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_12px_white]" style={{ left: `${((nm - 380) / 370) * 100}%` }} />)}
             </div>
@@ -773,7 +867,7 @@ export const ChemistryLabPage = () => {
         return (
           <Bench title="Flame Test" result={`${flameElement} produces its characteristic flame color.`}>
             <ControlLabel>Metal ion</ControlLabel>
-            <select value={flameElement} onChange={e => setFlameElement(e.target.value)} className="input text-sm mb-4">{Object.keys(flameColors).map(s => <option key={s}>{s}</option>)}</select>
+            <ElementSearchInput value={flameElement} onChange={setFlameElement} allowedSymbols={Object.keys(flameColors)} className="mb-4" placeholder="Search available metal ions" />
             <div className="h-40 rounded-xl bg-black border border-white/10 flex items-end justify-center overflow-hidden">
               <div className="w-32 h-32 rounded-t-full blur-sm" style={{ background: flameColors[flameElement], boxShadow: `0 0 50px ${flameColors[flameElement]}` }} />
             </div>
@@ -899,7 +993,10 @@ export const ChemistryLabPage = () => {
       case 'bond-predictor':
         return (
           <Bench title={activeExperiment.title} result={`${polarity.type}: ${polarity.note}`}>
-            <div className="grid sm:grid-cols-2 gap-3"><input value={polarityA} onChange={e => setPolarityA(e.target.value)} className="input text-sm" /><input value={polarityB} onChange={e => setPolarityB(e.target.value)} className="input text-sm" /></div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div><ControlLabel>Element A</ControlLabel><ElementSearchInput value={polarityA} onChange={setPolarityA} /></div>
+              <div><ControlLabel>Element B</ControlLabel><ElementSearchInput value={polarityB} onChange={setPolarityB} /></div>
+            </div>
           </Bench>
         );
       case 'mechanism':
@@ -1016,7 +1113,7 @@ export const ChemistryLabPage = () => {
         return (
           <Bench title={activeExperiment.title} result={`Current element: ${selected.name} (${selected.symbol})`}>
             <ControlLabel>Element</ControlLabel>
-            <select value={selectedSymbol} onChange={e => setSelectedSymbol(e.target.value)} className="input text-sm mb-4">{elements.map(el => <option key={el.symbol} value={el.symbol}>{el.name} ({el.symbol})</option>)}</select>
+            <ElementSearchInput value={selectedSymbol} onChange={setSelectedSymbol} className="mb-4" />
             <div className="grid sm:grid-cols-3 gap-2">
               <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Shells</p><p className="text-lg font-black text-white">{selected.shells?.join('-')}</p></div>
               <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Category</p><p className="text-sm text-gray-200">{selected.category}</p></div>
@@ -1062,9 +1159,7 @@ export const ChemistryLabPage = () => {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <select value={selectedSymbol} onChange={e => setSelectedSymbol(e.target.value)} className="input w-44 text-sm">
-              {elements.map(el => <option key={el.symbol} value={el.symbol}>{el.name} ({el.symbol})</option>)}
-            </select>
+            <ElementSearchInput value={selectedSymbol} onChange={setSelectedSymbol} className="w-56" />
             <button onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')} className="btn-secondary flex items-center gap-2 text-sm">
               <Languages size={14} /> {language === 'en' ? 'English' : 'Hindi'}
             </button>
@@ -1135,7 +1230,56 @@ export const ChemistryLabPage = () => {
             <div className="grid md:grid-cols-[1fr_170px_170px_180px] gap-2">
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input value={labSearch} onChange={e => setLabSearch(e.target.value)} placeholder="Search experiments, topics, or labels" className="input text-sm pl-9" />
+                <input
+                  value={labSearch}
+                  onChange={e => { setLabSearch(e.target.value); setShowLabSearchSuggestions(true); }}
+                  onFocus={() => setShowLabSearchSuggestions(true)}
+                  onBlur={() => window.setTimeout(() => setShowLabSearchSuggestions(false), 120)}
+                  placeholder="Search experiments, topics, or labels"
+                  className="input text-sm pl-9"
+                />
+                {showLabSearchSuggestions && (
+                  <div className="absolute z-30 mt-2 w-full rounded-xl border border-white/10 bg-gray-950 shadow-2xl overflow-hidden">
+                    {labSearchSuggestions.topics.length > 0 && (
+                      <div className="border-b border-white/10 p-2">
+                        <p className="px-1 pb-1 text-[10px] uppercase tracking-widest text-gray-500">Suggested words</p>
+                        <div className="flex flex-wrap gap-1">
+                          {labSearchSuggestions.topics.map(topic => (
+                            <button
+                              type="button"
+                              key={topic}
+                              onMouseDown={e => e.preventDefault()}
+                              onClick={() => { setLabSearch(topic); setShowLabSearchSuggestions(false); }}
+                              className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-gray-300 hover:text-white"
+                            >
+                              {topic}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {labSearchSuggestions.matches.length > 0 ? labSearchSuggestions.matches.map(item => (
+                      <button
+                        type="button"
+                        key={item.id}
+                        onMouseDown={e => e.preventDefault()}
+                        onClick={() => {
+                          setLabSearch(item.title);
+                          setActiveExperimentId(item.id);
+                          setActiveLabTab(item.tab);
+                          setActiveFocusTopic('all');
+                          setShowLabSearchSuggestions(false);
+                        }}
+                        className="w-full px-3 py-2 text-left hover:bg-white/[0.06]"
+                      >
+                        <span className="block text-sm font-semibold text-white">{item.title}</span>
+                        <span className="block text-[11px] text-gray-500">{item.topic} - {item.type} - {item.difficulty}</span>
+                      </button>
+                    )) : (
+                      <div className="px-3 py-3 text-xs text-gray-500">No matching lab suggestion.</div>
+                    )}
+                  </div>
+                )}
               </div>
               <select value={labTypeFilter} onChange={e => setLabTypeFilter(e.target.value)} className="input text-sm">
                 {labTypes.map(type => <option key={type}>{type}</option>)}
@@ -1451,7 +1595,7 @@ export const ChemistryLabPage = () => {
           </LabCard>
 
           <LabCard title="Spectroscopy Viewer">
-            <select value={selectedSymbol} onChange={e => setSelectedSymbol(e.target.value)} className="input text-xs mb-3">{['H', 'He', 'Li', 'Na', 'K', 'Ca', 'Cu'].map(s => <option key={s}>{s}</option>)}</select>
+            <ElementSearchInput value={selectedSymbol} onChange={setSelectedSymbol} allowedSymbols={['H', 'He', 'Li', 'Na', 'K', 'Ca', 'Cu']} className="mb-3" />
             <div className="h-20 rounded-xl bg-gradient-to-r from-violet-700 via-green-500 to-red-600 border border-white/10 relative overflow-hidden">
               {(spectrumLines[selectedSymbol] || [486, 656]).map(nm => <span key={nm} className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_12px_white]" style={{ left: `${((nm - 380) / 370) * 100}%` }} />)}
             </div>
@@ -1485,7 +1629,7 @@ export const ChemistryLabPage = () => {
           </LabCard>
 
           <LabCard title="Flame Test">
-            <select value={flameElement} onChange={e => setFlameElement(e.target.value)} className="input text-xs mb-3">{Object.keys(flameColors).map(s => <option key={s}>{s}</option>)}</select>
+            <ElementSearchInput value={flameElement} onChange={setFlameElement} allowedSymbols={Object.keys(flameColors)} className="mb-3" placeholder="Search available metal ions" />
             <div className="h-28 rounded-xl bg-black border border-white/10 flex items-end justify-center overflow-hidden">
               <div className="w-24 h-24 rounded-t-full blur-sm" style={{ background: flameColors[flameElement], boxShadow: `0 0 40px ${flameColors[flameElement]}` }} />
             </div>
@@ -1625,8 +1769,8 @@ export const ChemistryLabPage = () => {
 
           <LabCard title="Bond Polarity Visualizer">
             <div className="flex gap-2 mb-3">
-              <input value={polarityA} onChange={e => setPolarityA(e.target.value)} className="input text-xs" />
-              <input value={polarityB} onChange={e => setPolarityB(e.target.value)} className="input text-xs" />
+              <ElementSearchInput value={polarityA} onChange={setPolarityA} />
+              <ElementSearchInput value={polarityB} onChange={setPolarityB} />
             </div>
             <svg viewBox="0 0 220 80" className="w-full h-28 rounded-xl bg-black/20 border border-white/10">
               <circle cx="55" cy="40" r="18" fill="#94a3b8" />
