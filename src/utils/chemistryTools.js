@@ -363,13 +363,20 @@ export const lewisAssessment = (symbol) => {
 
 export const vseprFromDomains = (bondedAtoms, lonePairs) => {
   const domains = Number(bondedAtoms) + Number(lonePairs);
+  const lp = Number(lonePairs);
   if (domains === 2) return { shape: 'linear', angle: '180 deg' };
-  if (domains === 3 && lonePairs === 0) return { shape: 'trigonal planar', angle: '120 deg' };
-  if (domains === 3 && lonePairs === 1) return { shape: 'bent', angle: '<120 deg' };
-  if (domains === 4 && lonePairs === 0) return { shape: 'tetrahedral', angle: '109.5 deg' };
-  if (domains === 4 && lonePairs === 1) return { shape: 'pyramidal', angle: '~107 deg' };
-  if (domains === 4 && lonePairs === 2) return { shape: 'bent', angle: '~104.5 deg' };
-  if (domains === 6) return { shape: 'octahedral', angle: '90 deg' };
+  if (domains === 3 && lp === 0) return { shape: 'trigonal planar', angle: '120 deg' };
+  if (domains === 3 && lp === 1) return { shape: 'bent', angle: '<120 deg' };
+  if (domains === 4 && lp === 0) return { shape: 'tetrahedral', angle: '109.5 deg' };
+  if (domains === 4 && lp === 1) return { shape: 'trigonal pyramidal', angle: '~107 deg' };
+  if (domains === 4 && lp === 2) return { shape: 'bent', angle: '~104.5 deg' };
+  if (domains === 5 && lp === 0) return { shape: 'trigonal bipyramidal', angle: '90/120 deg' };
+  if (domains === 5 && lp === 1) return { shape: 'seesaw', angle: '~173/102 deg' };
+  if (domains === 5 && lp === 2) return { shape: 'T-shaped', angle: '~87.5 deg' };
+  if (domains === 5 && lp === 3) return { shape: 'linear', angle: '180 deg' };
+  if (domains === 6 && lp === 0) return { shape: 'octahedral', angle: '90 deg' };
+  if (domains === 6 && lp === 1) return { shape: 'square pyramidal', angle: '~87 deg' };
+  if (domains === 6 && lp === 2) return { shape: 'square planar', angle: '90 deg' };
   return { shape: 'expanded/other', angle: 'depends on domains' };
 };
 

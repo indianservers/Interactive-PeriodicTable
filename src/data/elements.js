@@ -323,10 +323,10 @@ const baseElements = [
     atomicNumber: 33, symbol: "As", name: "Arsenic", atomicMass: 74.922,
     category: "metalloid", group: 15, period: 4, block: "p",
     xpos: 15, ypos: 4, electronConfiguration: "[Ar] 3d¹⁰ 4s² 4p³", shells: [2, 8, 18, 5],
-    phase: "Solid", density: 5.776, meltingPoint: 1090, boilingPoint: 887,
+    phase: "Solid", density: 5.776, meltingPoint: null, boilingPoint: 887,
     electronegativity: 2.18, ionizationEnergy: 947, atomicRadius: 114,
     discoveredBy: "Albertus Magnus", yearDiscovered: 1250,
-    summary: "Arsenic is a metalloid with both metallic and nonmetallic properties. It is highly toxic.",
+    summary: "Arsenic is a metalloid with both metallic and nonmetallic properties. It sublimes at 887 K (614 °C) at 1 atm rather than melting; a liquid phase exists only under high pressure (~36 atm). It is highly toxic.",
     commonUses: ["Wood preservatives", "Semiconductors", "Pesticides", "Glass production"]
   },
   {
@@ -605,7 +605,7 @@ const baseElements = [
     xpos: 7, ypos: 9, electronConfiguration: "[Xe] 4f⁵ 6s²", shells: [2, 8, 18, 23, 8, 2],
     phase: "Solid", density: 7.26, meltingPoint: 1315, boilingPoint: 3273,
     electronegativity: 1.13, ionizationEnergy: 540, atomicRadius: 183,
-    discoveredBy: "Chien Shiung Wu", yearDiscovered: 1945,
+    discoveredBy: "Jacob A. Marinsky, Lawrence E. Glendenin, Charles D. Coryell", yearDiscovered: 1945,
     summary: "Promethium is a radioactive lanthanide that does not occur in nature in significant quantities.",
     commonUses: ["Nuclear batteries", "Luminous paint", "Research", "X-ray sources"]
   },
@@ -745,7 +745,7 @@ const baseElements = [
     xpos: 7, ypos: 6, electronConfiguration: "[Xe] 4f¹⁴ 5d⁵ 6s²", shells: [2, 8, 18, 32, 13, 2],
     phase: "Solid", density: 21.02, meltingPoint: 3459, boilingPoint: 5869,
     electronegativity: 1.9, ionizationEnergy: 760, atomicRadius: 188,
-    discoveredBy: "Masataka Ogawa", yearDiscovered: 1925,
+    discoveredBy: "Walter Noddack, Ida Tacke, Otto Berg", yearDiscovered: 1925,
     summary: "Rhenium is one of the rarest elements in Earth's crust with one of the highest melting points.",
     commonUses: ["Jet engine components", "Catalysts", "Electrical contacts", "Thermocouples"]
   },
@@ -905,7 +905,7 @@ const baseElements = [
     xpos: 5, ypos: 10, electronConfiguration: "[Rn] 5f² 6d¹ 7s²", shells: [2, 8, 18, 32, 20, 9, 2],
     phase: "Solid", density: 15.37, meltingPoint: 1841, boilingPoint: 4300,
     electronegativity: 1.5, ionizationEnergy: 568, atomicRadius: null,
-    discoveredBy: "William Crookes", yearDiscovered: 1913,
+    discoveredBy: "Kasimir Fajans, Otto H. Göhring", yearDiscovered: 1913,
     summary: "Protactinium is a dense radioactive actinide metal that is highly toxic.",
     commonUses: ["Research", "Nuclear science"]
   },
