@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, CalendarDays, Flame, HelpCircle, Layers, Trophy } from 'lucide-react';
 import { QuizMode } from '../components/quiz/QuizMode.jsx';
 import { elements } from '../data/elements.js';
@@ -6,10 +6,34 @@ import { useLocalStorage } from '../hooks/useLocalStorage.js';
 
 const todayIndex = () => Math.floor(Date.now() / 86400000) % elements.length;
 
+const countdownToTomorrow = () => {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setHours(24, 0, 0, 0);
+  const ms = Math.max(0, tomorrow - now);
+  const hours = String(Math.floor(ms / 3600000)).padStart(2, '0');
+  const minutes = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
+  const seconds = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+};
+
 const Flashcards = () => {
   const [index, setIndex] = useState(todayIndex());
   const [flipped, setFlipped] = useState(false);
   const el = elements[index];
+  const previous = () => { setIndex((index + elements.length - 1) % elements.length); setFlipped(false); };
+  const next = () => { setIndex((index + 1) % elements.length); setFlipped(false); };
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      const tag = event.target?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      if (event.key === ' ') { event.preventDefault(); setFlipped(f => !f); }
+      if (event.key === 'ArrowLeft') previous();
+      if (event.key === 'ArrowRight') next();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [index]);
   return (
     <div className="glass rounded-2xl p-5 text-center">
       <button onClick={() => setFlipped(f => !f)} className="w-full min-h-56 rounded-2xl bg-white/[0.05] border border-white/10 flex flex-col items-center justify-center">
@@ -18,8 +42,13 @@ const Flashcards = () => {
         <p className="text-sm text-gray-500 mt-3">{flipped ? `#${el.atomicNumber} · ${el.category}` : 'Tap to reveal'}</p>
       </button>
       <div className="flex gap-2 mt-4">
-        <button onClick={() => { setIndex((index + elements.length - 1) % elements.length); setFlipped(false); }} className="btn-secondary flex-1">Previous</button>
-        <button onClick={() => { setIndex((index + 1) % elements.length); setFlipped(false); }} className="btn-primary flex-1">Next</button>
+        <button onClick={previous} className="btn-secondary flex-1">Previous</button>
+        <button onClick={next} className="btn-primary flex-1">Next</button>
+      </div>
+      <div className="mt-4 flex flex-wrap justify-center gap-2 text-[10px] text-gray-500">
+        <span className="rounded-lg border border-white/10 px-2 py-1">Space flip</span>
+        <span className="rounded-lg border border-white/10 px-2 py-1">Left previous</span>
+        <span className="rounded-lg border border-white/10 px-2 py-1">Right next</span>
       </div>
     </div>
   );
@@ -48,8 +77,14 @@ const GuessElement = () => {
 
 const DailyChallenge = () => {
   const el = elements[todayIndex()];
+  const [countdown, setCountdown] = useState(countdownToTomorrow());
+  useEffect(() => {
+    const id = window.setInterval(() => setCountdown(countdownToTomorrow()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
   return (
     <div className="glass rounded-2xl p-5">
+      <p className="mb-3 text-center font-mono text-xs text-gray-500">Next daily element in {countdown}</p>
       <div className="flex items-center gap-3">
         <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-2xl font-black text-white">{el.symbol}</div>
         <div>
@@ -70,6 +105,7 @@ export const QuizPage = () => {
   const [mode, setMode] = useState('quiz');
   const [level, setLevel] = useState('beginner');
   const [streak] = useLocalStorage('cu-quiz-streak', { count: 0, best: 0, lastDate: null });
+  const [quizHistory] = useLocalStorage('cu-quiz-history', []);
 
   const tabs = [
     ['quiz', 'Quiz', BookOpen],
@@ -89,9 +125,18 @@ export const QuizPage = () => {
             </div>
             <p className="text-sm text-gray-400 mt-1">Levels, daily challenge, streaks, flashcards, and guess-the-element practice.</p>
           </div>
-          <div className="flex items-center gap-2 rounded-xl bg-white/[0.05] border border-white/10 px-3 py-2">
-            <Flame size={16} className="text-orange-300" />
-            <span className="text-sm text-gray-300">Streak {streak.count} · Best {streak.best}</span>
+          <div className="rounded-xl bg-white/[0.05] border border-white/10 px-3 py-2">
+            <div className="flex items-center gap-2">
+              <Flame size={16} className="text-orange-300" />
+              <span className="text-sm text-gray-300">Streak {streak.count} - Best {streak.best}</span>
+            </div>
+            <div className="mt-2 grid grid-cols-12 gap-1">
+              {Array.from({ length: 84 }, (_, i) => {
+                const date = new Date(Date.now() - (83 - i) * 86400000).toISOString().slice(0, 10);
+                const practiced = quizHistory.some(h => h.date?.slice(0, 10) === date);
+                return <span key={date} className={`h-2 w-2 rounded-sm ${practiced ? 'bg-emerald-400' : 'bg-white/10'}`} title={date} />;
+              })}
+            </div>
           </div>
         </div>
       </div>

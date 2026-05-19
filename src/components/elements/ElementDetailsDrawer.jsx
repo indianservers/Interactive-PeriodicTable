@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { X, Heart, Atom, GitCompare, Info, ZoomIn, RadioTower, Download, Pin } from 'lucide-react';
 import { getCategoryInfo } from '../../data/categories.js';
 import { getPhaseBadge } from '../../utils/colorScales.js';
 import { ElementProperties } from './ElementProperties.jsx';
 import { ElectronShellDiagram } from '../visualizers/ElectronShellDiagram.jsx';
 import { likelyIsotopes } from '../../utils/chemistryTools.js';
+import { elements } from '../../data/elements.js';
+import { useLocalStorage } from '../../hooks/useLocalStorage.js';
 
 const abundanceValue = (abundance = '') => {
   const parsed = Number(String(abundance).replace(/[^\d.]/g, ''));
@@ -106,22 +108,41 @@ export const ElementDetailsDrawer = ({
   isFavorite,
   onViewAtom,
   onCompare,
+  onSelectElement,
   onPinToggle,
   isPinned,
   reducedMotion,
 }) => {
   const [showAtomZoom, setShowAtomZoom] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [recentElements, setRecentElements] = useLocalStorage('cu-recent-elements', []);
   if (!element) return null;
   const catInfo = getCategoryInfo(element.category);
   const phase = getPhaseBadge(element.phase);
   const shellRows = element.shells?.map((count, index) => ({ shell: index + 1, electrons: count })) || [];
   const isotopes = likelyIsotopes(element);
+  const neighbors = useMemo(() => {
+    const byGroup = elements.filter(el => el.group === element.group && el.atomicNumber !== element.atomicNumber);
+    const above = byGroup.filter(el => el.period < element.period).sort((a, b) => b.period - a.period)[0];
+    const below = byGroup.filter(el => el.period > element.period).sort((a, b) => a.period - b.period)[0];
+    const left = elements.find(el => el.period === element.period && el.xpos === element.xpos - 1);
+    const right = elements.find(el => el.period === element.period && el.xpos === element.xpos + 1);
+    return [
+      ['Above', above],
+      ['Left', left],
+      ['Right', right],
+      ['Below', below],
+    ].filter(([, el]) => el);
+  }, [element]);
+
+  useEffect(() => {
+    setRecentElements(items => [element, ...items.filter(item => item.atomicNumber !== element.atomicNumber)].slice(0, 4));
+  }, [element, setRecentElements]);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-start justify-between p-5 border-b border-white/10" style={{ borderColor: `${catInfo.color}30` }}>
+      <div className="sticky top-0 z-30 flex items-start justify-between p-5 border-b border-white/10 bg-gray-950/95 backdrop-blur-xl" style={{ borderColor: `${catInfo.color}30` }}>
         <div className="flex items-center gap-4">
           <div
             className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black border"
@@ -147,6 +168,19 @@ export const ElementDetailsDrawer = ({
 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto scrollbar-thin">
+        {recentElements.filter(item => item.atomicNumber !== element.atomicNumber).length > 0 && (
+          <div className="flex gap-2 overflow-x-auto px-5 py-3 scrollbar-thin border-b border-white/5">
+            {recentElements.filter(item => item.atomicNumber !== element.atomicNumber).slice(0, 4).map(item => {
+              const cat = getCategoryInfo(item.category);
+              return (
+                <button key={item.atomicNumber} onClick={() => onSelectElement?.(item)} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-gray-300 hover:text-white">
+                  <span className="font-black" style={{ color: cat.color }}>{item.symbol}</span>
+                  {item.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
         {/* Atom diagram */}
         <div className="flex justify-center py-4 px-4 bg-white/[0.02]">
           <div className="relative w-48 h-48">
@@ -313,6 +347,28 @@ export const ElementDetailsDrawer = ({
                   {use}
                 </span>
               ))}
+            </div>
+          </div>
+        )}
+        {neighbors.length > 0 && (
+          <div className="px-5 pb-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Neighbors in the Table</p>
+            <div className="grid grid-cols-2 gap-2">
+              {neighbors.map(([label, item]) => {
+                const cat = getCategoryInfo(item.category);
+                return (
+                  <button key={`${label}-${item.atomicNumber}`} onClick={() => onSelectElement?.(item)} className="rounded-xl border border-white/10 bg-white/[0.04] p-2 text-left hover:bg-white/[0.07]">
+                    <span className="block text-[10px] uppercase tracking-widest text-gray-500">{label}</span>
+                    <span className="mt-1 flex items-center gap-2">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-lg border font-black" style={{ color: cat.color, borderColor: `${cat.color}55`, background: `${cat.color}18` }}>{item.symbol}</span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-xs font-bold text-white">{item.name}</span>
+                        <span className="block text-[10px] text-gray-500">#{item.atomicNumber}</span>
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

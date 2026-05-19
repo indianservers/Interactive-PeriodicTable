@@ -9,9 +9,10 @@ import { TrendHeatmap, TrendExplanationCard } from '../components/visualizers/Tr
 import { useElements } from '../hooks/useElements.js';
 import { useElementFilters } from '../hooks/useElementFilters.js';
 import { useLocalStorage } from '../hooks/useLocalStorage.js';
+import { getCategoryInfo } from '../data/categories.js';
 
 export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onCompare, reducedMotion }) => {
-  const { elements } = useElements();
+  const { elements, dailyElement } = useElements();
   const { filters, filtered, setSearch, setCategory, setPhase, setBlock, reset, hasActiveFilters } = useElementFilters(elements);
   const [selectedElement, setSelectedElement] = useState(null);
   const [compact, setCompact] = useLocalStorage('cu-compact', false);
@@ -20,11 +21,45 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [hoveredElement, setHoveredElement] = useState(null);
   const [pinnedElements, setPinnedElements] = useLocalStorage('cu-pinned-compare', []);
+  const [selectedElements, setSelectedElements] = useState([]);
+  const [lastSelected, setLastSelected] = useState(null);
+  const [jumpValue, setJumpValue] = useState('');
+  const [activeSyllabusTrack, setActiveSyllabusTrack] = useLocalStorage('cu-active-syllabus-track', 'off');
 
-  const handleSelectElement = useCallback((el) => {
+  const handleSelectElement = useCallback((el, event) => {
+    if (event?.shiftKey && lastSelected) {
+      const samePeriod = lastSelected.period === el.period;
+      const range = elements.filter(item => {
+        if (samePeriod) {
+          const min = Math.min(lastSelected.xpos ?? 0, el.xpos ?? 0);
+          const max = Math.max(lastSelected.xpos ?? 0, el.xpos ?? 0);
+          return item.period === el.period && (item.xpos ?? 0) >= min && (item.xpos ?? 0) <= max;
+        }
+        const min = Math.min(lastSelected.atomicNumber, el.atomicNumber);
+        const max = Math.max(lastSelected.atomicNumber, el.atomicNumber);
+        return item.atomicNumber >= min && item.atomicNumber <= max;
+      });
+      setSelectedElements(range);
+    } else {
+      setSelectedElements([el]);
+    }
+    setLastSelected(el);
     setSelectedElement(el);
     setDrawerOpen(true);
-  }, []);
+  }, [elements, lastSelected]);
+
+  const jumpToElement = useCallback(() => {
+    const atomicNumber = Number(jumpValue);
+    const target = elements.find(el => el.atomicNumber === atomicNumber);
+    if (!target) return;
+    setHoveredElement(target);
+    handleSelectElement(target);
+    requestAnimationFrame(() => {
+      const tile = document.querySelector(`[data-atomic-number="${atomicNumber}"]`);
+      tile?.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+      tile?.focus();
+    });
+  }, [elements, handleSelectElement, jumpValue]);
 
   const handleClose = () => {
     setDrawerOpen(false);
@@ -55,7 +90,6 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
   return (
     <div className="flex flex-col h-full periodic-page">
       <div className="flex flex-col lg:flex-row gap-0 flex-1 min-h-0">
-        {/* Main table area */}
         <div className="flex-1 p-4 space-y-4 overflow-auto scrollbar-thin min-w-0">
           <div className="periodic-hero rounded-2xl border border-white/10 p-4 overflow-hidden">
             <div className="flex flex-col xl:flex-row xl:items-center gap-4">
@@ -65,7 +99,7 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
                   <h2 className="text-xl font-black tracking-tight">Periodic Table</h2>
                 </div>
                 <p className="text-sm text-gray-400 mt-1 max-w-3xl">
-                  Explore elements by family, phase, block, and trends. Hover to preview, click to inspect, then jump into atom view or compare elements.
+                  Explore elements by family, phase, block, and trends. Hover a tile for an inline card, click to inspect, or shift-click two tiles to compare a range.
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -99,38 +133,35 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
                     <Zap size={14} className="text-amber-300" />
                     Trend Mode
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-1">Turn on trend colors to see atomic radius, electronegativity, and energy patterns.</p>
+                  <p className="text-[11px] text-gray-500 mt-1">Trend colors fade smoothly across tiles so patterns read like a heatmap.</p>
                 </div>
                 <div className="rounded-xl bg-black/15 border border-white/10 p-3">
                   <div className="flex items-center gap-2 text-xs font-semibold text-gray-300">
                     <MousePointer2 size={14} className="text-violet-300" />
                     Interactive
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-1">Hover previews an element; click opens deeper properties and actions.</p>
+                  <p className="text-[11px] text-gray-500 mt-1">Shift-click creates a comparison strip without losing your place in the table.</p>
                 </div>
               </div>
 
               <div className="rounded-xl bg-white/[0.055] border border-white/10 p-3 min-h-24">
-                <div className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Live Preview</div>
-                {hoveredElement ? (
-                  <div className="mt-2 flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl border border-white/15 bg-white/10 flex items-center justify-center text-xl font-black text-white">
-                      {hoveredElement.symbol}
+                <div className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Element of the Day</div>
+                {dailyElement && (
+                  <button onClick={() => handleSelectElement(dailyElement)} className="mt-2 flex w-full items-center gap-3 rounded-xl p-1 text-left hover:bg-white/[0.05]">
+                    <div className="w-12 h-12 rounded-xl border border-yellow-300/30 bg-yellow-300/10 flex items-center justify-center text-xl font-black text-yellow-100">
+                      {dailyElement.symbol}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-sm font-bold text-white truncate">{hoveredElement.name}</div>
-                      <div className="text-xs text-gray-500 truncate">{hoveredElement.category} · Period {hoveredElement.period} · {hoveredElement.block}-block</div>
-                      <div className="text-[11px] text-gray-400 mt-1">Atomic mass: {typeof hoveredElement.atomicMass === 'number' ? hoveredElement.atomicMass.toFixed(3) : 'Unknown'}</div>
+                      <div className="text-sm font-bold text-white truncate">{dailyElement.name}</div>
+                      <div className="text-xs text-gray-500 truncate">Highlighted directly on the table</div>
+                      <div className="text-[11px] text-gray-400 mt-1">#{dailyElement.atomicNumber} - {dailyElement.category}</div>
                     </div>
-                  </div>
-                ) : (
-                  <p className="text-xs text-gray-500 mt-3">Hover any tile to preview its family, period, block, and mass.</p>
+                  </button>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Controls row */}
           <div className="flex flex-wrap items-start gap-3 justify-between glass rounded-2xl p-3">
             <FilterBar
               filters={filters}
@@ -146,10 +177,14 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
               onToggleCompact={setCompact}
               trendMode={trendMode}
               onToggleTrend={() => setTrendMode(m => !m)}
+              jumpValue={jumpValue}
+              onJumpValueChange={setJumpValue}
+              onJump={jumpToElement}
+              activeSyllabusTrack={activeSyllabusTrack}
+              onSyllabusTrackChange={setActiveSyllabusTrack}
             />
           </div>
 
-          {/* Trend controls */}
           {trendMode && (
             <div className="space-y-2">
               <TrendHeatmap activeTrend={activeTrend} onTrendChange={setActiveTrend} />
@@ -157,30 +192,29 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
             </div>
           )}
 
-          {/* Category legend */}
           <CategoryLegend onFilterCategory={setCategory} activeCategory={filters.category} />
 
-          {/* Table */}
           <PeriodicTable
             filteredElements={filtered}
             selectedElement={selectedElement}
+            selectedElements={selectedElements}
             onSelectElement={handleSelectElement}
             compact={compact}
             trendMode={trendMode}
             activeTrend={activeTrend}
             hoveredElement={hoveredElement}
             onHoverElement={setHoveredElement}
+            dailyElementNumber={dailyElement?.atomicNumber}
+            activeSyllabusTrack={activeSyllabusTrack}
           />
 
           <p className="text-[10px] text-gray-600 text-center">
-            Showing {filtered.length} of 118 elements · Click any tile to view details
+            Showing {filtered.length} of 118 elements - Click any tile to view details
           </p>
         </div>
 
-        {/* Details drawer (desktop: right panel, tablet/mobile: modal) */}
         {drawerOpen && selectedElement && (
           <>
-            {/* Desktop side panel */}
             <div className="hidden lg:flex w-80 xl:w-96 border-l border-white/10 flex-shrink-0 h-full overflow-hidden drawer-slide-in">
               <div className="w-full">
                 <ElementDetailsDrawer
@@ -192,12 +226,12 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
                   isPinned={pinnedElements.some(item => item.atomicNumber === selectedElement.atomicNumber)}
                   onViewAtom={el => { onViewAtom(el); handleClose(); }}
                   onCompare={el => { onCompare(el); handleClose(); }}
+                  onSelectElement={handleSelectElement}
                   reducedMotion={reducedMotion}
                 />
               </div>
             </div>
 
-            {/* Mobile/tablet modal */}
             <div className="lg:hidden fixed inset-0 z-50 flex items-end">
               <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
               <div className="relative w-full bg-gray-900 rounded-t-3xl border-t border-white/10 max-h-[85vh] overflow-hidden drawer-slide-up">
@@ -211,6 +245,7 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
                   isPinned={pinnedElements.some(item => item.atomicNumber === selectedElement.atomicNumber)}
                   onViewAtom={el => { onViewAtom(el); handleClose(); }}
                   onCompare={el => { onCompare(el); handleClose(); }}
+                  onSelectElement={handleSelectElement}
                   reducedMotion={reducedMotion}
                 />
               </div>
@@ -218,6 +253,30 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
           </>
         )}
       </div>
+
+      {selectedElements.length > 1 && (
+        <div className="sticky bottom-0 z-30 border-t border-white/10 bg-gray-950/94 backdrop-blur-xl p-3">
+          <div className="mx-auto flex max-w-6xl items-center gap-3 overflow-x-auto scrollbar-thin">
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Selected {selectedElements.length}</span>
+            {selectedElements.map(el => {
+              const cat = getCategoryInfo(el.category);
+              return (
+                <button key={el.atomicNumber} onClick={() => handleSelectElement(el)} className="flex min-w-32 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-left">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border font-black" style={{ color: cat.color, borderColor: `${cat.color}55`, background: `${cat.color}18` }}>{el.symbol}</span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-xs font-bold text-white">{el.name}</span>
+                    <span className="block text-[10px] text-gray-500">EN {el.electronegativity ?? 'n/a'}</span>
+                  </span>
+                </button>
+              );
+            })}
+            <button onClick={() => setSelectedElements(selectedElement ? [selectedElement] : [])} className="ml-auto rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-gray-400 hover:text-white">
+              Clear range
+            </button>
+          </div>
+        </div>
+      )}
+
       {pinnedElements.length > 0 && (
         <div className="sticky bottom-0 z-30 border-t border-white/10 bg-gray-950/94 backdrop-blur-xl p-3">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_220px] gap-3 items-center">

@@ -1,7 +1,7 @@
-import { LayoutGrid, List, Layers } from 'lucide-react';
+import { Hash, LayoutGrid, List, Layers } from 'lucide-react';
 
-export const TableControls = ({ compact, onToggleCompact, trendMode, onToggleTrend }) => (
-  <div className="flex items-center gap-2">
+export const TableControls = ({ compact, onToggleCompact, trendMode, onToggleTrend, jumpValue = '', onJumpValueChange, onJump, activeSyllabusTrack = 'off', onSyllabusTrackChange }) => (
+  <div className="flex flex-wrap items-center gap-2">
     <div className="flex items-center gap-1 glass rounded-xl p-1">
       <button
         onClick={() => onToggleCompact(false)}
@@ -32,6 +32,36 @@ export const TableControls = ({ compact, onToggleCompact, trendMode, onToggleTre
       <Layers size={14} />
       Trend Colors
     </button>
+    <label className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs text-gray-400">
+      <Hash size={13} />
+      <input
+        value={jumpValue}
+        onChange={event => onJumpValueChange?.(event.target.value.replace(/\D/g, '').slice(0, 3))}
+        onKeyDown={event => {
+          if (event.key === 'Enter') onJump?.();
+        }}
+        className="w-12 bg-transparent text-sm font-semibold text-gray-100 outline-none placeholder:text-gray-600"
+        placeholder="79"
+        inputMode="numeric"
+        aria-label="Jump to atomic number"
+      />
+      <button onClick={onJump} className="rounded-lg bg-white/10 px-2 py-1 text-[10px] font-bold text-gray-200 hover:bg-white/15">
+        Jump
+      </button>
+    </label>
+    <select
+      value={activeSyllabusTrack}
+      onChange={event => onSyllabusTrackChange?.(event.target.value)}
+      className="input h-9 w-36 rounded-xl py-1.5 text-xs"
+      aria-label="Syllabus progress overlay"
+    >
+      <option value="off">Syllabus off</option>
+      <option value="class10">Class 10</option>
+      <option value="class11">Class 11</option>
+      <option value="class12">Class 12</option>
+      <option value="neet">NEET</option>
+      <option value="jeeMain">JEE Main</option>
+    </select>
   </div>
 );
 export default TableControls;

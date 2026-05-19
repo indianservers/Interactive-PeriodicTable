@@ -5,6 +5,7 @@ import { elements } from '../../data/elements.js';
 import { ALL_MOLECULES } from '../../data/molecules.js';
 import { labToolCatalog } from '../../data/syllabus.js';
 import { navGroups } from './Sidebar.jsx';
+import { getCategoryInfo } from '../../data/categories.js';
 
 const pageIcons = {
   dashboard: '⬡',
@@ -65,6 +66,7 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
   const breadcrumbs = parentCrumbs[currentPage] || [{ id: 'dashboard', label: 'Dashboard' }];
   const [searchOpen, setSearchOpen] = useState(false);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [copied, setCopied] = useState(false);
   const activeTitle = titles[currentPage] || 'Chemistry Universe';
@@ -90,11 +92,16 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
 
   useEffect(() => {
     const onKeyDown = (event) => {
-      if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
       const tag = event.target?.tagName?.toLowerCase();
       if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-      event.preventDefault();
-      setSearchOpen(true);
+      if (event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+      if (event.key === '?' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault();
+        setShortcutsOpen(true);
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -238,13 +245,23 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
               />
             </div>
             <div className="max-h-[60vh] overflow-y-auto p-2">
-              {suggestions.length > 0 ? suggestions.map((item, index) => (
+              {suggestions.length > 0 ? suggestions.map((item, index) => {
+                const cat = item.element ? getCategoryInfo(item.element.category) : null;
+                return (
                 <button key={`${item.type}-${item.label}-${index}`} onClick={() => chooseSuggestion(item)} className="w-full rounded-xl px-3 py-2 text-left hover:bg-white/[0.06]">
-                  <span className="text-xs font-semibold text-cyan-300">{item.type}</span>
-                  <span className="ml-2 text-sm font-bold text-white">{item.label}</span>
-                  <span className="block text-xs text-gray-500">{item.detail}</span>
+                  <span className="flex items-center gap-3">
+                    {item.element ? (
+                      <span className="flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-black" style={{ color: cat.color, borderColor: `${cat.color}55`, background: `${cat.color}18` }}>{item.element.symbol}</span>
+                    ) : (
+                      <span className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] font-bold text-cyan-200">{item.type === 'Tool' ? 'Lab Tool' : item.type}</span>
+                    )}
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold text-white">{item.label}</span>
+                      <span className="block text-xs text-gray-500">{item.detail}</span>
+                    </span>
+                  </span>
                 </button>
-              )) : (
+              );}) : (
                 <div className="p-6 text-center text-sm text-gray-500">No results yet. Try CFT, Oxygen, H2O, or Periodic Table.</div>
               )}
             </div>
@@ -254,6 +271,32 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
                 {recentPages.length > 0 && <p className="mt-1">Recent: {recentPages.map(id => titles[id] || id).join(', ')}</p>}
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {shortcutsOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/60 p-4 backdrop-blur-sm" onMouseDown={() => setShortcutsOpen(false)}>
+          <div className="mx-auto mt-20 max-w-md rounded-2xl border border-white/10 bg-gray-950 p-5 shadow-2xl" onMouseDown={event => event.stopPropagation()}>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-lg font-black text-white">Keyboard Shortcuts</h3>
+              <button onClick={() => setShortcutsOpen(false)} className="btn-secondary text-xs">Close</button>
+            </div>
+            <div className="mt-4 space-y-2 text-sm">
+              {[
+                ['/', 'Open global search'],
+                ['?', 'Show this shortcut panel'],
+                ['Arrow keys', 'Move across periodic table tiles'],
+                ['Enter', 'Open focused element'],
+                ['Shift-click', 'Select an element range'],
+                ['Space', 'Flip flashcard'],
+                ['Left / Right', 'Previous or next flashcard'],
+              ].map(([key, desc]) => (
+                <div key={key} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2">
+                  <span className="font-mono text-cyan-200">{key}</span>
+                  <span className="text-gray-300">{desc}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

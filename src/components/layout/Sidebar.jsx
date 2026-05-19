@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   LayoutDashboard, Table2, TrendingUp, GitCompare,
   Atom, Box, BookOpen, Heart, Settings, X, FlaskConical, GraduationCap,
-  ChevronDown, Trophy, Scale, Search, Clock,
+  ChevronDown, Trophy, Scale, Search, Clock, PanelLeftClose, PanelLeftOpen,
 } from 'lucide-react';
 
 export const navGroups = [
@@ -42,7 +42,7 @@ const bottomItems = [
 const updatedPages = new Set(['lab', 'balancer', 'study-tools']);
 const pageLabelMap = Object.fromEntries(navGroups.flatMap(group => group.items.map(item => [item.id, item])));
 
-export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePages = [], recentPages = [] }) => {
+export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePages = [], recentPages = [], mini = false, onMiniToggle }) => {
   const [labOpen, setLabOpen] = useState(false);
   const [menuSearch, setMenuSearch] = useState('');
   const [openGroups, setOpenGroups] = useState(() => Object.fromEntries(navGroups.map(group => [group.label, true])));
@@ -61,7 +61,7 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
       )}
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-full w-60 flex flex-col
+          fixed top-0 left-0 z-50 h-full ${mini ? 'w-12 sidebar-mini' : 'w-60'} flex flex-col
           transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 lg:static lg:z-auto
@@ -89,6 +89,9 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
         </div>
 
         <div className="px-3 pt-3">
+          <button onClick={onMiniToggle} className="mb-2 hidden w-full items-center justify-center rounded-xl border border-white/10 p-2 text-gray-500 hover:text-gray-200 lg:flex" title={mini ? 'Expand sidebar' : 'Collapse sidebar'}>
+            {mini ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+          </button>
           <div className="relative">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" />
             <input

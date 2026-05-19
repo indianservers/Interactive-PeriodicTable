@@ -13,6 +13,18 @@ const levelSettings = {
 
 const dayKey = () => new Date().toISOString().slice(0, 10);
 
+const explainQuestion = (q, selected) => {
+  const el = q.element;
+  if (!el) return `The correct answer is ${q.answer}.`;
+  if (q.question.includes('symbol')) return `${el.symbol} is the standard chemical symbol for ${el.name}.`;
+  if (q.question.includes('chemical symbol')) return `${el.name} is represented by ${el.symbol} on the periodic table.`;
+  if (q.question.includes('category')) return `${el.name} is classified as a ${el.category} based on its position and properties.`;
+  if (q.question.includes('atomic number')) return `Atomic number counts protons; ${el.name} has ${el.atomicNumber} protons.`;
+  if (q.question.includes('shell distribution')) return `${el.name}'s electrons fill shells as [${el.shells?.join(', ')}].`;
+  if (q.question.includes('higher')) return `${q.context || ''} The larger listed value determines the correct choice.`;
+  return selected === q.answer ? `Correct: ${q.answer} matches ${el.name}.` : `The correct answer is ${q.answer}.`;
+};
+
 export const QuizMode = ({ level = 'beginner' }) => {
   const settings = levelSettings[level] || levelSettings.beginner;
   const [bestScore, setBestScore] = useLocalStorage('cu-quiz-best', 0);
@@ -67,7 +79,7 @@ export const QuizMode = ({ level = 'beginner' }) => {
         const nextCount = s.lastDate === today ? s.count : s.lastDate === yesterday ? s.count + 1 : 1;
         return { count: nextCount, best: Math.max(s.best || 0, nextCount), lastDate: today };
       });
-      setQuizHistory(h => [{ score: finalScore, date: new Date().toISOString(), total: quiz.length, level: settings.label }, ...h].slice(0, 10));
+      setQuizHistory(h => [{ score: finalScore, date: new Date().toISOString(), total: quiz.length, level: settings.label, type: selectedType }, ...h].slice(0, 40));
       setFinished(true);
     } else {
       setCurrentQ(q => q + 1);
@@ -116,6 +128,26 @@ export const QuizMode = ({ level = 'beginner' }) => {
               <option key={t.id} value={t.id}>{t.label}</option>
             ))}
           </select>
+          <div className="mb-4 grid grid-cols-2 gap-2">
+            {quizTypes.map(type => {
+              const attempts = quizHistory.filter(h => h.type === type.id);
+              const best = attempts.length ? Math.max(...attempts.map(h => Math.round((h.score / h.total) * 100))) : 0;
+              return (
+                <button key={type.id} onClick={() => setSelectedType(type.id)} className={`rounded-xl border p-3 text-left ${selectedType === type.id ? 'border-indigo-400/50 bg-indigo-500/15' : 'border-white/10 bg-white/[0.035]'}`}>
+                  <div className="flex items-center gap-2">
+                    <svg viewBox="0 0 36 36" className="h-8 w-8 -rotate-90">
+                      <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="4" />
+                      <circle cx="18" cy="18" r="15" fill="none" stroke="#22d3ee" strokeWidth="4" strokeDasharray={`${best} 100`} pathLength="100" strokeLinecap="round" />
+                    </svg>
+                    <span className="min-w-0">
+                      <span className="block truncate text-xs font-bold text-white">{type.label}</span>
+                      <span className="block text-[10px] text-gray-500">Best {best}%</span>
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
           <button onClick={startQuiz} className="btn-primary w-full py-3 text-base">
             Start {settings.label} Quiz ({settings.count} Questions)
           </button>
@@ -245,6 +277,9 @@ export const QuizMode = ({ level = 'beginner' }) => {
         <div className="flex flex-col gap-2">
           <div className={`text-center text-sm font-medium py-2 rounded-xl ${isCorrect ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'}`}>
             {isCorrect ? '✓ Correct!' : `✗ The answer was: ${q.answer}`}
+          </div>
+          <div className="rounded-xl border border-cyan-400/20 bg-cyan-500/10 px-3 py-2 text-sm text-cyan-50">
+            {explainQuestion(q, selected)}
           </div>
           <button onClick={next} className="btn-primary flex items-center justify-center gap-2">
             {currentQ + 1 < quiz.length ? 'Next Question' : 'See Results'}

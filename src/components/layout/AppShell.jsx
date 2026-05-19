@@ -5,10 +5,25 @@ import { MobileNav } from './MobileNav.jsx';
 
 export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeToggle, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, compact = false, studyMode = false, onStudyModeToggle }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarMini, setSidebarMini] = useState(false);
   const currentYear = new Date().getFullYear();
+  const handleTouchStart = (event) => {
+    const touch = event.touches?.[0];
+    if (touch?.clientX <= 24) window.__cuSwipeStart = { x: touch.clientX, y: touch.clientY };
+  };
+  const handleTouchEnd = (event) => {
+    const start = window.__cuSwipeStart;
+    const touch = event.changedTouches?.[0];
+    window.__cuSwipeStart = null;
+    if (!start || !touch) return;
+    if (touch.clientX - start.x > 70 && Math.abs(touch.clientY - start.y) < 50) {
+      const backPage = recentPages.find(page => page !== currentPage) || 'dashboard';
+      onNavigate?.(backPage);
+    }
+  };
 
   return (
-    <div className={`min-h-screen flex ${isDark ? 'dark' : 'light'}`}>
+    <div className={`min-h-screen flex ${isDark ? 'dark' : 'light'}`} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}
@@ -16,6 +31,8 @@ export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeTog
         onClose={() => setSidebarOpen(false)}
         favoritePages={favoritePages}
         recentPages={recentPages}
+        mini={sidebarMini}
+        onMiniToggle={() => setSidebarMini(v => !v)}
       />
       <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
         <Topbar

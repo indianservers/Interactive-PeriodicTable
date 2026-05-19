@@ -8,15 +8,19 @@ import { trends } from '../../data/trends.js';
 export const PeriodicTable = ({
   filteredElements,
   selectedElement,
+  selectedElements = [],
   onSelectElement,
   compact,
   trendMode,
   activeTrend,
   hoveredElement,
   onHoverElement,
+  dailyElementNumber,
+  activeSyllabusTrack,
 }) => {
   const isFiltered = filteredElements.length < elements.length;
   const filteredSet = useMemo(() => new Set(filteredElements.map(e => e.atomicNumber)), [filteredElements]);
+  const selectedSet = useMemo(() => new Set(selectedElements.map(e => e.atomicNumber)), [selectedElements]);
 
   const { min, max, trendInfo } = useMemo(() => {
     if (!trendMode || !activeTrend) return { min: 0, max: 1, trendInfo: null };
@@ -39,6 +43,17 @@ export const PeriodicTable = ({
   const lanthanides = elements.filter(e => e.atomicNumber >= 57 && e.atomicNumber <= 71);
   const actinides = elements.filter(e => e.atomicNumber >= 89 && e.atomicNumber <= 103);
   const visibleElementSet = useMemo(() => new Set((isFiltered ? filteredElements : elements).map(e => e.atomicNumber)), [filteredElements, isFiltered]);
+  const studiedSet = useMemo(() => {
+    if (!activeSyllabusTrack || activeSyllabusTrack === 'off') return new Set();
+    const included = elements.filter(el => {
+      if (activeSyllabusTrack === 'class10') return el.atomicNumber <= 20 || ['reactive nonmetal', 'alkali metal', 'alkaline earth metal'].includes(el.category);
+      if (activeSyllabusTrack === 'class11') return el.atomicNumber <= 36 || ['alkali metal', 'alkaline earth metal', 'halogen', 'noble gas'].includes(el.category);
+      if (activeSyllabusTrack === 'class12') return ['transition metal', 'lanthanide', 'actinide', 'post-transition metal'].includes(el.category);
+      if (activeSyllabusTrack === 'neet') return el.atomicNumber <= 54 || ['halogen', 'noble gas', 'transition metal'].includes(el.category);
+      return el.atomicNumber <= 86;
+    });
+    return new Set(included.map(el => el.atomicNumber));
+  }, [activeSyllabusTrack]);
   const keyboardGrid = useMemo(() => {
     const rows = new Map();
     elements.forEach(el => {
@@ -90,11 +105,14 @@ export const PeriodicTable = ({
       <div key={el.atomicNumber} className={tileSize}>
         <ElementTile
           element={el}
-          isSelected={selectedElement?.atomicNumber === el.atomicNumber}
+          isSelected={selectedElement?.atomicNumber === el.atomicNumber || selectedSet.has(el.atomicNumber)}
           isHovered={hoveredElement?.atomicNumber === el.atomicNumber}
           isFiltered={!isFiltered || filteredSet.has(el.atomicNumber)}
           compact={compact}
           trendColor={getTrendColor(el)}
+          activeTrend={activeTrend}
+          isDaily={dailyElementNumber === el.atomicNumber}
+          isStudied={studiedSet.has(el.atomicNumber)}
           onClick={onSelectElement}
           onHover={onHoverElement}
           onNavigate={handleKeyboardNavigate}
@@ -105,15 +123,16 @@ export const PeriodicTable = ({
 
   return (
     <div className="overflow-x-auto scrollbar-thin pb-3 rounded-2xl periodic-table-wrap">
-      <div className="inline-block min-w-max p-3">
+      <div className="relative inline-block min-w-max p-3">
+        <div className={`f-block-connector absolute pointer-events-none ${compact ? 'left-[6.25rem] top-[13.1rem] h-[3.1rem] w-[5.6rem]' : 'left-[13.25rem] top-[27rem] h-[5.2rem] w-[10rem]'}`} aria-hidden="true" />
         {/* Group numbers header */}
-        <div className="flex gap-1 mb-1">
-          <div className={`${tileSize} flex items-center justify-center`}>
-            <span className="text-[8px] text-gray-700 font-bold">Per.</span>
+        <div className="sticky top-0 z-20 flex gap-1 mb-1 rounded-xl bg-gray-950/90 py-1 backdrop-blur-xl">
+          <div className={`${tileSize} sticky left-0 z-30 flex items-center justify-center rounded-lg bg-gray-950/95`}>
+            <span className="text-[8px] text-gray-500 font-bold">Period</span>
           </div>
           {Array.from({ length: 18 }, (_, i) => (
             <div key={i} className={`${tileSize} flex items-center justify-center`}>
-              <span className="text-[8px] text-gray-700 font-medium">{i + 1}</span>
+              <span className="text-[8px] text-gray-500 font-semibold">Group {i + 1}</span>
             </div>
           ))}
         </div>
@@ -124,8 +143,8 @@ export const PeriodicTable = ({
           return (
             <div key={y} className="flex gap-1 mb-1">
               {/* Period label */}
-              <div className={`${tileSize} flex items-center justify-center flex-shrink-0`}>
-                <span className="text-[9px] text-gray-600 font-bold">{y}</span>
+              <div className={`${tileSize} sticky left-0 z-20 flex items-center justify-center flex-shrink-0 rounded-lg bg-gray-950/90 backdrop-blur-xl`}>
+                <span className="text-[9px] text-gray-500 font-bold">P{y}</span>
               </div>
               {Array.from({ length: 18 }, (_, colIdx) => renderGridSlot(colIdx + 1, y))}
             </div>
@@ -145,11 +164,14 @@ export const PeriodicTable = ({
             <div key={el.atomicNumber} className={tileSize}>
               <ElementTile
                 element={el}
-                isSelected={selectedElement?.atomicNumber === el.atomicNumber}
+                isSelected={selectedElement?.atomicNumber === el.atomicNumber || selectedSet.has(el.atomicNumber)}
                 isHovered={hoveredElement?.atomicNumber === el.atomicNumber}
                 isFiltered={!isFiltered || filteredSet.has(el.atomicNumber)}
                 compact={compact}
                 trendColor={getTrendColor(el)}
+                activeTrend={activeTrend}
+                isDaily={dailyElementNumber === el.atomicNumber}
+                isStudied={studiedSet.has(el.atomicNumber)}
                 onClick={onSelectElement}
                 onHover={onHoverElement}
                 onNavigate={handleKeyboardNavigate}
@@ -168,11 +190,14 @@ export const PeriodicTable = ({
             <div key={el.atomicNumber} className={tileSize}>
               <ElementTile
                 element={el}
-                isSelected={selectedElement?.atomicNumber === el.atomicNumber}
+                isSelected={selectedElement?.atomicNumber === el.atomicNumber || selectedSet.has(el.atomicNumber)}
                 isHovered={hoveredElement?.atomicNumber === el.atomicNumber}
                 isFiltered={!isFiltered || filteredSet.has(el.atomicNumber)}
                 compact={compact}
                 trendColor={getTrendColor(el)}
+                activeTrend={activeTrend}
+                isDaily={dailyElementNumber === el.atomicNumber}
+                isStudied={studiedSet.has(el.atomicNumber)}
                 onClick={onSelectElement}
                 onHover={onHoverElement}
                 onNavigate={handleKeyboardNavigate}

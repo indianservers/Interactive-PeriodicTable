@@ -85,6 +85,19 @@ function App() {
     }
   };
 
+  const toggleThemeWithReveal = useCallback((event) => {
+    const rect = event?.currentTarget?.getBoundingClientRect?.();
+    const x = rect ? rect.left + rect.width / 2 : window.innerWidth - 32;
+    const y = rect ? rect.top + rect.height / 2 : 32;
+    const reveal = document.createElement('div');
+    reveal.className = 'theme-reveal';
+    reveal.style.left = `${x}px`;
+    reveal.style.top = `${y}px`;
+    document.body.appendChild(reveal);
+    toggleTheme();
+    window.setTimeout(() => reveal.remove(), 340);
+  }, [toggleTheme]);
+
   const commonProps = {
     favorites,
     onFavoriteToggle: handleFavoriteToggle,
@@ -147,7 +160,7 @@ function App() {
         return (
           <SettingsPage
             isDark={isDark}
-            onThemeToggle={toggleTheme}
+            onThemeToggle={toggleThemeWithReveal}
             compact={compact}
             onCompactToggle={() => setCompact(c => !c)}
             reducedMotion={reducedMotion}
@@ -172,7 +185,7 @@ function App() {
         currentPage={currentPage}
         onNavigate={navigate}
         isDark={isDark}
-        onThemeToggle={toggleTheme}
+        onThemeToggle={toggleThemeWithReveal}
         compact={compact}
         studyMode={studyMode}
         onStudyModeToggle={() => setStudyMode(v => !v)}
