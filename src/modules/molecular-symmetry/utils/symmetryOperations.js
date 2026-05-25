@@ -70,9 +70,10 @@ export function compareCoordinates(pointA, pointB, tolerance = 0.15) {
 
 export function transformPoint(point, symmetryElement) {
   if (!symmetryElement) return point;
+  const power = Math.max(1, Number(symmetryElement.power || 1));
   if (symmetryElement.type === 'E') return [...point];
   if (symmetryElement.type === 'Cn') {
-    return rotatePointAroundAxis(point, symmetryElement.axis || [0, 0, 1], (2 * Math.PI) / (symmetryElement.order || 1));
+    return rotatePointAroundAxis(point, symmetryElement.axis || [0, 0, 1], (2 * Math.PI * power) / (symmetryElement.order || 1));
   }
   if (symmetryElement.type === 'sigma') {
     return reflectPointAcrossPlane(point, symmetryElement.planeNormal || [0, 0, 1], symmetryElement.planePoint || [0, 0, 0]);
@@ -81,7 +82,11 @@ export function transformPoint(point, symmetryElement) {
     return invertPoint(point, symmetryElement.center || [0, 0, 0]);
   }
   if (symmetryElement.type === 'Sn') {
-    return applyImproperRotation(point, symmetryElement.axis || [0, 0, 1], symmetryElement.order || 2, symmetryElement.center || [0, 0, 0]);
+    let result = [...point];
+    for (let step = 0; step < power; step += 1) {
+      result = applyImproperRotation(result, symmetryElement.axis || [0, 0, 1], symmetryElement.order || 2, symmetryElement.center || [0, 0, 0]);
+    }
+    return result;
   }
   return [...point];
 }

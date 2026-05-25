@@ -1,0 +1,83 @@
+export const lecturePdfSource = {
+  title: 'Lectures 11 and 12 - Symmetry and Point Groups and Character Tables',
+  url: 'https://www.chem.tamu.edu/rgroup/marcetta/chem362/lectures/Lectures%2011%20%20and%2012%20-%20Symmetry%20and%20Point%20Gps%20and%20Character%20Tables.pdf',
+  pages: 38,
+  contentType: 'application/pdf',
+};
+
+export const lectureCompanionSlides = [
+  {
+    page: 2,
+    title: 'Operations vs elements',
+    summary: 'A symmetry operation makes the final arrangement indistinguishable from the original. A symmetry element is the line, plane, or point used to perform it.',
+    actions: ['Operate an axis Cn', 'Operate a plane sigma', 'Operate a centre i', 'Compare atom mapping'],
+  },
+  {
+    page: 3,
+    title: 'H2O rotation axis',
+    moleculeId: 'water',
+    elementId: 'C2-z',
+    summary: 'The H2O C2 axis lies in the molecular plane and bisects the H-O-H angle. A 180 degree rotation swaps the two hydrogens.',
+    actions: ['Select water', 'Choose C2 principal axis', 'Apply C2^1'],
+  },
+  {
+    page: 4,
+    title: 'BF3 C3 axis',
+    moleculeId: 'bf3',
+    elementId: 'C3-z',
+    summary: 'The BF3 C3 axis is perpendicular to the molecular plane through boron. C3^1 gives 120 degrees, while C3^2 gives 240 degrees.',
+    actions: ['Select BF3', 'Try C3^1', 'Try C3^2'],
+  },
+  {
+    page: 5,
+    title: 'Rotation powers Cn^m',
+    moleculeId: 'bf3',
+    elementId: 'C3-z',
+    summary: 'One Cn axis generates multiple operations: Cn^1, Cn^2, ... Cn^n. The last operation Cn^n is identity E.',
+    actions: ['Change the operation power selector', 'Compare C3^1 and C3^2 mappings', 'Observe C3^3 = E'],
+  },
+  {
+    page: 9,
+    title: 'Even axes generate lower axes',
+    moleculeId: 'xef4',
+    elementId: 'C4-z',
+    summary: 'If a C2n axis is present, a coincident Cn operation is also present. XeF4 demonstrates C4^2 = C2.',
+    actions: ['Select XeF4', 'Apply C4^1', 'Apply C4^2'],
+  },
+  {
+    page: 10,
+    title: 'Several distinct axes',
+    moleculeId: 'bf3',
+    elementId: 'C2-F1',
+    summary: 'BF3 has a principal C3 axis and three C2 axes perpendicular to it, one along each B-F bond.',
+    actions: ['Select BF3', 'Operate C2 along B-F', 'Compare with C3 axis'],
+  },
+  {
+    page: 19,
+    title: 'Consequences of symmetry',
+    summary: 'Symmetry predicts dipole moments, chirality, IR transitions, and orbital overlap.',
+    actions: ['Open Spectroscopy rules', 'Open Chirality panel', 'Open Orbital overlay'],
+  },
+  {
+    page: 24,
+    title: 'Simpler point group assignment',
+    summary: 'Start by looking for an axis of symmetry. If absent, look for a plane of symmetry to identify Cs or inversion for Ci.',
+    actions: ['Use Flowchart Trainer', 'Check axis first', 'Then plane and inversion'],
+  },
+  {
+    page: 26,
+    title: 'Linear molecules',
+    moleculeId: 'co2',
+    elementId: 'C2-x',
+    summary: 'Linear molecules have a C infinity molecular axis and infinitely many planes containing the axis. CO2 is treated here as a finite D2h teaching model for D infinity h.',
+    actions: ['Select CO2', 'Operate molecular axis', 'Locate inversion centre'],
+  },
+  {
+    page: 28,
+    title: 'High symmetry molecules',
+    moleculeId: 'methane',
+    elementId: 'C3-H1',
+    summary: 'Tetrahedral and octahedral molecules can often be identified before going through every ordinary decision-tree step.',
+    actions: ['Select methane', 'Operate C3 axis', 'Operate S4 axis'],
+  },
+];

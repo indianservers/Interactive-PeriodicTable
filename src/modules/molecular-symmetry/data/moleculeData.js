@@ -6,6 +6,7 @@ const CPK = {
   B: { color: '#f59e0b', radius: 0.38 },
   F: { color: '#22c55e', radius: 0.34 },
   Fe: { color: '#f97316', radius: 0.52 },
+  Xe: { color: '#a78bfa', radius: 0.58 },
 };
 
 const atom = (id, element, position) => ({
@@ -162,6 +163,46 @@ export const moleculeLibrary = [
     commonMistakes: [
       'Assigning Oh because the molecule feels highly symmetric.',
       'Looking for a horizontal plane in a tetrahedron.',
+    ],
+  },
+  {
+    id: 'xef4',
+    name: 'Xenon tetrafluoride',
+    formula: 'XeF4',
+    geometry: 'Square planar',
+    pointGroup: 'D4h',
+    difficulty: 'Intermediate',
+    notes: 'Lecture example for a C4 principal axis. Square-planar XeF4 also contains C2 axes, mirror planes, inversion, and improper rotations.',
+    atoms: [
+      atom('Xe', 'Xe', [0, 0, 0]),
+      atom('F1', 'F', [1.45, 0, 0]),
+      atom('F2', 'F', [0, 1.45, 0]),
+      atom('F3', 'F', [-1.45, 0, 0]),
+      atom('F4', 'F', [0, -1.45, 0]),
+    ],
+    bonds: [bond('Xe', 'F1'), bond('Xe', 'F2'), bond('Xe', 'F3'), bond('Xe', 'F4')],
+    symmetryElements: [
+      E,
+      { id: 'C4-z', label: 'C4 principal axis', type: 'Cn', order: 4, axis: [0, 0, 1], description: 'A 90 degree rotation cycles the four fluorines around xenon.' },
+      { id: 'C2-z', label: 'C2 coincident with C4', type: 'Cn', order: 2, axis: [0, 0, 1], description: 'The C4 squared operation is equivalent to a C2 rotation.' },
+      { id: 'C2-x', label: 'C2 through opposite F atoms', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A C2 axis lies along each trans F-Xe-F line.' },
+      { id: 'sigma-h', label: 'sigma h molecular plane', type: 'sigma', planeNormal: [0, 0, 1], planePoint: [0, 0, 0], description: 'All atoms lie in the horizontal molecular plane.' },
+      { id: 'sigma-v', label: 'sigma v through F1/F3', type: 'sigma', planeNormal: [0, 1, 0], planePoint: [0, 0, 0], description: 'A vertical plane containing the F1-Xe-F3 line.' },
+      { id: 'i', label: 'inversion centre', type: 'i', description: 'Xenon is the inversion centre for the square-planar molecule.' },
+      { id: 'S4-z', label: 'S4 axis', type: 'Sn', order: 4, axis: [0, 0, 1], description: 'C4 rotation followed by reflection in the molecular plane is valid.' },
+    ],
+    distractorElements: [
+      { id: 'C3-test', label: 'C3 test axis', type: 'Cn', order: 3, axis: [0, 0, 1], description: 'A square planar molecule is not invariant to 120 degree rotation.' },
+    ],
+    pointGroupReasoning: [
+      'The molecule is square planar with a C4 principal axis.',
+      'C4 squared gives a coincident C2 operation.',
+      'There are perpendicular C2 axes, a horizontal mirror plane, vertical mirror planes, and inversion.',
+      'Therefore the point group is D4h.',
+    ],
+    commonMistakes: [
+      'Stopping at C4v and missing the horizontal mirror plane and inversion centre.',
+      'Forgetting that an even-order C4 axis automatically generates a C2 operation.',
     ],
   },
   {

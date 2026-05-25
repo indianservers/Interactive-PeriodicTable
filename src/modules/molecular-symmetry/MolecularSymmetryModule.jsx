@@ -7,6 +7,7 @@ import MoleculeSelector from './components/MoleculeSelector.jsx';
 import MoleculeViewer3D from './components/MoleculeViewer3D.jsx';
 import SymmetryElementPanel from './components/SymmetryElementPanel.jsx';
 import SymmetryOperationControls from './components/SymmetryOperationControls.jsx';
+import SymmetryOperationLab from './components/SymmetryOperationLab.jsx';
 import AtomMappingTable from './components/AtomMappingTable.jsx';
 import PointGroupReasoningPanel from './components/PointGroupReasoningPanel.jsx';
 import SymmetryDecisionTree from './components/SymmetryDecisionTree.jsx';
@@ -15,6 +16,7 @@ import ChallengeModePanel from './components/ChallengeModePanel.jsx';
 import TheoryCard from './components/TheoryCard.jsx';
 import AdvancedTeachingSuite from './components/AdvancedTeachingSuite.jsx';
 import ClassroomExtensions from './components/ClassroomExtensions.jsx';
+import LecturePdfCompanion from './components/LecturePdfCompanion.jsx';
 import { getMoleculeById } from './data/moleculeData.js';
 import { loadSymmetryProgress } from './utils/localProgressStore.js';
 import { validateSymmetryOperation } from './utils/symmetryOperations.js';
@@ -71,6 +73,7 @@ export function MolecularSymmetryModule() {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const [operationPower, setOperationPower] = useState(1);
   const [showLabels, setShowLabels] = useState(true);
   const [showElements, setShowElements] = useState(true);
   const [showGhost, setShowGhost] = useState(true);
@@ -84,7 +87,13 @@ export function MolecularSymmetryModule() {
     setOperationResult(null);
     setProgress(0);
     setIsPlaying(false);
+    setOperationPower(1);
   }, [molecule]);
+
+  useEffect(() => {
+    const maxPower = selectedElement?.order || 1;
+    setOperationPower(value => Math.min(value, maxPower));
+  }, [selectedElement?.order]);
 
   useEffect(() => {
     if (!isPlaying) return undefined;
@@ -108,10 +117,10 @@ export function MolecularSymmetryModule() {
 
   const applyOperation = useCallback(() => {
     if (!selectedElement) return;
-    setOperationResult(validateSymmetryOperation(molecule, selectedElement));
+    setOperationResult(validateSymmetryOperation(molecule, { ...selectedElement, power: operationPower }));
     setProgress(0);
     setIsPlaying(true);
-  }, [molecule, selectedElement]);
+  }, [molecule, selectedElement, operationPower]);
 
   const resetOperation = () => {
     setIsPlaying(false);
@@ -233,14 +242,32 @@ export function MolecularSymmetryModule() {
               isPlaying={isPlaying}
               progress={progress}
               speed={speed}
+              operationPower={operationPower}
+              onOperationPowerChange={setOperationPower}
               onApply={applyOperation}
               onPause={() => setIsPlaying(false)}
               onStep={() => {
-                if (!operationResult && selectedElement) setOperationResult(validateSymmetryOperation(molecule, selectedElement));
+                if (!operationResult && selectedElement) setOperationResult(validateSymmetryOperation(molecule, { ...selectedElement, power: operationPower }));
                 setProgress(value => Math.min(1, value + 0.2));
               }}
               onReset={resetOperation}
               onSpeedChange={setSpeed}
+            />
+            <SymmetryOperationLab
+              molecule={molecule}
+              selectedElement={selectedElement}
+              operationResult={operationResult}
+              onSelectElement={setSelectedElement}
+              onSelectMolecule={setMoleculeId}
+              onApplyOperation={applyOperation}
+              onSetOperationPower={setOperationPower}
+            />
+            <LecturePdfCompanion
+              molecule={molecule}
+              onSelectMolecule={setMoleculeId}
+              onSelectElement={setSelectedElement}
+              onSetOperationPower={setOperationPower}
+              onApplyOperation={applyOperation}
             />
             <AdvancedTeachingSuite molecule={molecule} selectedElement={selectedElement} />
             <ClassroomExtensions molecule={molecule} operationResult={operationResult} onSelectMolecule={setMoleculeId} />

@@ -5,6 +5,8 @@ export function SymmetryOperationControls({
   isPlaying,
   progress,
   speed,
+  operationPower = 1,
+  onOperationPowerChange,
   onApply,
   onPause,
   onStep,
@@ -22,6 +24,22 @@ export function SymmetryOperationControls({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {(selectedElement?.type === 'Cn' || selectedElement?.type === 'Sn') && (
+            <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-gray-300">
+              Power
+              <select
+                value={operationPower}
+                onChange={event => onOperationPowerChange?.(Number(event.target.value))}
+                className="rounded-md border border-white/10 bg-slate-950 px-2 py-1 text-xs text-white"
+              >
+                {Array.from({ length: selectedElement.order || 1 }, (_, index) => index + 1).map(power => (
+                  <option key={power} value={power}>
+                    {selectedElement.type === 'Cn' ? `C${selectedElement.order}` : `S${selectedElement.order}`}^{power}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <button onClick={onApply} disabled={!selectedElement} className="btn-primary inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-40">
             {isPlaying ? <Pause size={16} /> : <Play size={16} />}
             Apply Operation
