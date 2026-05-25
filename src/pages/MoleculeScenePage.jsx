@@ -15,7 +15,7 @@ export const MoleculeScenePage = () => (
         <span className="rounded-full border border-violet-500/25 bg-violet-500/10 px-2 py-1 text-[11px] text-violet-200">z-axis: depth</span>
       </div>
     </div>
-    <MoleculeScene autoRotate={true} height={560} />
+    <MoleculeScene height={560} />
   </div>
 );
 

@@ -79,17 +79,38 @@ function buildScene(scene, molecule, viewMode, showLabels, highlightId) {
       const mid = new THREE.Vector3().addVectors(pA, pB).multiplyScalar(0.5);
 
       if (bond.type === 'covalent') {
-        const geo = new THREE.CylinderGeometry(0.11, 0.11, length, 16);
+        const order = bond.order || 1;
+        const n = dir.clone().normalize();
         const mat = new THREE.MeshStandardMaterial({
           color: 0x94a3b8, roughness: 0.35, metalness: 0.15,
           wireframe: viewMode === 'wireframe',
         });
-        const cyl = new THREE.Mesh(geo, mat);
-        cyl.position.copy(mid);
-        cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
-        cyl.castShadow = true;
-        cyl.userData.isMoleculeObject = true;
-        scene.add(cyl);
+        if (order === 1) {
+          const geo = new THREE.CylinderGeometry(0.11, 0.11, length, 16);
+          const cyl = new THREE.Mesh(geo, mat);
+          cyl.position.copy(mid);
+          cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
+          cyl.castShadow = true;
+          cyl.userData.isMoleculeObject = true;
+          scene.add(cyl);
+        } else {
+          const ref = Math.abs(n.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+          const perp = new THREE.Vector3().crossVectors(n, ref).normalize();
+          const spread = order === 2 ? 0.07 : 0.10;
+          const radius = order === 2 ? 0.075 : 0.065;
+          const offsets = order === 2
+            ? [perp.clone().multiplyScalar(spread), perp.clone().multiplyScalar(-spread)]
+            : [new THREE.Vector3(), perp.clone().multiplyScalar(spread), perp.clone().multiplyScalar(-spread)];
+          offsets.forEach(offset => {
+            const geo = new THREE.CylinderGeometry(radius, radius, length, 16);
+            const cyl = new THREE.Mesh(geo, mat.clone());
+            cyl.position.copy(mid.clone().add(offset));
+            cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
+            cyl.castShadow = true;
+            cyl.userData.isMoleculeObject = true;
+            scene.add(cyl);
+          });
+        }
       } else if (bond.type === 'ionic-dashed') {
         for (let i = 0; i < 10; i++) {
           if (i % 2 !== 0) continue;
@@ -724,14 +745,14 @@ export const MoleculeScene = ({ height = 520 }) => {
                 Bonds - {mol.bonds.length}
               </p>
               <div className="space-y-0.5 max-h-36 overflow-y-auto scrollbar-thin">
-                {mol.bonds.map((b, i) => (
-                  <div key={i} className="flex items-center gap-1.5 text-[10px] text-gray-400 px-1">
+                {mol.bonds.map((b) => (
+                  <div key={`${b.from}-${b.to}`} className="flex items-center gap-1.5 text-[10px] text-gray-400 px-1">
                     <span className={`w-2 h-1 rounded-full flex-shrink-0 ${b.type === 'ionic-dashed' ? 'bg-amber-500' : 'bg-slate-400'}`} />
                     <span className="font-mono">{b.from}</span>
                     <span className="text-gray-700">-</span>
                     <span className="font-mono">{b.to}</span>
                     <span className="ml-auto text-gray-600 text-[9px]">
-                      {b.type === 'ionic-dashed' ? 'ionic' : 'cov.'}
+                      {b.type === 'ionic-dashed' ? 'ionic' : b.order === 3 ? 'triple' : b.order === 2 ? 'double' : 'cov.'}
                     </span>
                   </div>
                 ))}

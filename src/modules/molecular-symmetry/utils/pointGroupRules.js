@@ -16,7 +16,7 @@ export function inferPointGroupFromSelections(selections = {}) {
   if (selections.highSymmetry === 'tetrahedral') return 'Td';
   if (selections.highSymmetry === 'octahedral') return 'Oh';
   if (selections.linear && selections.inversion) return 'D2h';
-  if (selections.linear) return 'C4v';
+  if (selections.linear) return 'C∞v';
   if (selections.principalAxis === 'C6' && selections.perpendicularC2 && selections.sigmaH) return 'D6h';
   if (selections.principalAxis === 'C3' && selections.perpendicularC2 && selections.sigmaH) return 'D3h';
   if (selections.principalAxis === 'C2' && selections.perpendicularC2 && selections.sigmaH && selections.inversion) return 'D2h';

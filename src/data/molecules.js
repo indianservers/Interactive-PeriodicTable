@@ -9,7 +9,10 @@ import { EXPANDED_REAL_MOLECULES, EXPANDED_REAL_MOLECULE_LIBRARY } from './gener
 const mk = (id, el, pos, color, radius, charge) =>
   ({ id, element: el, position: pos, color, radius, ...(charge ? { charge } : {}) });
 
-const bond = (from, to, type = 'covalent') => ({ from, to, type });
+const bond = (from, to, typeOrOrder = 'covalent') =>
+  typeof typeOrOrder === 'number'
+    ? { from, to, type: 'covalent', order: typeOrOrder }
+    : { from, to, type: typeOrOrder, order: 1 };
 const lbl  = (text, target, targetBond) =>
   targetBond ? { text, targetBond } : { text, target };
 
@@ -118,7 +121,7 @@ const ethylene = {
     mk('H1','H',[-1.25,0.93,0],H,0.30),mk('H2','H',[-1.25,-0.93,0],H,0.30),
     mk('H3','H',[1.25,0.93,0],H,0.30),mk('H4','H',[1.25,-0.93,0],H,0.30),
   ],
-  bonds:[bond('C1','C2'),bond('C1','H1'),bond('C1','H2'),bond('C2','H3'),bond('C2','H4')],
+  bonds:[bond('C1','C2',2),bond('C1','H1'),bond('C1','H2'),bond('C2','H3'),bond('C2','H4')],
   labels:[lbl('C=C Double Bond',null,['C1','C2']),lbl('sp² Carbon','C1')],
 };
 
@@ -130,7 +133,7 @@ const propene = {
     mk('H2','H',[0.2,1.22,0.35],H,0.30),
     mk('H3a','H',[1.93,0.82,0.4],H,0.29),mk('H3b','H',[1.93,-1.22,0.3],H,0.29),mk('H3c','H',[1.93,-0.2,-1.05],H,0.29),
   ],
-  bonds:[bond('C1','C2'),bond('C2','C3'),...['H1a','H1b'].map(h=>bond('C1',h)),bond('C2','H2'),...['H3a','H3b','H3c'].map(h=>bond('C3',h))],
+  bonds:[bond('C1','C2',2),bond('C2','C3'),...['H1a','H1b'].map(h=>bond('C1',h)),bond('C2','H2'),...['H3a','H3b','H3c'].map(h=>bond('C3',h))],
   labels:[lbl('Double Bond',null,['C1','C2']),lbl('Methyl group','C3')],
 };
 
@@ -140,7 +143,7 @@ const acetylene = {
     mk('C1','C',[-0.60,0,0],C,0.48),mk('C2','C',[0.60,0,0],C,0.48),
     mk('H1','H',[-1.69,0,0],H,0.30),mk('H2','H',[1.69,0,0],H,0.30),
   ],
-  bonds:[bond('C1','C2'),bond('C1','H1'),bond('C2','H2')],
+  bonds:[bond('C1','C2',3),bond('C1','H1'),bond('C2','H2')],
   labels:[lbl('C≡C Triple Bond',null,['C1','C2']),lbl('Linear / sp Carbon','C1')],
 };
 
@@ -188,7 +191,7 @@ const formaldehyde = {
     mk('C','C',[0,0,0],C,0.48),mk('O','O',[0,1.22,0],O,0.56),
     mk('H1','H',[-0.94,-0.35,0],H,0.30),mk('H2','H',[0.94,-0.35,0],H,0.30),
   ],
-  bonds:[bond('C','O'),bond('C','H1'),bond('C','H2')],
+  bonds:[bond('C','O',2),bond('C','H1'),bond('C','H2')],
   labels:[lbl('C=O Carbonyl','O'),lbl('Planar sp²','C')],
 };
 
@@ -199,7 +202,7 @@ const acetaldehyde = {
     mk('O','O',[0.77,1.22,0],O,0.56),mk('H2','H',[1.77,-0.55,0],H,0.30),
     mk('H1a','H',[-1.16,1.02,0],H,0.29),mk('H1b','H',[-1.16,-0.51,0.88],H,0.29),mk('H1c','H',[-1.16,-0.51,-0.88],H,0.29),
   ],
-  bonds:[bond('C1','C2'),bond('C2','O'),bond('C2','H2'),...['H1a','H1b','H1c'].map(h=>bond('C1',h))],
+  bonds:[bond('C1','C2'),bond('C2','O',2),bond('C2','H2'),...['H1a','H1b','H1c'].map(h=>bond('C1',h))],
   labels:[lbl('Aldehyde (–CHO)','C2'),lbl('Methyl group','C1')],
 };
 
@@ -211,7 +214,7 @@ const acetone = {
     mk('H1a','H',[-1.93,0.55,0.5],H,0.29),mk('H1b','H',[-1.93,0.55,-0.5],H,0.29),mk('H1c','H',[-2.0,-1.4,0],H,0.29),
     mk('H2a','H',[1.93,0.55,0.5],H,0.29), mk('H2b','H',[1.93,0.55,-0.5],H,0.29), mk('H2c','H',[2.0,-1.4,0],H,0.29),
   ],
-  bonds:[bond('CC','O'),bond('CC','C1'),bond('CC','C2'),
+  bonds:[bond('CC','O',2),bond('CC','C1'),bond('CC','C2'),
     ...['H1a','H1b','H1c'].map(h=>bond('C1',h)),...['H2a','H2b','H2c'].map(h=>bond('C2',h))],
   labels:[lbl('Ketone C=O','O'),lbl('Symmetric molecule','CC')],
 };
@@ -222,7 +225,7 @@ const formicAcid = {
     mk('C','C',[0,0,0],C,0.48),mk('O1','O',[0,1.22,0],O,0.56),mk('O2','O',[1.35,-0.3,0],O,0.56),
     mk('HO','H',[2.28,0.2,0],H,0.30),mk('HC','H',[-0.95,-0.55,0],H,0.30),
   ],
-  bonds:[bond('C','O1'),bond('C','O2'),bond('O2','HO'),bond('C','HC')],
+  bonds:[bond('C','O1',2),bond('C','O2'),bond('O2','HO'),bond('C','HC')],
   labels:[lbl('C=O','O1'),lbl('–OH','O2'),lbl('Carboxyl group','C')],
 };
 
@@ -233,7 +236,7 @@ const aceticAcid = {
     mk('O1','O',[0.55,1.13,0],O,0.56),mk('O2','O',[0.75,-1.0,0],O,0.56),mk('HO','H',[1.69,-1.4,0],H,0.30),
     mk('H1a','H',[-1.88,1.02,0],H,0.29),mk('H1b','H',[-1.88,-0.51,0.88],H,0.29),mk('H1c','H',[-1.88,-0.51,-0.88],H,0.29),
   ],
-  bonds:[bond('C1','C2'),bond('C2','O1'),bond('C2','O2'),bond('O2','HO'),...['H1a','H1b','H1c'].map(h=>bond('C1',h))],
+  bonds:[bond('C1','C2'),bond('C2','O1',2),bond('C2','O2'),bond('O2','HO'),...['H1a','H1b','H1c'].map(h=>bond('C1',h))],
   labels:[lbl('Carboxyl (–COOH)','C2'),lbl('Methyl group','C1')],
 };
 
@@ -257,7 +260,7 @@ const urea = {
     mk('H1a','H',[-1.8,-1.3,0.35],H,0.30),mk('H1b','H',[-1.8,-1.3,-0.35],H,0.30),
     mk('H2a','H',[1.8,-1.3,0.35],H,0.30), mk('H2b','H',[1.8,-1.3,-0.35],H,0.30),
   ],
-  bonds:[bond('C','O'),bond('C','N1'),bond('C','N2'),bond('N1','H1a'),bond('N1','H1b'),bond('N2','H2a'),bond('N2','H2b')],
+  bonds:[bond('C','O',2),bond('C','N1'),bond('C','N2'),bond('N1','H1a'),bond('N1','H1b'),bond('N2','H2a'),bond('N2','H2b')],
   labels:[lbl('C=O','O'),lbl('Two NH₂ groups','N1')],
 };
 
@@ -270,7 +273,7 @@ const glycine = {
     mk('HNa','H',[-2.5,0.9,0.3],H,0.30),mk('HNb','H',[-2.5,0.9,-0.3],H,0.30),mk('HNc','H',[-2.5,-0.8,0],H,0.30),
     mk('HCa','H',[-0.74,1.09,0.63],H,0.30),mk('HCb','H',[-0.74,1.09,-0.63],H,0.30),
   ],
-  bonds:[bond('N','Ca'),bond('Ca','Cc'),bond('Cc','O1'),bond('Cc','O2'),bond('O2','HO'),
+  bonds:[bond('N','Ca'),bond('Ca','Cc'),bond('Cc','O1',2),bond('Cc','O2'),bond('O2','HO'),
     bond('N','HNa'),bond('N','HNb'),bond('N','HNc'),bond('Ca','HCa'),bond('Ca','HCb')],
   labels:[lbl('Amino group','N'),lbl('Carboxyl group','Cc'),lbl('α-carbon','Ca')],
 };
@@ -388,8 +391,8 @@ const cyclopentane = {
 
 /* ── Diatomics ───────────────────────────────────────────────────────────── */
 const hydrogen  = { name:'Hydrogen',  formula:'H₂',  atoms:[mk('H1','H',[-0.37,0,0],H,0.31),mk('H2','H',[0.37,0,0],H,0.31)], bonds:[bond('H1','H2')], labels:[lbl('H–H bond',null,['H1','H2'])] };
-const oxygen    = { name:'Oxygen',    formula:'O₂',  atoms:[mk('O1','O',[-0.61,0,0],O,0.56),mk('O2','O',[0.61,0,0],O,0.56)], bonds:[bond('O1','O2')], labels:[lbl('O=O double bond',null,['O1','O2'])] };
-const nitrogen  = { name:'Nitrogen',  formula:'N₂',  atoms:[mk('N1','N',[-0.55,0,0],N,0.52),mk('N2','N',[0.55,0,0],N,0.52)], bonds:[bond('N1','N2')], labels:[lbl('N≡N triple bond',null,['N1','N2'])] };
+const oxygen    = { name:'Oxygen',    formula:'O₂',  atoms:[mk('O1','O',[-0.61,0,0],O,0.56),mk('O2','O',[0.61,0,0],O,0.56)], bonds:[bond('O1','O2',2)], labels:[lbl('O=O double bond',null,['O1','O2'])] };
+const nitrogen  = { name:'Nitrogen',  formula:'N₂',  atoms:[mk('N1','N',[-0.55,0,0],N,0.52),mk('N2','N',[0.55,0,0],N,0.52)], bonds:[bond('N1','N2',3)], labels:[lbl('N≡N triple bond',null,['N1','N2'])] };
 const fluorine  = { name:'Fluorine',  formula:'F₂',  atoms:[mk('F1','F',[-0.71,0,0],F,0.50),mk('F2','F',[0.71,0,0],F,0.50)], bonds:[bond('F1','F2')], labels:[lbl('F–F weak bond',null,['F1','F2'])] };
 const chlorine  = { name:'Chlorine',  formula:'Cl₂', atoms:[mk('Cl1','Cl',[-0.99,0,0],Cl,0.66),mk('Cl2','Cl',[0.99,0,0],Cl,0.66)], bonds:[bond('Cl1','Cl2')], labels:[lbl('Cl–Cl bond',null,['Cl1','Cl2'])] };
 const hf        = { name:'Hydrogen Fluoride', formula:'HF', atoms:[mk('H','H',[-0.92,0,0],H,0.31),mk('F','F',[0,0,0],F,0.56)], bonds:[bond('H','F')], labels:[lbl('Polar H–F bond',null,['H','F']),lbl('Most electronegative','F')] };
@@ -414,42 +417,42 @@ const h2o2 = {
 const co2 = {
   name:'Carbon Dioxide', formula:'CO₂',
   atoms:[mk('C','C',[0,0,0],C,0.50),mk('O1','O',[-1.3,0,0],O,0.56),mk('O2','O',[1.3,0,0],O,0.56)],
-  bonds:[bond('C','O1'),bond('C','O2')],
+  bonds:[bond('C','O1',2),bond('C','O2',2)],
   labels:[lbl('C=O Double Bond',null,['C','O1']),lbl('Linear molecule','C')],
 };
 
 const co = {
   name:'Carbon Monoxide', formula:'CO',
   atoms:[mk('C','C',[-0.56,0,0],C,0.50),mk('O','O',[0.56,0,0],O,0.56)],
-  bonds:[bond('C','O')],
+  bonds:[bond('C','O',3)],
   labels:[lbl('C≡O Triple Bond',null,['C','O']),lbl('Toxic gas','C')],
 };
 
 const so2 = {
   name:'Sulfur Dioxide', formula:'SO₂',
   atoms:[mk('S','S',[0,0,0],S,0.70),mk('O1','O',[-1.29,-0.68,0],O,0.56),mk('O2','O',[1.29,-0.68,0],O,0.56)],
-  bonds:[bond('S','O1'),bond('S','O2')],
+  bonds:[bond('S','O1',2),bond('S','O2',2)],
   labels:[lbl('Bent (119°)','S'),lbl('Acid rain precursor','O1')],
 };
 
 const so3 = {
   name:'Sulfur Trioxide', formula:'SO₃',
   atoms:[mk('S','S',[0,0,0],S,0.70),mk('O1','O',[0,1.43,0],O,0.56),mk('O2','O',[-1.24,-0.72,0],O,0.56),mk('O3','O',[1.24,-0.72,0],O,0.56)],
-  bonds:[bond('S','O1'),bond('S','O2'),bond('S','O3')],
+  bonds:[bond('S','O1',2),bond('S','O2',2),bond('S','O3',2)],
   labels:[lbl('Trigonal planar','S')],
 };
 
 const no2 = {
   name:'Nitrogen Dioxide', formula:'NO₂',
   atoms:[mk('N','N',[0,0,0],N,0.52),mk('O1','O',[-1.2,-0.6,0],O,0.56),mk('O2','O',[1.2,-0.6,0],O,0.56)],
-  bonds:[bond('N','O1'),bond('N','O2')],
+  bonds:[bond('N','O1',2),bond('N','O2',2)],
   labels:[lbl('Bent (134°)','N'),lbl('Brown smog component','O1')],
 };
 
 const no = {
   name:'Nitric Oxide', formula:'NO',
   atoms:[mk('N','N',[-0.54,0,0],N,0.52),mk('O','O',[0.54,0,0],O,0.56)],
-  bonds:[bond('N','O')],
+  bonds:[bond('N','O',2)],
   labels:[lbl('Free radical / signaling molecule',null,['N','O'])],
 };
 
@@ -461,7 +464,7 @@ const h2so4 = {
     mk('O3','O',[1.45,0,0],O,0.56),mk('O4','O',[-1.45,0,0],O,0.56),
     mk('H1','H',[2.38,0.42,0],H,0.30),mk('H2','H',[-2.38,0.42,0],H,0.30),
   ],
-  bonds:[bond('S','O1'),bond('S','O2'),bond('S','O3'),bond('S','O4'),bond('O3','H1'),bond('O4','H2')],
+  bonds:[bond('S','O1',2),bond('S','O2',2),bond('S','O3'),bond('S','O4'),bond('O3','H1'),bond('O4','H2')],
   labels:[lbl('Tetrahedral S center','S'),lbl('–OH groups','O3')],
 };
 
@@ -471,7 +474,7 @@ const hno3 = {
     mk('N','N',[0,0,0],N,0.52),mk('O1','O',[0,1.22,0],O,0.56),
     mk('O2','O',[-1.2,-0.55,0],O,0.56),mk('O3','O',[1.2,-0.55,0],O,0.56),mk('H','H',[-2.12,-0.1,0],H,0.30),
   ],
-  bonds:[bond('N','O1'),bond('N','O2'),bond('N','O3'),bond('O2','H')],
+  bonds:[bond('N','O1',2),bond('N','O2'),bond('N','O3',2),bond('O2','H')],
   labels:[lbl('N=O','O1'),lbl('–OH group','O2'),lbl('Strong acid','N')],
 };
 
@@ -482,7 +485,7 @@ const h3po4 = {
     mk('O2','O',[-1.26,-0.4,0.7],O,0.56),mk('O3','O',[1.26,-0.4,0.7],O,0.56),mk('O4','O',[0,-0.4,-1.45],O,0.56),
     mk('H2','H',[-1.72,-1.1,1.2],H,0.30),mk('H3','H',[1.72,-1.1,1.2],H,0.30),mk('H4','H',[0,-1.3,-2.0],H,0.30),
   ],
-  bonds:[bond('P','O1'),bond('P','O2'),bond('P','O3'),bond('P','O4'),bond('O2','H2'),bond('O3','H3'),bond('O4','H4')],
+  bonds:[bond('P','O1',2),bond('P','O2'),bond('P','O3'),bond('P','O4'),bond('O2','H2'),bond('O3','H3'),bond('O4','H4')],
   labels:[lbl('Tetrahedral P','P'),lbl('P=O','O1'),lbl('3 × –OH groups','O2')],
 };
 
@@ -493,7 +496,7 @@ const carbonicAcid = {
     mk('O2','O',[-1.24,-0.52,0],O,0.56),mk('O3','O',[1.24,-0.52,0],O,0.56),
     mk('H2','H',[-2.16,-0.1,0],H,0.30),mk('H3','H',[2.16,-0.1,0],H,0.30),
   ],
-  bonds:[bond('C','O1'),bond('C','O2'),bond('C','O3'),bond('O2','H2'),bond('O3','H3')],
+  bonds:[bond('C','O1',2),bond('C','O2'),bond('C','O3'),bond('O2','H2'),bond('O3','H3')],
   labels:[lbl('C=O','O1'),lbl('Weak acid in blood/rain','C')],
 };
 
@@ -561,7 +564,7 @@ const ozone = {
 const n2o = {
   name:'Nitrous Oxide', formula:'N₂O',
   atoms:[mk('N1','N',[-0.55,0,0],N,0.52),mk('N2','N',[0.55,0,0],N,0.52),mk('O','O',[1.68,0,0],O,0.56)],
-  bonds:[bond('N1','N2'),bond('N2','O')],
+  bonds:[bond('N1','N2',2),bond('N2','O',2)],
   labels:[lbl('Linear N–N–O','N2'),lbl('Laughing gas','N1')],
 };
 
@@ -576,7 +579,6 @@ const ammonia = {
 };
 
 /* ── Reactive Species ────────────────────────────────────────────────────── */
-const ozone2 = ozone; // duplicate for reactive section (will deduplicate in lib)
 const hydroxyl = {
   name:'Hydroxyl Radical', formula:'·OH',
   atoms:[mk('O','O',[0,0,0],O,0.56),mk('H','H',[0.96,0,0],H,0.30)],
@@ -597,7 +599,7 @@ const alanine = {
     mk('HCa','H',[-0.74,1.09,0.63],H,0.30),
     mk('HCb1','H',[-0.74,-2.52,0.5],H,0.29),mk('HCb2','H',[-1.7,-1.2,1.2],H,0.29),mk('HCb3','H',[0.22,-1.2,1.2],H,0.29),
   ],
-  bonds:[bond('N','Ca'),bond('Ca','Cb'),bond('Ca','Cc'),bond('Cc','O1'),bond('Cc','O2'),bond('O2','HO'),
+  bonds:[bond('N','Ca'),bond('Ca','Cb'),bond('Ca','Cc'),bond('Cc','O1',2),bond('Cc','O2'),bond('O2','HO'),
     bond('N','HNa'),bond('N','HNb'),bond('N','HNc'),bond('Ca','HCa'),
     bond('Cb','HCb1'),bond('Cb','HCb2'),bond('Cb','HCb3')],
   labels:[lbl('Amino group (–NH₃⁺)','N'),lbl('Carboxyl (–COOH)','Cc'),lbl('α-Carbon','Ca'),lbl('Methyl side chain','Cb')],
