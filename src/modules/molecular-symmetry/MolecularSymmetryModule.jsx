@@ -13,6 +13,8 @@ import SymmetryDecisionTree from './components/SymmetryDecisionTree.jsx';
 import PracticeQuizPanel from './components/PracticeQuizPanel.jsx';
 import ChallengeModePanel from './components/ChallengeModePanel.jsx';
 import TheoryCard from './components/TheoryCard.jsx';
+import AdvancedTeachingSuite from './components/AdvancedTeachingSuite.jsx';
+import ClassroomExtensions from './components/ClassroomExtensions.jsx';
 import { getMoleculeById } from './data/moleculeData.js';
 import { loadSymmetryProgress } from './utils/localProgressStore.js';
 import { validateSymmetryOperation } from './utils/symmetryOperations.js';
@@ -240,6 +242,8 @@ export function MolecularSymmetryModule() {
               onReset={resetOperation}
               onSpeedChange={setSpeed}
             />
+            <AdvancedTeachingSuite molecule={molecule} selectedElement={selectedElement} />
+            <ClassroomExtensions molecule={molecule} operationResult={operationResult} onSelectMolecule={setMoleculeId} />
           </section>
 
           <aside className="space-y-3">

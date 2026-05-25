@@ -1,0 +1,222 @@
+const table = ({ pointGroup, classes, irreps, notes }) => ({
+  pointGroup,
+  classes,
+  irreps,
+  order: classes.reduce((sum, item) => sum + item.size, 0),
+  notes,
+});
+
+export const characterTables = {
+  C2: table({
+    pointGroup: 'C2',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: 'C2', size: 1, match: ['C2'] },
+    ],
+    irreps: [
+      { label: 'A', chars: [1, 1], basis: 'z, Rz' },
+      { label: 'B', chars: [1, -1], basis: 'x, y, Rx, Ry' },
+    ],
+    notes: 'C2 separates functions that are symmetric or antisymmetric to a 180 degree rotation.',
+  }),
+  C2v: table({
+    pointGroup: 'C2v',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: 'C2', size: 1, match: ['C2'] },
+      { label: 'sigma v', size: 1, match: ['sigma', 'molecular'] },
+      { label: "sigma v'", size: 1, match: ['sigma', 'bisect'] },
+    ],
+    irreps: [
+      { label: 'A1', chars: [1, 1, 1, 1], basis: 'z, x2, y2, z2' },
+      { label: 'A2', chars: [1, 1, -1, -1], basis: 'Rz, xy' },
+      { label: 'B1', chars: [1, -1, 1, -1], basis: 'x, Ry, xz' },
+      { label: 'B2', chars: [1, -1, -1, 1], basis: 'y, Rx, yz' },
+    ],
+    notes: 'C2v is the workhorse table for bent molecules such as water.',
+  }),
+  C3v: table({
+    pointGroup: 'C3v',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '2C3', size: 2, match: ['C3'] },
+      { label: '3sigma v', size: 3, match: ['sigma'] },
+    ],
+    irreps: [
+      { label: 'A1', chars: [1, 1, 1], basis: 'z, z2, x2 + y2' },
+      { label: 'A2', chars: [1, 1, -1], basis: 'Rz' },
+      { label: 'E', chars: [2, -1, 0], basis: '(x, y), (Rx, Ry)' },
+    ],
+    notes: 'C3v has a doubly degenerate E representation for x/y-type functions.',
+  }),
+  D2h: table({
+    pointGroup: 'D2h',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: 'C2(z)', size: 1, match: ['C2', 'z'] },
+      { label: 'C2(y)', size: 1, match: ['C2', 'y'] },
+      { label: 'C2(x)', size: 1, match: ['C2', 'x'] },
+      { label: 'i', size: 1, match: ['i'] },
+      { label: 'sigma xy', size: 1, match: ['sigma', 'xy'] },
+      { label: 'sigma xz', size: 1, match: ['sigma', 'xz'] },
+      { label: 'sigma yz', size: 1, match: ['sigma', 'yz'] },
+    ],
+    irreps: [
+      { label: 'Ag', chars: [1, 1, 1, 1, 1, 1, 1, 1], basis: 'x2, y2, z2' },
+      { label: 'B1g', chars: [1, 1, -1, -1, 1, 1, -1, -1], basis: 'Rz, xy' },
+      { label: 'B2g', chars: [1, -1, 1, -1, 1, -1, 1, -1], basis: 'Ry, xz' },
+      { label: 'B3g', chars: [1, -1, -1, 1, 1, -1, -1, 1], basis: 'Rx, yz' },
+      { label: 'Au', chars: [1, 1, 1, 1, -1, -1, -1, -1], basis: '' },
+      { label: 'B1u', chars: [1, 1, -1, -1, -1, -1, 1, 1], basis: 'z' },
+      { label: 'B2u', chars: [1, -1, 1, -1, -1, 1, -1, 1], basis: 'y' },
+      { label: 'B3u', chars: [1, -1, -1, 1, -1, 1, 1, -1], basis: 'x' },
+    ],
+    notes: 'D2h is especially useful for teaching centrosymmetry and mutual exclusion.',
+  }),
+  D3h: table({
+    pointGroup: 'D3h',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '2C3', size: 2, match: ['C3'] },
+      { label: '3C2', size: 3, match: ['C2'] },
+      { label: 'sigma h', size: 1, match: ['sigma h'] },
+      { label: '2S3', size: 2, match: ['S3'] },
+      { label: '3sigma v', size: 3, match: ['sigma v'] },
+    ],
+    irreps: [
+      { label: "A1'", chars: [1, 1, 1, 1, 1, 1], basis: 'x2 + y2, z2' },
+      { label: "A2'", chars: [1, 1, -1, 1, 1, -1], basis: 'Rz' },
+      { label: "E'", chars: [2, -1, 0, 2, -1, 0], basis: '(x, y)' },
+      { label: 'A1"', chars: [1, 1, 1, -1, -1, -1], basis: '' },
+      { label: 'A2"', chars: [1, 1, -1, -1, -1, 1], basis: 'z' },
+      { label: 'E"', chars: [2, -1, 0, -2, 1, 0], basis: '(Rx, Ry)' },
+    ],
+    notes: 'D3h clearly separates in-plane and out-of-plane functions using prime notation.',
+  }),
+  D2d: table({
+    pointGroup: 'D2d',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '2S4', size: 2, match: ['S4'] },
+      { label: 'C2', size: 1, match: ['C2', 'x'] },
+      { label: "2C2'", size: 2, match: ['C2'] },
+      { label: '2sigma d', size: 2, match: ['sigma'] },
+    ],
+    irreps: [
+      { label: 'A1', chars: [1, 1, 1, 1, 1], basis: 'x2 + y2, z2' },
+      { label: 'A2', chars: [1, 1, 1, -1, -1], basis: 'Rz' },
+      { label: 'B1', chars: [1, -1, 1, 1, -1], basis: 'x2 - y2' },
+      { label: 'B2', chars: [1, -1, 1, -1, 1], basis: 'z, xy' },
+      { label: 'E', chars: [2, 0, -2, 0, 0], basis: '(x, y), (Rx, Ry)' },
+    ],
+    notes: 'D2d is the natural next table for allene and other molecules with S4 symmetry.',
+  }),
+  D5d: table({
+    pointGroup: 'D5d',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '2C5', size: 2, match: ['C5'] },
+      { label: '2C5^2', size: 2, match: ['C5'] },
+      { label: '5C2', size: 5, match: ['C2'] },
+      { label: 'i', size: 1, match: ['i'] },
+      { label: '2S10', size: 2, match: ['S10'] },
+      { label: '2S10^3', size: 2, match: ['S10'] },
+      { label: '5sigma d', size: 5, match: ['sigma'] },
+    ],
+    irreps: [
+      { label: 'A1g', chars: [1, 1, 1, 1, 1, 1, 1, 1], basis: 'z2' },
+      { label: 'A2g', chars: [1, 1, 1, -1, 1, 1, 1, -1], basis: 'Rz' },
+      { label: 'E1g', chars: [2, 0.618, -1.618, 0, 2, 0.618, -1.618, 0], basis: '(Rx, Ry)' },
+      { label: 'E2g', chars: [2, -1.618, 0.618, 0, 2, -1.618, 0.618, 0], basis: '(x2 - y2, xy)' },
+      { label: 'A1u', chars: [1, 1, 1, 1, -1, -1, -1, -1], basis: '' },
+      { label: 'A2u', chars: [1, 1, 1, -1, -1, -1, -1, 1], basis: 'z' },
+      { label: 'E1u', chars: [2, 0.618, -1.618, 0, -2, -0.618, 1.618, 0], basis: '(x, y)' },
+      { label: 'E2u', chars: [2, -1.618, 0.618, 0, -2, 1.618, -0.618, 0], basis: '' },
+    ],
+    notes: 'D5d is included for staggered ferrocene discussion; numerical golden-ratio characters are rounded.',
+  }),
+  D5h: table({
+    pointGroup: 'D5h',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '2C5', size: 2, match: ['C5'] },
+      { label: '2C5^2', size: 2, match: ['C5'] },
+      { label: "5C2'", size: 5, match: ['C2'] },
+      { label: 'sigma h', size: 1, match: ['sigma h'] },
+      { label: '2S5', size: 2, match: ['S5'] },
+      { label: '2S5^3', size: 2, match: ['S5'] },
+      { label: '5sigma v', size: 5, match: ['sigma'] },
+    ],
+    irreps: [
+      { label: "A1'", chars: [1, 1, 1, 1, 1, 1, 1, 1], basis: 'z2' },
+      { label: "A2'", chars: [1, 1, 1, -1, 1, 1, 1, -1], basis: 'Rz' },
+      { label: "E1'", chars: [2, 0.618, -1.618, 0, 2, 0.618, -1.618, 0], basis: '(x, y)' },
+      { label: "E2'", chars: [2, -1.618, 0.618, 0, 2, -1.618, 0.618, 0], basis: '(x2 - y2, xy)' },
+      { label: 'A1"', chars: [1, 1, 1, 1, -1, -1, -1, -1], basis: '' },
+      { label: 'A2"', chars: [1, 1, 1, -1, -1, -1, -1, 1], basis: 'z' },
+      { label: 'E1"', chars: [2, 0.618, -1.618, 0, -2, -0.618, 1.618, 0], basis: '(Rx, Ry)' },
+      { label: 'E2"', chars: [2, -1.618, 0.618, 0, -2, 1.618, -0.618, 0], basis: '' },
+    ],
+    notes: 'Use D5h as the eclipsed ferrocene comparison table.',
+  }),
+  D6h: table({
+    pointGroup: 'D6h',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '2C6', size: 2, match: ['C6'] },
+      { label: '2C3', size: 2, match: ['C3'] },
+      { label: 'C2', size: 1, match: ['C2', 'z'] },
+      { label: "3C2'", size: 3, match: ['C2'] },
+      { label: "3C2''", size: 3, match: ['C2'] },
+      { label: 'i', size: 1, match: ['i'] },
+      { label: '2S3', size: 2, match: ['S3'] },
+      { label: '2S6', size: 2, match: ['S6'] },
+      { label: 'sigma h', size: 1, match: ['sigma h'] },
+      { label: '3sigma d', size: 3, match: ['sigma d'] },
+      { label: '3sigma v', size: 3, match: ['sigma v'] },
+    ],
+    irreps: [
+      { label: 'A1g', chars: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], basis: 'z2, x2 + y2' },
+      { label: 'A2g', chars: [1, 1, 1, 1, -1, -1, 1, 1, 1, 1, -1, -1], basis: 'Rz' },
+      { label: 'B1g', chars: [1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1], basis: '' },
+      { label: 'B2g', chars: [1, -1, 1, -1, -1, 1, 1, -1, 1, -1, -1, 1], basis: '' },
+      { label: 'E1g', chars: [2, 1, -1, -2, 0, 0, 2, 1, -1, -2, 0, 0], basis: '(Rx, Ry)' },
+      { label: 'E2g', chars: [2, -1, -1, 2, 0, 0, 2, -1, -1, 2, 0, 0], basis: '(x2 - y2, xy)' },
+      { label: 'A1u', chars: [1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1], basis: '' },
+      { label: 'A2u', chars: [1, 1, 1, 1, -1, -1, -1, -1, -1, -1, 1, 1], basis: 'z' },
+      { label: 'B1u', chars: [1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1], basis: '' },
+      { label: 'B2u', chars: [1, -1, 1, -1, -1, 1, -1, 1, -1, 1, 1, -1], basis: '' },
+      { label: 'E1u', chars: [2, 1, -1, -2, 0, 0, -2, -1, 1, 2, 0, 0], basis: '(x, y)' },
+      { label: 'E2u', chars: [2, -1, -1, 2, 0, 0, -2, 1, 1, -2, 0, 0], basis: '' },
+    ],
+    notes: 'D6h is the benzene table; it is ideal for connecting symmetry to pi orbitals and spectroscopy.',
+  }),
+  Td: table({
+    pointGroup: 'Td',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '8C3', size: 8, match: ['C3'] },
+      { label: '3C2', size: 3, match: ['C2'] },
+      { label: '6S4', size: 6, match: ['S4'] },
+      { label: '6sigma d', size: 6, match: ['sigma'] },
+    ],
+    irreps: [
+      { label: 'A1', chars: [1, 1, 1, 1, 1], basis: 's, x2 + y2 + z2' },
+      { label: 'A2', chars: [1, 1, 1, -1, -1], basis: '' },
+      { label: 'E', chars: [2, -1, 2, 0, 0], basis: '(2z2 - x2 - y2, x2 - y2)' },
+      { label: 'T1', chars: [3, 0, -1, 1, -1], basis: '(Rx, Ry, Rz)' },
+      { label: 'T2', chars: [3, 0, -1, -1, 1], basis: '(x, y, z)' },
+    ],
+    notes: 'Td highlights triply degenerate T representations and is a bridge to ligand field theory.',
+  }),
+};
+
+export function normalizePointGroup(pointGroup) {
+  if (pointGroup?.includes('D5d')) return 'D5d';
+  if (pointGroup?.includes('D5h')) return 'D5h';
+  return pointGroup?.replace(/[∞]/g, 'inf') || 'C1';
+}
+
+export function getCharacterTable(pointGroup) {
+  return characterTables[normalizePointGroup(pointGroup)] || characterTables.C2v;
+}
