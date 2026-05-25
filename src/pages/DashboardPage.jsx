@@ -63,8 +63,8 @@ export const DashboardPage = ({ onNavigate, onSelectElement, recentPages = [], f
           <span className="text-xs text-gray-500 font-medium uppercase tracking-widest">Chemistry Universe</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-black text-white leading-tight">
-          Interactive Periodic
-          <span className="text-gradient"> Table Pro</span>
+          Chemistry Universe
+          <span className="text-gradient"> Powered by AI</span>
         </h1>
         <p className="text-gray-400 mt-2 text-sm max-w-md mx-auto">
           Explore all 118 elements with trends, comparisons, visualizations, and quizzes.
