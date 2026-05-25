@@ -27,6 +27,7 @@ const titles = {
   compare: 'Compare Elements',
   atom: 'Atom Visualizer',
   molecule: '3D Molecule Viewer',
+  symmetry: 'Molecular Symmetry Visualizer',
   lab: 'Chemistry Lab',
   syllabus: 'Syllabus Map',
   quiz: 'Quiz Mode',
@@ -42,6 +43,7 @@ const parentCrumbs = {
   compare: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'compare', label: 'Compare Elements' }],
   atom: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'atom', label: 'Atom Visualizer' }],
   molecule: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'molecule', label: '3D Molecules' }],
+  symmetry: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'symmetry', label: 'Molecular Symmetry' }],
   lab: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'lab', label: 'Chemistry Lab' }],
   syllabus: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'syllabus', label: 'Syllabus Map' }],
   quiz: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'quiz', label: 'Quiz' }],
@@ -116,7 +118,8 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
 
   const sharePage = () => {
     if (!navigator.clipboard) return;
-    navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#${currentPage}`);
+    const shareHash = currentPage === 'symmetry' ? 'molecular-symmetry' : currentPage;
+    navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#/${shareHash}`);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1400);
   };

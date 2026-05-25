@@ -16,10 +16,21 @@ import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
 const MoleculeScenePage = lazy(() => import('./pages/MoleculeScenePage.jsx'));
+const MolecularSymmetryModule = lazy(() => import('./modules/molecular-symmetry/MolecularSymmetryModule.jsx'));
+
+const pageHashMap = {
+  symmetry: 'molecular-symmetry',
+};
+const hashPageMap = {
+  'molecular-symmetry': 'symmetry',
+};
 
 function App() {
   const { theme, toggle: toggleTheme, isDark } = useTheme();
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [currentPage, setCurrentPage] = useState(() => {
+    const hash = window.location.hash.replace(/^#\/?/, '');
+    return hashPageMap[hash] || hash || 'dashboard';
+  });
   const [favorites, setFavorites] = useLocalStorage('cu-favorites', []);
   const [compact, setCompact] = useLocalStorage('cu-compact', false);
   const [studyMode, setStudyMode] = useLocalStorage('cu-study-mode', false);
@@ -37,8 +48,21 @@ function App() {
 
   const navigate = useCallback((page) => {
     setCurrentPage(page);
+    const nextHash = pageHashMap[page] || page;
+    if (window.location.hash.replace(/^#\/?/, '') !== nextHash) {
+      window.location.hash = nextHash;
+    }
     setRecentPages(prev => [page, ...prev.filter(id => id !== page)].slice(0, 8));
   }, [setRecentPages]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '');
+      setCurrentPage(hashPageMap[hash] || hash || 'dashboard');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   useEffect(() => {
     const handleUpdate = (event) => setServiceWorkerUpdate(() => event.detail?.refresh || null);
@@ -128,6 +152,18 @@ function App() {
             </div>
           }>
             <MoleculeScenePage />
+          </Suspense>
+        );
+      case 'symmetry':
+        return (
+          <Suspense fallback={
+            <div className="page-transition p-4 md:p-6 max-w-7xl mx-auto space-y-3">
+              <div className="skeleton h-12 rounded-2xl" />
+              <div className="skeleton h-[620px] rounded-2xl" />
+              <p className="text-center text-sm text-gray-400">Loading molecular symmetry laboratory...</p>
+            </div>
+          }>
+            <MolecularSymmetryModule />
           </Suspense>
         );
       case 'quiz':

@@ -3,6 +3,7 @@ import {
   LayoutDashboard, Table2, TrendingUp, GitCompare,
   Atom, Box, BookOpen, Heart, Settings, X, FlaskConical, GraduationCap,
   ChevronDown, Trophy, Scale, Search, Clock, PanelLeftClose, PanelLeftOpen,
+  Orbit,
 } from 'lucide-react';
 
 export const navGroups = [
@@ -20,6 +21,7 @@ export const navGroups = [
     items: [
       { id: 'atom', label: 'Atom Visualizer', icon: Atom },
       { id: 'molecule', label: '3D Molecules', icon: Box },
+      { id: 'symmetry', label: 'Molecular Symmetry', icon: Orbit },
       { id: 'lab', label: 'Chemistry Lab', icon: FlaskConical },
       { id: 'balancer', label: 'Equation Balancer', icon: Scale },
     ],
@@ -39,7 +41,7 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools']);
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry']);
 const pageLabelMap = Object.fromEntries(navGroups.flatMap(group => group.items.map(item => [item.id, item])));
 
 export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePages = [], recentPages = [], mini = false, onMiniToggle }) => {

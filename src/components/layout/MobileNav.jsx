@@ -1,10 +1,10 @@
-import { LayoutDashboard, Table2, FlaskConical, GraduationCap, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Table2, FlaskConical, Orbit, BookOpen } from 'lucide-react';
 
 const mobileItems = [
   { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
   { id: 'table', label: 'Table', icon: Table2 },
+  { id: 'symmetry', label: 'Symmetry', icon: Orbit },
   { id: 'lab', label: 'Lab', icon: FlaskConical },
-  { id: 'syllabus', label: 'Syllabus', icon: GraduationCap },
   { id: 'quiz', label: 'Quiz', icon: BookOpen },
 ];
 
