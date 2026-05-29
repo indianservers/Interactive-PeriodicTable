@@ -21,7 +21,7 @@ export const lessonPresets = [
     id: 'improper-axis',
     title: 'Improper rotations without fear',
     molecules: ['methane', 'allene', 'ferrocene'],
-    prompts: ['Separate Cn from Sn.', 'Describe the reflection plane after rotation.', 'Connect Sn to chirality tests.'],
+    prompts: ['Separate proper Cn rotation from the combined Sn operation.', 'Describe the perpendicular reflection plane after rotation.', 'Connect Sn to chirality tests.'],
   },
 ];
 
@@ -87,7 +87,7 @@ export const spectroscopyRules = [
 ];
 
 export const chiralityNotes = {
-  chiralRule: 'A molecule can be optically active only when it is chiral; by point-group symmetry this requires absence of every improper operation Sn, including mirror planes and inversion centres.',
+  chiralRule: 'A molecule can be optically active only when it is chiral; by point-group symmetry this requires absence of every improper operation Sn, where Sn means Cn rotation followed by reflection in the perpendicular plane. Mirror planes and inversion centres are included as improper-symmetry cases.',
   examples: [
     'Skew substituted allene can become chiral when terminal substituent pairs differ.',
     'Ordinary methane is achiral because Td includes improper operations.',

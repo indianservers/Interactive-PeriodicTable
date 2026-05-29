@@ -35,6 +35,7 @@ const titles = {
   settings: 'Settings',
   balancer: 'Equation Balancer',
   'study-tools': 'Study Tools',
+  'chemistry-solver': 'Chemistry Solver',
 };
 
 const parentCrumbs = {
@@ -51,6 +52,7 @@ const parentCrumbs = {
   settings: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'settings', label: 'Settings' }],
   balancer: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'balancer', label: 'Equation Balancer' }],
   'study-tools': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'study-tools', label: 'Study Tools' }],
+  'chemistry-solver': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'chemistry-solver', label: 'Chemistry Solver' }],
 };
 
 const pageItems = navGroups.flatMap(group => group.items);
@@ -64,7 +66,7 @@ const glossaryTerms = [
   ['PAN', 'Peroxyacetyl nitrate, a photochemical smog irritant.'],
 ];
 
-export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNavigate, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, studyMode = false, onStudyModeToggle }) => {
+export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNavigate, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, studyMode = false, onStudyModeToggle, canInstall = false, onInstallApp, isOnline = true }) => {
   const breadcrumbs = parentCrumbs[currentPage] || [{ id: 'dashboard', label: 'Dashboard' }];
   const [searchOpen, setSearchOpen] = useState(false);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
@@ -198,6 +200,16 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <div className={`hidden items-center gap-1 rounded-xl border px-2 py-1.5 text-[11px] font-bold sm:flex ${isOnline ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-amber-400/25 bg-amber-400/10 text-amber-200'}`} title="Offline cache status">
+          <span className={`h-1.5 w-1.5 rounded-full ${isOnline ? 'bg-emerald-300' : 'bg-amber-300'}`} />
+          {isOnline ? 'Offline ready' : 'Offline'}
+        </div>
+        {canInstall && (
+          <button onClick={onInstallApp} className="hidden items-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-100 hover:bg-cyan-400/15 md:flex" title="Install desktop shortcut">
+            <Download size={14} />
+            Install
+          </button>
+        )}
         <button
           onClick={() => setSearchOpen(true)}
           className="hidden md:flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-gray-400 hover:text-gray-100"

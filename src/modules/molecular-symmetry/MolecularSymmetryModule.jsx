@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BookOpen, Camera, Clipboard, Download, Eye, EyeOff, HelpCircle,
-  Maximize2, RotateCcw, SlidersHorizontal,
+  Maximize2, MousePointerClick, RotateCcw, SlidersHorizontal, X,
 } from 'lucide-react';
 import MoleculeSelector from './components/MoleculeSelector.jsx';
 import MoleculeViewer3D from './components/MoleculeViewer3D.jsx';
@@ -18,10 +18,123 @@ import AdvancedTeachingSuite from './components/AdvancedTeachingSuite.jsx';
 import ClassroomExtensions from './components/ClassroomExtensions.jsx';
 import LecturePdfCompanion from './components/LecturePdfCompanion.jsx';
 import { getMoleculeById } from './data/moleculeData.js';
+import { useLocalStorage } from '../../hooks/useLocalStorage.js';
 import { loadSymmetryProgress } from './utils/localProgressStore.js';
 import { validateSymmetryOperation } from './utils/symmetryOperations.js';
 
 const modes = ['Learn', 'Practice', 'Challenge'];
+
+const guideOptions = [
+  {
+    id: 'start',
+    label: 'Start the module',
+    title: 'Start with a molecule and one operation',
+    steps: [
+      'Choose a molecule from the library.',
+      'Select one symmetry element from the left panel.',
+      'Use Apply Operation to see whether atoms map to equivalent atoms.',
+    ],
+    action: 'Use Learn mode',
+  },
+  {
+    id: 'operations',
+    label: 'Learn operations',
+    title: 'Understand E, Cn, sigma, i, and Sn',
+    steps: [
+      'Use the Theory Card to read the definition of the selected operation.',
+      'Use the Student Operation Lab to compare proper rotation, reflection, inversion, and improper rotation.',
+      'For Sn, remember: proper Cn rotation followed by perpendicular reflection must give the original configuration.',
+    ],
+    action: 'Open methane S4',
+  },
+  {
+    id: 'pointGroup',
+    label: 'Assign point group',
+    title: 'Use symmetry elements to assign a point group',
+    steps: [
+      'First identify the highest proper rotational axis Cn.',
+      'Then check perpendicular C2 axes, mirror planes, inversion, and Sn.',
+      'Compare the final set with the point-group flowchart in Learn mode.',
+    ],
+    action: 'Show answers',
+  },
+  {
+    id: 'prediction',
+    label: 'Predict properties',
+    title: 'Use symmetry to predict molecular properties',
+    steps: [
+      'Dipole moment depends on whether symmetry cancels all bond dipoles.',
+      'Optical activity is ruled out by mirror planes, inversion, or any improper Sn operation.',
+      'IR vibrations are predicted from normal modes and selection rules.',
+    ],
+    action: 'Practice predictions',
+  },
+  {
+    id: 'selfLearning',
+    label: 'Self learning',
+    title: 'Practice with guided feedback',
+    steps: [
+      'Switch to Practice mode to hide answers and test yourself.',
+      'Use Classroom Extensions, then Self Learning, for pop-up feedback.',
+      'Try Point Group Finder when you want flowchart-style guidance.',
+    ],
+    action: 'Enter Practice mode',
+  },
+];
+
+function ModuleGuide({ activeId, onSelect, onClose, onAction }) {
+  const active = guideOptions.find(item => item.id === activeId) || guideOptions[0];
+  return (
+    <section className="glass rounded-xl p-3">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Interactive Guide</p>
+          <h2 className="mt-1 text-base font-black text-white">How to use this module</h2>
+          <p className="mt-1 text-xs leading-5 text-gray-400">Pick what you want to do, then follow the focused steps. You can close this guide and reopen it from the Guide button.</p>
+        </div>
+        <button onClick={onClose} className="btn-secondary inline-flex items-center gap-2 text-xs">
+          <X size={14} />
+          Close guide
+        </button>
+      </div>
+
+      <div className="mt-3 grid gap-3 xl:grid-cols-[260px_minmax(0,1fr)]">
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+          {guideOptions.map(option => (
+            <button
+              key={option.id}
+              onClick={() => onSelect(option.id)}
+              className={`rounded-lg border p-3 text-left text-xs transition-colors ${option.id === active.id ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-50' : 'border-white/10 bg-white/[0.035] text-gray-300 hover:bg-white/[0.07]'}`}
+            >
+              <span className="font-black">{option.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-slate-950/45 p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Selected guide path</p>
+              <h3 className="mt-1 text-lg font-black text-white">{active.title}</h3>
+            </div>
+            <button onClick={() => onAction(active.id)} className="btn-primary inline-flex items-center gap-2 text-xs">
+              <MousePointerClick size={14} />
+              {active.action}
+            </button>
+          </div>
+          <ol className="mt-4 grid gap-2 md:grid-cols-3">
+            {active.steps.map((step, index) => (
+              <li key={step} className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs leading-5 text-gray-300">
+                <span className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-emerald-300">Step {index + 1}</span>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function downloadDataUrl(dataUrl, filename) {
   const link = document.createElement('a');
@@ -80,14 +193,22 @@ export function MolecularSymmetryModule() {
   const [bondStyle, setBondStyle] = useState('ball-stick');
   const [hideAnswers, setHideAnswers] = useState(false);
   const [moduleContrast, setModuleContrast] = useState(false);
+  const [showGuide, setShowGuide] = useLocalStorage('cu-symmetry-guide-open', true);
+  const [activeGuideId, setActiveGuideId] = useState('start');
+  const guideElementTypeRef = useRef(null);
   const [progressState, setProgressState] = useState(() => loadSymmetryProgress());
 
   useEffect(() => {
-    setSelectedElement(molecule.symmetryElements[1] || molecule.symmetryElements[0]);
+    const guidedType = guideElementTypeRef.current;
+    const guidedElement = guidedType
+      ? molecule.symmetryElements.find(element => element.type === guidedType)
+      : null;
+    setSelectedElement(guidedElement || molecule.symmetryElements[1] || molecule.symmetryElements[0]);
     setOperationResult(null);
     setProgress(0);
     setIsPlaying(false);
     setOperationPower(1);
+    guideElementTypeRef.current = null;
   }, [molecule]);
 
   useEffect(() => {
@@ -151,6 +272,41 @@ export function MolecularSymmetryModule() {
     document.querySelector('[data-symmetry-module]')?.requestFullscreen?.();
   };
 
+  const runGuideAction = (guideId) => {
+    if (guideId === 'start') {
+      setMode('Learn');
+      setHideAnswers(false);
+      return;
+    }
+
+    if (guideId === 'operations') {
+      const methane = getMoleculeById('methane');
+      const methaneSn = methane.symmetryElements.find(element => element.type === 'Sn') || methane.symmetryElements[1];
+      setMode('Learn');
+      if (molecule.id === 'methane') {
+        setSelectedElement(methaneSn);
+      } else {
+        guideElementTypeRef.current = 'Sn';
+      }
+      setMoleculeId('methane');
+      setHideAnswers(false);
+      setOperationPower(1);
+      setOperationResult(null);
+      return;
+    }
+
+    if (guideId === 'pointGroup') {
+      setMode('Learn');
+      setHideAnswers(false);
+      return;
+    }
+
+    if (guideId === 'prediction' || guideId === 'selfLearning') {
+      setMode('Practice');
+      setHideAnswers(true);
+    }
+  };
+
   return (
     <div data-symmetry-module className={`page-transition min-h-screen p-4 md:p-6 ${moduleContrast ? 'high-contrast' : ''}`}>
       <div className="mx-auto max-w-[1600px] space-y-3">
@@ -176,10 +332,19 @@ export function MolecularSymmetryModule() {
                 ))}
               </div>
               <button onClick={resetOperation} className="btn-secondary inline-flex items-center gap-2"><RotateCcw size={15} />Reset</button>
-              <button onClick={() => alert('Drag to rotate, scroll to zoom, right-drag to pan. Select an element, apply the operation, then compare atom mapping and point group reasoning.')} className="btn-secondary inline-flex items-center gap-2"><HelpCircle size={15} />Help</button>
+              <button onClick={() => setShowGuide(true)} className="btn-secondary inline-flex items-center gap-2"><HelpCircle size={15} />Guide</button>
             </div>
           </div>
         </header>
+
+        {showGuide && (
+          <ModuleGuide
+            activeId={activeGuideId}
+            onSelect={setActiveGuideId}
+            onClose={() => setShowGuide(false)}
+            onAction={runGuideAction}
+          />
+        )}
 
         <main className="grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
           <aside className="space-y-3">

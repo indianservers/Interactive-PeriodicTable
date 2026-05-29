@@ -5,6 +5,7 @@ const CPK = {
   O: { color: '#ef4444', radius: 0.36 },
   B: { color: '#f59e0b', radius: 0.38 },
   F: { color: '#22c55e', radius: 0.34 },
+  Cl: { color: '#16a34a', radius: 0.48 },
   Fe: { color: '#f97316', radius: 0.52 },
   Xe: { color: '#a78bfa', radius: 0.58 },
   X: { color: '#38bdf8', radius: 0.24 },
@@ -105,7 +106,9 @@ export const symmetryTheoryCards = {
   },
   Sn: {
     title: 'Improper Rotation Sn',
-    body: 'An improper rotation is a Cn rotation followed by reflection in the plane perpendicular to that axis.',
+    body: 'An improper rotational axis Sn means: perform a proper Cn rotation first, then reflect the rotated molecule through the plane perpendicular to that axis. If these two operations together lead to the original configuration, Sn is present.',
+    test: 'Student test: Cn rotation alone may not give the original molecule. The combined operation Cn + perpendicular reflection must give the original configuration.',
+    example: 'For an S4 axis, rotate by 90 degrees, then reflect in the plane perpendicular to the axis. If the molecule now looks unchanged, that axis is S4.',
   },
 };
 
@@ -210,7 +213,7 @@ export const moleculeLibrary = [
       { id: 'C3-H1', label: 'C3 through C-H1', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'Rotation about a C-H bond cycles the other three hydrogens.' },
       { id: 'C2-x', label: 'C2 through opposite edges', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A 180 degree rotation swaps two pairs of hydrogens.' },
       { id: 'sigma-d', label: 'sigma d plane', type: 'sigma', planeNormal: [1, -1, 0], planePoint: [0, 0, 0], description: 'A dihedral plane contains two C-H bonds and bisects the opposite pair.' },
-      { id: 'S4-x', label: 'S4 axis', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'An S4 operation is characteristic of Td symmetry.' },
+      { id: 'S4-x', label: 'S4 axis', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'Rotate 90 degrees about this axis, then reflect in the plane perpendicular to it; the tetrahedral arrangement matches the original.' },
     ],
     distractorElements: [
       { id: 'i-test', label: 'inversion centre test', type: 'i', description: 'Td molecules lack inversion symmetry.' },
@@ -224,6 +227,122 @@ export const moleculeLibrary = [
     commonMistakes: [
       'Assigning Oh because the molecule feels highly symmetric.',
       'Looking for a horizontal plane in a tetrahedron.',
+    ],
+  },
+  {
+    id: 'methyl-chloride',
+    name: 'Methyl chloride',
+    formula: 'CH3Cl',
+    geometry: 'Substituted tetrahedral',
+    pointGroup: 'C3v',
+    difficulty: 'Intermediate',
+    notes: 'Replacing one H of methane by Cl lowers Td symmetry to C3v while keeping a C3 axis along C-Cl.',
+    atoms: [
+      atom('C', 'C', [0, 0, 0]),
+      atom('Cl', 'Cl', [1, 1, 1]),
+      atom('H1', 'H', [-1, -1, 1]),
+      atom('H2', 'H', [-1, 1, -1]),
+      atom('H3', 'H', [1, -1, -1]),
+    ],
+    bonds: [bond('C', 'Cl'), bond('C', 'H1'), bond('C', 'H2'), bond('C', 'H3')],
+    symmetryElements: [
+      E,
+      { id: 'C3-Cl', label: 'C3 along C-Cl', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'A 120 degree rotation around the C-Cl axis cycles the three hydrogens.' },
+      { id: 'sv-Cl-H1', label: 'sigma v through Cl/H1', type: 'sigma', planeNormal: [1, -1, 0], planePoint: [0, 0, 0], description: 'A vertical plane contains C-Cl and one C-H bond and swaps the other two hydrogens.' },
+      { id: 'sv-Cl-H2', label: 'sigma v through Cl/H2', type: 'sigma', planeNormal: [1, 0, -1], planePoint: [0, 0, 0], description: 'A second vertical mirror plane contains the C-Cl axis.' },
+      { id: 'sv-Cl-H3', label: 'sigma v through Cl/H3', type: 'sigma', planeNormal: [0, 1, -1], planePoint: [0, 0, 0], description: 'A third vertical mirror plane contains the C-Cl axis.' },
+    ],
+    distractorElements: [
+      { id: 'S4-test', label: 'S4 test from methane', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'Substitution destroys the methane S4 operation.' },
+      { id: 'i-test', label: 'inversion centre test', type: 'i', description: 'CH3Cl has no inversion centre.' },
+    ],
+    pointGroupReasoning: [
+      'The molecule is a substituted tetrahedron, not linear.',
+      'One C3 axis remains along the C-Cl bond.',
+      'Three vertical mirror planes contain the C3 axis.',
+      'There is no horizontal plane, inversion centre, or Td equivalence.',
+      'Therefore the point group is C3v.',
+    ],
+    commonMistakes: [
+      'Keeping Td after replacing one hydrogen by chlorine.',
+      'Missing the permanent dipole along the C-Cl direction.',
+    ],
+  },
+  {
+    id: 'dichloromethane',
+    name: 'Dichloromethane',
+    formula: 'CH2Cl2',
+    geometry: 'Disubstituted tetrahedral',
+    pointGroup: 'C2v',
+    difficulty: 'Intermediate',
+    notes: 'Replacing two H atoms by Cl lowers the methane framework to C2v.',
+    atoms: [
+      atom('C', 'C', [0, 0, 0]),
+      atom('H1', 'H', [1, 1, 1]),
+      atom('H2', 'H', [-1, -1, 1]),
+      atom('Cl1', 'Cl', [-1, 1, -1]),
+      atom('Cl2', 'Cl', [1, -1, -1]),
+    ],
+    bonds: [bond('C', 'H1'), bond('C', 'H2'), bond('C', 'Cl1'), bond('C', 'Cl2')],
+    symmetryElements: [
+      E,
+      { id: 'C2-z', label: 'C2 through H/H and Cl/Cl bisectors', type: 'Cn', order: 2, axis: [0, 0, 1], description: 'A 180 degree rotation swaps the two hydrogens and swaps the two chlorines.' },
+      { id: 'sigma-v-h', label: 'sigma v through H pair', type: 'sigma', planeNormal: [1, -1, 0], planePoint: [0, 0, 0], description: 'This vertical plane contains both C-H bonds and swaps the chlorines.' },
+      { id: 'sigma-v-cl', label: 'sigma v through Cl pair', type: 'sigma', planeNormal: [1, 1, 0], planePoint: [0, 0, 0], description: 'This vertical plane contains both C-Cl bonds and swaps the hydrogens.' },
+    ],
+    distractorElements: [
+      { id: 'C3-test', label: 'C3 test', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'The H/H/Cl/Cl substitution pattern removes the C3 axes.' },
+      { id: 'i-test', label: 'inversion centre test', type: 'i', description: 'CH2Cl2 has no inversion centre.' },
+    ],
+    pointGroupReasoning: [
+      'The molecule is non-linear and tetrahedral about carbon.',
+      'The highest proper rotation axis is C2.',
+      'Two vertical mirror planes contain the C2 axis.',
+      'There is no C3 axis and no inversion centre.',
+      'Therefore the point group is C2v.',
+    ],
+    commonMistakes: [
+      'Assuming any tetrahedral carbon must be Td.',
+      'Calling CH2Cl2 chiral even though it has mirror planes.',
+    ],
+  },
+  {
+    id: 'chloroform',
+    name: 'Chloroform',
+    formula: 'CHCl3',
+    geometry: 'Substituted tetrahedral',
+    pointGroup: 'C3v',
+    difficulty: 'Intermediate',
+    notes: 'Three equivalent chlorines restore a C3 axis, but the molecule remains lower than Td.',
+    atoms: [
+      atom('C', 'C', [0, 0, 0]),
+      atom('H', 'H', [1, 1, 1]),
+      atom('Cl1', 'Cl', [-1, -1, 1]),
+      atom('Cl2', 'Cl', [-1, 1, -1]),
+      atom('Cl3', 'Cl', [1, -1, -1]),
+    ],
+    bonds: [bond('C', 'H'), bond('C', 'Cl1'), bond('C', 'Cl2'), bond('C', 'Cl3')],
+    symmetryElements: [
+      E,
+      { id: 'C3-H', label: 'C3 along C-H', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'A 120 degree rotation around the C-H axis cycles the three chlorines.' },
+      { id: 'sv-H-Cl1', label: 'sigma v through H/Cl1', type: 'sigma', planeNormal: [1, -1, 0], planePoint: [0, 0, 0], description: 'A vertical plane contains C-H and one C-Cl bond and swaps the other chlorines.' },
+      { id: 'sv-H-Cl2', label: 'sigma v through H/Cl2', type: 'sigma', planeNormal: [1, 0, -1], planePoint: [0, 0, 0], description: 'A second vertical mirror plane contains the C-H axis.' },
+      { id: 'sv-H-Cl3', label: 'sigma v through H/Cl3', type: 'sigma', planeNormal: [0, 1, -1], planePoint: [0, 0, 0], description: 'A third vertical mirror plane contains the C-H axis.' },
+    ],
+    distractorElements: [
+      { id: 'S4-test', label: 'S4 test from methane', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'Three chlorines and one hydrogen do not preserve the methane S4 operation.' },
+      { id: 'i-test', label: 'inversion centre test', type: 'i', description: 'CHCl3 has no inversion centre.' },
+    ],
+    pointGroupReasoning: [
+      'The molecule is a substituted tetrahedron, not linear.',
+      'One C3 axis remains along the C-H bond.',
+      'Three vertical mirror planes are present.',
+      'The full Td symmetry of methane is not present.',
+      'Therefore the point group is C3v.',
+    ],
+    commonMistakes: [
+      'Expecting symmetry to decrease monotonically with every substitution.',
+      'Forgetting that three equivalent chlorines restore C3v symmetry.',
     ],
   },
   {
@@ -241,7 +360,7 @@ export const moleculeLibrary = [
       { id: 'C3-vertex', label: 'C3 through a vertex', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'A 120 degree rotation fixes one vertex and cycles the other three.' },
       { id: 'C2-edge-midpoints', label: 'C2 through opposite edge midpoints', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A 180 degree rotation swaps two pairs of vertices.' },
       { id: 'sigma-d-tetra', label: 'sigma d plane', type: 'sigma', planeNormal: [1, -1, 0], planePoint: [0, 0, 0], description: 'A dihedral mirror plane contains two vertices and bisects the opposite edge.' },
-      { id: 'S4-tetra', label: 'S4 axis', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'The tetrahedron has S4 axes through opposite edge midpoints.' },
+      { id: 'S4-tetra', label: 'S4 axis', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'Rotate 90 degrees through opposite edge midpoints, then reflect in the perpendicular plane to recover the same tetrahedron.' },
     ],
     distractorElements: [
       { id: 'i-test', label: 'inversion centre test', type: 'i', description: 'A tetrahedron has no inversion centre.' },
@@ -275,7 +394,7 @@ export const moleculeLibrary = [
       { id: 'C2-octa-edge', label: 'C2 through opposite edges', type: 'Cn', order: 2, axis: [1, 1, 0], description: 'A 180 degree rotation through opposite edge midpoints is valid for Oh symmetry.' },
       { id: 'sigma-h-octa', label: 'sigma h equatorial plane', type: 'sigma', planeNormal: [0, 0, 1], planePoint: [0, 0, 0], description: 'The equatorial plane swaps the two axial vertices.' },
       { id: 'i-octa', label: 'inversion centre', type: 'i', description: 'The centre of the octahedron maps every vertex to the opposite vertex.' },
-      { id: 'S4-octa-z', label: 'S4 axis', type: 'Sn', order: 4, axis: [0, 0, 1], description: 'C4 followed by reflection through the equatorial plane remains a valid operation.' },
+      { id: 'S4-octa-z', label: 'S4 axis', type: 'Sn', order: 4, axis: [0, 0, 1], description: 'Rotate 90 degrees around the C4 axis, then reflect through the equatorial plane perpendicular to that axis.' },
     ],
     distractorElements: [
       { id: 'C5-test', label: 'C5 test axis', type: 'Cn', order: 5, axis: [0, 0, 1], description: 'Octahedral symmetry has no five-fold axis.' },
@@ -315,7 +434,7 @@ export const moleculeLibrary = [
       { id: 'sigma-h', label: 'sigma h molecular plane', type: 'sigma', planeNormal: [0, 0, 1], planePoint: [0, 0, 0], description: 'All atoms lie in the horizontal molecular plane.' },
       { id: 'sigma-v', label: 'sigma v through F1/F3', type: 'sigma', planeNormal: [0, 1, 0], planePoint: [0, 0, 0], description: 'A vertical plane containing the F1-Xe-F3 line.' },
       { id: 'i', label: 'inversion centre', type: 'i', description: 'Xenon is the inversion centre for the square-planar molecule.' },
-      { id: 'S4-z', label: 'S4 axis', type: 'Sn', order: 4, axis: [0, 0, 1], description: 'C4 rotation followed by reflection in the molecular plane is valid.' },
+      { id: 'S4-z', label: 'S4 axis', type: 'Sn', order: 4, axis: [0, 0, 1], description: 'Rotate 90 degrees around the C4 axis, then reflect in the molecular plane perpendicular to that axis.' },
     ],
     distractorElements: [
       { id: 'C3-test', label: 'C3 test axis', type: 'Cn', order: 3, axis: [0, 0, 1], description: 'A square planar molecule is not invariant to 120 degree rotation.' },
@@ -352,7 +471,7 @@ export const moleculeLibrary = [
       { id: 'C2-F1', label: 'C2 axis in plane', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A C2 axis lies along each B-F bond.' },
       { id: 'sigma-h', label: 'sigma h molecular plane', type: 'sigma', planeNormal: [0, 0, 1], planePoint: [0, 0, 0], description: 'The whole molecule lies in the horizontal mirror plane.' },
       { id: 'sigma-v', label: 'sigma v through B-F1', type: 'sigma', planeNormal: [0, 1, 0], planePoint: [0, 0, 0], description: 'A vertical plane contains one B-F bond and swaps the other fluorines.' },
-      { id: 'S3-z', label: 'S3 axis', type: 'Sn', order: 3, axis: [0, 0, 1], description: 'C3 followed by reflection in the molecular plane is also valid.' },
+      { id: 'S3-z', label: 'S3 axis', type: 'Sn', order: 3, axis: [0, 0, 1], description: 'Rotate 120 degrees around the C3 axis, then reflect in the molecular plane perpendicular to that axis.' },
     ],
     distractorElements: [
       { id: 'i-test', label: 'inversion centre test', type: 'i', description: 'A trigonal planar AB3 molecule has no inversion centre.' },
@@ -421,7 +540,7 @@ export const moleculeLibrary = [
       { id: 'sigma-h', label: 'sigma h molecular plane', type: 'sigma', planeNormal: [0, 0, 1], planePoint: [0, 0, 0], description: 'All atoms lie in this mirror plane.' },
       { id: 'sigma-v', label: 'sigma v through opposite atoms', type: 'sigma', planeNormal: [0, 1, 0], planePoint: [0, 0, 0], description: 'A vertical plane through opposite C-H bonds.' },
       { id: 'i', label: 'inversion centre', type: 'i', description: 'The ring centre is an inversion centre.' },
-      { id: 'S6-z', label: 'S6 axis', type: 'Sn', order: 6, axis: [0, 0, 1], description: 'C6 rotation followed by reflection through the molecular plane.' },
+      { id: 'S6-z', label: 'S6 axis', type: 'Sn', order: 6, axis: [0, 0, 1], description: 'Rotate 60 degrees around the C6 axis, then reflect through the molecular plane perpendicular to that axis.' },
     ],
     distractorElements: [{ id: 'C5-test', label: 'C5 test axis', type: 'Cn', order: 5, axis: [0, 0, 1], description: 'A hexagon is not invariant under 72 degree rotation.' }],
     pointGroupReasoning: [
@@ -518,7 +637,7 @@ export const moleculeLibrary = [
       E,
       { id: 'C2-yz', label: 'C2 diagonal axis', type: 'Cn', order: 2, axis: [0, 1, 1], description: 'One C2 axis swaps terminal carbons and pairs of hydrogens.' },
       { id: 'C2-y-z', label: 'C2 perpendicular diagonal axis', type: 'Cn', order: 2, axis: [0, 1, -1], description: 'A second C2 axis perpendicular to the molecular axis.' },
-      { id: 'S4-x', label: 'S4 molecular axis', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'S4 about the C=C=C axis maps the perpendicular terminal groups.' },
+      { id: 'S4-x', label: 'S4 molecular axis', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'Rotate 90 degrees about the C=C=C axis, then reflect in the plane perpendicular to the chain; the terminal groups map correctly.' },
       { id: 'sigma-d', label: 'sigma d plane', type: 'sigma', planeNormal: [0, 1, 0], planePoint: [0, 0, 0], description: 'A dihedral plane bisects one terminal hydrogen pair and leaves the perpendicular pair in the plane.' },
     ],
     distractorElements: [
@@ -564,7 +683,7 @@ export const moleculeLibrary = [
       { id: 'C5-z', label: 'C5 sandwich axis', type: 'Cn', order: 5, axis: [0, 0, 1], description: 'Rotation around the Fe-ring axis cycles each cyclopentadienyl ring.' },
       { id: 'C2-edge', label: 'C2 perpendicular axis', type: 'Cn', order: 2, axis: [0.951, 0.309, 0], description: 'A perpendicular C2 axis interchanges the rings in the staggered model.' },
       { id: 'i', label: 'inversion centre', type: 'i', description: 'The staggered model has an inversion centre at iron.' },
-      { id: 'S10-z', label: 'S10 axis', type: 'Sn', order: 10, axis: [0, 0, 1], description: 'Improper rotation helps distinguish the staggered D5d description.' },
+      { id: 'S10-z', label: 'S10 axis', type: 'Sn', order: 10, axis: [0, 0, 1], description: 'Rotate 36 degrees around the sandwich axis, then reflect in the plane between the rings to match the staggered D5d model.' },
     ],
     distractorElements: [
       { id: 'sigma-h-test', label: 'sigma h eclipsed comparison', type: 'sigma', planeNormal: [0, 0, 1], planePoint: [0, 0, 0], description: 'This becomes valid in the eclipsed D5h teaching comparison, not this staggered coordinate set.' },
@@ -594,7 +713,7 @@ export const moleculeLibrary = [
       { id: 'C2-ico-edge', label: 'C2 through opposite edges', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A 180 degree rotation exchanges pairs of vertices through opposite edge midpoints.' },
       { id: 'sigma-ico', label: 'icosahedral mirror plane', type: 'sigma', planeNormal: [1, 0, 0], planePoint: [0, 0, 0], description: 'One of the mirror planes in the full Ih group.' },
       { id: 'i-ico', label: 'inversion centre', type: 'i', description: 'Each vertex has an opposite partner through the centre.' },
-      { id: 'S10-ico', label: 'S10 five-fold improper axis', type: 'Sn', order: 10, axis: [0, 1, PHI], description: 'An improper rotation associated with the five-fold axis is present in Ih.' },
+      { id: 'S10-ico', label: 'S10 five-fold improper axis', type: 'Sn', order: 10, axis: [0, 1, PHI], description: 'Rotate 36 degrees around the five-fold direction, then reflect in the plane perpendicular to that axis.' },
     ],
     distractorElements: [
       { id: 'C4-test', label: 'C4 test axis', type: 'Cn', order: 4, axis: [0, 1, PHI], description: 'Icosahedral symmetry has five-fold, three-fold, and two-fold axes, but no four-fold axis.' },
@@ -627,7 +746,7 @@ export const moleculeLibrary = [
       { id: 'C2-dodeca-edge', label: 'C2 through opposite edges', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A two-fold axis passes through opposite edge midpoints.' },
       { id: 'sigma-dodeca', label: 'dodecahedral mirror plane', type: 'sigma', planeNormal: [1, 0, 0], planePoint: [0, 0, 0], description: 'One of the mirror planes of the full Ih group.' },
       { id: 'i-dodeca', label: 'inversion centre', type: 'i', description: 'Each vertex has an opposite vertex through the centre.' },
-      { id: 'S10-dodeca', label: 'S10 five-fold improper axis', type: 'Sn', order: 10, axis: [PHI, 1, 0], description: 'The five-fold axis also supports an S10 improper operation.' },
+      { id: 'S10-dodeca', label: 'S10 five-fold improper axis', type: 'Sn', order: 10, axis: [PHI, 1, 0], description: 'Rotate 36 degrees around the five-fold direction, then reflect in the plane perpendicular to that axis.' },
     ],
     distractorElements: [
       { id: 'C4-test', label: 'C4 test axis', type: 'Cn', order: 4, axis: [PHI, 1, 0], description: 'A regular dodecahedron has no four-fold rotational symmetry.' },

@@ -24,10 +24,10 @@ const operationTypes = [
   },
   {
     type: 'Sn',
-    title: 'Operate Improper Axis',
+    title: 'Operate Improper Rotational Axis',
     icon: Move3D,
     tone: 'violet',
-    description: 'Rotate around an axis, then reflect in the plane perpendicular to that axis.',
+    description: 'Step 1: perform proper Cn rotation. Step 2: reflect in the perpendicular plane. Together they must give the original configuration.',
   },
 ];
 
@@ -83,7 +83,7 @@ export function SymmetryOperationLab({
       <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-300">Student Operation Lab</p>
-          <h2 className="text-base font-black text-white">Operate axis, plane, centre, and improper axis</h2>
+          <h2 className="text-base font-black text-white">Operate axis, plane, centre, and improper rotational axis</h2>
           <p className="mt-1 text-xs text-gray-400">Built from the lecture definition: operate a line, plane, or point and test whether the molecule is indistinguishable.</p>
         </div>
         <button
@@ -165,6 +165,15 @@ export function SymmetryOperationLab({
           <p className="mt-1 text-sm font-black text-white">{operationResult ? (operationResult.valid ? 'Indistinguishable' : 'Not a symmetry operation') : 'Operate to test'}</p>
         </div>
       </div>
+
+      {selectedElement?.type === 'Sn' && (
+        <div className="mt-3 rounded-lg border border-violet-400/25 bg-violet-400/10 p-3 text-xs text-violet-50">
+          <p className="font-black">Improper rotational axis S{selectedElement.order}</p>
+          <p className="mt-1 leading-5 text-violet-100/90">
+            First perform the proper C{selectedElement.order} rotation by {Math.round(360 / (selectedElement.order || 1))} degrees, then reflect in the plane perpendicular to that same axis. If rotation followed by reflection leads to the original configuration, S{selectedElement.order} is present.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

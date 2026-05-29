@@ -19,6 +19,11 @@ export function SymmetryOperationControls({
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Operation Timeline</p>
           <p className="mt-1 truncate text-sm text-white">{selectedElement ? selectedElement.label : 'Select a symmetry element'}</p>
+          {selectedElement?.type === 'Sn' && (
+            <p className="mt-1 text-[11px] leading-4 text-violet-100">
+              S{selectedElement.order}: proper C{selectedElement.order} rotation followed by perpendicular reflection must give the original configuration.
+            </p>
+          )}
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
             <div className="h-full rounded-full bg-cyan-400 transition-all" style={{ width: `${Math.round(progress * 100)}%` }} />
           </div>

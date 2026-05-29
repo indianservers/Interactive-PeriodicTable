@@ -17,13 +17,60 @@ import { useLocalStorage } from './hooks/useLocalStorage.js';
 
 const MoleculeScenePage = lazy(() => import('./pages/MoleculeScenePage.jsx'));
 const MolecularSymmetryModule = lazy(() => import('./modules/molecular-symmetry/MolecularSymmetryModule.jsx'));
+const ChemistrySolverModule = lazy(() => import('./modules/chemistry-solver/ChemistrySolverModule.jsx'));
 
 const pageHashMap = {
   symmetry: 'molecular-symmetry',
+  'chemistry-solver': 'chemistry-solver',
 };
 const hashPageMap = {
   'molecular-symmetry': 'symmetry',
+  'chemistry-solver': 'chemistry-solver',
 };
+
+function LoadingProgress({ title, detail, height = 620, reducedMotion = false }) {
+  const [progress, setProgress] = useState(12);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setProgress(78);
+      return undefined;
+    }
+
+    const timer = window.setInterval(() => {
+      setProgress(value => {
+        if (value >= 92) return value;
+        const increment = value < 45 ? 9 : value < 75 ? 5 : 2;
+        return Math.min(92, value + increment);
+      });
+    }, 180);
+
+    return () => window.clearInterval(timer);
+  }, [reducedMotion]);
+
+  return (
+    <div className="page-transition p-4 md:p-6 max-w-7xl mx-auto space-y-3" role="status" aria-live="polite" aria-label={title}>
+      <div className="glass rounded-2xl p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-300">Loading Progress</p>
+            <h2 className="mt-1 text-base font-black text-white">{title}</h2>
+            <p className="mt-1 text-xs text-gray-400">{detail}</p>
+          </div>
+          <div className="text-2xl font-black tabular-nums text-cyan-100">{progress}%</div>
+        </div>
+        <div className="mt-4 h-3 overflow-hidden rounded-full border border-white/10 bg-white/10">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-300 transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+      <div className="skeleton h-12 rounded-2xl" />
+      <div className="skeleton rounded-2xl" style={{ height }} />
+    </div>
+  );
+}
 
 function App() {
   const { theme, toggle: toggleTheme, isDark } = useTheme();
@@ -41,12 +88,16 @@ function App() {
   const [recentPages, setRecentPages] = useLocalStorage('cu-recent-pages', []);
   const [favoritePages, setFavoritePages] = useLocalStorage('cu-favorite-pages', []);
   const [serviceWorkerUpdate, setServiceWorkerUpdate] = useState(null);
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [isOnline, setIsOnline] = useState(() => navigator.onLine);
+  const [routeProgress, setRouteProgress] = useState(100);
 
   // Cross-page element state
   const [atomViewerElement, setAtomViewerElement] = useState(null);
   const [compareElement, setCompareElement] = useState(null);
 
   const navigate = useCallback((page) => {
+    setRouteProgress(18);
     setCurrentPage(page);
     const nextHash = pageHashMap[page] || page;
     if (window.location.hash.replace(/^#\/?/, '') !== nextHash) {
@@ -58,10 +109,39 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#\/?/, '');
+      setRouteProgress(18);
       setCurrentPage(hashPageMap[hash] || hash || 'dashboard');
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    setRouteProgress(64);
+    const done = window.setTimeout(() => setRouteProgress(100), 260);
+    return () => window.clearTimeout(done);
+  }, [currentPage]);
+
+  useEffect(() => {
+    const handleInstallPrompt = (event) => {
+      event.preventDefault();
+      setInstallPrompt(event);
+    };
+    const handleInstalled = () => setInstallPrompt(null);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('beforeinstallprompt', handleInstallPrompt);
+    window.addEventListener('appinstalled', handleInstalled);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
+      window.removeEventListener('appinstalled', handleInstalled);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   useEffect(() => {
@@ -109,6 +189,13 @@ function App() {
     }
   };
 
+  const handleInstallApp = useCallback(async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice.catch(() => null);
+    setInstallPrompt(null);
+  }, [installPrompt]);
+
   const toggleThemeWithReveal = useCallback((event) => {
     const rect = event?.currentTarget?.getBoundingClientRect?.();
     const x = rect ? rect.left + rect.width / 2 : window.innerWidth - 32;
@@ -144,26 +231,20 @@ function App() {
         return <AtomVisualizerPage initialElement={atomViewerElement} reducedMotion={reducedMotion} />;
       case 'molecule':
         return (
-          <Suspense fallback={
-            <div className="page-transition p-4 md:p-6 max-w-7xl mx-auto space-y-3">
-              <div className="skeleton h-12 rounded-2xl" />
-              <div className="skeleton h-[560px] rounded-2xl" />
-              <p className="text-center text-sm text-gray-400">Loading 3D viewer...</p>
-            </div>
-          }>
+          <Suspense fallback={<LoadingProgress title="Loading 3D viewer" detail="Preparing molecular canvas and controls..." height={560} reducedMotion={reducedMotion} />}>
             <MoleculeScenePage />
           </Suspense>
         );
       case 'symmetry':
         return (
-          <Suspense fallback={
-            <div className="page-transition p-4 md:p-6 max-w-7xl mx-auto space-y-3">
-              <div className="skeleton h-12 rounded-2xl" />
-              <div className="skeleton h-[620px] rounded-2xl" />
-              <p className="text-center text-sm text-gray-400">Loading molecular symmetry laboratory...</p>
-            </div>
-          }>
+          <Suspense fallback={<LoadingProgress title="Loading molecular symmetry laboratory" detail="Preparing symmetry operations, point-group tools, and 3D viewer..." height={620} reducedMotion={reducedMotion} />}>
             <MolecularSymmetryModule />
+          </Suspense>
+        );
+      case 'chemistry-solver':
+        return (
+          <Suspense fallback={<LoadingProgress title="Loading chemistry solver" detail="Loading solved question bank, filters, and learning assistant..." height={620} reducedMotion={reducedMotion} />}>
+            <ChemistrySolverModule />
           </Suspense>
         );
       case 'quiz':
@@ -229,9 +310,18 @@ function App() {
         favoritePages={favoritePages}
         onFavoritePageToggle={toggleFavoritePage}
         onSelectElement={handleViewAtom}
+        canInstall={Boolean(installPrompt)}
+        onInstallApp={handleInstallApp}
+        isOnline={isOnline}
       >
         {renderPage()}
       </AppShell>
+      <div className="pointer-events-none fixed left-0 top-0 z-[120] h-1 w-full bg-transparent">
+        <div
+          className="h-full bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-300 shadow-lg shadow-cyan-500/30 transition-all duration-300"
+          style={{ width: `${routeProgress}%`, opacity: routeProgress >= 100 ? 0 : 1 }}
+        />
+      </div>
       {serviceWorkerUpdate && (
         <button
           onClick={serviceWorkerUpdate}

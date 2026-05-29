@@ -6,7 +6,7 @@ export const decisionTreeQuestions = [
   'Check for special high-symmetry families.',
   'Find the principal proper rotation axis Cn.',
   'Check for n C2 axes perpendicular to Cn.',
-  'Check for sigma h, sigma v, sigma d, inversion, and Sn.',
+  'Check for mirror planes, inversion, and improper rotational axes Sn: proper Cn rotation followed by perpendicular reflection gives the original configuration.',
   'Use the classification family to assign the point group.',
   'Test optical activity from improper symmetry elements.',
 ];
@@ -30,7 +30,7 @@ export const pointGroupFamilies = [
   {
     family: 'Improper-axis groups',
     groups: ['Sn'],
-    criteria: 'An improper rotation axis is the defining element when no higher cyclic or dihedral family fits.',
+    criteria: 'An improper rotational axis Sn is the defining element when proper Cn rotation followed by reflection in the perpendicular plane gives the original configuration, but no higher cyclic or dihedral family fits.',
   },
   {
     family: 'Linear groups',
@@ -122,13 +122,13 @@ export function getPointGroupAssignmentSteps(molecule) {
       detail: 'Dn groups require n C2 axes perpendicular to the principal Cn axis.',
     },
     {
-      title: 'Add planes, inversion, and Sn',
+      title: 'Add planes, inversion, and improper axes Sn',
       result: [
         inventory.hasMirrorPlane ? 'mirror plane present' : 'no mirror plane listed',
         inventory.hasInversion ? 'inversion present' : 'no inversion centre',
         inventory.hasImproperAxis ? 'improper axis present' : 'no improper axis listed',
       ].join('; '),
-      detail: 'These suffixes distinguish Cnv/Cnh and Dnh/Dnd, and they also control chirality.',
+      detail: 'Sn means a combined operation: proper Cn rotation plus reflection in the plane perpendicular to the axis. The combined result must lead to the original configuration. These elements distinguish Cnv/Cnh and Dnh/Dnd, and they also control chirality.',
     },
     {
       title: 'Assign point group',
@@ -146,13 +146,13 @@ export function getOpticalActivityCriteria(molecule) {
     isPotentiallyOpticallyActive: !hasImproperSymmetry,
     verdict: hasImproperSymmetry ? 'Achiral by symmetry; optically inactive as a pure symmetry class.' : 'Potentially chiral; optical activity is symmetry-allowed.',
     reason: hasImproperSymmetry
-      ? 'A mirror plane, inversion centre, or improper rotation Sn makes the molecule superposable on its mirror image.'
+      ? 'A mirror plane, inversion centre, or improper rotational axis Sn (proper rotation followed by perpendicular reflection) makes the molecule superposable on its mirror image.'
       : 'No improper symmetry element is listed, so chirality is possible if the molecular constitution is not otherwise identical to its mirror image.',
     blockingElements: improperElements.map(element => element.label),
     checklist: [
       'If sigma is present, the molecule is achiral.',
       'If inversion i is present, the molecule is achiral.',
-      'If any Sn is present, including S1 as sigma or S2 as inversion, the molecule is achiral.',
+      'If any Sn operation is valid, including S1 as sigma or S2 as inversion, the molecule is achiral.',
       'Only groups lacking all improper operations can be optically active.',
     ],
   };

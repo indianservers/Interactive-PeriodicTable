@@ -43,6 +43,9 @@ export function PracticeQuizPanel({ molecule, selectedElement, validationResult,
         </label>
         <label className="block text-xs text-gray-300">
           Does it have an improper rotation axis?
+          <span className="mt-1 block text-[11px] leading-4 text-gray-500">
+            Test Sn by doing a proper Cn rotation first, then reflecting in the perpendicular plane. The combined result should be the original configuration.
+          </span>
           <select value={answers.improper} onChange={event => setAnswers(prev => ({ ...prev, improper: event.target.value }))} className="input mt-1 text-xs">
             <option value="">Choose</option>
             <option value="true">Yes</option>

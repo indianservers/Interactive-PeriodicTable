@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   Binary, ClipboardList, Compass, Eye, FileQuestion, GitCompare,
-  Orbit, Radar, ScanSearch, Shapes, SlidersHorizontal, Sparkles,
+  GraduationCap, Layers3, Orbit, Radar, ScanSearch, Shapes, SlidersHorizontal, Sparkles,
 } from 'lucide-react';
 import {
   chiralityNotes,
@@ -27,8 +27,19 @@ import {
   pointGroupFamilies,
   pointGroupSignatures,
 } from '../utils/pointGroupRules.js';
+import {
+  methaneDescentSeries,
+  pointGroupClassificationLessons,
+  pointGroupFlowchart,
+  predictionPrompts,
+  reflectionTypes,
+  symmetryOperationLessons,
+} from '../data/symmetryLearningContent.js';
 
 const featureTabs = [
+  { id: 'foundations', label: 'Foundations', icon: GraduationCap },
+  { id: 'selfLearning', label: 'Self Learning', icon: Binary },
+  { id: 'descent', label: 'Ascent/Descent', icon: Layers3 },
   { id: 'salc', label: 'SALCs', icon: Sparkles },
   { id: 'orbital', label: 'Orbital Overlay', icon: Orbit },
   { id: 'trainer', label: 'Point Group Finder', icon: Compass },
@@ -42,6 +53,9 @@ const featureTabs = [
   { id: 'assessment', label: 'Handouts', icon: FileQuestion },
 ];
 
+const commonPointGroups = ['C1', 'Cs', 'Ci', 'C2', 'C2v', 'C3v', 'C4v', 'D2d', 'D2h', 'D3h', 'D4h', 'D5d', 'D5h', 'D6h', 'Td', 'Oh', 'Ih'];
+const polarPointGroups = new Set(['C1', 'Cs', 'C2', 'C2v', 'C3v', 'C4v', 'C5v', 'C6v']);
+
 function Badge({ children, tone = 'cyan' }) {
   const tones = {
     cyan: 'border-cyan-400/25 bg-cyan-400/10 text-cyan-100',
@@ -51,6 +65,249 @@ function Badge({ children, tone = 'cyan' }) {
     violet: 'border-violet-400/25 bg-violet-400/10 text-violet-100',
   };
   return <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${tones[tone] || tones.cyan}`}>{children}</span>;
+}
+
+function isLinearMolecule(molecule) {
+  return molecule.geometry.toLowerCase().includes('linear');
+}
+
+function expectedVibrations(molecule) {
+  const atomCount = molecule.atoms.length;
+  return 3 * atomCount - (isLinearMolecule(molecule) ? 5 : 6);
+}
+
+function hasPermanentDipole(molecule) {
+  return polarPointGroups.has(molecule.pointGroup);
+}
+
+function FoundationsView({ onSelectMolecule }) {
+  const [selectedLesson, setSelectedLesson] = useState('improper-rotation');
+  const lesson = symmetryOperationLessons.find(item => item.id === selectedLesson) || symmetryOperationLessons[0];
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-3 lg:grid-cols-[260px_minmax(0,1fr)]">
+        <div className="space-y-2">
+          {symmetryOperationLessons.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setSelectedLesson(item.id)}
+              className={`w-full rounded-lg border p-3 text-left text-xs transition-colors ${selectedLesson === item.id ? 'border-cyan-400/40 bg-cyan-400/10 text-cyan-50' : 'border-white/10 bg-white/[0.035] text-gray-300 hover:bg-white/[0.07]'}`}
+            >
+              <span className="font-black">{item.title}</span>
+              {item.focus && <span className="ml-2 rounded-full border border-violet-400/25 px-2 py-0.5 text-[10px] text-violet-100">focus</span>}
+            </button>
+          ))}
+        </div>
+        <div className="rounded-xl border border-white/10 bg-slate-950/45 p-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Definitions and Types of Symmetry Operations</p>
+          <h3 className="mt-1 text-xl font-black text-white">{lesson.title}</h3>
+          <p className="mt-3 text-sm leading-6 text-gray-300">{lesson.definition}</p>
+          <p className={`mt-3 rounded-lg border p-3 text-xs leading-5 ${lesson.focus ? 'border-violet-400/25 bg-violet-400/10 text-violet-50' : 'border-cyan-400/20 bg-cyan-400/10 text-cyan-50'}`}>
+            {lesson.example}
+          </p>
+          {lesson.id === 'improper-rotation' && (
+            <div className="mt-3 grid gap-2 md:grid-cols-3">
+              {['1. Rotate around C4', '2. Reflect perpendicular', '3. Compare with original'].map(step => (
+                <div key={step} className="rounded-lg border border-violet-400/20 bg-black/20 p-3 text-xs font-bold text-violet-100">{step}</div>
+              ))}
+              <button onClick={() => onSelectMolecule?.('methane')} className="btn-primary text-xs md:col-span-3">Open methane S4 example</button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
+        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+          <p className="text-sm font-black text-white">Types of reflection planes</p>
+          <div className="mt-3 grid gap-2">
+            {reflectionTypes.map(item => (
+              <div key={item.type} className="rounded-lg border border-white/10 bg-slate-950/45 p-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge>{item.type}</Badge>
+                  <p className="text-xs font-bold text-white">{item.name}</p>
+                </div>
+                <p className="mt-2 text-[11px] leading-4 text-gray-400">{item.test}</p>
+                <p className="mt-1 text-[11px] leading-4 text-gray-500">{item.example}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+          <p className="text-sm font-black text-white">Classification of point groups</p>
+          <div className="mt-3 grid gap-2">
+            {pointGroupClassificationLessons.map(item => (
+              <div key={item.family} className="rounded-lg border border-white/10 bg-slate-950/45 p-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-xs font-bold text-white">{item.family}</p>
+                  <Badge tone="amber">{item.groups}</Badge>
+                </div>
+                <p className="mt-2 text-[11px] leading-4 text-gray-400">{item.rule}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+        <p className="text-sm font-black text-white">Flowchart for assigning point groups</p>
+        <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-5">
+          {pointGroupFlowchart.map((step, index) => (
+            <div key={step} className="rounded-lg border border-white/10 bg-slate-950/45 p-3">
+              <Badge tone={index < 3 ? 'cyan' : index < 8 ? 'violet' : 'emerald'}>Step {index + 1}</Badge>
+              <p className="mt-2 text-[11px] leading-4 text-gray-300">{step}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DescentView({ onSelectMolecule }) {
+  return (
+    <div className="space-y-3">
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Ascent and Descent in Symmetry</p>
+        <h3 className="text-lg font-black text-white">How substitution changes point group</h3>
+        <p className="mt-1 text-xs leading-5 text-gray-400">Descent means symmetry decreases when equivalent atoms are replaced by different atoms. Ascent can occur when a substitution pattern restores equivalence, as CHCl3 is higher symmetry than CH2Cl2.</p>
+      </div>
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {methaneDescentSeries.map((item, index) => (
+          <button
+            key={item.formula}
+            onClick={() => onSelectMolecule?.(item.moleculeId)}
+            className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left transition-colors hover:bg-white/[0.07]"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <Badge tone={index === 0 ? 'emerald' : item.symmetry.includes('Ascent') ? 'amber' : 'cyan'}>{item.pointGroup}</Badge>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">{index + 1}</span>
+            </div>
+            <p className="mt-3 text-lg font-black text-white">{item.formula}</p>
+            <p className="mt-1 text-xs font-bold text-cyan-100">{item.symmetry}</p>
+            <p className="mt-2 text-[11px] leading-4 text-gray-400">{item.note}</p>
+            <div className="mt-3 space-y-1 text-[11px] text-gray-500">
+              <p>Dipole: {item.dipole}</p>
+              <p>Optical activity: {item.optical}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SelfLearningPredictor({ molecule }) {
+  const [answers, setAnswers] = useState({ pointGroup: '', dipole: '', optical: '', vibration: '' });
+  const [feedback, setFeedback] = useState(null);
+  const opticalCriteria = getOpticalActivityCriteria(molecule);
+  const vibrationCount = expectedVibrations(molecule);
+  const expected = {
+    pointGroup: molecule.pointGroup,
+    dipole: hasPermanentDipole(molecule) ? 'yes' : 'no',
+    optical: opticalCriteria.isPotentiallyOpticallyActive ? 'yes' : 'no',
+    vibration: String(vibrationCount),
+  };
+  const explanations = {
+    pointGroup: `The assigned point group is ${molecule.pointGroup}: ${molecule.pointGroupReasoning.join(' ')}`,
+    dipole: hasPermanentDipole(molecule)
+      ? `${molecule.pointGroup} can support a permanent dipole along a symmetry-allowed direction.`
+      : `${molecule.pointGroup} cancels the bond dipoles by symmetry, so no permanent dipole is expected.`,
+    optical: opticalCriteria.reason,
+    vibration: `${molecule.formula} has ${molecule.atoms.length} atoms, so ${isLinearMolecule(molecule) ? 'linear 3N-5' : 'non-linear 3N-6'} gives ${vibrationCount} fundamental modes.`,
+  };
+
+  const submit = (id) => {
+    const answer = answers[id];
+    const correct = String(answer).trim().toLowerCase() === String(expected[id]).toLowerCase();
+    setFeedback({
+      id,
+      correct,
+      label: predictionPrompts.find(prompt => prompt.id === id)?.label,
+      expected: expected[id],
+      explanation: explanations[id],
+    });
+  };
+
+  const score = predictionPrompts.filter(prompt => String(answers[prompt.id]).trim().toLowerCase() === String(expected[prompt.id]).toLowerCase()).length;
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Interactive Self Learning Predictor</p>
+          <h3 className="text-lg font-black text-white">Predict before revealing the rule</h3>
+          <p className="mt-1 text-xs leading-5 text-gray-400">Each answer opens a feedback pop-up that explains the symmetry reason.</p>
+        </div>
+        <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-xs font-bold text-cyan-100">
+          Score {score}/{predictionPrompts.length}
+        </div>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+          <p className="text-sm font-black text-white">Current molecule</p>
+          <p className="mt-1 text-xs text-cyan-100">{molecule.name} | {molecule.formula} | {molecule.geometry}</p>
+          <ul className="mt-3 space-y-2 text-xs leading-5 text-gray-400">
+            <li>- Point group depends on the complete set of symmetry elements.</li>
+            <li>- Dipole moment survives only along symmetry-allowed directions.</li>
+            <li>- Optical activity is ruled out by mirror planes, inversion, or any Sn operation.</li>
+            <li>- Fundamental vibrations use 3N-6 for non-linear molecules and 3N-5 for linear molecules.</li>
+          </ul>
+        </div>
+
+        <div className="grid gap-2">
+          <label className="rounded-lg border border-white/10 bg-slate-950/45 p-3 text-xs text-gray-300">
+            {predictionPrompts[0].question}
+            <select value={answers.pointGroup} onChange={event => setAnswers(prev => ({ ...prev, pointGroup: event.target.value }))} className="input mt-2 text-xs">
+              <option value="">Choose point group</option>
+              {commonPointGroups.map(group => <option key={group} value={group}>{group}</option>)}
+            </select>
+            <button onClick={() => submit('pointGroup')} className="btn-secondary mt-2 text-xs">Check point group</button>
+          </label>
+          <label className="rounded-lg border border-white/10 bg-slate-950/45 p-3 text-xs text-gray-300">
+            {predictionPrompts[1].question}
+            <select value={answers.dipole} onChange={event => setAnswers(prev => ({ ...prev, dipole: event.target.value }))} className="input mt-2 text-xs">
+              <option value="">Choose</option>
+              <option value="yes">Has dipole moment</option>
+              <option value="no">No dipole moment</option>
+            </select>
+            <button onClick={() => submit('dipole')} className="btn-secondary mt-2 text-xs">Check dipole</button>
+          </label>
+          <label className="rounded-lg border border-white/10 bg-slate-950/45 p-3 text-xs text-gray-300">
+            {predictionPrompts[2].question}
+            <select value={answers.optical} onChange={event => setAnswers(prev => ({ ...prev, optical: event.target.value }))} className="input mt-2 text-xs">
+              <option value="">Choose</option>
+              <option value="yes">Optically active possible</option>
+              <option value="no">Optically inactive by symmetry</option>
+            </select>
+            <button onClick={() => submit('optical')} className="btn-secondary mt-2 text-xs">Check optical activity</button>
+          </label>
+          <label className="rounded-lg border border-white/10 bg-slate-950/45 p-3 text-xs text-gray-300">
+            {predictionPrompts[3].question}
+            <input value={answers.vibration} onChange={event => setAnswers(prev => ({ ...prev, vibration: event.target.value }))} className="input mt-2 text-xs" placeholder="Enter number, e.g. 9" />
+            <button onClick={() => submit('vibration')} className="btn-secondary mt-2 text-xs">Check vibrations</button>
+          </label>
+        </div>
+      </div>
+
+      {feedback && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className={`w-full max-w-md rounded-xl border p-4 shadow-2xl ${feedback.correct ? 'border-emerald-400/35 bg-slate-950' : 'border-amber-400/35 bg-slate-950'}`}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className={`text-[10px] font-bold uppercase tracking-widest ${feedback.correct ? 'text-emerald-300' : 'text-amber-300'}`}>{feedback.label}</p>
+                <h3 className="mt-1 text-lg font-black text-white">{feedback.correct ? 'Correct prediction' : 'Good attempt, revise this one'}</h3>
+              </div>
+              <button onClick={() => setFeedback(null)} className="rounded-lg border border-white/10 px-2 py-1 text-xs text-gray-300 hover:bg-white/10">Close</button>
+            </div>
+            <p className="mt-3 text-sm font-bold text-cyan-100">Expected: {feedback.expected}</p>
+            <p className="mt-2 text-xs leading-5 text-gray-300">{feedback.explanation}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function SalcView({ molecule }) {
@@ -519,13 +776,13 @@ function AssessmentView({ molecule }) {
 }
 
 export function ClassroomExtensions({ molecule, operationResult, onSelectMolecule }) {
-  const [activeTab, setActiveTab] = useState('salc');
+  const [activeTab, setActiveTab] = useState('foundations');
   return (
     <section className="glass rounded-xl p-3">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-amber-300">Classroom Extensions</p>
-          <h2 className="text-base font-black text-white">SALCs, orbitals, discovery, spectroscopy, and assessment</h2>
+          <h2 className="text-base font-black text-white">Definitions, point groups, prediction, spectra, and assessment</h2>
         </div>
         <div className="flex max-h-28 flex-wrap gap-2 overflow-y-auto pr-1">
           {featureTabs.map(tab => {
@@ -540,6 +797,9 @@ export function ClassroomExtensions({ molecule, operationResult, onSelectMolecul
         </div>
       </div>
       <div className="mt-4">
+        {activeTab === 'foundations' && <FoundationsView onSelectMolecule={onSelectMolecule} />}
+        {activeTab === 'selfLearning' && <SelfLearningPredictor molecule={molecule} />}
+        {activeTab === 'descent' && <DescentView onSelectMolecule={onSelectMolecule} />}
         {activeTab === 'salc' && <SalcView molecule={molecule} />}
         {activeTab === 'orbital' && <OrbitalOverlayView />}
         {activeTab === 'trainer' && <TrainerView molecule={molecule} />}

@@ -3,7 +3,7 @@ import { Sidebar } from './Sidebar.jsx';
 import { Topbar } from './Topbar.jsx';
 import { MobileNav } from './MobileNav.jsx';
 
-export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeToggle, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, compact = false, studyMode = false, onStudyModeToggle }) => {
+export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeToggle, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, compact = false, studyMode = false, onStudyModeToggle, canInstall = false, onInstallApp, isOnline = true }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarMini, setSidebarMini] = useState(false);
   const currentYear = new Date().getFullYear();
@@ -48,6 +48,9 @@ export const AppShell = ({ children, currentPage, onNavigate, isDark, onThemeTog
           compact={compact}
           studyMode={studyMode}
           onStudyModeToggle={onStudyModeToggle}
+          canInstall={canInstall}
+          onInstallApp={onInstallApp}
+          isOnline={isOnline}
         />
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-6">
           <div key={currentPage} className="page-transition">
