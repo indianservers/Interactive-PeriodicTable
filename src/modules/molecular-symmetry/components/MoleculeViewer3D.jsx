@@ -6,8 +6,10 @@ import { interpolateAtoms, normalize } from '../utils/symmetryOperations.js';
 
 const clearGroup = (group) => {
   while (group.children.length) {
-    const child = group.children.pop();
+    const child = group.children[0];
+    group.remove(child);
     child.traverse?.((obj) => {
+      obj.element?.remove?.();
       obj.geometry?.dispose?.();
       if (Array.isArray(obj.material)) obj.material.forEach(mat => mat.dispose?.());
       else obj.material?.dispose?.();

@@ -28,6 +28,10 @@ const titles = {
   atom: 'Atom Visualizer',
   molecule: '3D Molecule Viewer',
   symmetry: 'Molecular Symmetry Visualizer',
+  'symmetry-operations': 'Symmetry Operations Guide',
+  'symmetry-point-groups': 'Point Group Finder',
+  'symmetry-practice': 'Self Learning Predictor',
+  'symmetry-teaching': 'Symmetry Teaching Resources',
   lab: 'Chemistry Lab',
   syllabus: 'Syllabus Map',
   quiz: 'Quiz Mode',
@@ -45,6 +49,10 @@ const parentCrumbs = {
   atom: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'atom', label: 'Atom Visualizer' }],
   molecule: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'molecule', label: '3D Molecules' }],
   symmetry: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'symmetry', label: 'Molecular Symmetry' }],
+  'symmetry-operations': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'symmetry', label: 'Molecular Symmetry' }, { id: 'symmetry-operations', label: 'Operations Guide' }],
+  'symmetry-point-groups': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'symmetry', label: 'Molecular Symmetry' }, { id: 'symmetry-point-groups', label: 'Point Groups' }],
+  'symmetry-practice': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'symmetry', label: 'Molecular Symmetry' }, { id: 'symmetry-practice', label: 'Self Learning' }],
+  'symmetry-teaching': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'symmetry', label: 'Molecular Symmetry' }, { id: 'symmetry-teaching', label: 'Teaching Resources' }],
   lab: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'lab', label: 'Chemistry Lab' }],
   syllabus: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'syllabus', label: 'Syllabus Map' }],
   quiz: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'quiz', label: 'Quiz' }],
@@ -55,7 +63,14 @@ const parentCrumbs = {
   'chemistry-solver': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'chemistry-solver', label: 'Chemistry Solver' }],
 };
 
-const pageItems = navGroups.flatMap(group => group.items);
+const pageItems = navGroups.flatMap(group => group.items.flatMap(item => [item, ...(item.subItems || [])]));
+const pageHashMap = {
+  symmetry: 'molecular-symmetry',
+  'symmetry-operations': 'molecular-symmetry/operations',
+  'symmetry-point-groups': 'molecular-symmetry/point-groups',
+  'symmetry-practice': 'molecular-symmetry/practice',
+  'symmetry-teaching': 'molecular-symmetry/teaching',
+};
 
 const glossaryTerms = [
   ['CFSE', 'Crystal field stabilization energy from d-orbital splitting.'],
@@ -120,7 +135,7 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
 
   const sharePage = () => {
     if (!navigator.clipboard) return;
-    const shareHash = currentPage === 'symmetry' ? 'molecular-symmetry' : currentPage;
+    const shareHash = pageHashMap[currentPage] || currentPage;
     navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#/${shareHash}`);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1400);

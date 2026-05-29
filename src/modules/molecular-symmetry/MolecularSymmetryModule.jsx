@@ -24,6 +24,56 @@ import { validateSymmetryOperation } from './utils/symmetryOperations.js';
 
 const modes = ['Learn', 'Practice', 'Challenge'];
 
+const sectionTabs = [
+  {
+    id: 'symmetry',
+    section: 'visualizer',
+    label: '3D Visualizer',
+    title: 'Molecular Symmetry Visualizer',
+    description: 'A focused 3D molecular symmetry laboratory for testing elements and atom mappings.',
+    mode: 'Learn',
+    hideAnswers: false,
+  },
+  {
+    id: 'symmetry-operations',
+    section: 'operations',
+    label: 'Operations Guide',
+    title: 'Symmetry Operations Guide',
+    description: 'Work through E, Cn, sigma, i, and Sn operations with the live molecule viewer.',
+    mode: 'Learn',
+    hideAnswers: false,
+  },
+  {
+    id: 'symmetry-point-groups',
+    section: 'point-groups',
+    label: 'Point Group Finder',
+    title: 'Point Group Finder',
+    description: 'Use the reasoning panel and decision tree to classify molecules step by step.',
+    mode: 'Learn',
+    hideAnswers: false,
+  },
+  {
+    id: 'symmetry-practice',
+    section: 'practice',
+    label: 'Self Learning',
+    title: 'Self Learning Predictor',
+    description: 'Hide answers, test predictions, and build progress through guided practice.',
+    mode: 'Practice',
+    hideAnswers: true,
+  },
+  {
+    id: 'symmetry-teaching',
+    section: 'teaching',
+    label: 'Teaching Resources',
+    title: 'Symmetry Teaching Resources',
+    description: 'Open lecture companion material, classroom extensions, and advanced representation tools.',
+    mode: 'Learn',
+    hideAnswers: false,
+  },
+];
+
+const sectionById = Object.fromEntries(sectionTabs.map(item => [item.section, item]));
+
 const guideOptions = [
   {
     id: 'start',
@@ -174,11 +224,12 @@ function exportSummaryPdf(molecule, result) {
   win.print();
 }
 
-export function MolecularSymmetryModule() {
+export function MolecularSymmetryModule({ section = 'visualizer', currentPage = 'symmetry', onNavigate }) {
   const viewerRef = useRef(null);
   const rafRef = useRef(null);
   const lastTickRef = useRef(0);
-  const [mode, setMode] = useState('Learn');
+  const activeSection = sectionById[section] || sectionById.visualizer;
+  const [mode, setMode] = useState(activeSection.mode);
   const [moleculeId, setMoleculeId] = useState('water');
   const molecule = useMemo(() => getMoleculeById(moleculeId), [moleculeId]);
   const [selectedElement, setSelectedElement] = useState(() => molecule.symmetryElements[1] || molecule.symmetryElements[0]);
@@ -191,12 +242,20 @@ export function MolecularSymmetryModule() {
   const [showElements, setShowElements] = useState(true);
   const [showGhost, setShowGhost] = useState(true);
   const [bondStyle, setBondStyle] = useState('ball-stick');
-  const [hideAnswers, setHideAnswers] = useState(false);
+  const [hideAnswers, setHideAnswers] = useState(activeSection.hideAnswers);
   const [moduleContrast, setModuleContrast] = useState(false);
   const [showGuide, setShowGuide] = useLocalStorage('cu-symmetry-guide-open', true);
   const [activeGuideId, setActiveGuideId] = useState('start');
   const guideElementTypeRef = useRef(null);
   const [progressState, setProgressState] = useState(() => loadSymmetryProgress());
+
+  useEffect(() => {
+    setMode(activeSection.mode);
+    setHideAnswers(activeSection.hideAnswers);
+    setOperationResult(null);
+    setProgress(0);
+    setIsPlaying(false);
+  }, [activeSection.section]);
 
   useEffect(() => {
     const guidedType = guideElementTypeRef.current;
@@ -307,6 +366,16 @@ export function MolecularSymmetryModule() {
     }
   };
 
+  const showViewer = ['visualizer', 'operations', 'point-groups', 'practice'].includes(activeSection.section);
+  const showOperationLab = activeSection.section === 'operations';
+  const showPointGroupTools = activeSection.section === 'point-groups';
+  const showPracticeTools = ['practice'].includes(activeSection.section) || mode === 'Practice' || mode === 'Challenge';
+  const showTeachingTools = ['teaching'].includes(activeSection.section);
+  const showAdvancedSuite = ['teaching', 'point-groups'].includes(activeSection.section);
+  const mainGridClass = showTeachingTools
+    ? 'grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)]'
+    : 'grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)_340px]';
+
   return (
     <div data-symmetry-module className={`page-transition min-h-screen p-4 md:p-6 ${moduleContrast ? 'high-contrast' : ''}`}>
       <div className="mx-auto max-w-[1600px] space-y-3">
@@ -315,9 +384,9 @@ export function MolecularSymmetryModule() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <BookOpen size={20} className="text-cyan-300" />
-                <h1 className="text-xl font-black tracking-tight text-white md:text-2xl">Molecular Symmetry Visualizer</h1>
+                <h1 className="text-xl font-black tracking-tight text-white md:text-2xl">{activeSection.title}</h1>
               </div>
-              <p className="mt-1 text-sm text-gray-400">A 3D molecular symmetry laboratory for postgraduate point group reasoning.</p>
+              <p className="mt-1 text-sm text-gray-400">{activeSection.description}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex overflow-hidden rounded-xl border border-white/10">
@@ -332,12 +401,29 @@ export function MolecularSymmetryModule() {
                 ))}
               </div>
               <button onClick={resetOperation} className="btn-secondary inline-flex items-center gap-2"><RotateCcw size={15} />Reset</button>
-              <button onClick={() => setShowGuide(true)} className="btn-secondary inline-flex items-center gap-2"><HelpCircle size={15} />Guide</button>
+              {activeSection.section === 'visualizer' && (
+                <button onClick={() => setShowGuide(true)} className="btn-secondary inline-flex items-center gap-2"><HelpCircle size={15} />Guide</button>
+              )}
             </div>
+          </div>
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            {sectionTabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => onNavigate?.(tab.id)}
+                className={`shrink-0 rounded-lg border px-3 py-2 text-xs font-bold transition-colors ${
+                  currentPage === tab.id
+                    ? 'border-cyan-400/50 bg-cyan-400/15 text-cyan-100'
+                    : 'border-white/10 bg-white/[0.035] text-gray-400 hover:bg-white/[0.07] hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </header>
 
-        {showGuide && (
+        {showGuide && activeSection.section === 'visualizer' && (
           <ModuleGuide
             activeId={activeGuideId}
             onSelect={setActiveGuideId}
@@ -346,7 +432,7 @@ export function MolecularSymmetryModule() {
           />
         )}
 
-        <main className="grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
+        <main className={mainGridClass}>
           <aside className="space-y-3">
             <MoleculeSelector selectedId={molecule.id} onSelect={setMoleculeId} />
             <section className="glass rounded-xl p-3">
@@ -375,6 +461,7 @@ export function MolecularSymmetryModule() {
           </aside>
 
           <section className="space-y-3 min-w-0">
+            {showViewer && (
             <div className="glass rounded-xl p-2">
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <button onClick={() => viewerRef.current?.resetCamera()} className="btn-secondary inline-flex items-center gap-2"><RotateCcw size={15} />Camera</button>
@@ -402,6 +489,8 @@ export function MolecularSymmetryModule() {
                 height={580}
               />
             </div>
+            )}
+            {showViewer && (
             <SymmetryOperationControls
               selectedElement={selectedElement}
               isPlaying={isPlaying}
@@ -418,6 +507,8 @@ export function MolecularSymmetryModule() {
               onReset={resetOperation}
               onSpeedChange={setSpeed}
             />
+            )}
+            {showOperationLab && (
             <SymmetryOperationLab
               molecule={molecule}
               selectedElement={selectedElement}
@@ -427,17 +518,50 @@ export function MolecularSymmetryModule() {
               onApplyOperation={applyOperation}
               onSetOperationPower={setOperationPower}
             />
-            <LecturePdfCompanion
-              molecule={molecule}
-              onSelectMolecule={setMoleculeId}
-              onSelectElement={setSelectedElement}
-              onSetOperationPower={setOperationPower}
-              onApplyOperation={applyOperation}
-            />
-            <AdvancedTeachingSuite molecule={molecule} selectedElement={selectedElement} />
-            <ClassroomExtensions molecule={molecule} operationResult={operationResult} onSelectMolecule={setMoleculeId} />
+            )}
+            {showPointGroupTools && (
+              <>
+                <PointGroupReasoningPanel molecule={molecule} />
+                <SymmetryDecisionTree molecule={molecule} />
+                <section className="glass rounded-xl p-3">
+                  <h3 className="text-sm font-bold text-white">Common Student Mistakes</h3>
+                  <ul className="mt-2 space-y-1 text-xs leading-5 text-gray-400">
+                    {molecule.commonMistakes.map(mistake => <li key={mistake}>- {mistake}</li>)}
+                  </ul>
+                </section>
+              </>
+            )}
+            {showPracticeTools && (
+              <div className="grid gap-3 xl:grid-cols-2">
+                <PracticeQuizPanel
+                  molecule={molecule}
+                  selectedElement={selectedElement}
+                  validationResult={operationResult}
+                  onProgress={setProgressState}
+                />
+                <ChallengeModePanel
+                  molecule={molecule}
+                  onRandomMolecule={setMoleculeId}
+                  onProgress={setProgressState}
+                />
+              </div>
+            )}
+            {showTeachingTools && (
+              <LecturePdfCompanion
+                molecule={molecule}
+                onSelectMolecule={setMoleculeId}
+                onSelectElement={setSelectedElement}
+                onSetOperationPower={setOperationPower}
+                onApplyOperation={applyOperation}
+              />
+            )}
+            {showAdvancedSuite && <AdvancedTeachingSuite molecule={molecule} selectedElement={selectedElement} />}
+            {showTeachingTools && (
+              <ClassroomExtensions molecule={molecule} operationResult={operationResult} onSelectMolecule={setMoleculeId} />
+            )}
           </section>
 
+          {!showTeachingTools && (
           <aside className="space-y-3">
             <section className="glass rounded-xl p-3">
               <div className="flex items-center justify-between gap-2">
@@ -462,19 +586,15 @@ export function MolecularSymmetryModule() {
 
             <TheoryCard type={selectedElement?.type || 'E'} />
             <AtomMappingTable result={operationResult} />
-            {mode === 'Learn' && (
-              <>
-                <PointGroupReasoningPanel molecule={molecule} />
-                <SymmetryDecisionTree molecule={molecule} />
-                <section className="glass rounded-xl p-3">
-                  <h3 className="text-sm font-bold text-white">Common Student Mistakes</h3>
-                  <ul className="mt-2 space-y-1 text-xs leading-5 text-gray-400">
-                    {molecule.commonMistakes.map(mistake => <li key={mistake}>- {mistake}</li>)}
-                  </ul>
-                </section>
-              </>
+            {mode === 'Learn' && activeSection.section === 'operations' && (
+              <section className="glass rounded-xl p-3">
+                <h3 className="text-sm font-bold text-white">Operation Reading</h3>
+                <p className="mt-2 text-xs leading-5 text-gray-400">
+                  Use the operation lab on this page to compare the selected symmetry element with the live atom mapping result.
+                </p>
+              </section>
             )}
-            {mode === 'Practice' && (
+            {mode === 'Practice' && !showPracticeTools && (
               <PracticeQuizPanel
                 molecule={molecule}
                 selectedElement={selectedElement}
@@ -482,7 +602,7 @@ export function MolecularSymmetryModule() {
                 onProgress={setProgressState}
               />
             )}
-            {mode === 'Challenge' && (
+            {mode === 'Challenge' && !showPracticeTools && (
               <ChallengeModePanel
                 molecule={molecule}
                 onRandomMolecule={setMoleculeId}
@@ -490,6 +610,7 @@ export function MolecularSymmetryModule() {
               />
             )}
           </aside>
+          )}
         </main>
       </div>
     </div>

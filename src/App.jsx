@@ -21,11 +21,27 @@ const ChemistrySolverModule = lazy(() => import('./modules/chemistry-solver/Chem
 
 const pageHashMap = {
   symmetry: 'molecular-symmetry',
+  'symmetry-operations': 'molecular-symmetry/operations',
+  'symmetry-point-groups': 'molecular-symmetry/point-groups',
+  'symmetry-practice': 'molecular-symmetry/practice',
+  'symmetry-teaching': 'molecular-symmetry/teaching',
   'chemistry-solver': 'chemistry-solver',
 };
 const hashPageMap = {
   'molecular-symmetry': 'symmetry',
+  'molecular-symmetry/operations': 'symmetry-operations',
+  'molecular-symmetry/point-groups': 'symmetry-point-groups',
+  'molecular-symmetry/practice': 'symmetry-practice',
+  'molecular-symmetry/teaching': 'symmetry-teaching',
   'chemistry-solver': 'chemistry-solver',
+};
+
+const symmetrySections = {
+  symmetry: 'visualizer',
+  'symmetry-operations': 'operations',
+  'symmetry-point-groups': 'point-groups',
+  'symmetry-practice': 'practice',
+  'symmetry-teaching': 'teaching',
 };
 
 function LoadingProgress({ title, detail, height = 620, reducedMotion = false }) {
@@ -236,9 +252,13 @@ function App() {
           </Suspense>
         );
       case 'symmetry':
+      case 'symmetry-operations':
+      case 'symmetry-point-groups':
+      case 'symmetry-practice':
+      case 'symmetry-teaching':
         return (
           <Suspense fallback={<LoadingProgress title="Loading molecular symmetry laboratory" detail="Preparing symmetry operations, point-group tools, and 3D viewer..." height={620} reducedMotion={reducedMotion} />}>
-            <MolecularSymmetryModule />
+            <MolecularSymmetryModule section={symmetrySections[currentPage]} currentPage={currentPage} onNavigate={navigate} />
           </Suspense>
         );
       case 'chemistry-solver':
