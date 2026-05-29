@@ -7,6 +7,7 @@ const CPK = {
   F: { color: '#22c55e', radius: 0.34 },
   Fe: { color: '#f97316', radius: 0.52 },
   Xe: { color: '#a78bfa', radius: 0.58 },
+  X: { color: '#38bdf8', radius: 0.24 },
 };
 
 const atom = (id, element, position) => ({
@@ -25,6 +26,65 @@ const E = {
   type: 'E',
   description: 'Identity leaves every atom exactly where it is. It is present in every molecule.',
 };
+
+const PHI = (1 + Math.sqrt(5)) / 2;
+
+const scalePosition = (position, scale = 1) => position.map(value => Number((value * scale).toFixed(4)));
+
+const polyhedronAtoms = (prefix, positions, scale = 1) => positions.map((position, index) => (
+  atom(`${prefix}${index + 1}`, 'X', scalePosition(position, scale))
+));
+
+const polyhedronBonds = (positions, prefix, scale = 1) => {
+  const scaled = positions.map(position => scalePosition(position, scale));
+  const distances = [];
+  scaled.forEach((from, fromIndex) => {
+    scaled.slice(fromIndex + 1).forEach(to => {
+      distances.push(Math.hypot(from[0] - to[0], from[1] - to[1], from[2] - to[2]));
+    });
+  });
+  const edgeLength = Math.min(...distances.filter(distance => distance > 0.001));
+  const tolerance = edgeLength * 0.08;
+
+  return scaled.flatMap((from, fromIndex) => (
+    scaled.slice(fromIndex + 1).flatMap((to, offset) => {
+      const toIndex = fromIndex + offset + 1;
+      const distance = Math.hypot(from[0] - to[0], from[1] - to[1], from[2] - to[2]);
+      return Math.abs(distance - edgeLength) <= tolerance
+        ? [bond(`${prefix}${fromIndex + 1}`, `${prefix}${toIndex + 1}`)]
+        : [];
+    })
+  ));
+};
+
+const tetrahedronVertices = [
+  [1, 1, 1],
+  [-1, -1, 1],
+  [-1, 1, -1],
+  [1, -1, -1],
+];
+
+const octahedronVertices = [
+  [1, 0, 0],
+  [-1, 0, 0],
+  [0, 1, 0],
+  [0, -1, 0],
+  [0, 0, 1],
+  [0, 0, -1],
+];
+
+const icosahedronVertices = [
+  ...[-1, 1].flatMap(y => [-1, 1].map(z => [0, y, z * PHI])),
+  ...[-1, 1].flatMap(x => [-1, 1].map(y => [x, y * PHI, 0])),
+  ...[-1, 1].flatMap(x => [-1, 1].map(z => [x * PHI, 0, z])),
+];
+
+const dodecahedronVertices = [
+  ...[-1, 1].flatMap(x => [-1, 1].flatMap(y => [-1, 1].map(z => [x, y, z]))),
+  ...[-1, 1].flatMap(y => [-1, 1].map(z => [0, y / PHI, z * PHI])),
+  ...[-1, 1].flatMap(x => [-1, 1].map(y => [x / PHI, y * PHI, 0])),
+  ...[-1, 1].flatMap(x => [-1, 1].map(z => [x * PHI, 0, z / PHI])),
+];
 
 export const symmetryTheoryCards = {
   E: {
@@ -52,6 +112,7 @@ export const symmetryTheoryCards = {
 export const pointGroups = [
   'C1', 'Cs', 'Ci', 'C2', 'C2v', 'C3v', 'C4v', 'D2h',
   'D3h', 'D4h', 'D6h', 'Td', 'Oh', 'D2d', 'D5d', 'D5h',
+  'Ih',
 ];
 
 export const moleculeLibrary = [
@@ -163,6 +224,71 @@ export const moleculeLibrary = [
     commonMistakes: [
       'Assigning Oh because the molecule feels highly symmetric.',
       'Looking for a horizontal plane in a tetrahedron.',
+    ],
+  },
+  {
+    id: 'platonic-tetrahedron',
+    name: 'Tetrahedron framework',
+    formula: 'V4',
+    geometry: 'Platonic tetrahedron',
+    pointGroup: 'Td',
+    difficulty: 'Advanced',
+    notes: 'A regular tetrahedron is the pure geometric parent of tetrahedral molecular symmetry.',
+    atoms: polyhedronAtoms('T', tetrahedronVertices, 1.05),
+    bonds: polyhedronBonds(tetrahedronVertices, 'T', 1.05),
+    symmetryElements: [
+      E,
+      { id: 'C3-vertex', label: 'C3 through a vertex', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'A 120 degree rotation fixes one vertex and cycles the other three.' },
+      { id: 'C2-edge-midpoints', label: 'C2 through opposite edge midpoints', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A 180 degree rotation swaps two pairs of vertices.' },
+      { id: 'sigma-d-tetra', label: 'sigma d plane', type: 'sigma', planeNormal: [1, -1, 0], planePoint: [0, 0, 0], description: 'A dihedral mirror plane contains two vertices and bisects the opposite edge.' },
+      { id: 'S4-tetra', label: 'S4 axis', type: 'Sn', order: 4, axis: [1, 0, 0], description: 'The tetrahedron has S4 axes through opposite edge midpoints.' },
+    ],
+    distractorElements: [
+      { id: 'i-test', label: 'inversion centre test', type: 'i', description: 'A tetrahedron has no inversion centre.' },
+      { id: 'C4-test', label: 'C4 vertex test', type: 'Cn', order: 4, axis: [1, 1, 1], description: 'A vertex axis is three-fold, not four-fold.' },
+    ],
+    pointGroupReasoning: [
+      'The four vertices are all equivalent in a regular tetrahedron.',
+      'There are four C3 axes through vertices and opposite face centres.',
+      'There are C2 axes and S4 axes through opposite edge midpoints.',
+      'There is no inversion centre, so the point group is Td.',
+    ],
+    commonMistakes: [
+      'Adding an inversion centre because the solid feels balanced.',
+      'Confusing a tetrahedral vertex axis with a C4 axis.',
+    ],
+  },
+  {
+    id: 'platonic-octahedron',
+    name: 'Octahedron framework',
+    formula: 'V6',
+    geometry: 'Platonic octahedron',
+    pointGroup: 'Oh',
+    difficulty: 'Advanced',
+    notes: 'The octahedron is the idealized geometry behind octahedral coordination complexes.',
+    atoms: polyhedronAtoms('OCT', octahedronVertices, 1.4),
+    bonds: polyhedronBonds(octahedronVertices, 'OCT', 1.4),
+    symmetryElements: [
+      E,
+      { id: 'C4-octa-z', label: 'C4 through opposite vertices', type: 'Cn', order: 4, axis: [0, 0, 1], description: 'A 90 degree rotation around opposite vertices cycles four equatorial vertices.' },
+      { id: 'C3-octa-body', label: 'C3 through opposite faces', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'A 120 degree rotation cycles vertices around a pair of opposite triangular faces.' },
+      { id: 'C2-octa-edge', label: 'C2 through opposite edges', type: 'Cn', order: 2, axis: [1, 1, 0], description: 'A 180 degree rotation through opposite edge midpoints is valid for Oh symmetry.' },
+      { id: 'sigma-h-octa', label: 'sigma h equatorial plane', type: 'sigma', planeNormal: [0, 0, 1], planePoint: [0, 0, 0], description: 'The equatorial plane swaps the two axial vertices.' },
+      { id: 'i-octa', label: 'inversion centre', type: 'i', description: 'The centre of the octahedron maps every vertex to the opposite vertex.' },
+      { id: 'S4-octa-z', label: 'S4 axis', type: 'Sn', order: 4, axis: [0, 0, 1], description: 'C4 followed by reflection through the equatorial plane remains a valid operation.' },
+    ],
+    distractorElements: [
+      { id: 'C5-test', label: 'C5 test axis', type: 'Cn', order: 5, axis: [0, 0, 1], description: 'Octahedral symmetry has no five-fold axis.' },
+    ],
+    pointGroupReasoning: [
+      'The regular octahedron has three C4 axes through opposite vertices.',
+      'It also has C3 axes through opposite faces and C2 axes through opposite edges.',
+      'Mirror planes and an inversion centre are present.',
+      'These operations define the full octahedral point group Oh.',
+    ],
+    commonMistakes: [
+      'Stopping at D4h by looking only down one four-fold axis.',
+      'Forgetting that Oh includes many equivalent axes, not just one principal axis.',
     ],
   },
   {
@@ -450,6 +576,72 @@ export const moleculeLibrary = [
       'Therefore this coordinate set demonstrates D5d with a D5h contrast.',
     ],
     commonMistakes: ['Ignoring ring conformation.', 'Using D5h and D5d interchangeably without stating eclipsed versus staggered.'],
+  },
+  {
+    id: 'platonic-icosahedron',
+    name: 'Icosahedron framework',
+    formula: 'V12',
+    geometry: 'Platonic icosahedron',
+    pointGroup: 'Ih',
+    difficulty: 'Advanced',
+    notes: 'The regular icosahedron gives students a concrete model for icosahedral symmetry, including five-fold axes.',
+    atoms: polyhedronAtoms('I', icosahedronVertices, 0.9),
+    bonds: polyhedronBonds(icosahedronVertices, 'I', 0.9),
+    symmetryElements: [
+      E,
+      { id: 'C5-ico-vertex', label: 'C5 through opposite vertices', type: 'Cn', order: 5, axis: [0, 1, PHI], description: 'A 72 degree rotation about opposite vertices cycles the surrounding pentagonal belt.' },
+      { id: 'C3-ico-face', label: 'C3 through opposite faces', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'A 120 degree rotation cycles vertices around opposite triangular faces.' },
+      { id: 'C2-ico-edge', label: 'C2 through opposite edges', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A 180 degree rotation exchanges pairs of vertices through opposite edge midpoints.' },
+      { id: 'sigma-ico', label: 'icosahedral mirror plane', type: 'sigma', planeNormal: [1, 0, 0], planePoint: [0, 0, 0], description: 'One of the mirror planes in the full Ih group.' },
+      { id: 'i-ico', label: 'inversion centre', type: 'i', description: 'Each vertex has an opposite partner through the centre.' },
+      { id: 'S10-ico', label: 'S10 five-fold improper axis', type: 'Sn', order: 10, axis: [0, 1, PHI], description: 'An improper rotation associated with the five-fold axis is present in Ih.' },
+    ],
+    distractorElements: [
+      { id: 'C4-test', label: 'C4 test axis', type: 'Cn', order: 4, axis: [0, 1, PHI], description: 'Icosahedral symmetry has five-fold, three-fold, and two-fold axes, but no four-fold axis.' },
+    ],
+    pointGroupReasoning: [
+      'A regular icosahedron has six C5 axes through opposite vertices.',
+      'It also has C3 axes through opposite triangular faces and C2 axes through opposite edges.',
+      'The centre is an inversion centre and mirror/improper operations complete the full group.',
+      'Therefore the point group is Ih.',
+    ],
+    commonMistakes: [
+      'Forcing the model into Oh because both groups are highly symmetric.',
+      'Missing the diagnostic five-fold axes.',
+    ],
+  },
+  {
+    id: 'platonic-dodecahedron',
+    name: 'Dodecahedron framework',
+    formula: 'V20',
+    geometry: 'Platonic dodecahedron',
+    pointGroup: 'Ih',
+    difficulty: 'Advanced',
+    notes: 'The regular dodecahedron is dual to the icosahedron and has the same full icosahedral point group.',
+    atoms: polyhedronAtoms('D', dodecahedronVertices, 0.92),
+    bonds: polyhedronBonds(dodecahedronVertices, 'D', 0.92),
+    symmetryElements: [
+      E,
+      { id: 'C5-dodeca-face', label: 'C5 through opposite faces', type: 'Cn', order: 5, axis: [PHI, 1, 0], description: 'A 72 degree rotation passes through the centres of opposite pentagonal faces.' },
+      { id: 'C3-dodeca-vertex', label: 'C3 through opposite vertices', type: 'Cn', order: 3, axis: [1, 1, 1], description: 'Three pentagonal faces meet at each vertex, giving a three-fold axis.' },
+      { id: 'C2-dodeca-edge', label: 'C2 through opposite edges', type: 'Cn', order: 2, axis: [1, 0, 0], description: 'A two-fold axis passes through opposite edge midpoints.' },
+      { id: 'sigma-dodeca', label: 'dodecahedral mirror plane', type: 'sigma', planeNormal: [1, 0, 0], planePoint: [0, 0, 0], description: 'One of the mirror planes of the full Ih group.' },
+      { id: 'i-dodeca', label: 'inversion centre', type: 'i', description: 'Each vertex has an opposite vertex through the centre.' },
+      { id: 'S10-dodeca', label: 'S10 five-fold improper axis', type: 'Sn', order: 10, axis: [PHI, 1, 0], description: 'The five-fold axis also supports an S10 improper operation.' },
+    ],
+    distractorElements: [
+      { id: 'C4-test', label: 'C4 test axis', type: 'Cn', order: 4, axis: [PHI, 1, 0], description: 'A regular dodecahedron has no four-fold rotational symmetry.' },
+    ],
+    pointGroupReasoning: [
+      'A regular dodecahedron has C5 axes through opposite pentagonal faces.',
+      'It has C3 axes through opposite vertices and C2 axes through opposite edges.',
+      'The dodecahedron is centrosymmetric and dual to the icosahedron.',
+      'Therefore the point group is Ih.',
+    ],
+    commonMistakes: [
+      'Treating dodecahedral symmetry as lower than icosahedral symmetry.',
+      'Looking for a C4 axis because the object looks highly symmetric.',
+    ],
   },
 ];
 

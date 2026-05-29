@@ -46,6 +46,39 @@ export const conformationComparisons = {
   },
 };
 
+export const pointGroupComparisons = [
+  {
+    pair: 'C2v vs C2h',
+    left: 'C2v: one C2 axis and vertical mirror planes that contain the principal axis. No inversion centre is required.',
+    right: 'C2h: one C2 axis, a horizontal mirror plane perpendicular to that axis, and an inversion centre.',
+    clue: 'Ask whether the mirror planes contain the C2 axis or lie perpendicular to it.',
+  },
+  {
+    pair: 'C3v vs D3h',
+    left: 'C3v: one C3 axis and three vertical mirror planes, but no perpendicular C2 axes and no sigma h.',
+    right: 'D3h: C3 plus three perpendicular C2 axes and a horizontal mirror plane.',
+    clue: 'NH3 is C3v; planar BF3 is D3h.',
+  },
+  {
+    pair: 'C4v vs D4h',
+    left: 'C4v: C4 axis with vertical mirror planes, common for square pyramidal shapes.',
+    right: 'D4h: C4 axis, perpendicular C2 axes, sigma h, and often inversion.',
+    clue: 'Square planar XeF4 is D4h, not just C4v.',
+  },
+  {
+    pair: 'Td vs Oh',
+    left: 'Td: tetrahedral high symmetry with C3 axes and S4 axes, but no inversion centre.',
+    right: 'Oh: octahedral/cubic high symmetry with C4, C3, C2, mirror planes, and inversion.',
+    clue: 'Look for four-coordinate tetrahedral versus six-coordinate octahedral frameworks.',
+  },
+  {
+    pair: 'D5d vs D5h',
+    left: 'D5d: staggered five-fold sandwich geometry with inversion and S10.',
+    right: 'D5h: eclipsed five-fold sandwich geometry with a horizontal mirror plane.',
+    clue: 'Same formula can change point group when conformation changes.',
+  },
+];
+
 export const spectroscopyRules = [
   { label: 'IR active', rule: 'A mode is IR active if it transforms like x, y, or z.', color: 'cyan' },
   { label: 'Raman active', rule: 'A mode is Raman active if it transforms like quadratic functions: x2, y2, z2, xy, xz, yz.', color: 'violet' },
@@ -54,7 +87,7 @@ export const spectroscopyRules = [
 ];
 
 export const chiralityNotes = {
-  chiralRule: 'A molecule is chiral only if it lacks all improper rotation axes Sn, including mirror planes and inversion centres.',
+  chiralRule: 'A molecule can be optically active only when it is chiral; by point-group symmetry this requires absence of every improper operation Sn, including mirror planes and inversion centres.',
   examples: [
     'Skew substituted allene can become chiral when terminal substituent pairs differ.',
     'Ordinary methane is achiral because Td includes improper operations.',

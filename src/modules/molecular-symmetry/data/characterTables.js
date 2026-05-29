@@ -6,6 +6,9 @@ const table = ({ pointGroup, classes, irreps, notes }) => ({
   notes,
 });
 
+const PHI = (1 + Math.sqrt(5)) / 2;
+const INV_PHI_NEG = 1 - PHI;
+
 export const characterTables = {
   C2: table({
     pointGroup: 'C2',
@@ -236,6 +239,62 @@ export const characterTables = {
       { label: 'T2', chars: [3, 0, -1, -1, 1], basis: '(x, y, z)' },
     ],
     notes: 'Td highlights triply degenerate T representations and is a bridge to ligand field theory.',
+  }),
+  Oh: table({
+    pointGroup: 'Oh',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '8C3', size: 8, match: ['C3'] },
+      { label: '6C2', size: 6, match: ['C2', 'edge'] },
+      { label: '6C4', size: 6, match: ['C4'] },
+      { label: '3C2', size: 3, match: ['C2'] },
+      { label: 'i', size: 1, match: ['i'] },
+      { label: '6S4', size: 6, match: ['S4'] },
+      { label: '8S6', size: 8, match: ['S6'] },
+      { label: '3sigma h', size: 3, match: ['sigma h'] },
+      { label: '6sigma d', size: 6, match: ['sigma'] },
+    ],
+    irreps: [
+      { label: 'A1g', chars: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], basis: 's, x2 + y2 + z2' },
+      { label: 'A2g', chars: [1, 1, -1, -1, 1, 1, -1, 1, 1, -1], basis: '' },
+      { label: 'Eg', chars: [2, -1, 0, 0, 2, 2, 0, -1, 2, 0], basis: '(2z2 - x2 - y2, x2 - y2)' },
+      { label: 'T1g', chars: [3, 0, -1, 1, -1, 3, 1, 0, -1, -1], basis: '(Rx, Ry, Rz)' },
+      { label: 'T2g', chars: [3, 0, 1, -1, -1, 3, -1, 0, -1, 1], basis: '(xy, xz, yz)' },
+      { label: 'A1u', chars: [1, 1, 1, 1, 1, -1, -1, -1, -1, -1], basis: '' },
+      { label: 'A2u', chars: [1, 1, -1, -1, 1, -1, 1, -1, -1, 1], basis: '' },
+      { label: 'Eu', chars: [2, -1, 0, 0, 2, -2, 0, 1, -2, 0], basis: '' },
+      { label: 'T1u', chars: [3, 0, -1, 1, -1, -3, -1, 0, 1, 1], basis: '(x, y, z)' },
+      { label: 'T2u', chars: [3, 0, 1, -1, -1, -3, 1, 0, 1, -1], basis: '' },
+    ],
+    notes: 'Oh is the full octahedral table for ideal octahedra, cubes, and many coordination complexes.',
+  }),
+  Ih: table({
+    pointGroup: 'Ih',
+    classes: [
+      { label: 'E', size: 1, match: ['E'] },
+      { label: '12C5', size: 12, match: ['C5'] },
+      { label: '12C5^2', size: 12, match: ['C5'] },
+      { label: '20C3', size: 20, match: ['C3'] },
+      { label: '15C2', size: 15, match: ['C2'] },
+      { label: 'i', size: 1, match: ['i'] },
+      { label: '12S10', size: 12, match: ['S10'] },
+      { label: '12S10^3', size: 12, match: ['S10'] },
+      { label: '20S6', size: 20, match: ['S6'] },
+      { label: '15sigma', size: 15, match: ['sigma'] },
+    ],
+    irreps: [
+      { label: 'Ag', chars: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], basis: 's' },
+      { label: 'T1g', chars: [3, PHI, INV_PHI_NEG, 0, -1, 3, PHI, INV_PHI_NEG, 0, -1], basis: '(Rx, Ry, Rz)' },
+      { label: 'T2g', chars: [3, INV_PHI_NEG, PHI, 0, -1, 3, INV_PHI_NEG, PHI, 0, -1], basis: '' },
+      { label: 'Gg', chars: [4, -1, -1, 1, 0, 4, -1, -1, 1, 0], basis: '' },
+      { label: 'Hg', chars: [5, 0, 0, -1, 1, 5, 0, 0, -1, 1], basis: 'quadratic functions' },
+      { label: 'Au', chars: [1, 1, 1, 1, 1, -1, -1, -1, -1, -1], basis: '' },
+      { label: 'T1u', chars: [3, PHI, INV_PHI_NEG, 0, -1, -3, -PHI, -INV_PHI_NEG, 0, 1], basis: '(x, y, z)' },
+      { label: 'T2u', chars: [3, INV_PHI_NEG, PHI, 0, -1, -3, -INV_PHI_NEG, -PHI, 0, 1], basis: '' },
+      { label: 'Gu', chars: [4, -1, -1, 1, 0, -4, 1, 1, -1, 0], basis: '' },
+      { label: 'Hu', chars: [5, 0, 0, -1, 1, -5, 0, 0, 1, -1], basis: '' },
+    ],
+    notes: 'Ih is the full icosahedral table used for regular icosahedra, dodecahedra, and highly symmetric clusters.',
   }),
 };
 

@@ -3,7 +3,14 @@ import {
   Binary, ClipboardList, Compass, Eye, FileQuestion, GitCompare,
   Orbit, Radar, ScanSearch, Shapes, SlidersHorizontal, Sparkles,
 } from 'lucide-react';
-import { chiralityNotes, conformationComparisons, lessonPresets, orbitalSets, spectroscopyRules } from '../data/teachingExtensions.js';
+import {
+  chiralityNotes,
+  conformationComparisons,
+  lessonPresets,
+  orbitalSets,
+  pointGroupComparisons,
+  spectroscopyRules,
+} from '../data/teachingExtensions.js';
 import {
   assessmentQuestions,
   operationMismatchHeatmap,
@@ -11,19 +18,28 @@ import {
   proposeDiscoveryElement,
   salcSeed,
 } from '../utils/teachingExtensionUtils.js';
+import {
+  decisionTreeQuestions,
+  getOpticalActivityCriteria,
+  getPointGroupAssignmentSteps,
+  getPointGroupSignature,
+  inferPointGroupFromSelections,
+  pointGroupFamilies,
+  pointGroupSignatures,
+} from '../utils/pointGroupRules.js';
 
 const featureTabs = [
   { id: 'salc', label: 'SALCs', icon: Sparkles },
   { id: 'orbital', label: 'Orbital Overlay', icon: Orbit },
-  { id: 'trainer', label: 'Flowchart Trainer', icon: Compass },
-  { id: 'discover', label: 'Discovery Mode', icon: ScanSearch },
+  { id: 'trainer', label: 'Point Group Finder', icon: Compass },
+  { id: 'discover', label: 'Discovery Quiz', icon: ScanSearch },
   { id: 'heatmap', label: 'Difference Heatmap', icon: Radar },
-  { id: 'chirality', label: 'Chirality', icon: Shapes },
+  { id: 'chirality', label: 'Optical Activity', icon: Shapes },
   { id: 'spectroscopy', label: 'Selection Rules', icon: Eye },
   { id: 'perturb', label: 'Perturbation', icon: SlidersHorizontal },
-  { id: 'compare', label: 'Conformations', icon: GitCompare },
+  { id: 'compare', label: 'Comparison Cards', icon: GitCompare },
   { id: 'lessons', label: 'Lessons', icon: ClipboardList },
-  { id: 'assessment', label: 'Assessment', icon: FileQuestion },
+  { id: 'assessment', label: 'Handouts', icon: FileQuestion },
 ];
 
 function Badge({ children, tone = 'cyan' }) {
@@ -91,42 +107,154 @@ function OrbitalOverlayView() {
 }
 
 function TrainerView({ molecule }) {
-  const [step, setStep] = useState(0);
-  const prompts = [
-    ['Linear?', molecule.geometry.toLowerCase().includes('linear') ? 'Yes' : 'No'],
-    ['Principal axis?', molecule.symmetryElements.find(e => e.type === 'Cn')?.label || 'None beyond E'],
-    ['Mirror planes?', molecule.symmetryElements.some(e => e.type === 'sigma') ? 'Present' : 'Absent'],
-    ['Inversion centre?', molecule.symmetryElements.some(e => e.type === 'i') ? 'Present' : 'Absent'],
-    ['Improper axis?', molecule.symmetryElements.some(e => e.type === 'Sn') ? 'Present' : 'Absent'],
-    ['Point group', molecule.pointGroup],
-  ];
+  const [answers, setAnswers] = useState({
+    linear: false,
+    highSymmetry: '',
+    principalAxis: '',
+    perpendicularC2: false,
+    sigmaH: false,
+    sigmaV: false,
+    inversion: false,
+  });
+  const predicted = inferPointGroupFromSelections(answers);
+  const signature = getPointGroupSignature(predicted);
+  const setAnswer = (key, value) => setAnswers(current => ({ ...current, [key]: value }));
+  const useCurrentMolecule = () => {
+    const rotations = molecule.symmetryElements.filter(element => element.type === 'Cn');
+    const highest = rotations.reduce((best, element) => (element.order > best.order ? element : best), { order: 0 });
+    setAnswers({
+      linear: molecule.geometry.toLowerCase().includes('linear'),
+      highSymmetry: molecule.pointGroup === 'Td' ? 'tetrahedral' : molecule.pointGroup === 'Oh' ? 'octahedral' : molecule.pointGroup === 'Ih' ? 'icosahedral' : '',
+      principalAxis: highest.order ? `C${highest.order}` : '',
+      perpendicularC2: rotations.length > 1 && rotations.some(element => element.order === 2),
+      sigmaH: molecule.symmetryElements.some(element => element.id?.includes('sigma-h') || element.label.toLowerCase().includes('sigma h')),
+      sigmaV: molecule.symmetryElements.some(element => element.id?.includes('sigma-v') || element.label.toLowerCase().includes('sigma v')),
+      inversion: molecule.symmetryElements.some(element => element.type === 'i'),
+    });
+  };
+
   return (
     <div className="space-y-3">
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Point Group Flowchart Trainer</p>
-        <h3 className="text-lg font-black text-white">{prompts[step][0]}</h3>
-        <p className="mt-1 text-sm text-cyan-100">{prompts[step][1]}</p>
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Interactive Point Group Finder</p>
+          <h3 className="text-lg font-black text-white">Answer the flowchart questions</h3>
+          <p className="mt-1 text-xs leading-5 text-gray-400">Use this before revealing the molecule answer, then compare the predicted group with the assigned point group.</p>
+        </div>
+        <button onClick={useCurrentMolecule} className="btn-secondary text-xs">Fill From Current Molecule</button>
       </div>
-      <div className="grid gap-2 sm:grid-cols-3">
-        {prompts.map((item, index) => (
-          <button key={item[0]} onClick={() => setStep(index)} className={`rounded-lg border p-3 text-left ${step === index ? 'border-cyan-400/35 bg-cyan-400/10' : 'border-white/10 bg-white/[0.035]'}`}>
-            <p className="text-xs font-bold text-white">{index + 1}. {item[0]}</p>
-            <p className="mt-1 text-[11px] text-gray-500">{index <= step ? item[1] : 'Reveal in sequence'}</p>
-          </button>
-        ))}
+      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+        <label className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">
+          Linear molecule?
+          <select value={String(answers.linear)} onChange={event => setAnswer('linear', event.target.value === 'true')} className="input mt-2 text-xs">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </label>
+        <label className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">
+          High-symmetry family
+          <select value={answers.highSymmetry} onChange={event => setAnswer('highSymmetry', event.target.value)} className="input mt-2 text-xs">
+            <option value="">None</option>
+            <option value="tetrahedral">Tetrahedral</option>
+            <option value="octahedral">Octahedral</option>
+            <option value="icosahedral">Icosahedral</option>
+          </select>
+        </label>
+        <label className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">
+          Principal axis
+          <select value={answers.principalAxis} onChange={event => setAnswer('principalAxis', event.target.value)} className="input mt-2 text-xs">
+            <option value="">None</option>
+            <option value="C2">C2</option>
+            <option value="C3">C3</option>
+            <option value="C4">C4</option>
+            <option value="C5">C5</option>
+            <option value="C6">C6</option>
+          </select>
+        </label>
+        <label className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">
+          Perpendicular C2 axes?
+          <select value={String(answers.perpendicularC2)} onChange={event => setAnswer('perpendicularC2', event.target.value === 'true')} className="input mt-2 text-xs">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </label>
+        <label className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">
+          Horizontal plane sigma h?
+          <select value={String(answers.sigmaH)} onChange={event => setAnswer('sigmaH', event.target.value === 'true')} className="input mt-2 text-xs">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </label>
+        <label className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">
+          Vertical planes sigma v?
+          <select value={String(answers.sigmaV)} onChange={event => setAnswer('sigmaV', event.target.value === 'true')} className="input mt-2 text-xs">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </label>
+        <label className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">
+          Inversion centre?
+          <select value={String(answers.inversion)} onChange={event => setAnswer('inversion', event.target.value === 'true')} className="input mt-2 text-xs">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </label>
+        <div className={`rounded-lg border p-3 ${predicted === molecule.pointGroup ? 'border-emerald-400/25 bg-emerald-400/10' : 'border-amber-400/25 bg-amber-400/10'}`}>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Predicted point group</p>
+          <p className="mt-1 text-2xl font-black text-white">{predicted}</p>
+          <p className="mt-1 text-[11px] leading-4 text-gray-300">{signature?.signature || 'Continue refining the flowchart answers.'}</p>
+        </div>
       </div>
     </div>
   );
 }
 
 function DiscoveryView({ molecule }) {
+  const challenges = useMemo(() => ([
+    ...molecule.symmetryElements.filter(element => element.type !== 'E').map(element => ({ ...element, expected: true })),
+    ...(molecule.distractorElements || []).map(element => ({ ...element, expected: false })),
+  ]), [molecule]);
+  const [challengeIndex, setChallengeIndex] = useState(0);
+  const [guess, setGuess] = useState(null);
   const [type, setType] = useState('Cn');
+  const challenge = challenges[challengeIndex % Math.max(challenges.length, 1)];
   const proposal = useMemo(() => proposeDiscoveryElement(type, molecule), [type, molecule]);
+  const submitGuess = (value) => setGuess({ value, correct: value === challenge?.expected });
+  const nextChallenge = () => {
+    setChallengeIndex(index => index + 1);
+    setGuess(null);
+  };
+
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Symmetry Element Discovery Mode</p>
-        <h3 className="text-lg font-black text-white">Propose an element, then validate</h3>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Symmetry Element Discovery Quiz</p>
+        <h3 className="text-lg font-black text-white">Decide whether the proposed element is valid</h3>
+      </div>
+      {challenge ? (
+        <div className={`rounded-xl border p-3 ${guess ? (guess.correct ? 'border-emerald-400/25 bg-emerald-400/10' : 'border-rose-400/25 bg-rose-400/10') : 'border-white/10 bg-white/[0.035]'}`}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-black text-white">{challenge.label}</p>
+              <p className="mt-1 text-xs leading-5 text-gray-300">{challenge.description}</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => submitGuess(true)} className="btn-secondary text-xs">Valid</button>
+              <button onClick={() => submitGuess(false)} className="btn-secondary text-xs">Invalid</button>
+              <button onClick={nextChallenge} className="btn-primary text-xs">Next</button>
+            </div>
+          </div>
+          {guess && (
+            <p className="mt-2 text-xs font-semibold text-white">
+              {guess.correct ? 'Correct.' : 'Not quite.'} This element is {challenge.expected ? 'valid' : 'not valid'} for {molecule.name}.
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-400">No challenge elements are available for this molecule.</p>
+      )}
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Quick proposal helper</p>
       </div>
       <div className="flex flex-wrap gap-2">
         {['Cn', 'sigma', 'i', 'Sn'].map(item => (
@@ -172,15 +300,46 @@ function HeatmapView({ operationResult }) {
 }
 
 function ChiralityView({ molecule }) {
-  const hasImproper = molecule.symmetryElements.some(e => e.type === 'Sn' || e.type === 'sigma' || e.type === 'i');
+  const criteria = getOpticalActivityCriteria(molecule);
+  const [prediction, setPrediction] = useState('');
+  const submitted = prediction !== '';
+  const predictedActive = prediction === 'active';
+  const predictionCorrect = submitted && predictedActive === criteria.isPotentiallyOpticallyActive;
+
   return (
     <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Stereochemistry and Chirality</p>
-        <h3 className="text-lg font-black text-white">{hasImproper ? 'Achiral by listed symmetry elements' : 'Potentially chiral by symmetry test'}</h3>
-        <p className="mt-2 text-xs leading-5 text-gray-400">{chiralityNotes.chiralRule}</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Optical Activity from Symmetry</p>
+        <h3 className="text-lg font-black text-white">{criteria.verdict}</h3>
+        <p className="mt-2 text-xs leading-5 text-gray-400">{criteria.reason}</p>
+        <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.035] p-3">
+          <p className="text-xs font-bold text-white">Prediction mode</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button onClick={() => setPrediction('active')} className={`rounded-lg border px-3 py-2 text-xs font-bold ${prediction === 'active' ? 'border-emerald-400/35 bg-emerald-400/10 text-emerald-100' : 'border-white/10 text-gray-300'}`}>
+              Optically active
+            </button>
+            <button onClick={() => setPrediction('inactive')} className={`rounded-lg border px-3 py-2 text-xs font-bold ${prediction === 'inactive' ? 'border-rose-400/35 bg-rose-400/10 text-rose-100' : 'border-white/10 text-gray-300'}`}>
+              Optically inactive
+            </button>
+          </div>
+          {submitted && (
+            <p className={`mt-2 text-xs font-semibold ${predictionCorrect ? 'text-emerald-100' : 'text-rose-100'}`}>
+              {predictionCorrect ? 'Correct.' : 'Review the improper symmetry rule.'} {criteria.verdict}
+            </p>
+          )}
+        </div>
+        {criteria.blockingElements.length > 0 && (
+          <div className="mt-3 rounded-lg border border-rose-400/25 bg-rose-400/10 p-3">
+            <p className="text-xs font-bold text-rose-100">Symmetry elements that rule out optical activity</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {criteria.blockingElements.map(element => <Badge key={element} tone="rose">{element}</Badge>)}
+            </div>
+          </div>
+        )}
       </div>
       <div className="space-y-2">
+        {criteria.checklist.map(note => <div key={note} className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">{note}</div>)}
+        <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-3 text-xs leading-5 text-cyan-50">{chiralityNotes.chiralRule}</div>
         {chiralityNotes.examples.map(note => <div key={note} className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">{note}</div>)}
       </div>
     </div>
@@ -236,18 +395,35 @@ function PerturbationView({ molecule }) {
 }
 
 function ComparisonView({ molecule }) {
+  const [selectedPair, setSelectedPair] = useState(pointGroupComparisons[0].pair);
+  const selectedComparison = pointGroupComparisons.find(item => item.pair === selectedPair) || pointGroupComparisons[0];
   const comparison = conformationComparisons[molecule.id] || conformationComparisons.ferrocene;
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Compare Two Conformations</p>
-        <h3 className="text-lg font-black text-white">{comparison.title}</h3>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Point Group Comparison Cards</p>
+        <h3 className="text-lg font-black text-white">{selectedComparison.pair}</h3>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {pointGroupComparisons.map(item => (
+          <button key={item.pair} onClick={() => setSelectedPair(item.pair)} className={`rounded-lg border px-3 py-2 text-xs font-bold ${selectedPair === item.pair ? 'border-cyan-400/35 bg-cyan-400/10 text-cyan-100' : 'border-white/10 text-gray-400'}`}>
+            {item.pair}
+          </button>
+        ))}
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/10 p-3 text-xs leading-5 text-cyan-50">{comparison.left}</div>
-        <div className="rounded-xl border border-violet-400/20 bg-violet-400/10 p-3 text-xs leading-5 text-violet-50">{comparison.right}</div>
+        <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/10 p-3 text-xs leading-5 text-cyan-50">{selectedComparison.left}</div>
+        <div className="rounded-xl border border-violet-400/20 bg-violet-400/10 p-3 text-xs leading-5 text-violet-50">{selectedComparison.right}</div>
       </div>
-      <p className="text-xs leading-5 text-gray-400">{comparison.teachingPoint}</p>
+      <p className="rounded-lg border border-amber-400/20 bg-amber-400/10 p-3 text-xs leading-5 text-amber-50">{selectedComparison.clue}</p>
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Current molecule conformation note</p>
+        <div className="mt-2 grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-xs leading-5 text-gray-300">{comparison.left}</div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-xs leading-5 text-gray-300">{comparison.right}</div>
+        </div>
+        <p className="mt-2 text-xs leading-5 text-gray-400">{comparison.teachingPoint}</p>
+      </div>
     </div>
   );
 }
@@ -270,6 +446,8 @@ function LessonsView({ onSelectMolecule }) {
 
 function AssessmentView({ molecule }) {
   const questions = assessmentQuestions(molecule);
+  const assignmentSteps = getPointGroupAssignmentSteps(molecule);
+  const opticalCriteria = getOpticalActivityCriteria(molecule);
   const exportQuiz = () => {
     const win = window.open('', '_blank', 'noopener,noreferrer,width=820,height=680');
     if (!win) return;
@@ -277,14 +455,63 @@ function AssessmentView({ molecule }) {
     win.document.close();
     win.print();
   };
+  const exportFlowchart = () => {
+    const win = window.open('', '_blank', 'noopener,noreferrer,width=980,height=760');
+    if (!win) return;
+    win.document.write(`
+      <html>
+        <head>
+          <title>Point group assignment flowchart</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 32px; color: #111827; }
+            h1 { margin-bottom: 4px; }
+            h2 { margin-top: 28px; border-bottom: 1px solid #d1d5db; padding-bottom: 6px; }
+            li { margin: 8px 0; }
+            table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 13px; }
+            td, th { border: 1px solid #d1d5db; padding: 8px; text-align: left; vertical-align: top; }
+            .card { border: 1px solid #d1d5db; border-radius: 10px; padding: 12px; margin: 10px 0; }
+          </style>
+        </head>
+        <body>
+          <h1>Point Group Assignment Flowchart</h1>
+          <p>Current example: <strong>${molecule.name}</strong> (${molecule.formula}) -> <strong>${molecule.pointGroup}</strong></p>
+          <h2>Steps</h2>
+          <ol>${decisionTreeQuestions.map(step => `<li>${step}</li>`).join('')}</ol>
+          <h2>Worked Current Example</h2>
+          ${assignmentSteps.map(step => `<div class="card"><strong>${step.title}:</strong> ${step.result}<br><span>${step.detail}</span></div>`).join('')}
+          <h2>Common Point-Group Signatures</h2>
+          <table><tr><th>Point group</th><th>Symmetry signature</th><th>Example clue</th></tr>${pointGroupSignatures.map(row => `<tr><td>${row.group}</td><td>${row.signature}</td><td>${row.example}</td></tr>`).join('')}</table>
+          <h2>Families</h2>
+          <table><tr><th>Family</th><th>Groups</th><th>Criteria</th></tr>${pointGroupFamilies.map(row => `<tr><td>${row.family}</td><td>${row.groups.join(', ')}</td><td>${row.criteria}</td></tr>`).join('')}</table>
+          <h2>Optical Activity Criterion</h2>
+          <p>${opticalCriteria.verdict}</p>
+          <ul>${opticalCriteria.checklist.map(item => `<li>${item}</li>`).join('')}</ul>
+        </body>
+      </html>
+    `);
+    win.document.close();
+    win.print();
+  };
   return (
     <div className="space-y-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Assessment Export</p>
-          <h3 className="text-lg font-black text-white">Quiz generator for {molecule.name}</h3>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Printable Flowchart and Assessment</p>
+          <h3 className="text-lg font-black text-white">Handout generator for {molecule.name}</h3>
         </div>
-        <button onClick={exportQuiz} className="btn-primary text-xs">Export Quiz PDF</button>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={exportFlowchart} className="btn-secondary text-xs">Export Flowchart PDF</button>
+          <button onClick={exportQuiz} className="btn-primary text-xs">Export Quiz PDF</button>
+        </div>
+      </div>
+      <div className="grid gap-2 md:grid-cols-2">
+        {assignmentSteps.map(step => (
+          <div key={step.title} className="rounded-lg border border-white/10 bg-white/[0.035] p-3">
+            <p className="text-xs font-bold text-white">{step.title}</p>
+            <p className="mt-1 text-[11px] font-semibold text-cyan-100">{step.result}</p>
+            <p className="mt-1 text-[11px] leading-4 text-gray-500">{step.detail}</p>
+          </div>
+        ))}
       </div>
       <ol className="space-y-2">{questions.map((question, index) => <li key={question} className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-xs text-gray-300">{index + 1}. {question}</li>)}</ol>
     </div>
