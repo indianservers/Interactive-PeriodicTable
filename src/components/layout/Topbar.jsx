@@ -40,6 +40,7 @@ const titles = {
   balancer: 'Equation Balancer',
   'study-tools': 'Study Tools',
   'chemistry-solver': 'Chemistry Solver',
+  'chemistry-inventor': 'Chemistry Inventor Studio',
 };
 
 const parentCrumbs = {
@@ -61,6 +62,7 @@ const parentCrumbs = {
   balancer: [{ id: 'dashboard', label: 'Dashboard' }, { id: 'balancer', label: 'Equation Balancer' }],
   'study-tools': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'study-tools', label: 'Study Tools' }],
   'chemistry-solver': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'chemistry-solver', label: 'Chemistry Solver' }],
+  'chemistry-inventor': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'chemistry-inventor', label: 'Chemistry Inventor Studio' }],
 };
 
 const pageItems = navGroups.flatMap(group => group.items.flatMap(item => [item, ...(item.subItems || [])]));
@@ -70,6 +72,7 @@ const pageHashMap = {
   'symmetry-point-groups': 'molecular-symmetry/point-groups',
   'symmetry-practice': 'molecular-symmetry/practice',
   'symmetry-teaching': 'molecular-symmetry/teaching',
+  'chemistry-inventor': 'chemistry-inventor',
 };
 
 const glossaryTerms = [

@@ -65,6 +65,7 @@ export const navGroups = [
           { id: 'chemistry-solver', label: 'Practice Extensions', icon: Puzzle },
         ],
       },
+      { id: 'chemistry-inventor', label: 'Chemistry Inventor Studio', icon: Sparkles },
       { id: 'quiz', label: 'Quiz', icon: BookOpen },
       { id: 'favorites', label: 'Favorites', icon: Heart },
     ],
@@ -75,7 +76,7 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver']);
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor']);
 const allNavItems = navGroups.flatMap(group => group.items.flatMap(item => [item, ...(item.subItems || [])]));
 const pageLabelMap = Object.fromEntries(allNavItems.map(item => [item.id, item]));
 

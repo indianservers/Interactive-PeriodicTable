@@ -1,0 +1,22 @@
+export const chemicalLibrary = [
+  ['water', 'Water', 'H2O', 'Solvent', 'neutral', 'liquid', 'colourless', 'Solvent for solutions', 7, 'low', '', 18.02, 7, 20, 'mL', ['dissolution']],
+  ['hydrochloric-acid', 'Hydrochloric Acid', 'HCl', 'Acid', 'acid', 'aqueous', 'colourless', 'Acid tests and metal reactions', 10, 'medium', 'Use dilute acid only with eye protection.', 36.46, 1, 5, 'mL', ['neutralization', 'acid-metal', 'carbonate-test', 'chloride-test']],
+  ['sodium-hydroxide', 'Sodium Hydroxide', 'NaOH', 'Base', 'base', 'aqueous', 'colourless', 'Neutralization and indicator tests', 10, 'medium', 'Use dilute base only. Avoid skin contact.', 40, 13, 5, 'mL', ['neutralization', 'indicator-test']],
+  ['sodium-chloride', 'Sodium Chloride', 'NaCl', 'Salt', 'salt', 'solid', 'white', 'Salt solution and crystallization', 7, 'low', 'Do not taste chemicals.', 58.44, 7, 2, 'g', ['dissolution', 'conductivity']],
+  ['copper-sulphate', 'Copper Sulphate', 'CuSO4', 'Salt', 'salt', 'aqueous', 'blue', 'Crystallization and heating concept', 8, 'medium', 'Avoid direct contact.', 159.61, 5, 10, 'mL', ['crystallization', 'heating-hydrated-salt']],
+  ['silver-nitrate', 'Silver Nitrate', 'AgNO3', 'Salt', 'salt', 'aqueous', 'colourless', 'Chloride ion test', 10, 'medium', 'May stain skin and clothing.', 169.87, 6, 2, 'mL', ['chloride-test', 'precipitation']],
+  ['barium-chloride', 'Barium Chloride', 'BaCl2', 'Salt', 'salt', 'aqueous', 'colourless', 'Sulphate ion test', 10, 'medium', 'Teacher demo only; avoid contact.', 208.23, 6, 2, 'mL', ['sulphate-test', 'precipitation']],
+  ['calcium-carbonate', 'Calcium Carbonate', 'CaCO3', 'Carbonate', 'carbonate', 'solid', 'white', 'Carbonate test', 10, 'low', 'Avoid inhaling powder.', 100.09, 9, 1, 'g', ['carbonate-test', 'acid-carbonate']],
+  ['vinegar-acetic-acid', 'Vinegar / Acetic Acid', 'CH3COOH', 'Household acid', 'acid', 'liquid', 'colourless', 'Safe acid indicator test', 7, 'low', 'Use household vinegar or dilute acetic acid only.', 60.05, 3, 10, 'mL', ['indicator-test', 'neutralization']],
+  ['limewater', 'Limewater', 'Ca(OH)2', 'Base', 'base', 'aqueous', 'colourless', 'Carbon dioxide test', 8, 'low', 'Avoid splashing into eyes.', 74.09, 12, 10, 'mL', ['co2-limewater-test']],
+  ['zinc', 'Zinc', 'Zn', 'Metal', 'metal', 'solid', 'grey', 'Metal + acid reaction', 10, 'low', 'Use small granules only.', 65.38, null, 1, 'g', ['acid-metal']],
+  ['magnesium', 'Magnesium', 'Mg', 'Metal', 'metal', 'solid', 'silver', 'Combustion and acid reaction', 8, 'medium', 'Burning magnesium needs teacher supervision.', 24.31, null, 1, 'piece', ['combustion', 'acid-metal']],
+  ['iron-filings', 'Iron Filings', 'Fe', 'Metal', 'metal', 'solid', 'grey', 'Magnetic separation and reactivity', 8, 'low', 'Keep filings away from eyes.', 55.85, null, 1, 'g', ['separation', 'reactivity']],
+  ['oxygen', 'Oxygen', 'O2', 'Gas', 'gas', 'gas', 'colourless', 'Glowing splint test', 8, 'medium', 'Supports burning.', 32, null, 1, 'jar', ['oxygen-test']],
+  ['hydrogen', 'Hydrogen', 'H2', 'Gas', 'gas', 'gas', 'colourless', 'Pop test', 8, 'medium', 'Flammable; teacher demo only.', 2.02, null, 1, 'jar', ['hydrogen-test']],
+  ['carbon-dioxide', 'Carbon Dioxide', 'CO2', 'Gas', 'gas', 'gas', 'colourless', 'Turns limewater milky', 8, 'low', 'Do not inhale collected gas directly.', 44.01, null, 1, 'jar', ['co2-limewater-test']],
+  ['dilute-sulphuric-acid', 'Sulphuric Acid (Dilute Only)', 'H2SO4', 'Acid', 'acid', 'aqueous', 'colourless', 'Acid reactions and sulphate examples', 10, 'medium', 'Dilute acid only with teacher supervision.', 98.08, 1, 5, 'mL', ['acid-metal', 'neutralization', 'sulphate-test']],
+  ['simple-salt-solution', 'Simple Salt Solution', 'NaCl(aq)', 'Solution', 'salt-solution', 'aqueous', 'colourless', 'Conductivity and evaporation', 7, 'low', 'Use classroom-safe salt water.', null, 7, 20, 'mL', ['conductivity', 'evaporation']],
+].map(([id, name, formula, category, type, state, color, commonUse, gradeLevel, hazardLevel, safetyNote, molarMass, approxPH, defaultQuantity, defaultUnit, supportedReactions]) => ({
+  id, name, formula, category, type, state, color, commonUse, gradeLevel, hazardLevel, safetyNote, molarMass, approxPH, defaultQuantity, defaultUnit, supportedReactions,
+}));

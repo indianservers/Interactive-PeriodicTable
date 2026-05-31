@@ -1,4 +1,4 @@
-import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star, FlaskConical, Lightbulb, GraduationCap, Clock, Heart } from 'lucide-react';
+import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star, FlaskConical, Lightbulb, GraduationCap, Clock, Heart, Sparkles } from 'lucide-react';
 import { getCategoryInfo } from '../data/categories.js';
 import { useElements } from '../hooks/useElements.js';
 
@@ -38,6 +38,7 @@ const pageLabels = {
   quiz: 'Quiz',
   favorites: 'Favorites',
   settings: 'Settings',
+  'chemistry-inventor': 'Chemistry Inventor Studio',
 };
 
 export const DashboardPage = ({ onNavigate, onSelectElement, recentPages = [], favoritePages = [] }) => {
@@ -202,6 +203,7 @@ export const DashboardPage = ({ onNavigate, onSelectElement, recentPages = [], f
           <QuickActionCard icon={Atom} title="Atom Visualizer" desc="Electron shell diagrams" color="#06b6d4" onClick={() => onNavigate('atom')} />
           <QuickActionCard icon={Zap} title="3D Molecules" desc="Three.js molecule viewer" color="#a78bfa" onClick={() => onNavigate('molecule')} />
           <QuickActionCard icon={FlaskConical} title="Chemistry Lab" desc="50 study tools and charts" color="#2dd4bf" onClick={() => onNavigate('lab')} />
+          <QuickActionCard icon={Sparkles} title="Chemistry Inventor Studio" desc="Build, drag, simulate, and explain school chemistry experiments visually." color="#22d3ee" onClick={() => onNavigate('chemistry-inventor')} />
           <QuickActionCard icon={Star} title="Favorites" desc="Your saved elements" color="#fbbf24" onClick={() => onNavigate('favorites')} />
         </div>
       </div>
