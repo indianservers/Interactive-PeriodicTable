@@ -3,7 +3,7 @@ import {
   Atom, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock,
   FileQuestion, FlaskConical, FlaskRound, GitCompare, GraduationCap, Heart,
   LayoutDashboard, Lightbulb, ListTree, Microscope, Orbit, PanelLeftClose,
-  PanelLeftOpen, Puzzle, Route, Scale, Search, Settings, Sigma, Sparkles,
+  PanelLeftOpen, Pill, Puzzle, Route, Scale, Search, Settings, Sigma, Sparkles,
   Table2, TrendingUp, Trophy, X,
 } from 'lucide-react';
 
@@ -47,6 +47,7 @@ export const navGroups = [
         ],
       },
       { id: 'balancer', label: 'Equation Balancer', icon: Scale },
+      { id: 'drug-discovery', label: 'Drug Discovery', icon: Pill },
     ],
   },
   {
@@ -76,7 +77,7 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor']);
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery']);
 const allNavItems = navGroups.flatMap(group => group.items.flatMap(item => [item, ...(item.subItems || [])]));
 const pageLabelMap = Object.fromEntries(allNavItems.map(item => [item.id, item]));
 

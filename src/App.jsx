@@ -19,6 +19,7 @@ const MoleculeScenePage = lazy(() => import('./pages/MoleculeScenePage.jsx'));
 const MolecularSymmetryModule = lazy(() => import('./modules/molecular-symmetry/MolecularSymmetryModule.jsx'));
 const ChemistrySolverModule = lazy(() => import('./modules/chemistry-solver/ChemistrySolverModule.jsx'));
 const ChemistryInventorStudio = lazy(() => import('./modules/chemistry-inventor/index.js'));
+const DrugDiscoveryModule = lazy(() => import('./modules/drug-discovery/DrugDiscoveryModule.jsx'));
 
 const pageHashMap = {
   symmetry: 'molecular-symmetry',
@@ -28,6 +29,7 @@ const pageHashMap = {
   'symmetry-teaching': 'molecular-symmetry/teaching',
   'chemistry-solver': 'chemistry-solver',
   'chemistry-inventor': 'chemistry-inventor',
+  'drug-discovery': 'drug-discovery',
 };
 const hashPageMap = {
   'molecular-symmetry': 'symmetry',
@@ -37,6 +39,7 @@ const hashPageMap = {
   'molecular-symmetry/teaching': 'symmetry-teaching',
   'chemistry-solver': 'chemistry-solver',
   'chemistry-inventor': 'chemistry-inventor',
+  'drug-discovery': 'drug-discovery',
 };
 
 const symmetrySections = {
@@ -274,6 +277,12 @@ function App() {
         return (
           <Suspense fallback={<LoadingProgress title="Loading Chemistry Inventor Studio" detail="Preparing builder palette, canvas, inspector, and simulation panel..." height={640} reducedMotion={reducedMotion} />}>
             <ChemistryInventorStudio />
+          </Suspense>
+        );
+      case 'drug-discovery':
+        return (
+          <Suspense fallback={<LoadingProgress title="Loading Drug Discovery Module" detail="Preparing AlphaFold, ChEMBL, PubChem, PDB, SAR, docking, and ADME workspaces..." height={680} reducedMotion={reducedMotion} />}>
+            <DrugDiscoveryModule />
           </Suspense>
         );
       case 'quiz':

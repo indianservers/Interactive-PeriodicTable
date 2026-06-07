@@ -78,6 +78,18 @@ export const solverCategories = [
     subCategories: ['Alkanes', 'Alkenes', 'Alkynes', 'Benzene', 'Aromaticity', 'Alcohols', 'Phenols', 'Ethers', 'Aldehydes', 'Ketones', 'Carboxylic acids', 'Amines', 'Haloalkanes', 'Haloarenes', 'Biomolecules'],
   },
   {
+    id: 'biochemistry-medical-chemistry',
+    name: 'Biochemistry and Medical Chemistry',
+    description: 'Biomolecules, enzymes, body-fluid chemistry, clinical buffers, osmotic pressure, and medical isotope basics.',
+    subCategories: ['Amino acids', 'Peptides', 'Proteins', 'Carbohydrates', 'Lipids', 'Nucleic acids', 'Enzymes', 'Vitamins and coenzymes', 'Metabolism basics', 'Blood buffers', 'Clinical pH', 'Osmotic pressure', 'Isotonic solutions', 'Diagnostic isotopes', 'Body-fluid electrolytes'],
+  },
+  {
+    id: 'pharmaceutical-medicinal-chemistry',
+    name: 'Pharmaceutical and Medicinal Chemistry',
+    description: 'Drug functional groups, ADME, pKa and ionization, prodrugs, assays, impurities, and pharmaceutical quality control.',
+    subCategories: ['Drug functional groups', 'Structure activity relationship', 'pKa and ionization', 'Lipophilicity', 'Hydrogen bonding', 'ADME', 'Prodrugs', 'Metabolism reactions', 'Pharmaceutical buffers', 'Antacids', 'Analgesics', 'Antimicrobials', 'Drug assays', 'Chromatography in pharma', 'Dissolution testing'],
+  },
+  {
     id: 'inorganic-chemistry',
     name: 'Inorganic Chemistry',
     description: 'Block chemistry, coordination compounds, complex nomenclature, CFT, metallurgy, and industrial compounds.',

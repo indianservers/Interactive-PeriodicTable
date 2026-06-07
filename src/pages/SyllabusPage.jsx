@@ -18,7 +18,7 @@ const Pill = ({ children, color = '#64748b' }) => (
   </span>
 );
 
-const trackGroups = ['School', 'Senior Secondary', 'Entrance'];
+const trackGroups = ['School', 'Senior Secondary', 'Entrance', 'Applied'];
 
 export const SyllabusPage = ({ onNavigate }) => {
   const [activeTrack, setActiveTrack] = useState('class10');

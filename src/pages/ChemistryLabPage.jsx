@@ -205,7 +205,12 @@ const BadgePill = ({ children, className = '', style }) => (
 const newLabToolIds = new Set([
   'unit-cell', 'crystal-defects', 'adsorption', 'named-reactions', 'functional-tests', 'isomerism',
   'reactivity-series', 'quantum-numbers', 'gibbs', 'environmental-chem', 'cft', 'metallurgy',
-  'salt-analysis', 'pblock-advanced',
+  'salt-analysis', 'pblock-advanced', 'drug-functional-groups', 'adme-ionization', 'isotonicity',
+  'clinical-buffers', 'pharma-analysis', 'radiopharma', 'enzyme-kinetics', 'amino-acid-pi',
+  'protein-structure', 'carbohydrate-lab', 'lipid-membrane', 'nucleic-acid-lab',
+  'vitamin-coenzyme-map', 'metabolism-atp', 'drug-class-studio', 'drug-metabolism-lab',
+  'dosage-form-lab', 'antacid-analgesic-antimicrobial', 'pharma-buffer-lab', 'electrolyte-panel',
+  'hemoglobin-oxygen', 'diagnostic-color-tests', 'clinical-metabolites', 'toxicology-chelation',
 ]);
 
 const experimentBestFor = (item) => {
@@ -625,6 +630,274 @@ const pBlockData = {
   ],
 };
 
+const pharmaMedicalReference = {
+  'drug-functional-groups': {
+    result: 'High-yield drug motifs: acids, bases, amides, esters, alcohols, aromatics, and halogens.',
+    columns: ['Group', 'Pharma meaning', 'Medical example'],
+    rows: [
+      ['Carboxylic acid', 'Often acidic and ionized at blood pH; improves salt formation and water solubility.', 'NSAIDs, amino acids, bile acids'],
+      ['Amine', 'Often basic; changes membrane crossing, receptor binding, and salt formation.', 'Antihistamines, local anesthetics'],
+      ['Amide', 'Stable polar linkage; common in peptides and many drug scaffolds.', 'Paracetamol, penicillins'],
+      ['Ester', 'Can act as a prodrug or be hydrolyzed by esterases.', 'Aspirin, ester local anesthetics'],
+      ['Aromatic ring', 'Adds shape, pi interactions, and hydrophobic binding.', 'Many analgesic and antimicrobial drugs'],
+      ['Halogen', 'Can tune lipophilicity, metabolic stability, and binding.', 'Fluorinated steroids and antibiotics'],
+    ],
+  },
+  'adme-ionization': {
+    result: 'ADME links structure to absorption, distribution, metabolism, and excretion.',
+    columns: ['Concept', 'Chemistry rule', 'Pharma impact'],
+    rows: [
+      ['pH versus pKa', 'Weak acids ionize when pH is above pKa; weak bases ionize when pH is below pKa.', 'Charge changes solubility and membrane crossing.'],
+      ['Lipophilicity', 'Nonpolar surfaces favor membranes; polar groups favor water.', 'Too lipophilic can reduce solubility; too polar can reduce absorption.'],
+      ['Hydrogen bonding', 'Donors and acceptors improve binding and water interaction.', 'Excess hydrogen bonding may lower permeability.'],
+      ['Metabolism', 'Oxidation, reduction, hydrolysis, and conjugation alter functional groups.', 'Can activate prodrugs or clear active drugs.'],
+      ['Excretion', 'Ionized and polar compounds are cleared more easily in urine or bile.', 'pH can influence renal trapping for weak acids/bases.'],
+    ],
+  },
+  isotonicity: {
+    result: 'Isotonic preparations are designed to avoid strong water movement across cell membranes.',
+    columns: ['Term', 'Chemistry meaning', 'Medical relevance'],
+    rows: [
+      ['Hypotonic', 'Lower effective solute concentration than body fluid.', 'Cells can swell as water enters.'],
+      ['Isotonic', 'Similar osmotic pressure to body fluid.', 'Preferred for many IV and ophthalmic solutions.'],
+      ['Hypertonic', 'Higher effective solute concentration than body fluid.', 'Cells can shrink as water leaves.'],
+      ['Osmotic pressure', 'Pi = iMRT for dilute solutions.', 'Connects concentration to membrane water flow.'],
+      ['Normal saline', '0.9 percent NaCl is close to physiological tonicity.', 'Common fluid for clinical use.'],
+    ],
+  },
+  'clinical-buffers': {
+    result: 'Clinical buffer chemistry keeps body fluids near functional pH ranges.',
+    columns: ['Buffer system', 'Chemistry role', 'Medical connection'],
+    rows: [
+      ['Bicarbonate', 'H2CO3/HCO3- pair responds to CO2 and acid load.', 'Major blood buffer linked to respiration.'],
+      ['Phosphate', 'H2PO4-/HPO4^2- pair buffers near intracellular and renal pH.', 'Important in cells and urine.'],
+      ['Proteins', 'Ionizable amino acid side chains accept or donate protons.', 'Hemoglobin contributes to blood buffering.'],
+      ['Acidosis', 'Blood pH falls below normal range.', 'Can reflect metabolic or respiratory imbalance.'],
+      ['Alkalosis', 'Blood pH rises above normal range.', 'Can reflect CO2 loss or metabolic disturbance.'],
+    ],
+  },
+  'pharma-analysis': {
+    result: 'Pharmaceutical QC proves identity, strength, purity, and performance.',
+    columns: ['Method', 'What it checks', 'Typical use'],
+    rows: [
+      ['Titration assay', 'Amount of acid, base, oxidant, reductant, or complexing ion.', 'Aspirin, antacids, iodine, peroxide assays'],
+      ['Chromatography', 'Separation and quantification of active ingredient and impurities.', 'HPLC purity and content uniformity'],
+      ['Spectroscopy', 'Identity and concentration from light absorption or emission.', 'UV-visible assay, IR identity check'],
+      ['Dissolution testing', 'How quickly a dosage form releases drug.', 'Tablet and capsule performance'],
+      ['Limit tests', 'Trace impurity control.', 'Heavy metals, chloride, sulfate, residual impurities'],
+    ],
+  },
+  radiopharma: {
+    result: 'Radiopharmaceutical design balances half-life, emission, targeting, and safe clearance.',
+    columns: ['Isotope', 'Main use', 'Chemistry reason'],
+    rows: [
+      ['Tc-99m', 'SPECT imaging tracer.', 'Gamma emission and short half-life suit diagnostics.'],
+      ['F-18', 'PET imaging tracer.', 'Small fluorine label fits biomolecules such as glucose analogs.'],
+      ['I-131', 'Thyroid imaging and therapy.', 'Iodide targets thyroid tissue; beta and gamma emissions are useful clinically.'],
+      ['Co-60', 'Radiotherapy source.', 'Strong gamma emission for external beam treatment.'],
+      ['Lu-177', 'Targeted radionuclide therapy.', 'Beta emission plus ligand targeting for selected tumors.'],
+    ],
+  },
+  'enzyme-kinetics': {
+    result: 'Enzyme rate rises with substrate, then approaches Vmax; inhibitors reshape the curve.',
+    columns: ['Control', 'Visual signal', 'Lab connection'],
+    rows: [
+      ['Substrate', 'More substrate fills more active sites until saturation.', 'Michaelis-Menten kinetics'],
+      ['Competitive inhibitor', 'Competes at active site; apparent Km increases.', 'Drug-enzyme competition'],
+      ['Noncompetitive inhibitor', 'Lowers active enzyme fraction; Vmax falls.', 'Allosteric inhibition'],
+      ['Temperature', 'Moderate heat speeds collisions; high heat denatures protein.', 'Fever, sterilization, assays'],
+      ['pH', 'Ionization changes active-site binding.', 'Pepsin, trypsin, clinical enzymes'],
+    ],
+  },
+  'amino-acid-pi': {
+    result: 'Amino acids shift charge with pH: cationic below pI, zwitterionic near pI, anionic above pI.',
+    columns: ['pH region', 'Dominant form', 'Visualization cue'],
+    rows: [
+      ['Low pH', 'NH3+ and COOH; net positive.', 'Migrates toward cathode'],
+      ['Near pI', 'NH3+ and COO-; net zero.', 'Lowest solubility in electric field'],
+      ['High pH', 'NH2 and COO-; net negative.', 'Migrates toward anode'],
+      ['Peptide bond', 'COOH plus NH2 condense to amide linkage.', 'Protein backbone formation'],
+      ['Side chain', 'Acidic/basic/polar/nonpolar groups tune behavior.', 'Protein folding and binding'],
+    ],
+  },
+  'protein-structure': {
+    result: 'Protein behavior depends on primary sequence, folding forces, and denaturation conditions.',
+    columns: ['Level', 'Visual structure', 'Lab/medical link'],
+    rows: [
+      ['Primary', 'Amino acid chain order.', 'Mutation changes sequence'],
+      ['Secondary', 'Alpha helix and beta sheet hydrogen bonding.', 'Keratin, silk, enzymes'],
+      ['Tertiary', 'Hydrophobic packing, ionic links, disulfides.', 'Enzyme active sites'],
+      ['Quaternary', 'Multiple subunits assemble.', 'Hemoglobin tetramer'],
+      ['Denaturation', 'Heat, pH, solvents disrupt folding.', 'Fever, sterilization, protein tests'],
+    ],
+  },
+  'carbohydrate-lab': {
+    result: 'Carbohydrates cycle between open-chain and ring forms; reducing sugars give diagnostic color changes.',
+    columns: ['Sugar idea', 'Visual cue', 'Test/lab link'],
+    rows: [
+      ['Glucose ring', 'Six-membered ring with many OH groups.', 'High water solubility'],
+      ['Fructose', 'Ketose that can isomerize under test conditions.', 'Positive reducing sugar tests'],
+      ['Sucrose', 'Nonreducing disaccharide linkage.', 'No free anomeric carbon'],
+      ['Starch', 'Coiled glucose polymer.', 'Blue-black iodine complex'],
+      ['Cellulose', 'Straight beta-glucose polymer.', 'Fiber and plant cell walls'],
+    ],
+  },
+  'lipid-membrane': {
+    result: 'Lipids self-assemble: polar heads face water and nonpolar tails hide inside membranes or micelles.',
+    columns: ['Structure', 'Visual assembly', 'Medical/pharma link'],
+    rows: [
+      ['Fatty acid', 'Long nonpolar tail plus polar acid head.', 'Energy storage and soaps'],
+      ['Triglyceride', 'Three fatty acids esterified to glycerol.', 'Fats, oils, digestion'],
+      ['Phospholipid', 'Two tails plus phosphate head.', 'Cell membrane bilayer'],
+      ['Micelle', 'Tails inward, heads outward.', 'Soap, bile salts, drug solubilization'],
+      ['Emulsion', 'Dispersed oil droplets stabilized by surfactant.', 'Creams, suspensions, lipid formulations'],
+    ],
+  },
+  'nucleic-acid-lab': {
+    result: 'DNA/RNA recognition uses base pairing, hydrogen bonding, sugar chemistry, and phosphate charge.',
+    columns: ['Unit', 'Visual cue', 'Bio/medical link'],
+    rows: [
+      ['Nucleotide', 'Base plus sugar plus phosphate.', 'DNA/RNA monomer'],
+      ['A-T/U pair', 'Two hydrogen bonds.', 'Genetic coding'],
+      ['G-C pair', 'Three hydrogen bonds.', 'Higher thermal stability'],
+      ['Backbone', 'Charged phosphate-sugar chain.', 'Electrophoresis migration'],
+      ['RNA difference', 'Ribose OH and uracil.', 'mRNA, tRNA, ribozymes'],
+    ],
+  },
+  'vitamin-coenzyme-map': {
+    result: 'Vitamins and minerals often work as coenzymes, redox carriers, cofactors, or structural ions.',
+    columns: ['Nutrient', 'Chemical role', 'Medical connection'],
+    rows: [
+      ['B vitamins', 'Coenzyme fragments for metabolism.', 'Energy pathways, anemia links'],
+      ['Vitamin C', 'Redox antioxidant and collagen support.', 'Scurvy, wound healing'],
+      ['Vitamin D/Ca', 'Calcium-phosphate regulation.', 'Bone chemistry'],
+      ['Iron', 'Redox metal in heme.', 'Oxygen transport, anemia'],
+      ['Zinc/Mg', 'Enzyme cofactors and Lewis acid centers.', 'Immunity, ATP enzymes'],
+    ],
+  },
+  'metabolism-atp': {
+    result: 'Metabolism moves carbon, nitrogen, electrons, and phosphate energy through linked pathways.',
+    columns: ['Pathway board', 'Chemical transformation', 'Medical link'],
+    rows: [
+      ['Glycolysis', 'Glucose fragments into pyruvate with ATP/NADH production.', 'Blood glucose and energy'],
+      ['Citric acid cycle', 'Acetyl carbon oxidized to CO2.', 'Central metabolism'],
+      ['ATP hydrolysis', 'Phosphate transfer powers unfavorable steps.', 'Bioenergetics'],
+      ['Urea cycle', 'Excess nitrogen converted to urea.', 'Liver and kidney chemistry'],
+      ['Oxidative phosphorylation', 'Proton gradient drives ATP synthase.', 'Mitochondrial function'],
+    ],
+  },
+  'drug-class-studio': {
+    result: 'Drug classes can be compared by target, functional group pattern, and chemical handling.',
+    columns: ['Class', 'Core chemistry', 'Visual lab anchor'],
+    rows: [
+      ['Analgesics', 'Aromatics, amides, acids, phenols.', 'Pain/fever medicine motifs'],
+      ['Antacids', 'Weak bases neutralize gastric acid.', 'Neutralization and buffers'],
+      ['Antimicrobials', 'Heterocycles, beta-lactams, sulfonamides, quinolones.', 'Selective toxicity'],
+      ['Antihistamines', 'Basic amines plus aromatic groups.', 'Receptor-binding shape'],
+      ['Local anesthetics', 'Aromatic-lipophilic group, linker, amine.', 'Ionization controls onset'],
+    ],
+  },
+  'drug-metabolism-lab': {
+    result: 'Drug metabolism changes polarity through phase I functionalization and phase II conjugation.',
+    columns: ['Metabolic step', 'Chemical change', 'Pharma consequence'],
+    rows: [
+      ['Oxidation', 'Adds or exposes OH, C=O, N-oxide, or epoxide.', 'Often CYP-mediated'],
+      ['Reduction', 'Reduces nitro, azo, carbonyl, or disulfide groups.', 'Low oxygen tissues, gut flora'],
+      ['Hydrolysis', 'Breaks esters, amides, lactams.', 'Prodrug activation or clearance'],
+      ['Glucuronidation', 'Adds glucuronic acid.', 'Increases water solubility'],
+      ['Sulfation/acetylation', 'Conjugates polar or amine groups.', 'Clearance and genetic variation'],
+    ],
+  },
+  'dosage-form-lab': {
+    result: 'Dosage forms are chemical delivery systems: solution, suspension, emulsion, tablet, capsule, or syrup.',
+    columns: ['Form', 'Visual behavior', 'Chemistry control'],
+    rows: [
+      ['Solution', 'Clear single phase.', 'Solubility, pH, preservative'],
+      ['Suspension', 'Solid particles dispersed in liquid.', 'Wetting, viscosity, sedimentation'],
+      ['Emulsion', 'Oil and water droplets stabilized.', 'Surfactant and droplet size'],
+      ['Tablet', 'Compressed powder matrix.', 'Binder, disintegrant, dissolution'],
+      ['Syrup', 'Concentrated sugar solution.', 'Osmotic preservation and taste masking'],
+    ],
+  },
+  'antacid-analgesic-antimicrobial': {
+    result: 'Common medicine groups connect directly to acid-base, organic, and microbial chemistry.',
+    columns: ['Medicine group', 'Main chemistry', 'Lab visualization'],
+    rows: [
+      ['Antacid', 'Carbonates/hydroxides neutralize HCl.', 'CO2 bubbles or pH rise'],
+      ['Aspirin-like analgesic', 'Aromatic acid/ester chemistry.', 'Hydrolysis and titration'],
+      ['Paracetamol-like analgesic', 'Phenol plus amide motif.', 'Functional group map'],
+      ['Sulfa drugs', 'Sulfonamide mimicry.', 'Competitive biochemical blocking'],
+      ['Disinfectants', 'Oxidants or membrane disruptors.', 'Protein/lipid damage'],
+    ],
+  },
+  'pharma-buffer-lab': {
+    result: 'Pharmaceutical buffers choose pH for stability, comfort, solubility, and compatibility.',
+    columns: ['Buffer decision', 'Chemistry control', 'Formulation link'],
+    rows: [
+      ['Target pH', 'Close to pKa for useful buffer capacity.', 'Eye drops, injections, oral liquids'],
+      ['Capacity', 'More conjugate pair resists pH change.', 'Shelf stability'],
+      ['Compatibility', 'Avoid precipitation or degradation.', 'Drug salt and excipients'],
+      ['Comfort', 'Physiological pH reduces irritation.', 'Ophthalmic and injectable products'],
+      ['Preservation', 'pH affects microbial growth and preservative ionization.', 'Multi-dose containers'],
+    ],
+  },
+  'electrolyte-panel': {
+    result: 'Clinical electrolyte panels visualize charged ions that control nerves, heart rhythm, water balance, and bone.',
+    columns: ['Ion', 'Chemical role', 'Clinical signal'],
+    rows: [
+      ['Na+', 'Major extracellular cation.', 'Water balance and osmolarity'],
+      ['K+', 'Major intracellular cation.', 'Nerve and heart excitability'],
+      ['Ca2+', 'Bone mineral, signaling, clotting.', 'Tetany, bone, cardiac effects'],
+      ['Mg2+', 'ATP enzyme cofactor.', 'Neuromuscular and enzyme function'],
+      ['Cl-/HCO3-', 'Charge balance and acid-base control.', 'Blood gas and metabolic balance'],
+    ],
+  },
+  'hemoglobin-oxygen': {
+    result: 'Hemoglobin binds oxygen cooperatively; pH, CO2, CO, and 2,3-BPG shift oxygen release.',
+    columns: ['Factor', 'Curve effect', 'Medical chemistry link'],
+    rows: [
+      ['O2 pressure', 'Higher pressure loads heme sites.', 'Lungs versus tissues'],
+      ['Cooperativity', 'One O2 increases affinity for the next.', 'Sigmoid binding curve'],
+      ['Low pH/CO2', 'Right shift releases O2 to tissues.', 'Bohr effect'],
+      ['Carbon monoxide', 'Binds heme strongly and blocks O2 transport.', 'CO poisoning'],
+      ['Iron state', 'Fe2+ binds O2; Fe3+ methemoglobin cannot carry well.', 'Oxidative stress'],
+    ],
+  },
+  'diagnostic-color-tests': {
+    result: 'Diagnostic reagent tests convert analyte chemistry into visible color, precipitate, or intensity.',
+    columns: ['Analyte', 'Visual test idea', 'Chemistry signal'],
+    rows: [
+      ['Glucose', 'Oxidase/peroxidase color or reducing test.', 'Redox chemistry'],
+      ['Protein', 'Biuret violet complex.', 'Peptide bonds coordinate Cu2+'],
+      ['Ketone bodies', 'Nitroprusside purple complex.', 'Diabetes/fasting urine test'],
+      ['Bilirubin', 'Diazo color formation.', 'Liver/bile chemistry'],
+      ['Chloride', 'AgCl precipitate/titration.', 'Electrolyte and salt analysis'],
+    ],
+  },
+  'clinical-metabolites': {
+    result: 'Clinical metabolites are small molecules whose concentration reflects metabolism and organ function.',
+    columns: ['Marker', 'Chemical identity', 'Clinical chemistry use'],
+    rows: [
+      ['Glucose', 'Reducing carbohydrate fuel.', 'Diabetes monitoring'],
+      ['Urea', 'Neutral nitrogen waste.', 'Protein metabolism and kidney function'],
+      ['Creatinine', 'Creatine breakdown product.', 'Renal filtration estimate'],
+      ['Cholesterol', 'Sterol lipid.', 'Membranes, hormones, lipid panel'],
+      ['Uric acid', 'Purine oxidation product.', 'Gout and kidney stones'],
+    ],
+  },
+  'toxicology-chelation': {
+    result: 'Toxicology connects binding strength, redox chemistry, enzyme poisoning, and chelation.',
+    columns: ['Toxin', 'Chemical damage', 'Treatment concept'],
+    rows: [
+      ['Lead', 'Binds sulfhydryl groups and disrupts heme enzymes.', 'Chelation with suitable ligands'],
+      ['Mercury', 'Soft metal binds sulfur-rich proteins.', 'Avoid exposure; chelation in selected cases'],
+      ['Cyanide', 'Binds cytochrome oxidase iron.', 'Antidote chemistry redirects or oxidizes target'],
+      ['Carbon monoxide', 'Binds hemoglobin Fe2+ strongly.', 'Oxygen therapy shifts binding equilibrium'],
+      ['Arsenic', 'Disrupts enzyme thiols and phosphate chemistry.', 'Chelation and exposure control'],
+    ],
+  },
+};
+
 const LAB_EXPERIMENTS = [
   { id: 'titration', title: 'Titration Simulator', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: Waves, topic: 'pH', teaches: 'How acid and base neutralize each other.', steps: ['Move the NaOH drops slider.', 'Watch the color and pH change.', 'Find the point where the solution becomes neutral.'], tryThis: 'Set drops near the middle and notice the fast pH jump.', result: 'A sharp pH change marks the equivalence region.', safety: 'Real titrations use goggles and careful handling.', realWorld: 'Used to test medicine, water, and food acidity.' },
   { id: 'electrolysis', title: 'Electrolysis Cell', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Zap, topic: 'Redox', teaches: 'How electricity drives chemical changes.', steps: ['Choose an electrolyte.', 'Identify cathode and anode products.', 'Compare different solutions.'], tryThis: 'Switch from CuSO4 to NaCl(aq).', result: 'Different ions produce different gases or metals.', safety: 'Electrolysis can produce gases; use ventilation in real labs.', realWorld: 'Used in electroplating and metal extraction.' },
@@ -658,6 +931,30 @@ const LAB_EXPERIMENTS = [
   { id: 'quantum-numbers', title: 'Quantum Numbers Explorer', tab: 'Atoms', type: 'Calculator', difficulty: 'Advanced', icon: Atom, topic: 'Quantum', teaches: 'Quantum numbers describe electron shells, subshells, orbitals, and spin.', steps: ['Set n, l, ml, and ms.', 'Check validity.', 'Use wavelength, uncertainty, and photoelectric calculators.'], tryThis: 'Set n=3 and l=2 to see a 3d orbital.', result: 'Only combinations obeying l < n and -l <= ml <= l are allowed.', realWorld: 'Foundation for atomic structure and spectra.' },
   { id: 'gibbs', title: 'Gibbs Free Energy & Thermodynamic Spontaneity', tab: 'Reactions', type: 'Calculator', difficulty: 'Advanced', icon: Activity, topic: 'Thermodynamics', teaches: 'Delta G combines enthalpy, entropy, and temperature to predict spontaneity.', steps: ['Enter Delta H and Delta S.', 'Change temperature.', 'Read Delta G and K.'], tryThis: 'Use positive Delta H and positive Delta S, then raise T.', result: 'A reaction is spontaneous when Delta G is negative.', realWorld: 'Used to predict reaction feasibility and equilibrium.' },
   { id: 'environmental-chem', title: 'Environmental Chemistry', tab: 'Advanced', type: 'Reference', difficulty: 'Intermediate', icon: Waves, topic: 'Environment', teaches: 'Atmospheric chemistry, pollution, water quality, and smog depend on reaction pathways.', steps: ['Switch tabs.', 'Review key equations.', 'Connect pollutants to effects.'], tryThis: 'Compare photochemical and classical smog.', result: 'Environmental chemistry links molecular reactions to real-world health and climate effects.', realWorld: 'Useful for Class 11 environmental chemistry and NEET revision.' },
+  { id: 'drug-functional-groups', title: 'Drug Functional Groups Map', tab: 'Advanced', type: 'Reference', difficulty: 'Intermediate', icon: BadgeCheck, topic: 'Medicinal Chemistry', teaches: 'Functional groups control solubility, binding, stability, and metabolism in drug molecules.', steps: ['Compare acids, bases, amides, esters, and aromatics.', 'Connect each group to pKa or hydrogen bonding.', 'Predict how the group changes absorption or metabolism.'], tryThis: 'Search amine, carboxylic acid, ester, or amide.', result: 'Drug-like molecules balance polarity, shape, and ionization.', realWorld: 'Used in medicinal chemistry, pharmacy, and pharmacology.' },
+  { id: 'adme-ionization', title: 'ADME, pKa and Ionization Guide', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: Activity, topic: 'Pharmacokinetics', teaches: 'Absorption, distribution, metabolism, and excretion depend strongly on charge, polarity, and pH.', steps: ['Identify acidic or basic groups.', 'Compare pH with pKa.', 'Estimate whether the molecule is mostly ionized.'], tryThis: 'Compare a weak acid at stomach pH and blood pH.', result: 'Ionized forms are usually more water soluble; neutral forms cross membranes more easily.', realWorld: 'Used to reason about drug absorption and dosing.' },
+  { id: 'isotonicity', title: 'Isotonicity and Osmotic Pressure', tab: 'Solutions', type: 'Calculator', difficulty: 'Advanced', icon: Calculator, topic: 'Pharma Solutions', teaches: 'Osmotic pressure explains why injections and eye drops must match body-fluid tonicity.', steps: ['Review molarity and van Hoff factor.', 'Compare hypotonic, isotonic, and hypertonic solutions.', 'Link osmotic pressure to cell swelling or shrinking.'], tryThis: 'Compare normal saline with pure water.', result: 'Body-compatible solutions are designed near physiological osmolarity.', realWorld: 'Used in IV fluids, ophthalmic preparations, and medical labs.' },
+  { id: 'clinical-buffers', title: 'Blood Buffers and Clinical pH', tab: 'Solutions', type: 'Reference', difficulty: 'Intermediate', icon: ShieldAlert, topic: 'Clinical Chemistry', teaches: 'Bicarbonate, phosphate, and protein buffers help keep blood pH in a narrow range.', steps: ['Review buffer pair and pKa.', 'Connect acid/base addition to pH resistance.', 'Relate pH change to acidosis or alkalosis.'], tryThis: 'Compare bicarbonate buffer with pure water.', result: 'Clinical pH is controlled by chemistry plus breathing and kidney regulation.', realWorld: 'Used in blood chemistry, physiology, and medical diagnostics.' },
+  { id: 'pharma-analysis', title: 'Pharmaceutical Assay and QC Tests', tab: 'Advanced', type: 'Practice', difficulty: 'Advanced', icon: FlaskConical, topic: 'Pharma Analysis', teaches: 'Medicine quality checks use titration, chromatography, spectroscopy, dissolution, and impurity testing.', steps: ['Match the assay type to the sample.', 'Identify what property is measured.', 'Choose the chemistry tool that confirms quality.'], tryThis: 'Map aspirin assay to acid-base titration and HPLC impurity checks.', result: 'Pharmaceutical QC combines quantitative and instrumental analysis.', safety: 'Real assays follow pharmacopoeial methods and validated procedures.', realWorld: 'Used in pharmacy labs, manufacturing, and regulatory testing.' },
+  { id: 'radiopharma', title: 'Radiopharmaceutical Isotopes', tab: 'Atoms', type: 'Reference', difficulty: 'Intermediate', icon: RadioTower, topic: 'Nuclear Medicine', teaches: 'Medical tracers use isotope half-life, decay type, and tissue targeting chemistry.', steps: ['Compare half-life and decay emission.', 'Connect isotope choice to imaging or therapy.', 'Review shielding and dose safety.'], tryThis: 'Compare Tc-99m, I-131, F-18, and Co-60.', result: 'Useful medical isotopes balance detectable radiation with safe biological clearance.', safety: 'Radioisotopes require trained handling and strict dose controls.', realWorld: 'Used in PET, SPECT, thyroid therapy, and radiotherapy.' },
+  { id: 'enzyme-kinetics', title: 'Enzyme Kinetics Visual Lab', tab: 'Advanced', type: 'Simulation', difficulty: 'Advanced', icon: Activity, topic: 'Biochemistry', teaches: 'Substrate level, inhibitors, temperature, and pH change enzyme rate curves.', steps: ['Move through substrate and inhibitor stages.', 'Compare curve shape.', 'Connect Km and Vmax to assay behavior.'], tryThis: 'Compare competitive and noncompetitive inhibition.', result: 'Enzyme graphs show active-site saturation and inhibition patterns.', realWorld: 'Used in diagnostics, drug discovery, and enzyme assays.' },
+  { id: 'amino-acid-pi', title: 'Amino Acid pI and Zwitterion Lab', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: GitCompare, topic: 'Biochemistry', teaches: 'Amino acids change net charge with pH and form peptide bonds.', steps: ['Scan low pH, pI, and high pH.', 'Watch charge symbols shift.', 'Connect charge to electrophoresis.'], tryThis: 'Place the stage near pI and inspect net charge.', result: 'Amino acid ionization controls solubility, migration, and peptide formation.', realWorld: 'Used in protein purification and formulation.' },
+  { id: 'protein-structure', title: 'Protein Folding and Denaturation Studio', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: Boxes, topic: 'Biochemistry', teaches: 'Protein levels of structure build from sequence to folded function.', steps: ['Move from primary to quaternary structure.', 'Inspect denaturation stage.', 'Connect folding forces to function.'], tryThis: 'Move to denaturation and compare shape loss.', result: 'Protein function depends on folded 3D chemistry.', realWorld: 'Used in enzyme function, fever effects, and lab tests.' },
+  { id: 'carbohydrate-lab', title: 'Carbohydrate Ring and Reducing Sugar Lab', tab: 'Molecules', type: 'Practice', difficulty: 'Intermediate', icon: BadgeCheck, topic: 'Biochemistry', teaches: 'Sugar ring/open-chain chemistry explains reducing tests and polysaccharides.', steps: ['Compare glucose, fructose, sucrose, starch, and cellulose.', 'Watch ring and polymer cues.', 'Connect structures to tests.'], tryThis: 'Compare sucrose with glucose.', result: 'Free anomeric carbon and polymer shape control carbohydrate tests.', realWorld: 'Used in nutrition, diagnostics, and pharmacy excipients.' },
+  { id: 'lipid-membrane', title: 'Lipid Membrane and Micelle Visualizer', tab: 'Molecules', type: 'Simulation', difficulty: 'Intermediate', icon: Waves, topic: 'Biochemistry', teaches: 'Lipids arrange into bilayers, micelles, emulsions, and membranes.', steps: ['Compare lipid assemblies.', 'Watch hydrophilic heads and hydrophobic tails.', 'Connect to solubilization.'], tryThis: 'Move from phospholipid to micelle.', result: 'Amphiphiles self-assemble to minimize tail-water contact.', realWorld: 'Used in cells, bile salts, creams, and drug delivery.' },
+  { id: 'nucleic-acid-lab', title: 'DNA/RNA Base Pairing Visualizer', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: GitCompare, topic: 'Biochemistry', teaches: 'Base pairing, phosphate charge, and sugar differences organize DNA and RNA.', steps: ['Compare A-T/U and G-C pairing.', 'Watch hydrogen-bond counts.', 'Connect backbone charge to migration.'], tryThis: 'Compare G-C with A-T.', result: 'Hydrogen bonding and phosphate chemistry make genetic structure readable.', realWorld: 'Used in genetics, PCR, sequencing, and diagnostics.' },
+  { id: 'vitamin-coenzyme-map', title: 'Vitamins, Coenzymes and Minerals Map', tab: 'Advanced', type: 'Reference', difficulty: 'Intermediate', icon: BookOpen, topic: 'Biochemistry', teaches: 'Micronutrients act as coenzymes, redox carriers, cofactors, and structural ions.', steps: ['Compare nutrient roles.', 'Map nutrient to chemical job.', 'Connect deficiency to chemistry.'], tryThis: 'Compare iron, vitamin C, and B vitamins.', result: 'Small cofactors make large biological pathways work.', realWorld: 'Used in nutrition, clinical chemistry, and pharmacology.' },
+  { id: 'metabolism-atp', title: 'Metabolism, ATP and Urea Cycle Board', tab: 'Advanced', type: 'Visualizer', difficulty: 'Advanced', icon: Activity, topic: 'Metabolism', teaches: 'Metabolic boards track carbon, nitrogen, electrons, and phosphate energy.', steps: ['Move through glycolysis, ATP, and urea cycle stages.', 'Watch pathway flow.', 'Connect outputs to clinical markers.'], tryThis: 'Move to urea cycle and read nitrogen flow.', result: 'Metabolism is chemical accounting across linked pathways.', realWorld: 'Used in physiology, liver/kidney chemistry, and bioenergetics.' },
+  { id: 'drug-class-studio', title: 'Drug Class Chemistry Studio', tab: 'Advanced', type: 'Reference', difficulty: 'Intermediate', icon: BadgeCheck, topic: 'Medicinal Chemistry', teaches: 'Drug classes share recognizable functional group and target patterns.', steps: ['Compare analgesics, antacids, antimicrobials, antihistamines, and anesthetics.', 'Read group motifs.', 'Connect chemistry to use.'], tryThis: 'Compare local anesthetics with antihistamines.', result: 'Drug class behavior follows structure, charge, and target fit.', realWorld: 'Used in pharmacy, pharmacology, and medicinal chemistry.' },
+  { id: 'drug-metabolism-lab', title: 'Drug Metabolism Reaction Lab', tab: 'Advanced', type: 'Visualizer', difficulty: 'Advanced', icon: ChevronRight, topic: 'Pharmacokinetics', teaches: 'Drug metabolism changes polarity through functionalization and conjugation.', steps: ['Step through phase I and phase II transformations.', 'Watch polarity rise.', 'Connect chemistry to clearance.'], tryThis: 'Compare oxidation with glucuronidation.', result: 'Metabolism usually makes molecules easier to eliminate.', realWorld: 'Used in prodrugs, interactions, and dose design.' },
+  { id: 'dosage-form-lab', title: 'Dosage Form Chemistry Lab', tab: 'Solutions', type: 'Simulation', difficulty: 'Intermediate', icon: FlaskConical, topic: 'Pharma Solutions', teaches: 'Dosage forms are controlled chemical delivery systems.', steps: ['Compare solution, suspension, emulsion, tablet, and syrup.', 'Watch phase behavior.', 'Connect formulation choices to release.'], tryThis: 'Compare suspension with solution.', result: 'Solubility, particle size, viscosity, and surfactants control delivery.', realWorld: 'Used in compounding and pharmaceutical manufacturing.' },
+  { id: 'antacid-analgesic-antimicrobial', title: 'Antacid, Analgesic and Antimicrobial Lab', tab: 'Advanced', type: 'Practice', difficulty: 'Intermediate', icon: ShieldAlert, topic: 'Medicines', teaches: 'Common medicines connect to neutralization, organic motifs, and microbial targets.', steps: ['Compare medicine groups.', 'Watch pH or motif changes.', 'Connect chemistry to action.'], tryThis: 'Compare antacid neutralization with sulfa competition.', result: 'Medicine action often starts with a simple chemical principle.', realWorld: 'Used in NEET, pharmacy, and medical chemistry foundations.' },
+  { id: 'pharma-buffer-lab', title: 'Pharmaceutical Buffer Formulation Lab', tab: 'Solutions', type: 'Simulation', difficulty: 'Advanced', icon: ShieldAlert, topic: 'Pharma Buffers', teaches: 'Formulation pH controls stability, comfort, solubility, and compatibility.', steps: ['Choose target buffer stage.', 'Compare capacity and comfort.', 'Connect pH to dosage form.'], tryThis: 'Compare comfort with shelf stability.', result: 'A good buffer balances chemical stability with body compatibility.', realWorld: 'Used in injections, eye drops, oral liquids, and biologics.' },
+  { id: 'electrolyte-panel', title: 'Clinical Electrolyte Panel Visualizer', tab: 'Solutions', type: 'Visualizer', difficulty: 'Intermediate', icon: BarChart3, topic: 'Clinical Chemistry', teaches: 'Electrolytes control water balance, nerves, muscles, heart rhythm, and acid-base chemistry.', steps: ['Compare Na, K, Ca, Mg, Cl, and bicarbonate.', 'Watch ion bars.', 'Connect charge to body systems.'], tryThis: 'Compare sodium with potassium.', result: 'Ion concentration and charge create body-fluid chemistry.', realWorld: 'Used in hospital chemistry panels and physiology.' },
+  { id: 'hemoglobin-oxygen', title: 'Hemoglobin and Oxygen Binding Lab', tab: 'Advanced', type: 'Visualizer', difficulty: 'Advanced', icon: Activity, topic: 'Medical Chemistry', teaches: 'Hemoglobin oxygen loading changes with pressure, pH, CO2, CO, and iron state.', steps: ['Move through curve factors.', 'Watch oxygen occupancy.', 'Connect curve shift to tissues.'], tryThis: 'Compare low pH with carbon monoxide.', result: 'Binding equilibria decide oxygen delivery.', realWorld: 'Used in respiratory physiology and CO poisoning.' },
+  { id: 'diagnostic-color-tests', title: 'Diagnostic Reagent Color Lab', tab: 'Advanced', type: 'Practice', difficulty: 'Intermediate', icon: Sparkles, topic: 'Diagnostics', teaches: 'Diagnostic reagents turn analyte chemistry into visible color, precipitate, or intensity.', steps: ['Compare glucose, protein, ketones, bilirubin, and chloride.', 'Watch color panels.', 'Connect analyte to reagent chemistry.'], tryThis: 'Compare glucose redox with biuret protein complex.', result: 'Color tests convert molecular chemistry into measurable signals.', realWorld: 'Used in clinical labs, urine tests, and point-of-care testing.' },
+  { id: 'clinical-metabolites', title: 'Glucose, Urea, Creatinine and Cholesterol Lab', tab: 'Advanced', type: 'Visualizer', difficulty: 'Intermediate', icon: BarChart3, topic: 'Clinical Chemistry', teaches: 'Small metabolites reflect fuel use, nitrogen waste, kidney function, lipid balance, and purine chemistry.', steps: ['Compare marker bars.', 'Read the chemical identity.', 'Connect marker to organ function.'], tryThis: 'Compare glucose with creatinine.', result: 'Clinical markers are small molecules measured by analytical chemistry.', realWorld: 'Used in blood tests and medical diagnostics.' },
+  { id: 'toxicology-chelation', title: 'Toxicology and Chelation Visualizer', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: ShieldAlert, topic: 'Toxicology', teaches: 'Toxins harm by binding metals/proteins, blocking enzymes, or shifting equilibria; chelation can trap some metals.', steps: ['Compare toxin binding targets.', 'Watch ligand capture.', 'Connect chemistry to treatment concept.'], tryThis: 'Compare lead chelation with CO poisoning.', result: 'Toxicity often comes from strong binding at the wrong biochemical site.', safety: 'Toxicology topics are conceptual; real exposure needs medical care.', realWorld: 'Used in poisoning, occupational health, and coordination chemistry.' },
   { id: 'cft', title: 'Crystal Field Theory Visualizer', tab: 'Advanced', type: 'Visualizer', difficulty: 'Advanced', icon: Orbit, topic: 'Coordination', teaches: 'Ligand geometry splits d orbitals, changing color, CFSE, and magnetism.', steps: ['Choose geometry.', 'Set d-electron count.', 'Compare strong and weak field filling.'], tryThis: 'Try d6 octahedral in strong and weak field modes.', result: 'Splitting and pairing decide unpaired electrons and magnetic moment.', realWorld: 'Explains transition metal complex color and spin state.' },
   { id: 'metallurgy', title: 'Metallurgy & Extraction Flowchart', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: Boxes, topic: 'Metallurgy', teaches: 'Ore extraction follows concentration, reduction, and refining logic.', steps: ['Select a metal.', 'Click each extraction step.', 'Review equations and Ellingham idea.'], tryThis: 'Compare Al electrolysis with Fe blast furnace reduction.', result: 'Reduction route depends on metal reactivity and oxide stability.', realWorld: 'Core industrial chemistry for metals.' },
   { id: 'salt-analysis', title: 'Qualitative Salt Analysis Guide', tab: 'Advanced', type: 'Practice', difficulty: 'Advanced', icon: BadgeCheck, topic: 'Salt Analysis', teaches: 'Systematic cation and anion tests identify unknown salts.', steps: ['Review cation groups.', 'Review anion tests.', 'Pick a sample salt for test sequence.'], tryThis: 'Choose CuSO4 and follow both ion confirmations.', result: 'Group reagents narrow ions before confirmatory tests.', safety: 'Qualitative analysis reagents can be toxic, acidic, or release gases.', realWorld: 'Used in practical exams and analytical chemistry.' },
@@ -704,6 +1001,9 @@ const labFocusTopics = [
   { id: 'reactions', label: 'Reactions', desc: 'Equations, redox, rates, heat' },
   { id: 'solutions', label: 'Solutions', desc: 'pH, concentration, solubility, buffers' },
   { id: 'organic', label: 'Organic', desc: 'Mechanisms, polymers, biomolecules' },
+  { id: 'bio', label: 'Bio', desc: 'Enzymes, proteins, sugars, lipids, DNA, metabolism' },
+  { id: 'pharma', label: 'Pharma', desc: 'Drug groups, ADME, dosage forms, assays, buffers' },
+  { id: 'medical', label: 'Medical', desc: 'Clinical, isotope, electrolyte and toxicology chemistry' },
 ];
 const labTypes = ['All', 'Simulation', 'Calculator', 'Visualizer', 'Practice', 'Reference'];
 const labDifficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
@@ -719,6 +1019,30 @@ const prerequisiteMap = {
   'electrochemical-cell': 'Know redox potential and electron flow first.',
   colligative: 'Know molality and solution concentration first.',
   mechanism: 'Know nucleophiles, leaving groups, and bond breaking first.',
+  'enzyme-kinetics': 'Know enzymes as catalysts, active sites, substrate, product, and reaction rate.',
+  'amino-acid-pi': 'Know acids, bases, zwitterions, and alpha-amino acid functional groups.',
+  'protein-structure': 'Know peptide bonds, hydrogen bonding, hydrophobic interactions, and disulfide links.',
+  'carbohydrate-lab': 'Know ring/open-chain sugar forms, glycosidic bonds, and reducing tests.',
+  'lipid-membrane': 'Know polar heads, nonpolar tails, amphiphiles, and hydrophobic effect.',
+  'nucleic-acid-lab': 'Know nucleotide parts: base, sugar, and phosphate.',
+  'vitamin-coenzyme-map': 'Know vitamins as small organic helpers and minerals as inorganic cofactors.',
+  'metabolism-atp': 'Know oxidation-reduction, ATP phosphate transfer, and carbon/nitrogen flow.',
+  'drug-functional-groups': 'Know organic functional groups, polarity, hydrogen bonding, and acid-base behavior.',
+  'adme-ionization': 'Know pH, pKa, ionization, polarity, and membrane crossing basics.',
+  isotonicity: 'Know molarity, osmotic pressure, van Hoff factor, and semipermeable membranes.',
+  'clinical-buffers': 'Know weak acid/conjugate base buffers and Henderson-Hasselbalch idea.',
+  'drug-class-studio': 'Know organic motifs such as acids, amides, amines, aromatics, and heterocycles.',
+  'drug-metabolism-lab': 'Know oxidation, reduction, hydrolysis, and conjugation reactions.',
+  'dosage-form-lab': 'Know solution, suspension, emulsion, solubility, viscosity, and surfactants.',
+  'antacid-analgesic-antimicrobial': 'Know neutralization, functional groups, and selective toxicity idea.',
+  'pharma-buffer-lab': 'Know buffer capacity, target pH, pKa, and compatibility.',
+  'pharma-analysis': 'Know titration, chromatography, spectroscopy, and impurity testing basics.',
+  radiopharma: 'Know isotopes, half-life, decay type, tracer targeting, and radiation safety.',
+  'electrolyte-panel': 'Know ions, charge balance, osmolarity, and body-fluid compartments.',
+  'hemoglobin-oxygen': 'Know equilibrium, cooperative binding, heme iron, pH, and CO2 effects.',
+  'diagnostic-color-tests': 'Know redox tests, complex formation, precipitation, and absorbance.',
+  'clinical-metabolites': 'Know small biomolecules and analytical concentration measurements.',
+  'toxicology-chelation': 'Know coordination, ligand binding, enzyme inhibition, and redox toxicity.',
 };
 
 const commonMistakes = {
@@ -731,6 +1055,30 @@ const commonMistakes = {
   equilibrium: 'A catalyst changes speed, not the equilibrium position.',
   colligative: 'Use molality, not molarity, for boiling and freezing point calculations.',
   electrolysis: 'Do not mix up electrode sign conventions for electrolytic and galvanic cells.',
+  'enzyme-kinetics': 'Do not assume rate rises forever; active sites saturate near Vmax.',
+  'amino-acid-pi': 'Do not treat every amino acid as neutral at all pH values; net charge changes with pH.',
+  'protein-structure': 'Do not confuse denaturation with peptide-bond hydrolysis; unfolding can occur without breaking the backbone.',
+  'carbohydrate-lab': 'Do not assume every disaccharide is reducing; sucrose lacks a free anomeric carbon.',
+  'lipid-membrane': 'Do not draw lipid tails facing water in a stable bilayer or micelle.',
+  'nucleic-acid-lab': 'Do not forget phosphate makes nucleic acid backbones negatively charged.',
+  'vitamin-coenzyme-map': 'Do not memorize vitamins only as names; link each one to a chemical role.',
+  'metabolism-atp': 'Do not treat ATP as stored heat; it drives reactions through coupled phosphate transfer.',
+  'drug-functional-groups': 'Do not decide drug behavior from one group only; shape, charge, and polarity act together.',
+  'adme-ionization': 'Do not assume neutral is always better; solubility and permeability must be balanced.',
+  isotonicity: 'Do not confuse percent concentration with osmolarity; ion dissociation changes particle count.',
+  'clinical-buffers': 'Do not treat blood pH as a single test-tube buffer; lungs and kidneys also regulate it.',
+  'drug-class-studio': 'Do not assume all drugs in a class have identical functional groups or metabolism.',
+  'drug-metabolism-lab': 'Do not assume metabolism always inactivates a drug; prodrugs can be activated.',
+  'dosage-form-lab': 'Do not call a cloudy suspension a solution; phase behavior matters.',
+  'antacid-analgesic-antimicrobial': 'Do not mix symptom relief chemistry with antimicrobial target chemistry.',
+  'pharma-buffer-lab': 'Do not maximize buffer strength blindly; comfort and compatibility can suffer.',
+  'pharma-analysis': 'Do not use one assay to prove everything; identity, purity, strength, and release are different checks.',
+  radiopharma: 'Do not pick an isotope by radiation type alone; half-life, targeting, and clearance matter.',
+  'electrolyte-panel': 'Do not compare ions only by charge; compartment and concentration range matter.',
+  'hemoglobin-oxygen': 'Do not confuse oxygen binding with oxidation of iron to Fe3+.',
+  'diagnostic-color-tests': 'Do not read color intensity without controls, calibration, and timing.',
+  'clinical-metabolites': 'Do not interpret a marker without sample type, units, and context.',
+  'toxicology-chelation': 'Do not assume every poison is treated by chelation; mechanism decides treatment concept.',
 };
 
 const formulaNotes = {
@@ -745,6 +1093,30 @@ const formulaNotes = {
   'rate-lab': 'Rate generally increases with concentration and temperature.',
   calorimetry: 'q = m c Delta T.',
   solubility: 'Precipitation is predicted by comparing Q with Ksp.',
+  'enzyme-kinetics': 'Michaelis-Menten: v = Vmax[S] / (Km + [S]).',
+  'amino-acid-pi': 'For simple neutral amino acids, pI is roughly (pKa1 + pKa2) / 2.',
+  'protein-structure': 'Protein stability is a balance of hydrogen bonding, ionic links, hydrophobic packing, and disulfides.',
+  'carbohydrate-lab': 'Reducing sugars have a free anomeric carbon that can open to a carbonyl form.',
+  'lipid-membrane': 'Amphiphiles assemble with polar heads toward water and nonpolar tails away from water.',
+  'nucleic-acid-lab': 'A pairs with T/U by 2 H-bonds; G pairs with C by 3 H-bonds.',
+  'vitamin-coenzyme-map': 'Coenzymes transfer electrons, acyl groups, one-carbon units, or phosphate-linked energy.',
+  'metabolism-atp': 'ATP hydrolysis and redox carriers couple unfavorable steps to favorable chemistry.',
+  'drug-functional-groups': 'Drug-like behavior depends on pKa, logP, H-bond donors/acceptors, and molecular shape.',
+  'adme-ionization': 'Weak acid ionized fraction rises above pKa; weak base ionized fraction rises below pKa.',
+  isotonicity: 'Osmotic pressure: Pi = iMRT; osmolarity counts dissolved particles.',
+  'clinical-buffers': 'Henderson-Hasselbalch: pH = pKa + log(base/acid).',
+  'drug-class-studio': 'SAR compares how structure changes affect potency, selectivity, and safety.',
+  'drug-metabolism-lab': 'Phase I adds/exposes groups; Phase II conjugates polar groups for clearance.',
+  'dosage-form-lab': 'Release depends on solubility, particle size, dissolution, viscosity, and matrix breakup.',
+  'antacid-analgesic-antimicrobial': 'Antacids neutralize acid; analgesics affect biochemical targets; antimicrobials block microbial chemistry.',
+  'pharma-buffer-lab': 'Useful buffer range is usually near pKa +/- 1 pH unit.',
+  'pharma-analysis': 'Assay proves amount; chromatography separates impurities; dissolution tests release.',
+  radiopharma: 'Remaining activity follows A = A0 / 2^n after n half-lives.',
+  'electrolyte-panel': 'Electroneutrality and osmolarity link ions to water balance.',
+  'hemoglobin-oxygen': 'Bohr effect: lower pH and higher CO2 shift oxygen release toward tissues.',
+  'diagnostic-color-tests': 'Many color tests use redox change, complex formation, precipitation, or enzymatic color generation.',
+  'clinical-metabolites': 'Clinical chemistry converts concentration changes into metabolic and organ-function signals.',
+  'toxicology-chelation': 'Chelators bind metal ions through multiple donor atoms to improve removal or reduce binding to enzymes.',
 };
 
 const miniQuiz = {
@@ -753,6 +1125,50 @@ const miniQuiz = {
   stoichiometry: { q: 'What must be done before mole-ratio calculations?', a: 'Balance the chemical equation.' },
   vsepr: { q: 'What determines molecular shape in VSEPR?', a: 'Bonding pairs and lone-pair electron domains.' },
   electrolysis: { q: 'What drives a non-spontaneous reaction in electrolysis?', a: 'External electrical energy.' },
+  'enzyme-kinetics': { q: 'Why does the enzyme rate curve level off?', a: 'Active sites become saturated, so rate approaches Vmax.' },
+  'amino-acid-pi': { q: 'What happens to net amino acid charge near pI?', a: 'The net charge is close to zero, often as a zwitterion.' },
+  'protein-structure': { q: 'What changes during denaturation?', a: 'The folded structure is disrupted while peptide bonds may remain intact.' },
+  'carbohydrate-lab': { q: 'What makes a sugar reducing?', a: 'A free anomeric carbon that can open to a carbonyl form.' },
+  'lipid-membrane': { q: 'Why do micelles form in water?', a: 'Polar heads face water while nonpolar tails hide inside.' },
+  'nucleic-acid-lab': { q: 'Which base pair has more hydrogen bonds, A-T or G-C?', a: 'G-C has three hydrogen bonds; A-T has two.' },
+  'metabolism-atp': { q: 'What does ATP transfer in many biochemical reactions?', a: 'A phosphate-linked energy unit that couples reactions.' },
+  'adme-ionization': { q: 'Why does pKa matter in drug absorption?', a: 'It predicts ionization, which affects solubility and membrane crossing.' },
+  isotonicity: { q: 'Why does NaCl count more particles than glucose?', a: 'NaCl dissociates into ions, increasing osmotic particle count.' },
+  'clinical-buffers': { q: 'What is the main blood buffer pair?', a: 'Carbonic acid/bicarbonate, linked to CO2 handling.' },
+  radiopharma: { q: 'Why is half-life important for medical isotopes?', a: 'It balances useful detection or therapy with safe clearance.' },
+  'electrolyte-panel': { q: 'Which ion is the major extracellular cation?', a: 'Sodium ion, Na+.' },
+  'hemoglobin-oxygen': { q: 'What does low pH do to oxygen release?', a: 'It shifts hemoglobin toward releasing oxygen in tissues.' },
+  'toxicology-chelation': { q: 'What is chelation?', a: 'Binding a metal ion with a ligand that has multiple donor atoms.' },
+};
+
+const appliedChemistryRoadmaps = {
+  bio: {
+    title: 'Biochemistry Strength Map',
+    accent: '#22c55e',
+    strands: [
+      ['Biomolecule structure', 'Amino acids, proteins, carbohydrates, lipids, nucleic acids'],
+      ['Biochemical forces', 'Hydrogen bonding, ionization, hydrophobic effect, redox and phosphate transfer'],
+      ['Lab visuals', 'Enzyme curves, folding, reducing sugars, membranes, base pairing, metabolism board'],
+    ],
+  },
+  pharma: {
+    title: 'Pharmaceutical Chemistry Strength Map',
+    accent: '#14b8a6',
+    strands: [
+      ['Drug structure', 'Functional groups, SAR, pKa, lipophilicity, hydrogen bonding'],
+      ['Formulation chemistry', 'Buffers, isotonicity, dosage forms, solubility, stability, excipients'],
+      ['Quality control', 'Assay, chromatography, spectroscopy, dissolution, impurities and limits'],
+    ],
+  },
+  medical: {
+    title: 'Medical and Clinical Chemistry Strength Map',
+    accent: '#fb7185',
+    strands: [
+      ['Body-fluid chemistry', 'Electrolytes, buffers, osmolarity, blood pH, oxygen binding'],
+      ['Diagnostics', 'Glucose, urea, creatinine, cholesterol, color tests, radiotracers'],
+      ['Toxicology', 'Heavy metals, CO, cyanide, enzyme poisoning, chelation and isotope safety'],
+    ],
+  },
 };
 
 const LabCard = ({ title, children }) => {
@@ -1116,6 +1532,7 @@ export const ChemistryLabPage = () => {
   const [metallurgyStep, setMetallurgyStep] = useState(0);
   const [saltAnalysisSample, setSaltAnalysisSample] = useState('NaCl');
   const [pblockGroup, setPblockGroup] = useState('Group 15');
+  const [bioMedicalStage, setBioMedicalStage] = useState(0);
   const [language, setLanguage] = useLocalStorage('cu-language', 'en');
   const [teacherMode, setTeacherMode] = useLocalStorage('cu-teacher-mode', false);
   const [savedFilters, setSavedFilters] = useLocalStorage('cu-saved-filters', []);
@@ -1324,6 +1741,9 @@ export const ChemistryLabPage = () => {
       reactions: itemTags.units.some(unit => ['reactions', 'thermo', 'equilibrium', 'electrochem', 'kinetics'].includes(unit)),
       solutions: itemTags.units.some(unit => ['acidBase', 'solutions'].includes(unit)),
       organic: itemTags.units.some(unit => ['organicBasics', 'organicAdvanced', 'biomolecules'].includes(unit)),
+      bio: itemTags.units.includes('biomolecules') || ['enzyme-kinetics', 'amino-acid-pi', 'protein-structure', 'carbohydrate-lab', 'lipid-membrane', 'nucleic-acid-lab', 'vitamin-coenzyme-map', 'metabolism-atp'].includes(item.id),
+      pharma: itemTags.units.includes('pharmaceutical') || itemTags.tracks.includes('pharma'),
+      medical: itemTags.units.some(unit => ['biomolecules', 'pharmaceutical', 'clinical'].includes(unit)),
       all: true,
     };
     const matchesSearch = !query || [item.title, item.topic, item.type, item.difficulty, item.teaches].join(' ').toLowerCase().includes(query);
@@ -1540,6 +1960,9 @@ export const ChemistryLabPage = () => {
         reactions: ['reactions', 'thermo', 'equilibrium', 'electrochem', 'kinetics'],
         solutions: ['acidBase', 'solutions'],
         organic: ['organicBasics', 'organicAdvanced', 'biomolecules'],
+        bio: ['biomolecules'],
+        pharma: ['pharmaceutical'],
+        medical: ['biomolecules', 'pharmaceutical', 'clinical'],
       }[topicId] || [];
       return itemTags.units.some(unit => topicUnits.includes(unit));
     });
@@ -1547,6 +1970,7 @@ export const ChemistryLabPage = () => {
     setExperimentStarted(false);
   };
   const activeFocusInfo = labFocusTopics.find(topic => topic.id === activeFocusTopic);
+  const activeRoadmap = appliedChemistryRoadmaps[activeFocusTopic];
   const showFullLab = !guidedMode || showAdvancedLab;
   const renderGuidedWorkbench = () => {
     const LazyTool = lazyLabTools[activeExperiment.id];
@@ -2466,6 +2890,267 @@ export const ChemistryLabPage = () => {
             </div>
           </Bench>
         );
+      case 'drug-functional-groups':
+      case 'adme-ionization':
+      case 'isotonicity':
+      case 'clinical-buffers':
+      case 'pharma-analysis':
+      case 'radiopharma':
+      case 'enzyme-kinetics':
+      case 'amino-acid-pi':
+      case 'protein-structure':
+      case 'carbohydrate-lab':
+      case 'lipid-membrane':
+      case 'nucleic-acid-lab':
+      case 'vitamin-coenzyme-map':
+      case 'metabolism-atp':
+      case 'drug-class-studio':
+      case 'drug-metabolism-lab':
+      case 'dosage-form-lab':
+      case 'antacid-analgesic-antimicrobial':
+      case 'pharma-buffer-lab':
+      case 'electrolyte-panel':
+      case 'hemoglobin-oxygen':
+      case 'diagnostic-color-tests':
+      case 'clinical-metabolites':
+      case 'toxicology-chelation': {
+        const reference = pharmaMedicalReference[activeExperiment.id];
+        const activeStageIndex = Math.min(bioMedicalStage, reference.rows.length - 1);
+        const activeRow = reference.rows[activeStageIndex] || reference.rows[0];
+        const stagePercent = reference.rows.length > 1 ? (activeStageIndex / (reference.rows.length - 1)) * 100 : 0;
+        const signal = 35 + ((activeStageIndex * 17) % 55);
+        const isBarLab = ['electrolyte-panel', 'clinical-metabolites', 'diagnostic-color-tests', 'pharma-analysis'].includes(activeExperiment.id);
+        const isCurveLab = ['enzyme-kinetics', 'hemoglobin-oxygen', 'adme-ionization', 'drug-metabolism-lab'].includes(activeExperiment.id);
+        const isMembraneLab = ['lipid-membrane', 'isotonicity', 'dosage-form-lab'].includes(activeExperiment.id);
+        const isMoleculeLab = ['nucleic-acid-lab', 'protein-structure', 'amino-acid-pi', 'carbohydrate-lab'].includes(activeExperiment.id);
+        const isToxicology = activeExperiment.id === 'toxicology-chelation';
+        const activeColor = isToxicology ? '#fb7185' : isBarLab ? '#f59e0b' : isMembraneLab ? '#38bdf8' : isMoleculeLab ? '#a78bfa' : '#22c55e';
+        const activeShort = String(activeRow[0]).slice(0, 22);
+        return (
+          <Bench title={activeExperiment.title} result={reference.result}>
+            <div className="space-y-4">
+              <div className="grid lg:grid-cols-[1fr_280px] gap-4">
+                <div className="rounded-xl bg-black/20 border border-white/10 p-4 overflow-hidden">
+                  <svg viewBox="0 0 520 260" className="w-full h-72 rounded-xl bg-slate-950/70 border border-white/10">
+                    <defs>
+                      <linearGradient id="bioMedicalGlow" x1="0" x2="1">
+                        <stop offset="0%" stopColor="#22d3ee" />
+                        <stop offset="50%" stopColor="#34d399" />
+                        <stop offset="100%" stopColor="#fb7185" />
+                      </linearGradient>
+                      <radialGradient id="bioMedicalPulse" cx="50%" cy="50%" r="60%">
+                        <stop offset="0%" stopColor={activeColor} stopOpacity="0.65" />
+                        <stop offset="100%" stopColor={activeColor} stopOpacity="0" />
+                      </radialGradient>
+                    </defs>
+                    <rect x="18" y="18" width="484" height="224" rx="18" fill="#020617" stroke="#1e293b" />
+                    <rect x="34" y="34" width="452" height="26" rx="13" fill="#0f172a" stroke="#243244" />
+                    <circle cx="50" cy="47" r="5" fill={activeColor} />
+                    <text x="62" y="51" fill="#e2e8f0" fontSize="12" fontWeight="700">{activeShort}</text>
+                    {isCurveLab && (
+                      <>
+                        {[92, 128, 164, 200].map(y => <line key={y} x1="62" y1={y} x2="462" y2={y} stroke="#1f2937" strokeDasharray="4 7" />)}
+                        {[142, 222, 302, 382].map(x => <line key={x} x1={x} y1="74" x2={x} y2="204" stroke="#1f2937" strokeDasharray="4 7" />)}
+                        <line x1="62" y1="204" x2="462" y2="204" stroke="#64748b" strokeWidth="2" />
+                        <line x1="62" y1="204" x2="62" y2="72" stroke="#64748b" strokeWidth="2" />
+                        <path d={`M70 198 C 145 ${150 - activeStageIndex * 7}, 215 ${98 - activeStageIndex * 5}, 455 ${80 + activeStageIndex * 9}`} fill="none" stroke="url(#bioMedicalGlow)" strokeWidth="6" strokeLinecap="round" />
+                        <path d={`M70 198 C 135 180, 220 ${125 + activeStageIndex * 8}, 455 ${118 + activeStageIndex * 7}`} fill="none" stroke="#a78bfa" strokeWidth="3" strokeDasharray="8 8" strokeLinecap="round" />
+                        <text x="70" y="82" fill="#94a3b8" fontSize="11">rate / occupancy</text>
+                        <text x="332" y="226" fill="#94a3b8" fontSize="11">substrate, O2 pressure, or time</text>
+                        <circle cx={95 + stagePercent * 3.55} cy={198 - signal} r="24" fill="url(#bioMedicalPulse)" />
+                        <circle cx={95 + stagePercent * 3.55} cy={198 - signal} r="10" fill="#22c55e" stroke="#bbf7d0" strokeWidth="3" />
+                        <g transform="translate(388 92)">
+                          <rect x="0" y="0" width="82" height="58" rx="16" fill="#0f172a" stroke="#334155" />
+                          <path d="M18 34 C24 14, 56 14, 64 34 C58 50, 24 50, 18 34Z" fill="#16a34a33" stroke="#22c55e" strokeWidth="2" />
+                          <circle cx={42 + (activeStageIndex % 2) * 10} cy="34" r="7" fill={activeColor} />
+                          <text x="14" y="14" fill="#94a3b8" fontSize="9">active site</text>
+                        </g>
+                      </>
+                    )}
+                    {isBarLab && (
+                      <>
+                        <line x1="58" y1="210" x2="468" y2="210" stroke="#64748b" strokeWidth="2" />
+                        {reference.rows.map((row, index) => {
+                          const height = 42 + ((index * 23 + activeStageIndex * 15) % 112);
+                          const active = index === activeStageIndex;
+                          return (
+                            <g key={row[0]}>
+                              <rect x={68 + index * 76} y="82" width="54" height="130" rx="18" fill="#0f172a" stroke={active ? activeColor : '#475569'} strokeWidth="2" />
+                              <rect x={74 + index * 76} y={210 - height} width="42" height={height} rx="10" fill={active ? `${activeColor}cc` : '#334155'} />
+                              <rect
+                                x={76 + index * 76}
+                                y={210 - height}
+                                width="38"
+                                height={height}
+                                rx="8"
+                                fill={active ? '#22c55e99' : '#334155'}
+                                stroke={active ? '#bbf7d0' : '#64748b'}
+                                strokeWidth="2"
+                              />
+                              <rect x={72 + index * 76} y="66" width="46" height="22" rx="8" fill={active ? '#f59e0b' : '#0f172a'} stroke="#475569" />
+                              <text x={76 + index * 76} y="230" fill="#cbd5e1" fontSize="10">{row[0].slice(0, 8)}</text>
+                            </g>
+                          );
+                        })}
+                        <text x="68" y="76" fill="#94a3b8" fontSize="11">test tubes: color intensity and concentration signal</text>
+                      </>
+                    )}
+                    {isMembraneLab && (
+                      <>
+                        <rect x="46" y="70" width="428" height="130" rx="26" fill="#0f172a" stroke="#334155" />
+                        <text x="64" y="88" fill="#94a3b8" fontSize="11">aqueous side A</text>
+                        <text x="370" y="190" fill="#94a3b8" fontSize="11">aqueous side B</text>
+                        {Array.from({ length: 14 }, (_, i) => (
+                          <g key={i} transform={`translate(${76 + i * 28}, 94)`}>
+                            <circle cx="0" cy="0" r="8" fill="#38bdf8" />
+                            <line x1="-4" y1="8" x2="-12" y2="48" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                            <line x1="4" y1="8" x2="12" y2="48" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                            <circle cx="0" cy="86" r="8" fill="#38bdf8" />
+                            <line x1="-4" y1="78" x2="-12" y2="38" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                            <line x1="4" y1="78" x2="12" y2="38" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                          </g>
+                        ))}
+                        {Array.from({ length: 18 }, (_, i) => (
+                          <circle key={i} cx={72 + (i * 29) % 410} cy={78 + ((i * 37 + activeStageIndex * 9) % 116)} r="3" fill={i % 3 ? '#bae6fd' : '#fb7185'} opacity="0.8" />
+                        ))}
+                        <path d={`M116 132 C 190 ${110 - activeStageIndex * 6}, 265 ${164 + activeStageIndex * 3}, 398 132`} fill="none" stroke="#e2e8f0" strokeWidth="2" strokeDasharray="7 7" />
+                        <circle cx={125 + stagePercent * 2.6} cy="132" r={18 + activeStageIndex * 3} fill="#fb718533" stroke="#fb7185" strokeWidth="3" />
+                        <text x="66" y="224" fill="#94a3b8" fontSize="11">bilayer, osmotic movement, droplets, micelles, and formulation particles</text>
+                      </>
+                    )}
+                    {isMoleculeLab && (
+                      <>
+                        <path d={`M58 ${150 - activeStageIndex * 9} C 110 65, 172 205, 228 110 S 350 62, 462 ${150 + activeStageIndex * 5}`} fill="none" stroke="url(#bioMedicalGlow)" strokeWidth="9" strokeLinecap="round" />
+                        <path d={`M58 ${164 - activeStageIndex * 7} C 110 78, 172 218, 228 124 S 350 76, 462 ${164 + activeStageIndex * 4}`} fill="none" stroke="#38bdf8" strokeWidth={activeExperiment.id === 'nucleic-acid-lab' ? 5 : 0} strokeLinecap="round" opacity="0.8" />
+                        {Array.from({ length: 8 }, (_, i) => (
+                          <g key={i}>
+                            {activeExperiment.id === 'nucleic-acid-lab' && <line x1={72 + i * 55} y1={118 + (i % 2 ? 36 : -22)} x2={72 + i * 55} y2={132 + (i % 2 ? 36 : -22)} stroke="#c4b5fd" strokeWidth="3" strokeDasharray="4 4" />}
+                            <circle cx={72 + i * 55} cy={118 + (i % 2 ? 36 : -22)} r="15" fill={i <= activeStageIndex + 2 ? '#22c55e' : '#475569'} stroke="#e2e8f0" strokeWidth="2" />
+                            <text x={67 + i * 55} y={123 + (i % 2 ? 36 : -22)} fill="#020617" fontSize="10" fontWeight="900">{['A', 'T', 'G', 'C', 'OH', 'N', 'P', 'S'][i]}</text>
+                          </g>
+                        ))}
+                        <g transform="translate(360 78)">
+                          <rect x="0" y="0" width="92" height="54" rx="14" fill="#0f172a" stroke="#334155" />
+                          <text x="12" y="20" fill="#94a3b8" fontSize="9">contacts</text>
+                          <circle cx="22" cy="36" r="6" fill="#22d3ee" />
+                          <circle cx="46" cy="36" r="6" fill="#f59e0b" />
+                          <circle cx="70" cy="36" r="6" fill="#fb7185" />
+                        </g>
+                        <text x="70" y="224" fill="#94a3b8" fontSize="11">sequence, rings, base pairs, folding contacts, and ionizable groups</text>
+                      </>
+                    )}
+                    {isToxicology && (
+                      <>
+                        <path d="M86 128 C118 68, 198 66, 228 128 C198 190, 118 188, 86 128Z" fill="#7f1d1d66" stroke="#f87171" strokeWidth="4" />
+                        <text x="132" y="133" fill="#fecaca" fontSize="17" fontWeight="900">toxin</text>
+                        <circle cx="340" cy="130" r="58" fill="none" stroke="#22d3ee" strokeWidth="6" strokeDasharray="12 8" />
+                        {[0, 60, 120, 180, 240, 300].map(angle => {
+                          const rad = angle * Math.PI / 180;
+                          return <circle key={angle} cx={340 + Math.cos(rad) * 58} cy={130 + Math.sin(rad) * 58} r="9" fill="#34d399" />;
+                        })}
+                        <circle cx="340" cy="130" r="18" fill="#f59e0b" stroke="#fde68a" strokeWidth="3" />
+                        <path d="M230 130 C252 106, 272 106, 294 130 C272 154, 252 154, 230 130Z" fill="#0f172a" stroke="#cbd5e1" strokeWidth="3" />
+                        <text x="244" y="134" fill="#e2e8f0" fontSize="10">bind</text>
+                        <text x="74" y="224" fill="#94a3b8" fontSize="11">enzyme/heme binding site vs chelator pocket with multiple donor atoms</text>
+                      </>
+                    )}
+                    {!isCurveLab && !isBarLab && !isMembraneLab && !isMoleculeLab && !isToxicology && (
+                      <>
+                        {reference.rows.map((row, index) => {
+                          const x = 70 + index * (380 / Math.max(1, reference.rows.length - 1));
+                          const active = index === Math.min(bioMedicalStage, reference.rows.length - 1);
+                          return (
+                            <g key={row[0]}>
+                              {index > 0 && <line x1={70 + (index - 1) * (380 / Math.max(1, reference.rows.length - 1))} y1="130" x2={x} y2="130" stroke="#334155" strokeWidth="4" />}
+                              <circle cx={x} cy="130" r={active ? 25 : 18} fill={active ? '#22c55e' : '#1e293b'} stroke={active ? '#bbf7d0' : '#64748b'} strokeWidth="3" />
+                              <text x={x - 18} y="176" fill="#cbd5e1" fontSize="10">{row[0].slice(0, 14)}</text>
+                            </g>
+                          );
+                        })}
+                        <rect x="72" y="54" width={110 + stagePercent * 2.9} height="18" rx="9" fill="url(#bioMedicalGlow)" />
+                        <text x="76" y="48" fill="#94a3b8" fontSize="12">progressive visual map</text>
+                      </>
+                    )}
+                  </svg>
+                </div>
+                <div className="space-y-3">
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+                    <p className="text-xs font-bold text-emerald-200">Active stage</p>
+                    <p className="text-lg font-black text-white mt-1">{activeRow[0]}</p>
+                    <p className="text-sm text-emerald-50 mt-2">{activeRow[1]}</p>
+                    <p className="text-xs text-emerald-100/75 mt-2">{activeRow[2]}</p>
+                  </div>
+                  <div>
+                    <ControlLabel>Visualization stage: {activeStageIndex + 1}/{reference.rows.length}</ControlLabel>
+                    <input
+                      type="range"
+                      min="0"
+                      max={Math.max(0, reference.rows.length - 1)}
+                      value={Math.min(bioMedicalStage, reference.rows.length - 1)}
+                      onChange={e => setBioMedicalStage(Number(e.target.value))}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                      <p className="text-[10px] text-gray-500">assay signal</p>
+                      <p className="text-2xl font-black text-white">{signal}%</p>
+                      <MiniBar label="relative response" value={signal} color="#22d3ee" />
+                    </div>
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                      <p className="text-[10px] text-gray-500">polarity / charge</p>
+                      <p className="text-2xl font-black text-white">{Math.round(100 - signal / 1.4)}%</p>
+                      <MiniBar label="chemical shift" value={100 - signal / 1.4} color="#fb7185" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-xl bg-white/[0.035] border border-white/10 overflow-hidden">
+                <div className="grid grid-cols-[0.8fr_1.1fr_1.1fr] gap-px bg-white/10 text-xs">
+                  {reference.columns.map(column => (
+                    <div key={column} className="bg-slate-950/80 px-3 py-2 font-bold text-cyan-100">{column}</div>
+                  ))}
+                  {reference.rows.flatMap((row, rowIndex) => row.map((cell, index) => (
+                    <div
+                      key={`${row[0]}-${index}`}
+                      className={`px-3 py-2 ${rowIndex === activeStageIndex ? 'bg-cyan-500/15 text-cyan-50' : 'bg-slate-950/55 text-gray-300'}`}
+                    >
+                      {cell}
+                    </div>
+                  )))}
+                </div>
+              </div>
+              <div className="grid md:grid-cols-3 gap-3">
+                {reference.rows.map((row, index) => (
+                  <button
+                    key={row[0]}
+                    onClick={() => setBioMedicalStage(index)}
+                    className={`text-left rounded-xl border p-3 transition-colors ${index === Math.min(bioMedicalStage, reference.rows.length - 1) ? 'bg-cyan-500/15 border-cyan-500/30' : 'bg-white/[0.035] border-white/10 hover:bg-white/[0.06]'}`}
+                  >
+                    <p className="text-sm font-bold text-white">{row[0]}</p>
+                    <p className="text-xs text-gray-400 mt-1">{row[1]}</p>
+                    <p className="text-[11px] text-cyan-300 mt-2">{row[2]}</p>
+                  </button>
+                ))}
+              </div>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div className="rounded-xl bg-violet-500/10 border border-violet-500/20 p-4">
+                  <p className="text-xs font-bold text-violet-200">Visual lab mode</p>
+                  <p className="text-sm text-violet-50 mt-2">
+                    Use the stage control to scan structures, curves, tests, formulations, ions, or pathway steps without switching into question-answer practice.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-4">
+                  <p className="text-xs font-bold text-amber-200">Bridge concepts</p>
+                  <p className="text-sm text-amber-50 mt-2">
+                    Connect each visual to organic functional groups, buffers, solutions, isotopes, kinetics, coordination, and analytical chemistry.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Bench>
+        );
+      }
       case 'functional-tests':
         return (
           <Bench title="Functional Group Test Reference" result={functionalQuizAnswer ? (functionalQuizCorrect ? `Correct: ${activeFunctionalQuiz.expected}` : `Review: best pick is ${activeFunctionalQuiz.answer}. ${activeFunctionalQuiz.expected}`) : 'Pick a test or try the reverse quiz.'}>
@@ -2879,6 +3564,29 @@ export const ChemistryLabPage = () => {
                     </div>
                   </div>
                 </div>
+
+                {activeRoadmap && (
+                  <div className="rounded-2xl bg-white/[0.035] border border-white/10 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div>
+                        <p className="text-sm font-black text-white">{activeRoadmap.title}</p>
+                        <p className="text-xs text-gray-500 mt-1">Structure, lab method, and medical use stay linked while you move through tools.</p>
+                      </div>
+                      <BadgePill className="bg-black/15 text-gray-200 border-white/10" style={{ borderColor: `${activeRoadmap.accent}66`, color: activeRoadmap.accent }}>applied track</BadgePill>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-3">
+                      {activeRoadmap.strands.map(([title, detail], index) => (
+                        <div key={title} className="rounded-xl bg-black/20 border border-white/10 p-3">
+                          <div className="flex items-center gap-2">
+                            <span className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black" style={{ background: `${activeRoadmap.accent}22`, color: activeRoadmap.accent, border: `1px solid ${activeRoadmap.accent}55` }}>{index + 1}</span>
+                            <p className="text-xs font-bold text-white">{title}</p>
+                          </div>
+                          <p className="text-[11px] text-gray-400 mt-2">{detail}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2 max-h-80 overflow-y-auto scrollbar-thin pr-1">
                   {visibleExperiments.map(item => {

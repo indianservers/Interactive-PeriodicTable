@@ -41,6 +41,7 @@ const titles = {
   'study-tools': 'Study Tools',
   'chemistry-solver': 'Chemistry Solver',
   'chemistry-inventor': 'Chemistry Inventor Studio',
+  'drug-discovery': 'Drug Discovery',
 };
 
 const parentCrumbs = {
@@ -63,6 +64,7 @@ const parentCrumbs = {
   'study-tools': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'study-tools', label: 'Study Tools' }],
   'chemistry-solver': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'chemistry-solver', label: 'Chemistry Solver' }],
   'chemistry-inventor': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'chemistry-inventor', label: 'Chemistry Inventor Studio' }],
+  'drug-discovery': [{ id: 'dashboard', label: 'Dashboard' }, { id: 'drug-discovery', label: 'Drug Discovery' }],
 };
 
 const pageItems = navGroups.flatMap(group => group.items.flatMap(item => [item, ...(item.subItems || [])]));
@@ -73,6 +75,7 @@ const pageHashMap = {
   'symmetry-practice': 'molecular-symmetry/practice',
   'symmetry-teaching': 'molecular-symmetry/teaching',
   'chemistry-inventor': 'chemistry-inventor',
+  'drug-discovery': 'drug-discovery',
 };
 
 const glossaryTerms = [
@@ -82,6 +85,10 @@ const glossaryTerms = [
   ['Ksp', 'Solubility product constant for sparingly soluble salts.'],
   ['CIP', 'Priority rules used for E/Z and R/S stereochemistry.'],
   ['PAN', 'Peroxyacetyl nitrate, a photochemical smog irritant.'],
+  ['QSAR', 'Quantitative structure-activity relationship linking molecular descriptors to bioactivity.'],
+  ['ADME', 'Absorption, distribution, metabolism, and excretion profile for a drug candidate.'],
+  ['pLDDT', 'AlphaFold local confidence score for predicted protein structure regions.'],
+  ['pChEMBL', 'Normalized potency scale used by ChEMBL for comparable activity values.'],
 ];
 
 export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNavigate, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, studyMode = false, onStudyModeToggle, canInstall = false, onInstallApp, isOnline = true }) => {
