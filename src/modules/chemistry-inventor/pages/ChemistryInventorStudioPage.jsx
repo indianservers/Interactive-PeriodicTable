@@ -25,6 +25,7 @@ import {
   snapValue,
 } from '../utils/projectUtils.js';
 import { calculateBadges, createLabReport, formatLabReport, openPrintReport } from '../utils/reportUtils.js';
+import { BookOpenCheck, FileText, FlaskConical, ListChecks, SlidersHorizontal } from 'lucide-react';
 import '../styles/chemistryInventor.css';
 
 const CANVAS_WIDTH = 1120;
@@ -61,12 +62,13 @@ export default function ChemistryInventorStudioPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [vivaAnswers, setVivaAnswers] = useState({});
   const [activeComponentId, setActiveComponentId] = useState(null);
-  const [zoom, setZoom] = useState(draft?.zoom || 1);
+  const [zoom, setZoom] = useState(draft?.zoom || 0.82);
   const [snapToGrid, setSnapToGrid] = useState(draft?.snapToGrid ?? true);
   const [lastAction, setLastAction] = useState('Workspace ready. Drag a component into the canvas.');
   const [outputLog, setOutputLog] = useState([createLogEntry('Builder opened.')]);
   const [simulationResult, setSimulationResult] = useState(null);
   const [currentReport, setCurrentReport] = useState(null);
+  const [activePanel, setActivePanel] = useState('properties');
 
   const activeComponent = components.find(component => component.id === activeComponentId) || null;
   const report = useMemo(() => createSimulationReport({
@@ -203,7 +205,7 @@ export default function ChemistryInventorStudioPage() {
     setSelectedTemplate(null);
     setVivaAnswers({});
     setActiveComponentId(null);
-    setZoom(1);
+    setZoom(0.82);
     setSnapToGrid(true);
     log('New workspace created.');
   }, [log]);
@@ -244,7 +246,7 @@ export default function ChemistryInventorStudioPage() {
     setSelectedTemplate(experimentTemplates.find(template => template.id === project.selectedTemplateId) || null);
     setVivaAnswers(project.vivaAnswers || {});
     setActiveComponentId(null);
-    setZoom(project.zoom || 1);
+    setZoom(project.zoom || 0.82);
     setSnapToGrid(project.snapToGrid ?? true);
     log(`Loaded ${project.name}.`);
   }, [loadProject, log]);
@@ -418,8 +420,8 @@ export default function ChemistryInventorStudioPage() {
   }, [activeMode, components, grade, persistDraft, procedureBlocks, projectId, projectName, selectedTemplate, snapToGrid, vivaAnswers, zoom]);
 
   return (
-    <div className="chemistry-inventor-studio p-3 md:p-4">
-      <div className="mx-auto max-w-[1640px] overflow-hidden rounded-2xl border border-white/10 bg-slate-950 shadow-2xl shadow-black/30">
+    <div className="chemistry-inventor-studio p-2 md:p-3">
+      <div className="mx-auto flex h-full max-w-[1640px] flex-col overflow-hidden rounded-xl border border-white/10 bg-slate-950 shadow-2xl shadow-black/30">
         <TopStudioToolbar
           grade={grade}
           activeMode={activeMode}
@@ -438,27 +440,7 @@ export default function ChemistryInventorStudioPage() {
           onGenerateReport={generateReport}
           onHelp={showHelp}
         />
-        <StudioDashboard
-          grade={grade}
-          projects={projects}
-          reports={reports}
-          badges={badges}
-          onLoadProject={loadSavedProject}
-          onLoadReport={loadSavedReport}
-          onSelectTemplate={selectTemplate}
-        />
-        <TemplateGallery
-          grade={grade}
-          activeMode={activeMode}
-          selectedTemplate={selectedTemplate}
-          validation={guidedValidation}
-          vivaAnswers={vivaAnswers}
-          onLoadTemplate={template => loadTemplate(template, { mode: 'guided' })}
-          onSelectTemplate={selectTemplate}
-          onTeacherDemo={template => loadTemplate(template, { mode: 'teacher-demo', teacherDemo: true })}
-          onToggleViva={index => setVivaAnswers(previous => ({ ...previous, [index]: !previous[index] }))}
-        />
-        <div className="grid min-h-[680px] grid-cols-1 lg:grid-cols-[290px_minmax(0,1fr)_320px]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[250px_minmax(0,1fr)_360px] xl:grid-cols-[270px_minmax(0,1fr)_390px]">
           <ComponentPalette grade={grade} onAddComponent={addCanvasObject} />
           <BuilderCanvas
             components={components}
@@ -473,48 +455,102 @@ export default function ChemistryInventorStudioPage() {
             onZoomChange={value => setZoom(Number(value.toFixed(2)))}
             onSnapToggle={() => setSnapToGrid(value => !value)}
           />
-          <PropertiesInspector
-            activeComponent={activeComponent}
-            grade={grade}
-            projectCount={projects.length}
-            onUpdate={updateObject}
-            onDuplicate={duplicateObject}
-            onDelete={deleteObject}
-          />
+          <aside className="flex min-h-0 flex-col border-l border-white/10 bg-slate-950/80">
+            <div className="grid grid-cols-5 gap-1 border-b border-white/10 p-2">
+              {[
+                { id: 'properties', label: 'Props', icon: SlidersHorizontal },
+                { id: 'guide', label: 'Guide', icon: BookOpenCheck },
+                { id: 'logic', label: 'Logic', icon: ListChecks },
+                { id: 'output', label: 'Output', icon: FlaskConical },
+                { id: 'report', label: 'Report', icon: FileText },
+              ].map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setActivePanel(id)}
+                  className={`inline-flex h-9 items-center justify-center gap-1 rounded-lg border text-[11px] font-black transition ${activePanel === id ? 'border-cyan-300/40 bg-cyan-300/15 text-cyan-50' : 'border-white/10 bg-white/[0.03] text-gray-400 hover:text-white'}`}
+                  type="button"
+                >
+                  <Icon size={13} /> {label}
+                </button>
+              ))}
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {activePanel === 'properties' && (
+                <PropertiesInspector
+                  activeComponent={activeComponent}
+                  grade={grade}
+                  projectCount={projects.length}
+                  onUpdate={updateObject}
+                  onDuplicate={duplicateObject}
+                  onDelete={deleteObject}
+                />
+              )}
+              {activePanel === 'guide' && (
+                <>
+                  <StudioDashboard
+                    grade={grade}
+                    projects={projects}
+                    reports={reports}
+                    badges={badges}
+                    onLoadProject={loadSavedProject}
+                    onLoadReport={loadSavedReport}
+                    onSelectTemplate={selectTemplate}
+                  />
+                  <TemplateGallery
+                    grade={grade}
+                    activeMode={activeMode}
+                    selectedTemplate={selectedTemplate}
+                    validation={guidedValidation}
+                    vivaAnswers={vivaAnswers}
+                    onLoadTemplate={template => loadTemplate(template, { mode: 'guided' })}
+                    onSelectTemplate={selectTemplate}
+                    onTeacherDemo={template => loadTemplate(template, { mode: 'teacher-demo', teacherDemo: true })}
+                    onToggleViva={index => setVivaAnswers(previous => ({ ...previous, [index]: !previous[index] }))}
+                  />
+                </>
+              )}
+              {activePanel === 'logic' && (
+                <LogicBlocksPanel
+                  blocks={procedureBlocks}
+                  canvasObjects={components}
+                  currentStep={procedureStep}
+                  paused={procedurePaused}
+                  onAddBlock={addProcedureBlock}
+                  onUpdateBlock={updateProcedureBlock}
+                  onDeleteBlock={deleteProcedureBlock}
+                  onReorderBlocks={reorderProcedureBlocks}
+                  onRunAll={runAllBlocks}
+                  onRunStep={runStep}
+                  onPause={() => setProcedurePaused(value => !value)}
+                  onResetSteps={resetProcedureSteps}
+                  onExplainStep={explainCurrentStep}
+                />
+              )}
+              {activePanel === 'output' && (
+                <SimulationPanel
+                  report={report}
+                  projects={projects}
+                  outputLog={outputLog}
+                  simulationResult={simulationResult}
+                  procedureTimeline={procedureTimeline}
+                  selectedTemplate={selectedTemplate}
+                  grade={grade}
+                />
+              )}
+              {activePanel === 'report' && (
+                <LabReportPanel
+                  currentReport={currentReport}
+                  reports={reports}
+                  onGenerate={generateReport}
+                  onCopy={copyReport}
+                  onSave={saveCurrentReport}
+                  onLoad={loadSavedReport}
+                  onPrint={printReport}
+                />
+              )}
+            </div>
+          </aside>
         </div>
-        <LogicBlocksPanel
-          blocks={procedureBlocks}
-          canvasObjects={components}
-          currentStep={procedureStep}
-          paused={procedurePaused}
-          onAddBlock={addProcedureBlock}
-          onUpdateBlock={updateProcedureBlock}
-          onDeleteBlock={deleteProcedureBlock}
-          onReorderBlocks={reorderProcedureBlocks}
-          onRunAll={runAllBlocks}
-          onRunStep={runStep}
-          onPause={() => setProcedurePaused(value => !value)}
-          onResetSteps={resetProcedureSteps}
-          onExplainStep={explainCurrentStep}
-        />
-        <SimulationPanel
-          report={report}
-          projects={projects}
-          outputLog={outputLog}
-          simulationResult={simulationResult}
-          procedureTimeline={procedureTimeline}
-          selectedTemplate={selectedTemplate}
-          grade={grade}
-        />
-        <LabReportPanel
-          currentReport={currentReport}
-          reports={reports}
-          onGenerate={generateReport}
-          onCopy={copyReport}
-          onSave={saveCurrentReport}
-          onLoad={loadSavedReport}
-          onPrint={printReport}
-        />
       </div>
     </div>
   );

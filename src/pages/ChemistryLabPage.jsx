@@ -1000,6 +1000,7 @@ const labFocusTopics = [
   { id: 'bonding', label: 'Bonding', desc: 'Bonds, shapes, polarity, molecules' },
   { id: 'reactions', label: 'Reactions', desc: 'Equations, redox, rates, heat' },
   { id: 'solutions', label: 'Solutions', desc: 'pH, concentration, solubility, buffers' },
+  { id: 'inorganic', label: 'Inorganic', desc: 'p-block, coordination, CFT, metallurgy, salt analysis, crystals' },
   { id: 'organic', label: 'Organic', desc: 'Mechanisms, polymers, biomolecules' },
   { id: 'bio', label: 'Bio', desc: 'Enzymes, proteins, sugars, lipids, DNA, metabolism' },
   { id: 'pharma', label: 'Pharma', desc: 'Drug groups, ADME, dosage forms, assays, buffers' },
@@ -1408,7 +1409,7 @@ const oxidationGuess = (formula) => {
   }).join(' · ');
 };
 
-export const ChemistryLabPage = () => {
+export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentId = '' }) => {
   const labSearchRef = useRef(null);
   const [selectedSymbol, setSelectedSymbol] = useState('C');
   const [secondSymbol, setSecondSymbol] = useState('O');
@@ -1542,12 +1543,12 @@ export const ChemistryLabPage = () => {
   const [learningMode, setLearningMode] = useLocalStorage('cu-lab-learning-mode', true);
   const [completedExperiments, setCompletedExperiments] = useLocalStorage('cu-lab-completed', []);
   const [activeLabTab, setActiveLabTab] = useState('Start Here');
-  const [activeFocusTopic, setActiveFocusTopic] = useState(null);
+  const [activeFocusTopic, setActiveFocusTopic] = useState(initialFocusTopic || 'all');
   const [labSearch, setLabSearch] = useState('');
   const [showLabSearchSuggestions, setShowLabSearchSuggestions] = useState(false);
   const [labTypeFilter, setLabTypeFilter] = useState('All');
   const [labDifficultyFilter, setLabDifficultyFilter] = useState('All');
-  const [activeExperimentId, setActiveExperimentId] = useState('titration');
+  const [activeExperimentId, setActiveExperimentId] = useState(initialExperimentId || 'titration');
   const [showAdvancedLab, setShowAdvancedLab] = useState(false);
   const [focusLab, setFocusLab] = useState(false);
   const [experimentStarted, setExperimentStarted] = useState(false);
@@ -1740,6 +1741,7 @@ export const ChemistryLabPage = () => {
       bonding: itemTags.units.some(unit => ['bonding', 'coordination'].includes(unit)),
       reactions: itemTags.units.some(unit => ['reactions', 'thermo', 'equilibrium', 'electrochem', 'kinetics'].includes(unit)),
       solutions: itemTags.units.some(unit => ['acidBase', 'solutions'].includes(unit)),
+      inorganic: itemTags.units.some(unit => ['inorganic', 'coordination', 'periodic', 'atoms'].includes(unit)) || ['salt-analysis', 'pblock-advanced', 'cft', 'metallurgy', 'unit-cell', 'crystal-defects', 'crystal-structure', 'reactivity-series', 'molecule-links'].includes(item.id),
       organic: itemTags.units.some(unit => ['organicBasics', 'organicAdvanced', 'biomolecules'].includes(unit)),
       bio: itemTags.units.includes('biomolecules') || ['enzyme-kinetics', 'amino-acid-pi', 'protein-structure', 'carbohydrate-lab', 'lipid-membrane', 'nucleic-acid-lab', 'vitamin-coenzyme-map', 'metabolism-atp'].includes(item.id),
       pharma: itemTags.units.includes('pharmaceutical') || itemTags.tracks.includes('pharma'),
@@ -1790,6 +1792,33 @@ export const ChemistryLabPage = () => {
   useEffect(() => {
     setRecentLabIds(ids => [activeExperiment.id, ...ids.filter(id => id !== activeExperiment.id)].slice(0, 8));
   }, [activeExperiment.id, setRecentLabIds]);
+  useEffect(() => {
+    const nextFocus = initialFocusTopic || 'all';
+    setActiveFocusTopic(nextFocus);
+    setActiveLabTab('Start Here');
+    const requestedExperiment = initialExperimentId
+      ? LAB_EXPERIMENTS.find(item => item.id === initialExperimentId)
+      : null;
+    if (requestedExperiment) {
+      setActiveExperimentId(requestedExperiment.id);
+      setActiveLabTab(requestedExperiment.tab);
+      return;
+    }
+    if (nextFocus !== 'all') {
+      const nextExperiment = LAB_EXPERIMENTS.find(item => {
+        const itemTags = getSyllabusTagsForLab(item.id);
+        if (nextFocus === 'inorganic') {
+          return itemTags.units.some(unit => ['inorganic', 'coordination', 'periodic', 'atoms'].includes(unit))
+            || ['salt-analysis', 'pblock-advanced', 'cft', 'metallurgy', 'unit-cell', 'crystal-defects', 'crystal-structure', 'reactivity-series', 'molecule-links'].includes(item.id);
+        }
+        if (nextFocus === 'organic') return itemTags.units.some(unit => ['organicBasics', 'organicAdvanced', 'biomolecules'].includes(unit));
+        if (nextFocus === 'bio') return itemTags.units.includes('biomolecules');
+        if (nextFocus === 'pharma') return itemTags.units.includes('pharmaceutical') || itemTags.tracks.includes('pharma');
+        return false;
+      });
+      if (nextExperiment) setActiveExperimentId(nextExperiment.id);
+    }
+  }, [initialExperimentId, initialFocusTopic]);
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
@@ -1959,12 +1988,14 @@ export const ChemistryLabPage = () => {
         bonding: ['bonding', 'coordination'],
         reactions: ['reactions', 'thermo', 'equilibrium', 'electrochem', 'kinetics'],
         solutions: ['acidBase', 'solutions'],
+        inorganic: ['inorganic', 'coordination', 'periodic', 'atoms'],
         organic: ['organicBasics', 'organicAdvanced', 'biomolecules'],
         bio: ['biomolecules'],
         pharma: ['pharmaceutical'],
         medical: ['biomolecules', 'pharmaceutical', 'clinical'],
       }[topicId] || [];
-      return itemTags.units.some(unit => topicUnits.includes(unit));
+      return itemTags.units.some(unit => topicUnits.includes(unit))
+        || (topicId === 'inorganic' && ['salt-analysis', 'pblock-advanced', 'cft', 'metallurgy', 'unit-cell', 'crystal-defects', 'crystal-structure', 'reactivity-series', 'molecule-links'].includes(item.id));
     });
     if (nextExperiment) setActiveExperimentId(nextExperiment.id);
     setExperimentStarted(false);

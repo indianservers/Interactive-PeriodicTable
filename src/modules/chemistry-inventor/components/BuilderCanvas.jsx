@@ -76,8 +76,8 @@ export function BuilderCanvas({
   };
 
   return (
-    <section className="flex min-h-[560px] min-w-0 flex-col bg-slate-950">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-slate-950/70 px-4 py-2">
+    <section className="flex min-h-0 min-w-0 flex-col bg-slate-950">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-slate-950/70 px-3 py-2">
         <div className="flex items-center gap-2 text-xs text-gray-400">
           <MousePointer2 size={14} className="text-cyan-200" />
           Builder Canvas
@@ -97,19 +97,20 @@ export function BuilderCanvas({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto bg-slate-950 p-4">
-        <div
-          ref={canvasRef}
-          onDrop={handleDrop}
-          onDragOver={event => {
-            event.preventDefault();
-            setIsDragOver(true);
-          }}
-          onDragLeave={() => setIsDragOver(false)}
-          onPointerDown={() => onSelect(null)}
-          className={`chemistry-inventor-canvas relative h-[720px] w-[1120px] overflow-hidden rounded-2xl border ${isDragOver ? 'border-cyan-300/70 bg-cyan-300/[0.06]' : 'border-white/10 bg-slate-900/55'}`}
-          style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
-        >
+      <div className="min-h-0 flex-1 overflow-auto bg-slate-950 p-3">
+        <div className="mx-auto" style={{ width: 1120 * zoom, height: 720 * zoom }}>
+          <div
+            ref={canvasRef}
+            onDrop={handleDrop}
+            onDragOver={event => {
+              event.preventDefault();
+              setIsDragOver(true);
+            }}
+            onDragLeave={() => setIsDragOver(false)}
+            onPointerDown={() => onSelect(null)}
+            className={`chemistry-inventor-canvas relative h-[720px] w-[1120px] overflow-hidden rounded-xl border ${isDragOver ? 'border-cyan-300/70 bg-cyan-300/[0.06]' : 'border-white/10 bg-slate-900/55'}`}
+            style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
+          >
           <div className="absolute left-4 top-4 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">
             Drop components here
           </div>
@@ -156,6 +157,7 @@ export function BuilderCanvas({
               </div>
             );
           })}
+          </div>
         </div>
       </div>
     </section>

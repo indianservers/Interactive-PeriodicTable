@@ -1,15 +1,24 @@
-import { LayoutDashboard, Table2, FlaskConical, Orbit, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Table2, TestTube2, Orbit, BookOpen } from 'lucide-react';
 
 const mobileItems = [
   { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
   { id: 'table', label: 'Table', icon: Table2 },
   { id: 'symmetry', label: 'Symmetry', icon: Orbit },
-  { id: 'lab', label: 'Lab', icon: FlaskConical },
+  { id: 'chemistry-visuals', label: 'Visuals', icon: TestTube2 },
   { id: 'quiz', label: 'Quiz', icon: BookOpen },
 ];
 
 const isMobileItemActive = (currentPage, id) => (
-  currentPage === id || (id === 'symmetry' && currentPage.startsWith('symmetry-'))
+  currentPage === id
+  || (id === 'symmetry' && currentPage.startsWith('symmetry-'))
+  || (id === 'chemistry-visuals' && (
+    currentPage === 'lab'
+    || currentPage.includes('-visuals')
+    || currentPage.startsWith('organic-')
+    || currentPage.startsWith('inorganic-')
+    || currentPage.startsWith('bio-')
+    || currentPage.startsWith('pharma-')
+  ))
 );
 
 export const MobileNav = ({ currentPage, onNavigate }) => (

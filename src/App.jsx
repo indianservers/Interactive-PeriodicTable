@@ -12,6 +12,7 @@ import { ChemistryLabPage } from './pages/ChemistryLabPage.jsx';
 import { SyllabusPage } from './pages/SyllabusPage.jsx';
 import { ReactionBalancerPage } from './pages/ReactionBalancerPage.jsx';
 import { StudyToolsPage } from './pages/StudyToolsPage.jsx';
+import { SubjectModulePage } from './pages/SubjectModulePage.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -30,6 +31,39 @@ const pageHashMap = {
   'chemistry-solver': 'chemistry-solver',
   'chemistry-inventor': 'chemistry-inventor',
   'drug-discovery': 'drug-discovery',
+  'chemistry-visuals': 'visuals',
+  'organic-visuals': 'visuals/organic',
+  'organic-mechanisms': 'visuals/organic/mechanisms',
+  'organic-functional-tests': 'visuals/organic/functional-tests',
+  'organic-named-reactions': 'visuals/organic/named-reactions',
+  'organic-isomerism': 'visuals/organic/isomerism',
+  'organic-polymers': 'visuals/organic/polymers',
+  'inorganic-visuals': 'visuals/inorganic',
+  'inorganic-coordination': 'visuals/inorganic/coordination',
+  'inorganic-crystals': 'visuals/inorganic/crystals',
+  'inorganic-salt-analysis': 'visuals/inorganic/salt-analysis',
+  'inorganic-metallurgy': 'visuals/inorganic/metallurgy',
+  'inorganic-pblock': 'visuals/inorganic/p-block',
+  'bio-visuals': 'visuals/bio',
+  'bio-proteins': 'visuals/bio/proteins',
+  'bio-membranes': 'visuals/bio/membranes',
+  'bio-carbohydrates': 'visuals/bio/carbohydrates',
+  'bio-nucleic-acids': 'visuals/bio/nucleic-acids',
+  'bio-metabolism': 'visuals/bio/metabolism',
+  'pharma-visuals': 'visuals/pharma',
+  'pharma-adme': 'visuals/pharma/adme',
+  'pharma-dosage': 'visuals/pharma/dosage',
+  'pharma-qc': 'visuals/pharma/qc',
+  'pharma-buffers': 'visuals/pharma/buffers',
+  'pharma-toxicology': 'visuals/pharma/toxicology',
+  'organic-reaction-visualizer': 'modules/organic-reactions',
+  'spectroscopy-interpreter': 'modules/spectroscopy',
+  'biochemistry-module': 'modules/biochemistry',
+  'inorganic-deep-module': 'modules/inorganic',
+  'physical-simulators': 'modules/physical',
+  'iupac-nomenclature': 'modules/iupac',
+  'retrosynthesis-planner': 'modules/retrosynthesis',
+  'subject-modules': 'modules',
 };
 const hashPageMap = {
   'molecular-symmetry': 'symmetry',
@@ -40,6 +74,39 @@ const hashPageMap = {
   'chemistry-solver': 'chemistry-solver',
   'chemistry-inventor': 'chemistry-inventor',
   'drug-discovery': 'drug-discovery',
+  visuals: 'chemistry-visuals',
+  'visuals/organic': 'organic-visuals',
+  'visuals/organic/mechanisms': 'organic-mechanisms',
+  'visuals/organic/functional-tests': 'organic-functional-tests',
+  'visuals/organic/named-reactions': 'organic-named-reactions',
+  'visuals/organic/isomerism': 'organic-isomerism',
+  'visuals/organic/polymers': 'organic-polymers',
+  'visuals/inorganic': 'inorganic-visuals',
+  'visuals/inorganic/coordination': 'inorganic-coordination',
+  'visuals/inorganic/crystals': 'inorganic-crystals',
+  'visuals/inorganic/salt-analysis': 'inorganic-salt-analysis',
+  'visuals/inorganic/metallurgy': 'inorganic-metallurgy',
+  'visuals/inorganic/p-block': 'inorganic-pblock',
+  'visuals/bio': 'bio-visuals',
+  'visuals/bio/proteins': 'bio-proteins',
+  'visuals/bio/membranes': 'bio-membranes',
+  'visuals/bio/carbohydrates': 'bio-carbohydrates',
+  'visuals/bio/nucleic-acids': 'bio-nucleic-acids',
+  'visuals/bio/metabolism': 'bio-metabolism',
+  'visuals/pharma': 'pharma-visuals',
+  'visuals/pharma/adme': 'pharma-adme',
+  'visuals/pharma/dosage': 'pharma-dosage',
+  'visuals/pharma/qc': 'pharma-qc',
+  'visuals/pharma/buffers': 'pharma-buffers',
+  'visuals/pharma/toxicology': 'pharma-toxicology',
+  'modules/organic-reactions': 'organic-reaction-visualizer',
+  'modules/spectroscopy': 'spectroscopy-interpreter',
+  'modules/biochemistry': 'biochemistry-module',
+  'modules/inorganic': 'inorganic-deep-module',
+  'modules/physical': 'physical-simulators',
+  'modules/iupac': 'iupac-nomenclature',
+  'modules/retrosynthesis': 'retrosynthesis-planner',
+  modules: 'subject-modules',
 };
 
 const symmetrySections = {
@@ -49,6 +116,45 @@ const symmetrySections = {
   'symmetry-practice': 'practice',
   'symmetry-teaching': 'teaching',
 };
+
+const labVisualRoutes = {
+  'chemistry-visuals': { focus: 'all', experiment: 'molecule-links' },
+  'organic-visuals': { focus: 'organic', experiment: 'mechanism' },
+  'organic-mechanisms': { focus: 'organic', experiment: 'mechanism' },
+  'organic-functional-tests': { focus: 'organic', experiment: 'functional-tests' },
+  'organic-named-reactions': { focus: 'organic', experiment: 'named-reactions' },
+  'organic-isomerism': { focus: 'organic', experiment: 'isomerism' },
+  'organic-polymers': { focus: 'organic', experiment: 'polymer' },
+  'inorganic-visuals': { focus: 'inorganic', experiment: 'cft' },
+  'inorganic-coordination': { focus: 'inorganic', experiment: 'cft' },
+  'inorganic-crystals': { focus: 'inorganic', experiment: 'crystal-defects' },
+  'inorganic-salt-analysis': { focus: 'inorganic', experiment: 'salt-analysis' },
+  'inorganic-metallurgy': { focus: 'inorganic', experiment: 'metallurgy' },
+  'inorganic-pblock': { focus: 'inorganic', experiment: 'pblock-advanced' },
+  'bio-visuals': { focus: 'bio', experiment: 'protein-structure' },
+  'bio-proteins': { focus: 'bio', experiment: 'protein-structure' },
+  'bio-membranes': { focus: 'bio', experiment: 'lipid-membrane' },
+  'bio-carbohydrates': { focus: 'bio', experiment: 'carbohydrate-lab' },
+  'bio-nucleic-acids': { focus: 'bio', experiment: 'nucleic-acid-lab' },
+  'bio-metabolism': { focus: 'bio', experiment: 'metabolism-atp' },
+  'pharma-visuals': { focus: 'pharma', experiment: 'drug-functional-groups' },
+  'pharma-adme': { focus: 'pharma', experiment: 'adme-ionization' },
+  'pharma-dosage': { focus: 'pharma', experiment: 'dosage-form-lab' },
+  'pharma-qc': { focus: 'pharma', experiment: 'pharma-analysis' },
+  'pharma-buffers': { focus: 'pharma', experiment: 'pharma-buffer-lab' },
+  'pharma-toxicology': { focus: 'pharma', experiment: 'toxicology-chelation' },
+};
+
+const subjectModuleRoutes = new Set([
+  'organic-reaction-visualizer',
+  'spectroscopy-interpreter',
+  'biochemistry-module',
+  'inorganic-deep-module',
+  'physical-simulators',
+  'iupac-nomenclature',
+  'retrosynthesis-planner',
+  'subject-modules',
+]);
 
 function LoadingProgress({ title, detail, height = 620, reducedMotion = false }) {
   const [progress, setProgress] = useState(12);
@@ -285,8 +391,45 @@ function App() {
             <DrugDiscoveryModule />
           </Suspense>
         );
+      case 'organic-reaction-visualizer':
+      case 'spectroscopy-interpreter':
+      case 'biochemistry-module':
+      case 'inorganic-deep-module':
+      case 'physical-simulators':
+      case 'iupac-nomenclature':
+      case 'retrosynthesis-planner':
+      case 'subject-modules':
+        return <SubjectModulePage moduleId={currentPage === 'subject-modules' ? 'organic-reaction-visualizer' : currentPage} />;
       case 'quiz':
         return <QuizPage />;
+      case 'chemistry-visuals':
+      case 'organic-visuals':
+      case 'organic-mechanisms':
+      case 'organic-functional-tests':
+      case 'organic-named-reactions':
+      case 'organic-isomerism':
+      case 'organic-polymers':
+      case 'inorganic-visuals':
+      case 'inorganic-coordination':
+      case 'inorganic-crystals':
+      case 'inorganic-salt-analysis':
+      case 'inorganic-metallurgy':
+      case 'inorganic-pblock':
+      case 'bio-visuals':
+      case 'bio-proteins':
+      case 'bio-membranes':
+      case 'bio-carbohydrates':
+      case 'bio-nucleic-acids':
+      case 'bio-metabolism':
+      case 'pharma-visuals':
+      case 'pharma-adme':
+      case 'pharma-dosage':
+      case 'pharma-qc':
+      case 'pharma-buffers':
+      case 'pharma-toxicology': {
+        const route = labVisualRoutes[currentPage] || labVisualRoutes['chemistry-visuals'];
+        return <ChemistryLabPage initialFocusTopic={route.focus} initialExperimentId={route.experiment} />;
+      }
       case 'lab':
         return <ChemistryLabPage />;
       case 'balancer':

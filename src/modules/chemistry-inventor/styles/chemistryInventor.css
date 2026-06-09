@@ -1,9 +1,18 @@
 .chemistry-inventor-studio {
-  min-height: calc(100vh - 3.5rem);
+  height: calc(100vh - 3.5rem);
+  overflow: hidden;
   background:
     linear-gradient(135deg, rgba(8, 145, 178, 0.12), transparent 34%),
     linear-gradient(90deg, rgba(168, 85, 247, 0.08), rgba(20, 184, 166, 0.08)),
     rgba(2, 6, 23, 0.44);
+}
+
+@media (max-width: 1023px) {
+  .chemistry-inventor-studio {
+    height: auto;
+    min-height: calc(100vh - 3.5rem);
+    overflow: visible;
+  }
 }
 
 .chemistry-inventor-studio button,

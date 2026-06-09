@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import {
-  Atom, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock,
+  Activity, Atom, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock,
   FileQuestion, FlaskConical, FlaskRound, GitCompare, GraduationCap, Heart,
   LayoutDashboard, Lightbulb, ListTree, Microscope, Orbit, PanelLeftClose,
   PanelLeftOpen, Pill, Puzzle, Route, Scale, Search, Settings, Sigma, Sparkles,
-  Table2, TrendingUp, Trophy, X,
+  Table2, TestTube2, TrendingUp, Trophy, Waves, X,
 } from 'lucide-react';
 
 export const navGroups = [
@@ -24,6 +24,69 @@ export const navGroups = [
     items: [
       { id: 'atom', label: 'Atom Visualizer', icon: Atom },
       { id: 'molecule', label: '3D Molecules', icon: Box },
+      {
+        id: 'chemistry-visuals',
+        label: 'Chemistry Visuals',
+        icon: TestTube2,
+        subItems: [
+          {
+            id: 'organic-visuals',
+            label: 'Organic Chemistry',
+            icon: FlaskRound,
+            subItems: [
+              { id: 'organic-visuals', label: 'All Organic Visuals', icon: Sparkles },
+              { id: 'organic-mechanisms', label: 'Mechanism Player', icon: Route },
+              { id: 'organic-functional-tests', label: 'Functional Tests', icon: Trophy },
+              { id: 'organic-named-reactions', label: 'Named Reactions', icon: BookOpen },
+              { id: 'organic-isomerism', label: 'Isomerism Explorer', icon: GitCompare },
+              { id: 'organic-polymers', label: 'Polymer Builder', icon: Box },
+              { id: 'molecule', label: 'Organic 3D Molecules', icon: Box },
+            ],
+          },
+          {
+            id: 'inorganic-visuals',
+            label: 'Inorganic Chemistry',
+            icon: Atom,
+            subItems: [
+              { id: 'inorganic-visuals', label: 'All Inorganic Visuals', icon: Sparkles },
+              { id: 'inorganic-coordination', label: 'Coordination and CFT', icon: Orbit },
+              { id: 'inorganic-crystals', label: 'Crystal Structures', icon: Box },
+              { id: 'inorganic-salt-analysis', label: 'Salt Analysis', icon: Trophy },
+              { id: 'inorganic-metallurgy', label: 'Metallurgy Flowchart', icon: Route },
+              { id: 'inorganic-pblock', label: 'p-Block Reference', icon: BookOpen },
+              { id: 'trends', label: 'Periodic Trends', icon: TrendingUp },
+            ],
+          },
+          {
+            id: 'bio-visuals',
+            label: 'Bio Chemistry',
+            icon: Waves,
+            subItems: [
+              { id: 'bio-visuals', label: 'All Bio Visuals', icon: Sparkles },
+              { id: 'bio-proteins', label: 'Proteins and Enzymes', icon: Brain },
+              { id: 'bio-membranes', label: 'Lipids and Membranes', icon: Waves },
+              { id: 'bio-carbohydrates', label: 'Carbohydrates', icon: FlaskRound },
+              { id: 'bio-nucleic-acids', label: 'DNA and RNA', icon: GitCompare },
+              { id: 'bio-metabolism', label: 'Metabolism and ATP', icon: Route },
+              { id: 'molecule', label: 'Biomolecule 3D Viewer', icon: Box },
+            ],
+          },
+          {
+            id: 'pharma-visuals',
+            label: 'Pharma Chemistry',
+            icon: Pill,
+            subItems: [
+              { id: 'pharma-visuals', label: 'All Pharma Visuals', icon: Sparkles },
+              { id: 'pharma-adme', label: 'ADME and Ionization', icon: Route },
+              { id: 'pharma-dosage', label: 'Dosage Forms', icon: FlaskConical },
+              { id: 'pharma-qc', label: 'Assay and QC', icon: Trophy },
+              { id: 'pharma-buffers', label: 'Pharma Buffers', icon: FlaskRound },
+              { id: 'pharma-toxicology', label: 'Toxicology', icon: Heart },
+              { id: 'drug-discovery', label: 'Drug Discovery Suite', icon: Pill },
+            ],
+          },
+        ],
+      },
       {
         id: 'symmetry',
         label: 'Molecular Symmetry',
@@ -54,6 +117,20 @@ export const navGroups = [
     label: 'Learn',
     icon: BookOpen,
     items: [
+      {
+        id: 'subject-modules',
+        label: 'Subject Modules',
+        icon: GraduationCap,
+        subItems: [
+          { id: 'organic-reaction-visualizer', label: 'Organic Reaction Visualizer', icon: Route },
+          { id: 'spectroscopy-interpreter', label: 'Spectroscopy Interpreter', icon: BarChart3 },
+          { id: 'biochemistry-module', label: 'Biochemistry Module', icon: Brain },
+          { id: 'inorganic-deep-module', label: 'Inorganic Deep Module', icon: Atom },
+          { id: 'physical-simulators', label: 'Physical Simulators', icon: Activity },
+          { id: 'iupac-nomenclature', label: 'IUPAC Nomenclature', icon: BookOpen },
+          { id: 'retrosynthesis-planner', label: 'Retrosynthesis Planner', icon: GitCompare },
+        ],
+      },
       { id: 'syllabus', label: 'Syllabus Map', icon: GraduationCap },
       { id: 'study-tools', label: 'Study Tools', icon: Trophy },
       {
@@ -77,8 +154,9 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery']);
-const allNavItems = navGroups.flatMap(group => group.items.flatMap(item => [item, ...(item.subItems || [])]));
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules']);
+const flattenNavItems = (items) => items.flatMap(item => [item, ...flattenNavItems(item.subItems || [])]);
+const allNavItems = navGroups.flatMap(group => flattenNavItems(group.items));
 const pageLabelMap = Object.fromEntries(allNavItems.map(item => [item.id, item]));
 
 const MenuTooltip = ({ text }) => (
@@ -92,15 +170,17 @@ const itemTitle = (label, detail) => detail ? `${label} - ${detail}` : label;
 export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePages = [], recentPages = [], mini = false, onMiniToggle }) => {
   const [menuSearch, setMenuSearch] = useState('');
   const [openGroups, setOpenGroups] = useState(() => Object.fromEntries(navGroups.map(group => [group.label, true])));
-  const [openSubmenus, setOpenSubmenus] = useState({ symmetry: true });
+  const [openSubmenus, setOpenSubmenus] = useState({ 'chemistry-visuals': true, symmetry: true });
   const query = menuSearch.trim().toLowerCase();
+  const itemMatchesQuery = (item) => {
+    if (!query) return true;
+    const childText = flattenNavItems(item.subItems || []).map(subItem => `${subItem.label} ${subItem.id}`).join(' ');
+    return `${item.label} ${item.id} ${childText}`.toLowerCase().includes(query);
+  };
   const filteredGroups = navGroups
     .map(group => ({
       ...group,
-      items: group.items.filter(item => {
-        const subText = (item.subItems || []).map(subItem => `${subItem.label} ${subItem.id}`).join(' ');
-        return !query || `${item.label} ${item.id} ${group.label} ${subText}`.toLowerCase().includes(query);
-      }),
+      items: group.items.filter(itemMatchesQuery),
     }))
     .filter(group => group.items.length > 0);
   const recentItems = recentPages.map(id => pageLabelMap[id]).filter(Boolean).slice(0, 4);
@@ -116,6 +196,48 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
       return;
     }
     goTo(id);
+  };
+
+  const itemHasActivePage = (item) => item.id === currentPage || (item.subItems || []).some(itemHasActivePage);
+
+  const renderNavItem = ({ id, label, icon: Icon = CircleDot, subItems = [] }, depth = 0) => {
+    const submenuOpen = Boolean(openSubmenus[id]);
+    const hasSubItems = subItems.length > 0;
+    const active = itemHasActivePage({ id, subItems });
+    const visibleSubItems = subItems.filter(itemMatchesQuery);
+    return (
+      <div key={`${id}-${label}`}>
+        <button
+          onClick={() => handleParentClick(id, hasSubItems)}
+          onDoubleClick={() => hasSubItems && pageLabelMap[id] && goTo(id)}
+          className={`${depth === 0 ? 'sidebar-item text-sm' : 'group/menu-tooltip relative flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition-colors'} ${
+            depth === 0
+              ? active ? 'active' : ''
+              : active ? 'bg-indigo-500/15 text-indigo-200' : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
+          }`}
+          aria-current={active ? 'page' : undefined}
+          aria-expanded={hasSubItems ? submenuOpen : undefined}
+          title={hasSubItems ? itemTitle(label, submenuOpen ? 'Collapse submenu. Double-click to open page.' : 'Expand submenu. Double-click to open page.') : label}
+          aria-label={hasSubItems ? itemTitle(label, submenuOpen ? 'Collapse submenu' : 'Expand submenu') : label}
+        >
+          <Icon size={depth === 0 ? 16 : 13} className="flex-shrink-0" />
+          <span className={depth === 0 ? 'text-sm' : ''}>{label}</span>
+          {depth === 0 && updatedPages.has(id) && <span className="ml-auto rounded-full border border-amber-500/25 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-300">Updated</span>}
+          {depth === 0 && favoritePages.includes(id) && <Sparkles size={13} className="text-amber-300" title="Favorite page" />}
+          {hasSubItems ? (
+            <ChevronDown size={14} className={`ml-auto transition-transform ${submenuOpen ? 'rotate-180' : ''}`} />
+          ) : currentPage === id && depth === 0 ? (
+            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/60" />
+          ) : null}
+          <MenuTooltip text={label} />
+        </button>
+        {hasSubItems && submenuOpen && (
+          <div className={`${depth === 0 ? 'ml-8' : 'ml-4'} mt-1 space-y-0.5 border-l border-white/10 pl-2`}>
+            {visibleSubItems.map(item => renderNavItem(item, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -234,53 +356,7 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
                 </button>
                 {openGroups[group.label] && (
                   <div className="space-y-0.5">
-                    {group.items.map(({ id, label, icon: Icon, subItems }) => {
-                      const submenuOpen = Boolean(openSubmenus[id]);
-                      const active = currentPage === id || subItems?.some(item => item.id === currentPage);
-                      return (
-                        <div key={id}>
-                          <button
-                            onClick={() => handleParentClick(id, Boolean(subItems?.length))}
-                            onDoubleClick={() => subItems?.length && goTo(id)}
-                            className={`sidebar-item group/menu-tooltip relative w-full text-left ${active ? 'active' : ''}`}
-                            aria-current={active ? 'page' : undefined}
-                            aria-expanded={subItems?.length ? submenuOpen : undefined}
-                            title={subItems?.length ? itemTitle(label, submenuOpen ? 'Collapse submenu. Double-click to open page.' : 'Expand submenu. Double-click to open page.') : label}
-                            aria-label={subItems?.length ? itemTitle(label, submenuOpen ? 'Collapse submenu' : 'Expand submenu') : label}
-                          >
-                            <Icon size={16} className="flex-shrink-0" />
-                            <span className="text-sm">{label}</span>
-                            {updatedPages.has(id) && <span className="ml-auto rounded-full border border-amber-500/25 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-300">Updated</span>}
-                            {favoritePages.includes(id) && <Sparkles size={13} className="text-amber-300" title="Favorite page" />}
-                            {subItems?.length ? (
-                              <ChevronDown size={14} className={`transition-transform ${submenuOpen ? 'rotate-180' : ''}`} />
-                            ) : currentPage === id && (
-                              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/60" />
-                            )}
-                            <MenuTooltip text={label} />
-                          </button>
-                          {subItems?.length && submenuOpen && (
-                            <div className="ml-8 mt-1 space-y-0.5 border-l border-white/10 pl-2">
-                              {subItems.map(({ id: target, label: subLabel, icon: SubIcon = CircleDot }) => (
-                                <button
-                                  key={subLabel}
-                                  onClick={() => goTo(target)}
-                                  className={`group/menu-tooltip relative flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition-colors ${
-                                    currentPage === target ? 'bg-indigo-500/15 text-indigo-200' : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
-                                  }`}
-                                  title={subLabel}
-                                  aria-label={subLabel}
-                                >
-                                  <SubIcon size={13} className="flex-shrink-0" />
-                                  <span>{subLabel}</span>
-                                  <MenuTooltip text={subLabel} />
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                    {group.items.map(item => renderNavItem(item))}
                   </div>
                 )}
               </div>
