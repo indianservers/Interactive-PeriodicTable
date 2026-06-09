@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Activity, Atom, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock,
+  Activity, Atom, BadgeCheck, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock,
   FileQuestion, FlaskConical, FlaskRound, GitCompare, GraduationCap, Heart,
   LayoutDashboard, Lightbulb, ListTree, Microscope, Orbit, PanelLeftClose,
   PanelLeftOpen, Pill, Puzzle, Route, Scale, Search, Settings, Sigma, Sparkles,
@@ -127,6 +127,7 @@ export const navGroups = [
           { id: 'advanced-visuals', label: 'Advanced Visual Chemistry', icon: Sparkles },
           { id: 'practice-tutor', label: 'Practice, Exams and Tutor', icon: FileQuestion },
           { id: 'learning-command', label: 'Learning Command Center', icon: ListTree },
+          { id: 'coverage-audit', label: 'Coverage Audit', icon: BadgeCheck },
           { id: 'organic-reaction-visualizer', label: 'Organic Reaction Visualizer', icon: Route },
           { id: 'spectroscopy-interpreter', label: 'Spectroscopy Interpreter', icon: BarChart3 },
           { id: 'biochemistry-module', label: 'Biochemistry Module', icon: Brain },
@@ -159,7 +160,7 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor', 'learning-command']);
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor', 'learning-command', 'coverage-audit']);
 const flattenNavItems = (items) => items.flatMap(item => [item, ...flattenNavItems(item.subItems || [])]);
 const allNavItems = navGroups.flatMap(group => flattenNavItems(group.items));
 const pageLabelMap = Object.fromEntries(allNavItems.map(item => [item.id, item]));

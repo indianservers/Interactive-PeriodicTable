@@ -19,6 +19,7 @@ import { SeniorChemistryCorePage } from './pages/SeniorChemistryCorePage.jsx';
 import { AdvancedVisualChemistryPage } from './pages/AdvancedVisualChemistryPage.jsx';
 import { PracticeExamTutorPage } from './pages/PracticeExamTutorPage.jsx';
 import { LearningCommandCenterPage } from './pages/LearningCommandCenterPage.jsx';
+import { CurriculumCoverageAuditPage } from './pages/CurriculumCoverageAuditPage.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -42,6 +43,7 @@ const pageHashMap = {
   'advanced-visuals': 'advanced-visuals',
   'practice-tutor': 'practice-tutor',
   'learning-command': 'learning-command',
+  'coverage-audit': 'coverage-audit',
   'chemistry-visuals': 'visuals',
   'organic-visuals': 'visuals/organic',
   'organic-mechanisms': 'visuals/organic/mechanisms',
@@ -90,6 +92,7 @@ const hashPageMap = {
   'advanced-visuals': 'advanced-visuals',
   'practice-tutor': 'practice-tutor',
   'learning-command': 'learning-command',
+  'coverage-audit': 'coverage-audit',
   visuals: 'chemistry-visuals',
   'visuals/organic': 'organic-visuals',
   'visuals/organic/mechanisms': 'organic-mechanisms',
@@ -199,6 +202,7 @@ const pageStatusLabels = {
   'advanced-visuals': 'Advanced Visual Chemistry',
   'practice-tutor': 'Practice, Exams and Tutor',
   'learning-command': 'Learning Command Center',
+  'coverage-audit': 'Curriculum Coverage Audit',
   'chemistry-visuals': 'Chemistry Visuals',
   'organic-visuals': 'Organic Chemistry Visuals',
   'organic-mechanisms': 'Organic Mechanism Player',
@@ -253,6 +257,7 @@ const getLoadingDetail = (page) => {
   if (page === 'advanced-visuals') return 'Preparing advanced visual modules, simulations, and 2D/3D launch paths...';
   if (page === 'practice-tutor') return 'Preparing adaptive practice, exams, mistake notebook, flashcards, and tutor prompts...';
   if (page === 'learning-command') return 'Preparing learning paths, teacher assignments, printable artifacts, and readiness checks...';
+  if (page === 'coverage-audit') return 'Preparing board coverage, missing pieces, 2D/3D readiness, and priority gap backlog...';
   if (page === 'chemistry-inventor') return 'Preparing builder palette, canvas, inspector, and simulation status...';
   return 'Preparing page content and interactive controls...';
 };
@@ -543,6 +548,8 @@ function App() {
         return <PracticeExamTutorPage onNavigate={navigate} />;
       case 'learning-command':
         return <LearningCommandCenterPage onNavigate={navigate} />;
+      case 'coverage-audit':
+        return <CurriculumCoverageAuditPage onNavigate={navigate} />;
       case 'organic-reaction-visualizer':
       case 'spectroscopy-interpreter':
       case 'biochemistry-module':
