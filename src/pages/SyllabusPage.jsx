@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { BadgeCheck, BookOpen, Box, Filter, FlaskConical, GraduationCap, Layers3, Route, Search, Target, Tags } from 'lucide-react';
+import { BadgeCheck, BookOpen, Box, CheckCircle2, ClipboardList, Filter, FlaskConical, GraduationCap, Layers3, ListChecks, Route, Search, Sparkles, Target, Tags } from 'lucide-react';
 import {
   curriculumBoards,
   curriculumVisualizationMap,
-  getCurriculumPlan,
+  getDetailedCurriculumPlan,
   getSyllabusTagsForLab,
   getUnitTitle,
   labToolCatalog,
@@ -39,9 +39,13 @@ export const SyllabusPage = ({ onNavigate }) => {
   const [activeGrade, setActiveGrade] = useState(10);
   const [activeTrack, setActiveTrack] = useState('class10');
   const [activeUnit, setActiveUnit] = useState('all');
+  const [activeChapterId, setActiveChapterId] = useState(null);
   const [query, setQuery] = useState('');
 
-  const curriculumPlan = useMemo(() => getCurriculumPlan(activeBoard, activeGrade), [activeBoard, activeGrade]);
+  const curriculumPlan = useMemo(() => getDetailedCurriculumPlan(activeBoard, activeGrade), [activeBoard, activeGrade]);
+  const activeChapter = useMemo(() => (
+    curriculumPlan.chapters.find(chapter => chapter.id === activeChapterId) || curriculumPlan.chapters[0]
+  ), [activeChapterId, curriculumPlan.chapters]);
 
   const unitOptions = useMemo(() => {
     const curriculumUnits = syllabusUnits.filter(unit => curriculumPlan.unitIds.includes(unit.id));
@@ -117,7 +121,7 @@ export const SyllabusPage = ({ onNavigate }) => {
               {curriculumBoards.map(board => (
                 <button
                   key={board.id}
-                  onClick={() => { setActiveBoard(board.id); setActiveTrack(`class${activeGrade}`); setActiveUnit('all'); }}
+                  onClick={() => { setActiveBoard(board.id); setActiveTrack(`class${activeGrade}`); setActiveUnit('all'); setActiveChapterId(null); }}
                   className={`rounded-xl border px-3 py-2 text-left text-xs font-bold transition-colors ${
                     activeBoard === board.id ? 'bg-white/[0.09] border-white/20 text-white' : 'bg-white/[0.025] border-white/10 text-gray-400 hover:text-gray-200'
                   }`}
@@ -139,7 +143,7 @@ export const SyllabusPage = ({ onNavigate }) => {
               {gradeOptions.map(grade => (
                 <button
                   key={grade}
-                  onClick={() => { setActiveGrade(grade); setActiveTrack(`class${grade}`); setActiveUnit('all'); }}
+                  onClick={() => { setActiveGrade(grade); setActiveTrack(`class${grade}`); setActiveUnit('all'); setActiveChapterId(null); }}
                   className={`rounded-lg border px-2 py-2 text-xs font-black transition-colors ${
                     activeGrade === grade ? 'border-cyan-300/40 bg-cyan-300/15 text-cyan-50' : 'border-white/10 bg-white/[0.025] text-gray-400 hover:text-gray-200'
                   }`}
@@ -164,7 +168,7 @@ export const SyllabusPage = ({ onNavigate }) => {
                     {syllabusTracks.filter(item => item.group === group).map(item => (
                       <button
                         key={item.id}
-                        onClick={() => { setActiveTrack(item.id); setActiveGrade(Number(item.id.replace('class', '')) || activeGrade); setActiveUnit('all'); }}
+                        onClick={() => { setActiveTrack(item.id); setActiveGrade(Number(item.id.replace('class', '')) || activeGrade); setActiveUnit('all'); setActiveChapterId(null); }}
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm border transition-colors ${
                           activeTrack === item.id ? 'bg-white/[0.09] border-white/20 text-white' : 'bg-white/[0.025] border-white/10 text-gray-400 hover:text-gray-200'
                         }`}
@@ -191,18 +195,139 @@ export const SyllabusPage = ({ onNavigate }) => {
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="rounded-xl border border-white/10 bg-black/15 px-3 py-2">
                   <p className="text-lg font-black text-white">{curriculumPlan.unitIds.length}</p>
-                  <p className="text-[10px] text-gray-500">topics</p>
+                  <p className="text-[10px] text-gray-500">chapters</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-black/15 px-3 py-2">
-                  <p className="text-lg font-black text-cyan-100">{curriculumPlan.visuals.length}</p>
-                  <p className="text-[10px] text-gray-500">2D maps</p>
+                  <p className="text-lg font-black text-cyan-100">{curriculumPlan.subtopicCount}</p>
+                  <p className="text-[10px] text-gray-500">subtopics</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-black/15 px-3 py-2">
-                  <p className="text-lg font-black text-emerald-100">{curriculumPlan.visuals.length}</p>
-                  <p className="text-[10px] text-gray-500">3D maps</p>
+                  <p className="text-lg font-black text-emerald-100">{curriculumPlan.coverage.visualLinks}</p>
+                  <p className="text-[10px] text-gray-500">visual links</p>
                 </div>
               </div>
             </div>
+          </section>
+
+          <section className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <ClipboardList size={16} className="text-cyan-300" />
+                  <h3 className="text-sm font-bold text-white">Chapter Path</h3>
+                </div>
+                <span className="text-xs text-gray-500">{curriculumPlan.chapters.length} chapters</span>
+              </div>
+              <div className="max-h-[28rem] space-y-2 overflow-y-auto pr-1">
+                {curriculumPlan.chapters.map(chapter => {
+                  const active = activeChapter?.id === chapter.id;
+                  return (
+                    <button
+                      key={chapter.id}
+                      type="button"
+                      onClick={() => { setActiveChapterId(chapter.id); setActiveUnit(chapter.unitId); }}
+                      className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                        active ? 'border-cyan-300/40 bg-cyan-300/12' : 'border-white/10 bg-white/[0.035] hover:bg-white/[0.065]'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg text-xs font-black ${active ? 'bg-cyan-300 text-slate-950' : 'bg-white/10 text-gray-300'}`}>
+                          {chapter.order}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-black text-white">{chapter.title}</p>
+                          <p className="mt-1 line-clamp-2 text-xs text-gray-500">{chapter.focus}</p>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            <span className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{chapter.level}</span>
+                            <span className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{chapter.subtopics.length} subtopics</span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {activeChapter && (
+              <div className="glass rounded-2xl p-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-300">Selected Chapter</p>
+                    <h3 className="mt-1 text-lg font-black text-white">{activeChapter.title}</h3>
+                    <p className="mt-1 text-sm text-gray-400">{activeChapter.visualTitle}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" onClick={() => onNavigate?.(activeChapter.twoDRoute)} className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-xs font-black text-cyan-100 hover:bg-cyan-300/15">
+                      <Box size={14} /> Open 2D
+                    </button>
+                    <button type="button" onClick={() => onNavigate?.(activeChapter.threeDRoute)} className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-xs font-black text-emerald-100 hover:bg-emerald-300/15">
+                      <Layers3 size={14} /> Open 3D
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                  <div className="rounded-xl border border-white/10 bg-black/15 p-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <Sparkles size={14} className="text-cyan-200" />
+                      <p className="text-xs font-black text-white">Outcomes</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      {activeChapter.outcomes.map(outcome => (
+                        <p key={outcome} className="flex gap-2 text-xs text-gray-400"><CheckCircle2 size={13} className="mt-0.5 shrink-0 text-emerald-300" />{outcome}</p>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-black/15 p-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <Target size={14} className="text-amber-200" />
+                      <p className="text-xs font-black text-white">Prerequisites</p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {activeChapter.prerequisites.map(item => (
+                        <span key={item} className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-bold text-gray-300">{item}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-black/15 p-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <ListChecks size={14} className="text-pink-200" />
+                      <p className="text-xs font-black text-white">Revision</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      {activeChapter.revision.map(item => (
+                        <p key={item} className="text-xs text-gray-400">{item}</p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <p className="text-xs font-black uppercase tracking-widest text-gray-500">Subtopics</p>
+                    <span className="text-xs text-gray-500">{activeChapter.subtopics.length} checkpoints</span>
+                  </div>
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {activeChapter.subtopics.map(subtopic => (
+                      <div key={subtopic.id} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                        <div className="flex items-start gap-2">
+                          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-white/10 text-[10px] font-black text-gray-300">{subtopic.order}</span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-white">{subtopic.title}</p>
+                            <p className="mt-1 text-[11px] text-gray-500">{subtopic.checkpoint}</p>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              <span className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-black text-cyan-100">{subtopic.difficulty}</span>
+                              <span className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-black text-emerald-100">{subtopic.visualType}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
 
           <div className="glass rounded-2xl p-4 space-y-3">

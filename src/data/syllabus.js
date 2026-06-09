@@ -170,6 +170,460 @@ export const getCurriculumPlan = (boardId = 'cbse', grade = 10) => {
   };
 };
 
+const conceptBlueprints = {
+  materials: {
+    chapterTitle: 'Materials, Properties and Everyday Uses',
+    level: 'Foundation',
+    prerequisites: ['Observation skills', 'Names of common materials'],
+    outcomes: ['Classify materials by observable properties', 'Connect material choice to use', 'Separate natural and synthetic examples'],
+    revision: ['Property vocabulary', 'Common material examples', 'Safety around household chemicals'],
+    subtopics: [
+      { id: 'material-properties', title: 'Hardness, lustre, solubility, transparency and conductivity', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'natural-synthetic', title: 'Natural, man-made and synthetic materials', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'metals-nonmetals-first-look', title: 'First look at metals and non-metals', difficulty: 'Foundation', visualType: '3D' },
+      { id: 'materials-in-life', title: 'Materials in food, clothing, homes and tools', difficulty: 'Applied', visualType: '2D' },
+    ],
+  },
+  separation: {
+    chapterTitle: 'Separation of Substances',
+    level: 'Foundation',
+    prerequisites: ['Mixtures', 'Particle size', 'Solubility'],
+    outcomes: ['Choose a separation method from mixture properties', 'Explain filtration and evaporation', 'Compare chromatography and distillation'],
+    revision: ['Filtration steps', 'Evaporation vs crystallization', 'Soluble vs insoluble'],
+    subtopics: [
+      { id: 'handpicking-sieving', title: 'Handpicking, sieving, winnowing and sedimentation', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'filtration-evaporation', title: 'Filtration, evaporation and crystallization', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'distillation-chromatography', title: 'Distillation and chromatography', difficulty: 'Exam', visualType: '3D' },
+      { id: 'purity-tests', title: 'Purity, melting point, boiling point and simple tests', difficulty: 'Exam', visualType: '2D' },
+    ],
+  },
+  airWater: {
+    chapterTitle: 'Air, Water, Soil and Environmental Chemistry',
+    level: 'Foundation',
+    prerequisites: ['States of matter', 'Mixtures'],
+    outcomes: ['Describe air and water as mixtures', 'Identify pollutants and treatment methods', 'Connect chemistry to environment'],
+    revision: ['Composition of air', 'Water cycle', 'Pollution control basics'],
+    subtopics: [
+      { id: 'air-composition', title: 'Composition of air and combustion support', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'water-purification', title: 'Water purification, filtration and chlorination', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'acid-rain-smog', title: 'Acid rain, smog and greenhouse gases', difficulty: 'Exam', visualType: '3D' },
+      { id: 'green-chemistry', title: 'Green chemistry and waste reduction', difficulty: 'Applied', visualType: '2D' },
+    ],
+  },
+  changes: {
+    chapterTitle: 'Physical and Chemical Changes',
+    level: 'Foundation',
+    prerequisites: ['States of matter', 'Observation skills'],
+    outcomes: ['Distinguish physical and chemical changes', 'Identify evidence of reaction', 'Connect changes to energy and reversibility'],
+    revision: ['Color change', 'Gas formation', 'Reversible vs irreversible'],
+    subtopics: [
+      { id: 'physical-change', title: 'Melting, freezing, dissolving and shape change', difficulty: 'Foundation', visualType: '3D' },
+      { id: 'chemical-change', title: 'Burning, rusting, curdling and new substances', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'reaction-evidence', title: 'Gas, precipitate, heat, light and color evidence', difficulty: 'Exam', visualType: '2D' },
+      { id: 'energy-in-changes', title: 'Endothermic and exothermic changes', difficulty: 'Exam', visualType: '3D' },
+    ],
+  },
+  matter: {
+    chapterTitle: 'Matter, Mixtures and Particle Models',
+    level: 'Foundation',
+    prerequisites: ['Materials', 'States of matter'],
+    outcomes: ['Use particle models for states of matter', 'Classify elements, compounds and mixtures', 'Interpret phase changes'],
+    revision: ['Pure substance vs mixture', 'Solute and solvent', 'Phase-change graph'],
+    subtopics: [
+      { id: 'states-particles', title: 'Solid, liquid, gas and particle spacing', difficulty: 'Foundation', visualType: '3D' },
+      { id: 'elements-compounds-mixtures', title: 'Elements, compounds, mixtures and symbols', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'solutions-suspensions-colloids', title: 'Solutions, suspensions and colloids', difficulty: 'Exam', visualType: '2D' },
+      { id: 'phase-diagrams-first', title: 'Phase change curves and simple phase diagrams', difficulty: 'Exam', visualType: '3D' },
+    ],
+  },
+  atoms: {
+    chapterTitle: 'Atomic Structure and Isotopes',
+    level: 'Exam',
+    prerequisites: ['Elements', 'Charges', 'Basic algebra'],
+    outcomes: ['Build atomic models', 'Calculate protons, neutrons and electrons', 'Explain isotopes and average atomic mass'],
+    revision: ['Atomic number', 'Mass number', 'Electronic configuration'],
+    subtopics: [
+      { id: 'atomic-models', title: 'Dalton, Thomson, Rutherford, Bohr and quantum model', difficulty: 'Exam', visualType: '2D' },
+      { id: 'shells-orbitals', title: 'Shells, subshells, orbitals and quantum numbers', difficulty: 'Exam', visualType: '3D' },
+      { id: 'isotopes-ions', title: 'Isotopes, isobars, ions and average mass', difficulty: 'Exam', visualType: '2D' },
+      { id: 'electron-configuration', title: 'Aufbau, Hund and Pauli rules', difficulty: 'Olympiad', visualType: '2D' },
+    ],
+  },
+  periodic: {
+    chapterTitle: 'Periodic Table and Trends',
+    level: 'Exam',
+    prerequisites: ['Atomic structure', 'Electron configuration'],
+    outcomes: ['Predict trends across periods and groups', 'Use valence electrons for reactivity', 'Compare periodic blocks'],
+    revision: ['Atomic radius', 'Ionization energy', 'Electronegativity'],
+    subtopics: [
+      { id: 'modern-periodic-law', title: 'Modern periodic law and table structure', difficulty: 'Exam', visualType: '2D' },
+      { id: 'periodic-trends', title: 'Radius, IE, EA, EN and metallic character', difficulty: 'Exam', visualType: '2D' },
+      { id: 'blocks-families', title: 's, p, d, f blocks and families', difficulty: 'Exam', visualType: '2D' },
+      { id: 'anomalies', title: 'Anomalies and diagonal relationships', difficulty: 'Olympiad', visualType: '2D' },
+    ],
+  },
+  bonding: {
+    chapterTitle: 'Chemical Bonding and Molecular Structure',
+    level: 'Exam',
+    prerequisites: ['Valence electrons', 'Periodic trends'],
+    outcomes: ['Draw Lewis structures', 'Predict molecular shape', 'Connect bonding to polarity and properties'],
+    revision: ['Octet rule exceptions', 'VSEPR geometry', 'Hybridization'],
+    subtopics: [
+      { id: 'ionic-covalent-metallic', title: 'Ionic, covalent, coordinate and metallic bonds', difficulty: 'Exam', visualType: '2D' },
+      { id: 'lewis-vsepr', title: 'Lewis structures, formal charge and VSEPR', difficulty: 'Exam', visualType: '3D' },
+      { id: 'hybridization-mo', title: 'Hybridization and molecular orbital diagrams', difficulty: 'Olympiad', visualType: '3D' },
+      { id: 'polarity-imf', title: 'Bond polarity, molecular polarity and intermolecular forces', difficulty: 'Exam', visualType: '3D' },
+    ],
+  },
+  mole: {
+    chapterTitle: 'Mole Concept and Stoichiometry',
+    level: 'Exam',
+    prerequisites: ['Atomic mass', 'Balanced equations'],
+    outcomes: ['Convert between mass, moles and particles', 'Solve limiting reagent problems', 'Calculate empirical and molecular formulae'],
+    revision: ['Avogadro constant', 'Molar mass', 'Percentage composition'],
+    subtopics: [
+      { id: 'mole-conversions', title: 'Mass-mole-particle conversions', difficulty: 'Exam', visualType: '2D' },
+      { id: 'stoichiometry-equations', title: 'Equation stoichiometry and limiting reagent', difficulty: 'Exam', visualType: '2D' },
+      { id: 'empirical-molecular', title: 'Empirical formula and molecular formula', difficulty: 'Exam', visualType: '2D' },
+      { id: 'gas-stoichiometry', title: 'Gas volume and solution stoichiometry', difficulty: 'Olympiad', visualType: '3D' },
+    ],
+  },
+  reactions: {
+    chapterTitle: 'Chemical Reactions and Equations',
+    level: 'Foundation',
+    prerequisites: ['Symbols and formulae', 'Conservation of mass'],
+    outcomes: ['Balance equations', 'Classify reaction types', 'Predict observations and products'],
+    revision: ['Combination', 'Decomposition', 'Displacement'],
+    subtopics: [
+      { id: 'balancing-equations', title: 'Balancing equations and state symbols', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'reaction-types', title: 'Combination, decomposition, displacement and double displacement', difficulty: 'Exam', visualType: '2D' },
+      { id: 'precipitation-gas', title: 'Precipitation, neutralization and gas evolution', difficulty: 'Exam', visualType: '2D' },
+      { id: 'reaction-energy', title: 'Reaction energy and simple energy diagrams', difficulty: 'Exam', visualType: '3D' },
+    ],
+  },
+  redox: {
+    chapterTitle: 'Redox Reactions and Electron Transfer',
+    level: 'Exam',
+    prerequisites: ['Reaction equations', 'Charges and ions'],
+    outcomes: ['Assign oxidation numbers', 'Identify oxidizing and reducing agents', 'Balance redox reactions'],
+    revision: ['OIL RIG', 'Oxidation state rules', 'Half reactions'],
+    subtopics: [
+      { id: 'oxidation-number', title: 'Oxidation number rules and exceptions', difficulty: 'Exam', visualType: '2D' },
+      { id: 'redox-agents', title: 'Oxidizing agents and reducing agents', difficulty: 'Exam', visualType: '2D' },
+      { id: 'half-reaction-method', title: 'Ion-electron and half-reaction balancing', difficulty: 'Olympiad', visualType: '2D' },
+      { id: 'redox-cells', title: 'Redox link to cells, corrosion and electrolysis', difficulty: 'Exam', visualType: '3D' },
+    ],
+  },
+  acidBase: {
+    chapterTitle: 'Acids, Bases, Salts and pH',
+    level: 'Foundation',
+    prerequisites: ['Ions', 'Solutions'],
+    outcomes: ['Use indicators and pH', 'Explain neutralization', 'Prepare and identify common salts'],
+    revision: ['Strong vs weak', 'pH scale', 'Salt hydrolysis'],
+    subtopics: [
+      { id: 'acid-base-theories', title: 'Arrhenius, Bronsted-Lowry and Lewis ideas', difficulty: 'Exam', visualType: '2D' },
+      { id: 'ph-indicators', title: 'pH, indicators and universal indicator colors', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'neutralization-salts', title: 'Neutralization, salts, baking soda, washing soda and POP', difficulty: 'Exam', visualType: '2D' },
+      { id: 'buffers-titration', title: 'Buffers, titration curves and equivalence point', difficulty: 'Olympiad', visualType: '3D' },
+    ],
+  },
+  solutions: {
+    chapterTitle: 'Solutions and Colligative Properties',
+    level: 'Exam',
+    prerequisites: ['Moles', 'Concentration'],
+    outcomes: ['Calculate concentration units', 'Explain colligative properties', 'Interpret abnormal molar mass'],
+    revision: ['Molarity', 'Molality', 'van Hoff factor'],
+    subtopics: [
+      { id: 'concentration-units', title: 'Molarity, molality, mole fraction and ppm', difficulty: 'Exam', visualType: '2D' },
+      { id: 'solubility-curves', title: 'Solubility curves and Henry law', difficulty: 'Exam', visualType: '2D' },
+      { id: 'colligative-properties', title: 'Raoult law, elevation, depression and osmotic pressure', difficulty: 'Exam', visualType: '3D' },
+      { id: 'abnormal-molar-mass', title: 'Association, dissociation and van Hoff factor', difficulty: 'Olympiad', visualType: '2D' },
+    ],
+  },
+  solidState: {
+    chapterTitle: 'Solid State and Crystal Packing',
+    level: 'Exam',
+    prerequisites: ['Geometry', 'Density', 'Coordination number'],
+    outcomes: ['Compare unit cells', 'Calculate packing efficiency', 'Identify defects and voids'],
+    revision: ['BCC/FCC/HCP', 'Voids', 'Defects'],
+    subtopics: [
+      { id: 'unit-cells', title: 'Primitive, BCC, FCC and HCP unit cells', difficulty: 'Exam', visualType: '3D' },
+      { id: 'packing-efficiency', title: 'Packing efficiency and density calculations', difficulty: 'Exam', visualType: '3D' },
+      { id: 'voids', title: 'Tetrahedral and octahedral voids', difficulty: 'Olympiad', visualType: '3D' },
+      { id: 'defects', title: 'Schottky, Frenkel, metal excess and impurity defects', difficulty: 'Exam', visualType: '2D' },
+    ],
+  },
+  thermo: {
+    chapterTitle: 'Thermodynamics and Thermochemistry',
+    level: 'Exam',
+    prerequisites: ['Energy units', 'Stoichiometry'],
+    outcomes: ['Use first law terms', 'Apply Hess law', 'Predict spontaneity from Gibbs energy'],
+    revision: ['Delta H', 'Delta S', 'Delta G'],
+    subtopics: [
+      { id: 'system-surroundings', title: 'System, surroundings, work, heat and internal energy', difficulty: 'Exam', visualType: '2D' },
+      { id: 'enthalpy-hess', title: 'Enthalpy, Hess law and bond enthalpy', difficulty: 'Exam', visualType: '2D' },
+      { id: 'entropy-gibbs', title: 'Entropy, Gibbs free energy and spontaneity', difficulty: 'Exam', visualType: '3D' },
+      { id: 'thermo-numericals', title: 'Calorimetry and thermochemical numericals', difficulty: 'Olympiad', visualType: '2D' },
+    ],
+  },
+  equilibrium: {
+    chapterTitle: 'Chemical and Ionic Equilibrium',
+    level: 'Exam',
+    prerequisites: ['Reversible reactions', 'Concentration'],
+    outcomes: ['Write equilibrium expressions', 'Predict shifts', 'Solve pH and solubility equilibrium'],
+    revision: ['Kc/Kp', 'Le Chatelier', 'Ka/Kb/Ksp'],
+    subtopics: [
+      { id: 'kc-kp', title: 'Equilibrium constant Kc, Kp and reaction quotient', difficulty: 'Exam', visualType: '2D' },
+      { id: 'le-chatelier', title: 'Le Chatelier principle and dynamic equilibrium', difficulty: 'Exam', visualType: '3D' },
+      { id: 'ionic-equilibrium', title: 'Weak acids, weak bases, buffer and hydrolysis', difficulty: 'Exam', visualType: '2D' },
+      { id: 'ksp-common-ion', title: 'Ksp, common ion effect and salt precipitation', difficulty: 'Olympiad', visualType: '2D' },
+    ],
+  },
+  electrochem: {
+    chapterTitle: 'Electrochemistry',
+    level: 'Exam',
+    prerequisites: ['Redox', 'Logarithms', 'Ions'],
+    outcomes: ['Build galvanic cells', 'Use Nernst equation', 'Explain electrolysis and corrosion'],
+    revision: ['EMF', 'Cell notation', 'Faraday laws'],
+    subtopics: [
+      { id: 'galvanic-cell', title: 'Galvanic cell, salt bridge and electrode potential', difficulty: 'Exam', visualType: '3D' },
+      { id: 'nernst-equation', title: 'Nernst equation and concentration cells', difficulty: 'Olympiad', visualType: '2D' },
+      { id: 'electrolysis-faraday', title: 'Electrolysis and Faraday laws', difficulty: 'Exam', visualType: '3D' },
+      { id: 'corrosion-prevention', title: 'Corrosion and prevention methods', difficulty: 'Exam', visualType: '2D' },
+    ],
+  },
+  kinetics: {
+    chapterTitle: 'Chemical Kinetics',
+    level: 'Exam',
+    prerequisites: ['Graphs', 'Concentration', 'Logarithms'],
+    outcomes: ['Determine rate law and order', 'Use integrated rate equations', 'Explain temperature effect'],
+    revision: ['Rate constant', 'Half-life', 'Arrhenius equation'],
+    subtopics: [
+      { id: 'rate-law', title: 'Rate, rate law, order and molecularity', difficulty: 'Exam', visualType: '2D' },
+      { id: 'integrated-rate', title: 'Zero, first and second order integrated equations', difficulty: 'Exam', visualType: '2D' },
+      { id: 'half-life', title: 'Half-life and concentration-time graphs', difficulty: 'Exam', visualType: '2D' },
+      { id: 'arrhenius-collision', title: 'Arrhenius plot, activation energy and collision theory', difficulty: 'Olympiad', visualType: '3D' },
+    ],
+  },
+  organicBasics: {
+    chapterTitle: 'Organic Chemistry Basics and Hydrocarbons',
+    level: 'Exam',
+    prerequisites: ['Bonding', 'Hybridization', 'Nomenclature basics'],
+    outcomes: ['Name simple organic compounds', 'Identify functional groups and isomers', 'Explain hydrocarbon reactions'],
+    revision: ['IUPAC roots', 'Inductive effect', 'Resonance'],
+    subtopics: [
+      { id: 'goc-effects', title: 'GOC: inductive, resonance, hyperconjugation and acidity/basicity', difficulty: 'Exam', visualType: '2D' },
+      { id: 'iupac-isomerism', title: 'IUPAC basics, isomerism and stereochemistry', difficulty: 'Exam', visualType: '3D' },
+      { id: 'alkanes-alkenes-alkynes', title: 'Alkanes, alkenes, alkynes preparation and reactions', difficulty: 'Exam', visualType: '3D' },
+      { id: 'aromaticity', title: 'Benzene, aromaticity and electrophilic substitution', difficulty: 'Olympiad', visualType: '3D' },
+    ],
+  },
+  organicAdvanced: {
+    chapterTitle: 'Functional Groups and Organic Reactions',
+    level: 'Exam',
+    prerequisites: ['GOC', 'Reaction mechanisms'],
+    outcomes: ['Predict products from reagents', 'Compare functional group tests', 'Plan simple syntheses'],
+    revision: ['SN1/SN2/E1/E2', 'Named reactions', 'Carbonyl chemistry'],
+    subtopics: [
+      { id: 'halo-alcohol-ether', title: 'Haloalkanes, haloarenes, alcohols, phenols and ethers', difficulty: 'Exam', visualType: '3D' },
+      { id: 'carbonyl-carboxyl', title: 'Aldehydes, ketones, carboxylic acids and derivatives', difficulty: 'Exam', visualType: '3D' },
+      { id: 'amines-diazonium', title: 'Amines, diazonium salts and nitrogen compounds', difficulty: 'Exam', visualType: '2D' },
+      { id: 'named-retro', title: 'Named reactions, mechanisms and retrosynthesis', difficulty: 'UG Bridge', visualType: '3D' },
+    ],
+  },
+  inorganic: {
+    chapterTitle: 'Inorganic and Block Chemistry',
+    level: 'Exam',
+    prerequisites: ['Periodic trends', 'Oxidation states'],
+    outcomes: ['Compare block properties', 'Predict colors and oxidation states', 'Explain extraction and industrial processes'],
+    revision: ['p-block trends', 'd-block color', 'Metallurgy'],
+    subtopics: [
+      { id: 's-block-p-block', title: 's-block, p-block and important compounds', difficulty: 'Exam', visualType: '2D' },
+      { id: 'd-f-block', title: 'd-block, f-block, colors and oxidation states', difficulty: 'Exam', visualType: '3D' },
+      { id: 'metallurgy-process', title: 'Metallurgy, extraction and refining', difficulty: 'Exam', visualType: '2D' },
+      { id: 'salt-analysis', title: 'Qualitative salt analysis groups and tests', difficulty: 'Exam', visualType: '2D' },
+    ],
+  },
+  coordination: {
+    chapterTitle: 'Coordination Compounds',
+    level: 'Exam',
+    prerequisites: ['Bonding', 'd-block chemistry'],
+    outcomes: ['Name coordination compounds', 'Build geometries and isomers', 'Use CFT for color and magnetism'],
+    revision: ['Ligands', 'Coordination number', 'Crystal field splitting'],
+    subtopics: [
+      { id: 'werner-naming', title: "Werner theory, ligands and IUPAC naming", difficulty: 'Exam', visualType: '2D' },
+      { id: 'coordination-geometry', title: 'Octahedral, tetrahedral and square planar geometry', difficulty: 'Exam', visualType: '3D' },
+      { id: 'isomerism-coordination', title: 'Structural, linkage, ionization, cis/trans and fac/mer isomerism', difficulty: 'Exam', visualType: '3D' },
+      { id: 'cft-magnetism', title: 'CFT splitting, color and magnetic behavior', difficulty: 'Olympiad', visualType: '3D' },
+    ],
+  },
+  biomolecules: {
+    chapterTitle: 'Biomolecules and Biochemistry',
+    level: 'Exam',
+    prerequisites: ['Organic functional groups', 'Acids and bases'],
+    outcomes: ['Identify biomolecule classes', 'Connect structure to function', 'Explain enzymes and genetic molecules'],
+    revision: ['Amino acids', 'Carbohydrates', 'DNA/RNA'],
+    subtopics: [
+      { id: 'amino-acids-proteins', title: 'Amino acids, zwitterions, peptides and proteins', difficulty: 'Exam', visualType: '3D' },
+      { id: 'carbohydrates-lipids', title: 'Carbohydrates, lipids, membranes and micelles', difficulty: 'Exam', visualType: '3D' },
+      { id: 'dna-rna', title: 'DNA, RNA, nucleotides and central dogma', difficulty: 'Exam', visualType: '3D' },
+      { id: 'enzymes-metabolism', title: 'Enzyme kinetics, glycolysis, TCA and ETC overview', difficulty: 'UG Bridge', visualType: '3D' },
+    ],
+  },
+  pharmaceutical: {
+    chapterTitle: 'Pharmaceutical and Medicinal Chemistry',
+    level: 'Applied',
+    prerequisites: ['Organic functional groups', 'pH and buffers'],
+    outcomes: ['Recognize drug functional groups', 'Connect ionization to ADME', 'Interpret dosage chemistry'],
+    revision: ['pKa', 'Partitioning', 'Assay basics'],
+    subtopics: [
+      { id: 'drug-functional-groups', title: 'Drug functional groups and pharmacophores', difficulty: 'Applied', visualType: '2D' },
+      { id: 'adme-pka', title: 'ADME, pKa, ionization and partitioning', difficulty: 'UG Bridge', visualType: '3D' },
+      { id: 'dosage-buffers', title: 'Dosage forms, buffers, isotonicity and stability', difficulty: 'Applied', visualType: '2D' },
+      { id: 'drug-analysis', title: 'Assay, impurities and basic medicinal chemistry tests', difficulty: 'UG Bridge', visualType: '2D' },
+    ],
+  },
+  clinical: {
+    chapterTitle: 'Clinical and Diagnostic Chemistry',
+    level: 'Applied',
+    prerequisites: ['Biomolecules', 'Solutions'],
+    outcomes: ['Interpret body-fluid chemistry', 'Connect buffers to physiology', 'Recognize diagnostic color tests'],
+    revision: ['Blood pH', 'Electrolytes', 'Metabolites'],
+    subtopics: [
+      { id: 'body-buffers', title: 'Blood buffers, bicarbonate and clinical pH', difficulty: 'Applied', visualType: '2D' },
+      { id: 'electrolytes', title: 'Electrolytes, osmotic pressure and isotonicity', difficulty: 'Applied', visualType: '2D' },
+      { id: 'metabolites', title: 'Glucose, urea, creatinine and cholesterol chemistry', difficulty: 'Applied', visualType: '3D' },
+      { id: 'diagnostic-tests', title: 'Diagnostic reagents, color tests and enzymes', difficulty: 'Applied', visualType: '2D' },
+    ],
+  },
+  environmental: {
+    chapterTitle: 'Environmental Chemistry',
+    level: 'Applied',
+    prerequisites: ['Air and water chemistry', 'Redox'],
+    outcomes: ['Explain pollution chemistry', 'Calculate basic water-quality measures', 'Apply green chemistry principles'],
+    revision: ['Acid rain', 'Smog', 'BOD/COD'],
+    subtopics: [
+      { id: 'air-pollution', title: 'NOx, SOx, ozone, smog and particulate matter', difficulty: 'Exam', visualType: '3D' },
+      { id: 'water-quality', title: 'Water pollution, hardness, BOD and COD', difficulty: 'Exam', visualType: '2D' },
+      { id: 'soil-waste', title: 'Soil contamination, heavy metals and waste treatment', difficulty: 'Applied', visualType: '2D' },
+      { id: 'green-principles', title: 'Green chemistry principles and sustainable processes', difficulty: 'Applied', visualType: '2D' },
+    ],
+  },
+  practical: {
+    chapterTitle: 'Practical Chemistry and Lab Skills',
+    level: 'Applied',
+    prerequisites: ['Lab safety', 'Measurement'],
+    outcomes: ['Choose apparatus correctly', 'Record observations', 'Write a lab report and viva answers'],
+    revision: ['Safety symbols', 'Accuracy', 'Observation table'],
+    subtopics: [
+      { id: 'lab-safety', title: 'Safety, symbols, handling and disposal', difficulty: 'Foundation', visualType: '2D' },
+      { id: 'apparatus-use', title: 'Apparatus setup and measurement skills', difficulty: 'Foundation', visualType: '3D' },
+      { id: 'qualitative-tests', title: 'Gas tests, ion tests and organic functional tests', difficulty: 'Exam', visualType: '2D' },
+      { id: 'report-viva', title: 'Observation tables, inference and viva preparation', difficulty: 'Exam', visualType: '2D' },
+    ],
+  },
+};
+
+const boardFocus = {
+  ap: {
+    6: 'local examples, observation and activity-based science',
+    7: 'materials, acids, bases and everyday applications',
+    8: 'experiments, reactions and particle ideas',
+    9: 'foundational numerical chemistry and matter',
+    10: 'board exam chemistry with practical observation',
+    11: 'AP Intermediate first-year chemistry foundations',
+    12: 'AP Intermediate second-year physical, inorganic and organic chemistry',
+  },
+  cbse: {
+    6: 'NCERT-style observation and classification',
+    7: 'activities, indicators and environmental chemistry',
+    8: 'materials, reactions and simple lab skills',
+    9: 'matter, atoms and mole foundations',
+    10: 'CBSE Science chemistry exam chapters',
+    11: 'CBSE Chemistry 043 foundations and numericals',
+    12: 'CBSE Chemistry 043 board and entrance bridge',
+  },
+  igcse: {
+    6: 'Cambridge lower-secondary chemistry readiness',
+    7: 'inquiry, particles and materials',
+    8: 'experimental chemistry bridge',
+    9: 'Cambridge IGCSE Chemistry 0620 core content',
+    10: 'Cambridge IGCSE Chemistry 0620 extended content',
+    11: 'AS-style bridge from IGCSE to senior chemistry',
+    12: 'A-level/IB bridge topics for advanced study',
+  },
+  ib: {
+    6: 'IB MYP inquiry and model-building',
+    7: 'MYP matter, interactions and environment',
+    8: 'MYP experimental and systems thinking',
+    9: 'MYP chemistry foundations with conceptual links',
+    10: 'MYP to DP chemistry transition',
+    11: 'IB DP structure, bonding, energetics and reactivity',
+    12: 'IB DP synthesis, analysis and options-style integration',
+  },
+};
+
+const buildChapterFromUnit = (unitId, index, plan) => {
+  const visual = curriculumVisualizationMap[unitId] || { twoD: 'chemistry-visuals', threeD: 'molecule', title: 'Interactive chemistry visualization' };
+  const blueprint = conceptBlueprints[unitId] || {
+    chapterTitle: getUnitTitle(unitId),
+    level: 'Exam',
+    prerequisites: ['Prior chapter concepts'],
+    outcomes: ['Understand the core concept', 'Apply the concept in problems', 'Use visuals to explain the idea'],
+    revision: ['Definitions', 'Key equations', 'Common mistakes'],
+    subtopics: [
+      { id: `${unitId}-concept`, title: getUnitTitle(unitId), difficulty: 'Exam', visualType: '2D' },
+    ],
+  };
+
+  return {
+    id: `${plan.board.id}-g${plan.grade}-${unitId}`,
+    unitId,
+    order: index + 1,
+    title: blueprint.chapterTitle,
+    focus: boardFocus[plan.board.id]?.[plan.grade] || plan.board.detail,
+    level: blueprint.level,
+    prerequisites: blueprint.prerequisites,
+    outcomes: blueprint.outcomes,
+    revision: blueprint.revision,
+    twoDRoute: visual.twoD,
+    threeDRoute: visual.threeD,
+    visualTitle: visual.title,
+    subtopics: blueprint.subtopics.map((subtopic, subIndex) => ({
+      ...subtopic,
+      id: `${unitId}-${subtopic.id}`,
+      order: subIndex + 1,
+      twoDRoute: visual.twoD,
+      threeDRoute: visual.threeD,
+      checkpoint: subtopic.difficulty === 'Foundation' ? 'Can explain with one example' : subtopic.difficulty === 'Olympiad' || subtopic.difficulty === 'UG Bridge' ? 'Can solve transfer problems' : 'Can answer exam-style questions',
+    })),
+  };
+};
+
+export const getDetailedCurriculumPlan = (boardId = 'cbse', grade = 10) => {
+  const plan = getCurriculumPlan(boardId, grade);
+  const chapters = plan.unitIds.map((unitId, index) => buildChapterFromUnit(unitId, index, plan));
+  const subtopicCount = chapters.reduce((total, chapter) => total + chapter.subtopics.length, 0);
+  const outcomes = chapters.flatMap(chapter => chapter.outcomes);
+  const revisionItems = chapters.flatMap(chapter => chapter.revision);
+  const difficulties = [...new Set(chapters.flatMap(chapter => chapter.subtopics.map(subtopic => subtopic.difficulty)))];
+
+  return {
+    ...plan,
+    chapters,
+    subtopicCount,
+    outcomes,
+    revisionItems,
+    difficulties,
+    coverage: {
+      chapters: chapters.length,
+      subtopics: subtopicCount,
+      outcomes: outcomes.length,
+      visualLinks: subtopicCount * 2,
+    },
+  };
+};
+
 const tags = (tracks, units) => ({ tracks, units });
 
 export const labToolCatalog = [
