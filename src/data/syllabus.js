@@ -1,4 +1,6 @@
 export const syllabusTracks = [
+  { id: 'class6', label: 'Class 6', group: 'School', color: '#84cc16' },
+  { id: 'class7', label: 'Class 7', group: 'School', color: '#4ade80' },
   { id: 'class8', label: 'Class 8', group: 'School', color: '#22c55e' },
   { id: 'class9', label: 'Class 9', group: 'School', color: '#06b6d4' },
   { id: 'class10', label: 'Class 10', group: 'School', color: '#3b82f6' },
@@ -14,14 +16,20 @@ export const syllabusTracks = [
 export const syllabusTrackMap = Object.fromEntries(syllabusTracks.map(track => [track.id, track]));
 
 export const syllabusUnits = [
-  { id: 'matter', title: 'Matter, Elements, Compounds and Mixtures', tracks: ['class8', 'class9'] },
+  { id: 'materials', title: 'Materials Around Us, Properties and Uses', tracks: ['class6', 'class7', 'class8'] },
+  { id: 'separation', title: 'Separation of Substances and Pure Samples', tracks: ['class6', 'class7', 'class8', 'class9'] },
+  { id: 'airWater', title: 'Air, Water, Soil and Environmental Chemistry', tracks: ['class6', 'class7', 'class8', 'class9', 'class10'] },
+  { id: 'changes', title: 'Physical and Chemical Changes', tracks: ['class6', 'class7', 'class8', 'class9', 'class10'] },
+  { id: 'matter', title: 'Matter, Elements, Compounds and Mixtures', tracks: ['class6', 'class7', 'class8', 'class9'] },
   { id: 'atoms', title: 'Atoms, Molecules, Structure of Atom and Isotopes', tracks: ['class9', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'periodic', title: 'Periodic Classification and Trends', tracks: ['class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'bonding', title: 'Chemical Bonding and Molecular Structure', tracks: ['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'mole', title: 'Mole Concept, Formulae and Stoichiometry', tracks: ['class9', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'reactions', title: 'Chemical Reactions, Equations and Redox', tracks: ['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
+  { id: 'redox', title: 'Redox Reactions, Oxidation Number and Electron Transfer', tracks: ['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'acidBase', title: 'Acids, Bases, Salts, pH and Indicators', tracks: ['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'solutions', title: 'Solutions and Colligative Properties', tracks: ['class12', 'neet', 'jeeMain', 'jeeAdvanced'] },
+  { id: 'solidState', title: 'Solid State, Crystals and Packing', tracks: ['class12', 'jeeMain', 'jeeAdvanced'] },
   { id: 'thermo', title: 'Thermodynamics and Thermochemistry', tracks: ['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'equilibrium', title: 'Chemical and Ionic Equilibrium', tracks: ['class11', 'neet', 'jeeMain', 'jeeAdvanced'] },
   { id: 'electrochem', title: 'Electrochemistry, Cells and Corrosion', tracks: ['class12', 'neet', 'jeeMain', 'jeeAdvanced'] },
@@ -36,6 +44,131 @@ export const syllabusUnits = [
   { id: 'environmental', title: 'Environmental Chemistry', tracks: ['class11', 'neet', 'jeeMain'] },
   { id: 'practical', title: 'Practical Chemistry and Lab Skills', tracks: ['class9', 'class10', 'class11', 'class12', 'neet', 'jeeMain'] },
 ];
+
+export const curriculumBoards = [
+  {
+    id: 'ap',
+    label: 'AP State',
+    detail: 'AP SCERT 6-10 science plus BIEAP Intermediate chemistry, aligned to NCERT for senior secondary.',
+    color: '#22c55e',
+  },
+  {
+    id: 'cbse',
+    label: 'CBSE',
+    detail: 'NCERT-based Science for 6-10 and CBSE Chemistry 043 for 11-12.',
+    color: '#06b6d4',
+  },
+  {
+    id: 'igcse',
+    label: 'IGCSE',
+    detail: 'Cambridge Lower Secondary bridge for 6-8 and Cambridge IGCSE Chemistry 0620 for 9-10.',
+    color: '#f59e0b',
+  },
+  {
+    id: 'ib',
+    label: 'IB',
+    detail: 'IB MYP science bridge for 6-10 and IB DP Chemistry first assessment 2025 for 11-12.',
+    color: '#a78bfa',
+  },
+];
+
+const juniorCore = ['materials', 'separation', 'airWater', 'changes', 'matter', 'practical'];
+const middleCore = ['matter', 'atoms', 'bonding', 'mole', 'reactions', 'acidBase', 'periodic', 'organicBasics', 'inorganic', 'practical'];
+const seniorCore = ['atoms', 'periodic', 'bonding', 'mole', 'thermo', 'equilibrium', 'redox', 'organicBasics', 'inorganic', 'practical'].filter(Boolean);
+
+const boardGradeUnits = {
+  ap: {
+    6: juniorCore,
+    7: [...juniorCore, 'acidBase'],
+    8: ['materials', 'separation', 'matter', 'atoms', 'airWater', 'changes', 'reactions', 'practical'],
+    9: ['matter', 'atoms', 'mole', 'reactions', 'airWater', 'practical'],
+    10: ['reactions', 'acidBase', 'inorganic', 'organicBasics', 'practical', 'airWater'],
+    11: ['mole', 'atoms', 'periodic', 'bonding', 'thermo', 'equilibrium', 'organicBasics', 'inorganic', 'environmental', 'practical'],
+    12: ['solidState', 'solutions', 'electrochem', 'kinetics', 'coordination', 'organicAdvanced', 'biomolecules', 'inorganic', 'practical'],
+  },
+  cbse: {
+    6: juniorCore,
+    7: [...juniorCore, 'acidBase'],
+    8: ['materials', 'separation', 'matter', 'atoms', 'airWater', 'changes', 'reactions', 'practical'],
+    9: ['matter', 'atoms', 'mole', 'reactions', 'airWater', 'practical'],
+    10: ['reactions', 'acidBase', 'inorganic', 'organicBasics', 'practical', 'airWater'],
+    11: seniorCore,
+    12: ['solutions', 'electrochem', 'kinetics', 'coordination', 'organicAdvanced', 'biomolecules', 'inorganic', 'practical'],
+  },
+  igcse: {
+    6: juniorCore,
+    7: [...juniorCore, 'acidBase'],
+    8: ['materials', 'separation', 'matter', 'atoms', 'airWater', 'changes', 'reactions', 'practical'],
+    9: ['matter', 'atoms', 'bonding', 'mole', 'reactions', 'acidBase', 'periodic', 'inorganic', 'practical'],
+    10: ['bonding', 'mole', 'reactions', 'acidBase', 'electrochem', 'organicBasics', 'organicAdvanced', 'inorganic', 'practical'],
+    11: ['mole', 'bonding', 'thermo', 'equilibrium', 'organicBasics', 'inorganic', 'practical'],
+    12: ['solutions', 'kinetics', 'electrochem', 'organicAdvanced', 'biomolecules', 'coordination', 'practical'],
+  },
+  ib: {
+    6: juniorCore,
+    7: [...juniorCore, 'acidBase'],
+    8: ['materials', 'separation', 'matter', 'atoms', 'airWater', 'changes', 'reactions', 'practical'],
+    9: middleCore,
+    10: [...middleCore, 'solutions', 'thermo'],
+    11: ['atoms', 'periodic', 'bonding', 'mole', 'thermo', 'kinetics', 'equilibrium', 'organicBasics', 'practical'],
+    12: ['solutions', 'electrochem', 'kinetics', 'organicAdvanced', 'biomolecules', 'coordination', 'environmental', 'practical'],
+  },
+};
+
+export const curriculumVisualizationMap = {
+  materials: { twoD: 'chemistry-visuals', threeD: 'molecule', title: 'Particles, materials and state models' },
+  separation: { twoD: 'lab', threeD: 'chemistry-inventor', title: 'Filtration, distillation and chromatography workflows' },
+  airWater: { twoD: 'chemistry-visuals', threeD: 'physical-simulators', title: 'Air, water, pollution and phase-particle views' },
+  changes: { twoD: 'balancer', threeD: 'chemistry-inventor', title: 'Physical and chemical change simulations' },
+  matter: { twoD: 'chemistry-visuals', threeD: 'physical-simulators', title: 'Matter, mixtures, unit cells and particle motion' },
+  atoms: { twoD: 'atom', threeD: 'molecule', title: 'Atomic structure, isotopes and orbitals' },
+  periodic: { twoD: 'trends', threeD: 'atom', title: 'Periodic trends and atomic models' },
+  bonding: { twoD: 'chemistry-visuals', threeD: 'molecule', title: 'Lewis, VSEPR, hybridization and 3D shapes' },
+  mole: { twoD: 'balancer', threeD: 'chemistry-inventor', title: 'Stoichiometry, formulae and lab quantities' },
+  reactions: { twoD: 'balancer', threeD: 'chemistry-inventor', title: 'Equation balancing and reaction simulation' },
+  redox: { twoD: 'balancer', threeD: 'physical-simulators', title: 'Oxidation numbers, electron transfer and electrochemical links' },
+  acidBase: { twoD: 'lab', threeD: 'chemistry-inventor', title: 'pH, indicators, titration and buffers' },
+  solutions: { twoD: 'lab', threeD: 'physical-simulators', title: 'Solutions, concentration and colligative properties' },
+  solidState: { twoD: 'inorganic-crystals', threeD: 'physical-simulators', title: 'BCC, FCC, HCP, unit cells, voids and packing efficiency' },
+  thermo: { twoD: 'lab', threeD: 'physical-simulators', title: 'Thermodynamics, Hess law and energy diagrams' },
+  equilibrium: { twoD: 'lab', threeD: 'physical-simulators', title: 'Equilibrium shifts and particle-level reversibility' },
+  electrochem: { twoD: 'lab', threeD: 'physical-simulators', title: 'Galvanic cells, Nernst equation and ion flow' },
+  kinetics: { twoD: 'lab', threeD: 'physical-simulators', title: 'Rate laws, Arrhenius plots and collision models' },
+  organicBasics: { twoD: 'organic-visuals', threeD: 'organic-reaction-visualizer', title: 'Hydrocarbons, mechanisms and conformations' },
+  organicAdvanced: { twoD: 'organic-named-reactions', threeD: 'organic-reaction-visualizer', title: 'Functional groups, named reactions and mechanisms' },
+  inorganic: { twoD: 'inorganic-visuals', threeD: 'inorganic-deep-module', title: 'Blocks, metallurgy, colors and qualitative analysis' },
+  coordination: { twoD: 'inorganic-coordination', threeD: 'inorganic-deep-module', title: 'Coordination geometry, isomerism and CFT' },
+  biomolecules: { twoD: 'bio-visuals', threeD: 'biochemistry-module', title: 'Amino acids, proteins, DNA/RNA and metabolism' },
+  pharmaceutical: { twoD: 'pharma-visuals', threeD: 'spectroscopy-interpreter', title: 'Drug chemistry, ADME and functional groups' },
+  clinical: { twoD: 'bio-visuals', threeD: 'biochemistry-module', title: 'Clinical metabolites, buffers and diagnostic chemistry' },
+  environmental: { twoD: 'chemistry-visuals', threeD: 'physical-simulators', title: 'Environmental chemistry and atmospheric models' },
+  practical: { twoD: 'lab', threeD: 'chemistry-inventor', title: 'Practical lab setup, observation and reports' },
+};
+
+export const getCurriculumPlan = (boardId = 'cbse', grade = 10) => {
+  const board = curriculumBoards.find(item => item.id === boardId) || curriculumBoards[1];
+  const safeGrade = Math.min(12, Math.max(6, Number(grade) || 10));
+  const unitIds = boardGradeUnits[board.id]?.[safeGrade] || [];
+  const baseTrack = `class${safeGrade}`;
+  const visuals = unitIds.map(unitId => ({
+    unitId,
+    title: getUnitTitle(unitId),
+    ...(curriculumVisualizationMap[unitId] || {
+      twoD: 'chemistry-visuals',
+      threeD: 'molecule',
+      title: 'Interactive chemistry visualization',
+    }),
+  }));
+
+  return {
+    board,
+    grade: safeGrade,
+    baseTrack,
+    unitIds,
+    visuals,
+    summary: `${board.label} Grade ${safeGrade}: ${unitIds.length} chemistry coverage areas with mapped 2D and 3D interactives.`,
+  };
+};
 
 const tags = (tracks, units) => ({ tracks, units });
 
@@ -134,12 +267,12 @@ export const labToolCatalog = [
 
 export const labSyllabusTags = {
   titration: tags(['class10', 'class11', 'class12', 'neet', 'jeeMain'], ['acidBase', 'practical']),
-  electrolysis: tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['electrochem', 'practical']),
-  distillation: tags(['class8', 'class9', 'class11', 'neet', 'jeeMain'], ['matter', 'practical', 'organicBasics']),
-  chromatography: tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['practical', 'organicBasics']),
+  electrolysis: tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['electrochem', 'redox', 'practical']),
+  distillation: tags(['class6', 'class7', 'class8', 'class9', 'class11', 'neet', 'jeeMain'], ['separation', 'matter', 'practical', 'organicBasics']),
+  chromatography: tags(['class6', 'class7', 'class8', 'class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['separation', 'practical', 'organicBasics']),
   spectroscopy: tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['atoms']),
   'ph-meter': tags(['class10', 'class11', 'neet', 'jeeMain'], ['acidBase', 'equilibrium', 'practical']),
-  'electrochemical-cell': tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['electrochem']),
+  'electrochemical-cell': tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['electrochem', 'redox']),
   equilibrium: tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['equilibrium']),
   osmosis: tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['solutions']),
   'flame-test': tags(['class10', 'class11', 'neet', 'jeeMain'], ['atoms', 'inorganic', 'practical']),
@@ -149,17 +282,17 @@ export const labSyllabusTags = {
   'weak-acid-ph': tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['acidBase', 'equilibrium']),
   'gas-law': tags(['class9', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['matter']),
   'empirical-formula': tags(['class9', 'class11', 'neet', 'jeeMain'], ['mole', 'organicBasics']),
-  oxidation: tags(['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['reactions']),
+  oxidation: tags(['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['reactions', 'redox']),
   'electron-config-tool': tags(['class9', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['atoms', 'periodic']),
   hess: tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['thermo']),
   colligative: tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['solutions']),
-  'unit-cell': tags(['class12', 'jeeMain', 'jeeAdvanced'], ['matter']),
-  'crystal-defects': tags(['class12', 'jeeMain', 'jeeAdvanced'], ['matter']),
+  'unit-cell': tags(['class12', 'jeeMain', 'jeeAdvanced'], ['solidState', 'matter']),
+  'crystal-defects': tags(['class12', 'jeeMain', 'jeeAdvanced'], ['solidState', 'matter']),
   adsorption: tags(['class12', 'jeeMain', 'jeeAdvanced'], ['solutions']),
   'named-reactions': tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['organicAdvanced', 'coordination']),
   'functional-tests': tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['organicAdvanced', 'coordination']),
   isomerism: tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['organicAdvanced', 'coordination']),
-  'reactivity-series': tags(['class10', 'class11', 'neet', 'jeeMain'], ['reactions', 'inorganic', 'practical']),
+  'reactivity-series': tags(['class10', 'class11', 'neet', 'jeeMain'], ['reactions', 'redox', 'inorganic', 'practical']),
   'quantum-numbers': tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['atoms']),
   gibbs: tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['thermo']),
   'environmental-chem': tags(['class11', 'neet', 'jeeMain'], ['environmental']),
@@ -192,36 +325,36 @@ export const labSyllabusTags = {
   'salt-analysis': tags(['class10', 'class11', 'class12', 'neet', 'jeeMain'], ['inorganic', 'practical']),
   'pblock-advanced': tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['inorganic']),
   'orbital-shape': tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['atoms', 'bonding']),
-  'crystal-structure': tags(['jeeAdvanced'], ['matter']),
+  'crystal-structure': tags(['class12', 'jeeMain', 'jeeAdvanced'], ['solidState', 'matter']),
   hybridization: tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['bonding', 'organicBasics']),
   vsepr: tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['bonding']),
   'bond-polarity': tags(['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['bonding', 'periodic']),
   mechanism: tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['organicBasics', 'organicAdvanced']),
   imf: tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['bonding', 'solutions']),
   'nuclear-decay': tags(['class9', 'class11', 'jeeMain'], ['atoms']),
-  'phase-diagram': tags(['class8', 'class9', 'class11', 'jeeAdvanced'], ['matter']),
+  'phase-diagram': tags(['class6', 'class7', 'class8', 'class9', 'class11', 'jeeAdvanced'], ['matter', 'changes']),
   'mo-diagram': tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['bonding']),
   'rate-lab': tags(['class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['kinetics', 'practical']),
   calorimetry: tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['thermo', 'practical']),
   solubility: tags(['class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['equilibrium', 'solutions']),
-  indicator: tags(['class10', 'class11', 'class12', 'neet', 'jeeMain'], ['acidBase', 'practical']),
-  corrosion: tags(['class10', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['electrochem', 'inorganic']),
+  indicator: tags(['class6', 'class7', 'class10', 'class11', 'class12', 'neet', 'jeeMain'], ['acidBase', 'practical']),
+  corrosion: tags(['class10', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['electrochem', 'redox', 'inorganic']),
   soap: tags(['class10', 'class12', 'neet', 'jeeMain'], ['organicAdvanced', 'biomolecules']),
   fermentation: tags(['class12', 'neet'], ['biomolecules', 'practical']),
   polymer: tags(['class10', 'neet', 'jeeMain'], ['organicAdvanced', 'biomolecules']),
   buffer: tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['acidBase', 'equilibrium']),
   recrystallization: tags(['class11', 'neet', 'jeeMain'], ['practical', 'organicBasics']),
   bohr: tags(['class9', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['atoms']),
-  timeline: tags(['class8', 'class9', 'class10', 'class11'], ['matter', 'periodic']),
-  'element-pack': tags(['class8', 'class9', 'class10', 'class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['periodic', 'inorganic']),
+  timeline: tags(['class6', 'class7', 'class8', 'class9', 'class10', 'class11'], ['materials', 'matter', 'periodic']),
+  'element-pack': tags(['class6', 'class7', 'class8', 'class9', 'class10', 'class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['materials', 'periodic', 'inorganic']),
   isotopes: tags(['class9', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['atoms']),
   'formula-builder': tags(['class8', 'class9', 'class10', 'class11', 'neet', 'jeeMain'], ['mole', 'bonding']),
   'bond-predictor': tags(['class10', 'class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['bonding', 'periodic']),
   'equation-balancer': tags(['class9', 'class10', 'class11', 'neet', 'jeeMain'], ['reactions', 'mole']),
-  abundance: tags(['class8', 'class9', 'class11', 'neet', 'jeeMain'], ['periodic']),
+  abundance: tags(['class6', 'class7', 'class8', 'class9', 'class11', 'neet', 'jeeMain'], ['materials', 'periodic']),
   'trend-graph': tags(['class11', 'neet', 'jeeMain', 'jeeAdvanced'], ['periodic']),
-  'safety-valency': tags(['class8', 'class9', 'class10', 'class11'], ['bonding', 'practical']),
-  'concept-helper': tags(['class8', 'class9', 'class10', 'class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['matter', 'atoms', 'bonding', 'periodic']),
+  'safety-valency': tags(['class6', 'class7', 'class8', 'class9', 'class10', 'class11'], ['materials', 'bonding', 'practical']),
+  'concept-helper': tags(['class6', 'class7', 'class8', 'class9', 'class10', 'class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['materials', 'separation', 'airWater', 'changes', 'matter', 'atoms', 'bonding', 'periodic']),
   'molecule-links': tags(['class10', 'class11', 'class12', 'neet', 'jeeMain', 'jeeAdvanced'], ['bonding', 'organicBasics', 'organicAdvanced', 'coordination']),
 };
 

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, Suspense, lazy } from 'react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 import { AppShell } from './components/layout/AppShell.jsx';
 import { DashboardPage } from './pages/DashboardPage.jsx';
 import { PeriodicTablePage } from './pages/PeriodicTablePage.jsx';
@@ -156,6 +157,81 @@ const subjectModuleRoutes = new Set([
   'subject-modules',
 ]);
 
+const pageStatusLabels = {
+  dashboard: 'Dashboard',
+  table: 'Periodic Table',
+  trends: 'Periodic Trends',
+  compare: 'Compare Elements',
+  atom: 'Atom Visualizer',
+  molecule: '3D Molecule Viewer',
+  symmetry: 'Molecular Symmetry Visualizer',
+  'symmetry-operations': 'Symmetry Operations Guide',
+  'symmetry-point-groups': 'Point Group Finder',
+  'symmetry-practice': 'Self Learning Predictor',
+  'symmetry-teaching': 'Symmetry Teaching Resources',
+  lab: 'Chemistry Lab',
+  syllabus: 'Syllabus Map',
+  quiz: 'Quiz Mode',
+  favorites: 'Favorites',
+  settings: 'Settings',
+  balancer: 'Equation Balancer',
+  'study-tools': 'Study Tools',
+  'chemistry-solver': 'Chemistry Solver',
+  'chemistry-inventor': 'Chemistry Inventor Studio',
+  'drug-discovery': 'Drug Discovery',
+  'chemistry-visuals': 'Chemistry Visuals',
+  'organic-visuals': 'Organic Chemistry Visuals',
+  'organic-mechanisms': 'Organic Mechanism Player',
+  'organic-functional-tests': 'Organic Functional Tests',
+  'organic-named-reactions': 'Organic Named Reactions',
+  'organic-isomerism': 'Organic Isomerism Explorer',
+  'organic-polymers': 'Organic Polymer Builder',
+  'inorganic-visuals': 'Inorganic Chemistry Visuals',
+  'inorganic-coordination': 'Coordination and CFT Visuals',
+  'inorganic-crystals': 'Crystal Structure Visuals',
+  'inorganic-salt-analysis': 'Inorganic Salt Analysis',
+  'inorganic-metallurgy': 'Metallurgy Visual Flowchart',
+  'inorganic-pblock': 'p-Block Inorganic Reference',
+  'bio-visuals': 'Biochemistry Visuals',
+  'bio-proteins': 'Protein and Enzyme Visuals',
+  'bio-membranes': 'Lipid and Membrane Visuals',
+  'bio-carbohydrates': 'Carbohydrate Visuals',
+  'bio-nucleic-acids': 'DNA and RNA Visuals',
+  'bio-metabolism': 'Metabolism and ATP Visuals',
+  'pharma-visuals': 'Pharma Chemistry Visuals',
+  'pharma-adme': 'ADME and Ionization Visuals',
+  'pharma-dosage': 'Dosage Form Visuals',
+  'pharma-qc': 'Pharmaceutical Assay and QC',
+  'pharma-buffers': 'Pharmaceutical Buffer Visuals',
+  'pharma-toxicology': 'Toxicology and Chelation Visuals',
+  'organic-reaction-visualizer': 'Organic Reaction Visualizer',
+  'spectroscopy-interpreter': 'Spectroscopy Interpreter',
+  'biochemistry-module': 'Biochemistry Module',
+  'inorganic-deep-module': 'Inorganic Chemistry Deep Module',
+  'physical-simulators': 'Physical Chemistry Simulators',
+  'iupac-nomenclature': 'IUPAC Nomenclature Practice',
+  'retrosynthesis-planner': 'Retrosynthesis and Synthesis Planner',
+  'subject-modules': 'Subject Modules',
+};
+
+const formatPageStatusLabel = (page) => (
+  pageStatusLabels[page] ||
+  page
+    .split('-')
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ') ||
+  'Dashboard'
+);
+
+const getLoadingDetail = (page) => {
+  if (subjectModuleRoutes.has(page)) return 'Preparing 3D scene, reaction controls, and module data...';
+  if (labVisualRoutes[page]) return 'Opening visual experiment, submenu context, and simulation controls...';
+  if (page === 'molecule' || page.startsWith('symmetry')) return 'Preparing molecular canvas, controls, and 3D assets...';
+  if (page === 'chemistry-inventor') return 'Preparing builder palette, canvas, inspector, and simulation status...';
+  return 'Preparing page content and interactive controls...';
+};
+
 function LoadingProgress({ title, detail, height = 620, reducedMotion = false }) {
   const [progress, setProgress] = useState(12);
 
@@ -219,13 +295,26 @@ function App() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
   const [routeProgress, setRouteProgress] = useState(100);
+  const [routeStatus, setRouteStatus] = useState({
+    visible: false,
+    title: 'Ready',
+    detail: 'Dashboard ready',
+    ready: true,
+  });
 
   // Cross-page element state
   const [atomViewerElement, setAtomViewerElement] = useState(null);
   const [compareElement, setCompareElement] = useState(null);
 
   const navigate = useCallback((page) => {
+    const label = formatPageStatusLabel(page);
     setRouteProgress(18);
+    setRouteStatus({
+      visible: true,
+      title: `Opening ${label}`,
+      detail: 'Syncing route and preparing chemistry tools...',
+      ready: false,
+    });
     setCurrentPage(page);
     const nextHash = pageHashMap[page] || page;
     if (window.location.hash.replace(/^#\/?/, '') !== nextHash) {
@@ -237,17 +326,45 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#\/?/, '');
+      const nextPage = hashPageMap[hash] || hash || 'dashboard';
       setRouteProgress(18);
-      setCurrentPage(hashPageMap[hash] || hash || 'dashboard');
+      setRouteStatus({
+        visible: true,
+        title: `Opening ${formatPageStatusLabel(nextPage)}`,
+        detail: 'Reading route and preparing page state...',
+        ready: false,
+      });
+      setCurrentPage(nextPage);
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   useEffect(() => {
+    const label = formatPageStatusLabel(currentPage);
     setRouteProgress(64);
-    const done = window.setTimeout(() => setRouteProgress(100), 260);
-    return () => window.clearTimeout(done);
+    setRouteStatus({
+      visible: true,
+      title: `Loading ${label}`,
+      detail: getLoadingDetail(currentPage),
+      ready: false,
+    });
+    const done = window.setTimeout(() => {
+      setRouteProgress(100);
+      setRouteStatus({
+        visible: true,
+        title: `Ready: ${label}`,
+        detail: 'All visible controls loaded.',
+        ready: true,
+      });
+    }, 320);
+    const hide = window.setTimeout(() => {
+      setRouteStatus(status => ({ ...status, visible: false }));
+    }, 1200);
+    return () => {
+      window.clearTimeout(done);
+      window.clearTimeout(hide);
+    };
   }, [currentPage]);
 
   useEffect(() => {
@@ -503,6 +620,32 @@ function App() {
           style={{ width: `${routeProgress}%`, opacity: routeProgress >= 100 ? 0 : 1 }}
         />
       </div>
+      {routeStatus.visible && (
+        <div
+          className="pointer-events-none fixed left-1/2 top-16 z-[121] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-cyan-300/25 bg-gray-950/95 p-3 text-cyan-50 shadow-2xl shadow-black/40 backdrop-blur-xl lg:top-4"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex items-center gap-3">
+            <div className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl border ${routeStatus.ready ? 'border-emerald-300/30 bg-emerald-400/15 text-emerald-200' : 'border-cyan-300/30 bg-cyan-400/15 text-cyan-200'}`}>
+              {routeStatus.ready ? <CheckCircle2 size={18} /> : <Loader2 size={18} className={reducedMotion ? '' : 'animate-spin'} />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-3">
+                <p className="truncate text-xs font-black uppercase tracking-[0.18em] text-cyan-100">{routeStatus.title}</p>
+                <span className="shrink-0 text-xs font-black tabular-nums text-white">{routeProgress}%</span>
+              </div>
+              <p className="mt-1 truncate text-[11px] font-semibold text-gray-400">{routeStatus.detail}</p>
+            </div>
+          </div>
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-indigo-300 to-emerald-300 transition-all duration-300"
+              style={{ width: `${routeProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
       {serviceWorkerUpdate && (
         <button
           onClick={serviceWorkerUpdate}

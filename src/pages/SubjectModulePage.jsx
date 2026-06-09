@@ -4,6 +4,7 @@ import {
   FlaskConical, GitCompare, Orbit, Pill, Route, Search, Sigma, Sparkles,
   TestTube2, Waves, Zap,
 } from 'lucide-react';
+import { MiniMolecule3D } from '../components/visualizers/MiniMolecule3D.jsx';
 
 const moduleMeta = {
   'organic-reaction-visualizer': {
@@ -263,6 +264,7 @@ function OrganicReactionVisualizer() {
   const [step, setStep] = useState(1);
   const [query, setQuery] = useState('');
   const active = mechanisms[mechanism];
+  const organic3dVariant = mechanism === 'eas' ? 'eas' : mechanism === 'aldol' ? 'e2' : mechanism;
   const filteredNames = namedReactionNames.filter(name => name.toLowerCase().includes(query.toLowerCase())).slice(0, 18);
 
   return (
@@ -282,7 +284,16 @@ function OrganicReactionVisualizer() {
         </div>
       </Panel>
       <Panel title={`${active.label} Curved Arrow View`} icon={Route}>
-        <MechanismSvg active={active} step={step} />
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <MechanismSvg active={active} step={step} />
+          <MiniMolecule3D
+            scene="organic"
+            variant={organic3dVariant}
+            title={`${active.label} 3D motion`}
+            note="Animated attack, leaving group movement, or sigma-complex geometry"
+            height={300}
+          />
+        </div>
         <div className="mt-3 grid gap-2 md:grid-cols-2">
           <InfoCard title="Current event" text={active.steps[step - 1]} />
           <InfoCard title="Curved arrow meaning" text={active.arrows[Math.min(step - 1, active.arrows.length - 1)]} />
@@ -333,7 +344,16 @@ function SpectroscopyInterpreter() {
         </div>
       </Panel>
       <Panel title={`${mode.toUpperCase()} Spectrum`} icon={BarChart3}>
-        <SpectrumSvg peaks={peaks} mode={mode} />
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <SpectrumSvg peaks={peaks} mode={mode} />
+          <MiniMolecule3D
+            scene="spectroscopy"
+            variant={mode}
+            title={`${sample.name} peak assignment`}
+            note={mode === 'nmr' ? 'Highlighted H environments' : mode === 'ir' ? 'Highlighted vibrating bonds' : 'Animated fragment path'}
+            height={320}
+          />
+        </div>
         <div className="mt-3 grid gap-2 md:grid-cols-3">
           {sample.clues.map(clue => <InfoCard key={clue} title="Peak clue" text={clue} />)}
         </div>
@@ -368,7 +388,16 @@ function BiochemistryModule() {
       </Panel>
       <div className="grid gap-3">
         <Panel title="Protein Folding: Primary to Quaternary" icon={Boxes}>
-          <ProteinSvg />
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <ProteinSvg />
+            <MiniMolecule3D
+              scene="bio"
+              variant="protein"
+              title="Protein folding 3D"
+              note="Backbone coil with folding shell"
+              height={180}
+            />
+          </div>
         </Panel>
         <Panel title="Metabolic Pathways and Enzyme Kinetics" icon={Activity}>
           <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
@@ -377,6 +406,10 @@ function BiochemistryModule() {
                 {Object.keys(pathwaySteps).map(key => <option key={key} value={key}>{key}</option>)}
               </select>
               <FlowSvg steps={pathwaySteps[pathway]} />
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <MiniMolecule3D scene="bio" variant="dna" title="DNA/RNA helix viewer" note="Central dogma structure cue" height={220} />
+                <MiniMolecule3D scene="bio" variant="membrane" title="Lipid bilayer and micelle viewer" note="Polar heads and hydrophobic tails" height={220} />
+              </div>
             </div>
             <div>
               <label className="text-xs font-bold text-gray-500">Substrate {substrate} mM</label>
@@ -414,7 +447,7 @@ function InorganicDeepModule() {
       </Panel>
       <div className="grid gap-3">
         <Panel title="Coordination Builder and Crystal Field Theory" icon={Orbit}>
-          <div className="grid gap-3 lg:grid-cols-[260px_1fr]">
+          <div className="grid gap-3 lg:grid-cols-[260px_minmax(0,1fr)_320px]">
             <div className="space-y-3">
               <select value={geometry} onChange={event => setGeometry(event.target.value)} className="input h-9 rounded-lg text-xs">
                 {['Octahedral', 'Tetrahedral', 'Square planar'].map(item => <option key={item}>{item}</option>)}
@@ -424,6 +457,13 @@ function InorganicDeepModule() {
               <InfoCard title="Naming pattern" text="[Metal(ligands)] charge: list ligands alphabetically, then metal with oxidation state." />
             </div>
             <CftSvg geometry={geometry} electrons={electrons} />
+            <MiniMolecule3D
+              scene="coordination"
+              variant={geometry}
+              title={`${geometry} coordination 3D`}
+              note="Ligand geometry with d-orbital lobes around metal"
+              height={260}
+            />
           </div>
         </Panel>
         <Panel title="Metallurgy and Qualitative Salt Analysis" icon={TestTube2}>
@@ -449,6 +489,7 @@ function PhysicalSimulators() {
   const [a, setA] = useState(40);
   const [b, setB] = useState(25);
   const selected = physicalSystems[system];
+  const physical3dVariant = system === 'solid' ? 'crystal' : system === 'electrochem' ? 'electrochem' : 'particles';
   const computed = useMemo(() => {
     if (system === 'thermo') return `${(a - 298 * (b / 1000)).toFixed(2)} kJ/mol`;
     if (system === 'kinetics') return `t1/2 ${(0.693 / Math.max(0.01, a / 100)).toFixed(2)} s`;
@@ -471,7 +512,7 @@ function PhysicalSimulators() {
         </div>
       </Panel>
       <Panel title={selected.title} icon={Sigma}>
-        <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_300px_320px]">
           <PhysicalSvg system={system} a={a} b={b} />
           <div>
             <label className="text-xs font-bold text-gray-500">{selected.controls[0]}: {a}</label>
@@ -481,6 +522,13 @@ function PhysicalSimulators() {
             <InfoCard title="Calculated output" text={computed} />
             <InfoCard title="Interpretation" text={selected.takeaway} />
           </div>
+          <MiniMolecule3D
+            scene="physical"
+            variant={physical3dVariant}
+            title={`${selected.title} 3D model`}
+            note={system === 'solid' ? 'Unit-cell packing and void cue' : system === 'electrochem' ? 'Electron and ion flow' : 'Particle motion and phase behavior'}
+            height={280}
+          />
         </div>
       </Panel>
     </div>
@@ -492,6 +540,7 @@ function NomenclaturePractice() {
   const [answer, setAnswer] = useState('');
   const card = nomenclatureCards[index % nomenclatureCards.length];
   const correct = answer.trim().toLowerCase() === card.name.toLowerCase();
+  const nomenclature3dVariant = card.name.includes('but-2-ene') ? 'ez' : card.name.includes('cobalt') ? 'coordination' : card.name.includes('bromo') ? 'rs' : 'ring';
 
   return (
     <div className="grid gap-3 xl:grid-cols-[330px_minmax(0,1fr)]">
@@ -502,7 +551,16 @@ function NomenclaturePractice() {
         <button onClick={() => { setIndex(index + 1); setAnswer(''); }} className="btn-primary mt-3 inline-flex h-9 items-center gap-2 px-3 text-xs"><ChevronRight size={14} /> Next structure</button>
       </Panel>
       <Panel title="Rule Breakdown and Reverse Mode" icon={BadgeCheck}>
-        <StructureSvg label={card.name} />
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <StructureSvg label={card.name} />
+          <MiniMolecule3D
+            scene="nomenclature"
+            variant={nomenclature3dVariant}
+            title="3D nomenclature viewer"
+            note="R/S, E/Z, ring conformation, or coordination geometry cue"
+            height={260}
+          />
+        </div>
         <div className="mt-3 grid gap-2 md:grid-cols-3">
           <InfoCard title="Parent selection" text="Choose the longest chain or principal coordination entity." />
           <InfoCard title="Priority and numbering" text="Lowest locants go to principal functional group, multiple bonds, then substituents." />
@@ -532,7 +590,16 @@ function RetrosynthesisPlanner() {
         <InfoCard title="Planning caution" text={target.risk} />
       </Panel>
       <Panel title={mode === 'retro' ? 'Disconnection Strategy' : 'Forward Synthesis Prediction'} icon={GitCompare}>
-        <FlowSvg steps={mode === 'retro' ? [target.target, ...target.disconnections] : target.forward} />
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <FlowSvg steps={mode === 'retro' ? [target.target, ...target.disconnections] : target.forward} />
+          <MiniMolecule3D
+            scene="retrosynthesis"
+            variant={mode === 'retro' ? 'disconnect' : 'forward'}
+            title={`${target.target} 3D planning view`}
+            note={mode === 'retro' ? 'Highlighted disconnected bond' : 'Animated reagent approach'}
+            height={260}
+          />
+        </div>
         <div className="mt-3 grid gap-2 md:grid-cols-3">
           {(mode === 'retro' ? target.disconnections : target.forward).slice(0, 3).map((text, index) => (
             <InfoCard key={text} title={`Step ${index + 1}`} text={text} />
