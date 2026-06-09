@@ -15,6 +15,7 @@ import { ReactionBalancerPage } from './pages/ReactionBalancerPage.jsx';
 import { StudyToolsPage } from './pages/StudyToolsPage.jsx';
 import { SubjectModulePage } from './pages/SubjectModulePage.jsx';
 import { SchoolChemistryMasteryPage } from './pages/SchoolChemistryMasteryPage.jsx';
+import { SeniorChemistryCorePage } from './pages/SeniorChemistryCorePage.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -34,6 +35,7 @@ const pageHashMap = {
   'chemistry-inventor': 'chemistry-inventor',
   'drug-discovery': 'drug-discovery',
   'school-mastery': 'school-mastery',
+  'senior-core': 'senior-core',
   'chemistry-visuals': 'visuals',
   'organic-visuals': 'visuals/organic',
   'organic-mechanisms': 'visuals/organic/mechanisms',
@@ -78,6 +80,7 @@ const hashPageMap = {
   'chemistry-inventor': 'chemistry-inventor',
   'drug-discovery': 'drug-discovery',
   'school-mastery': 'school-mastery',
+  'senior-core': 'senior-core',
   visuals: 'chemistry-visuals',
   'visuals/organic': 'organic-visuals',
   'visuals/organic/mechanisms': 'organic-mechanisms',
@@ -183,6 +186,7 @@ const pageStatusLabels = {
   'chemistry-inventor': 'Chemistry Inventor Studio',
   'drug-discovery': 'Drug Discovery',
   'school-mastery': 'School Chemistry Mastery',
+  'senior-core': 'Senior Chemistry Core',
   'chemistry-visuals': 'Chemistry Visuals',
   'organic-visuals': 'Organic Chemistry Visuals',
   'organic-mechanisms': 'Organic Mechanism Player',
@@ -233,6 +237,7 @@ const getLoadingDetail = (page) => {
   if (labVisualRoutes[page]) return 'Opening visual experiment, submenu context, and simulation controls...';
   if (page === 'molecule' || page.startsWith('symmetry')) return 'Preparing molecular canvas, controls, and 3D assets...';
   if (page === 'school-mastery') return 'Preparing grade path, experiments, practice, viva, and visual links...';
+  if (page === 'senior-core') return 'Preparing senior chemistry tracks, formulae, mechanisms, and 3D routes...';
   if (page === 'chemistry-inventor') return 'Preparing builder palette, canvas, inspector, and simulation status...';
   return 'Preparing page content and interactive controls...';
 };
@@ -515,6 +520,8 @@ function App() {
         );
       case 'school-mastery':
         return <SchoolChemistryMasteryPage onNavigate={navigate} />;
+      case 'senior-core':
+        return <SeniorChemistryCorePage onNavigate={navigate} />;
       case 'organic-reaction-visualizer':
       case 'spectroscopy-interpreter':
       case 'biochemistry-module':

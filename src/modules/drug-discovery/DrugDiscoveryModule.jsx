@@ -188,7 +188,8 @@ const industryPhases = [
   ['5', 'Pipeline Simulator', 'Decision gates, candidate comparison, and readiness scoring', 'done'],
   ['6', 'Dossier Explorer', 'CMC, clinical chemistry, regulatory evidence, and data provenance', 'done'],
   ['7', 'RWE and Pharmacovigilance', 'label monitoring, safety signals, real-world evidence, and lifecycle actions', 'done'],
-  ['8', 'Manufacturing Scale-Up', 'process robustness, tech transfer, PAT, packaging, and supply continuity', 'active'],
+  ['8', 'Manufacturing Scale-Up', 'process robustness, tech transfer, PAT, packaging, and supply continuity', 'done'],
+  ['9', 'Market Access and Lifecycle', 'launch readiness, access strategy, distribution, field signals, and lifecycle planning', 'active'],
 ];
 
 const phase2Metrics = [
@@ -544,6 +545,48 @@ const supplyContinuityRisks = [
   ['Packaging', 'moisture barrier, desiccant, child resistance, serialization', 72, '#22c55e'],
   ['Cold / humidity chain', 'warehouse RH, transport excursions, field complaints', 58, '#f59e0b'],
   ['Demand surge', 'capacity buffer, campaign planning, inventory policy', 61, '#fb7185'],
+];
+
+const marketAccessStrategies = {
+  Oncology: ['Precision oncology launch', 'companion diagnostics, mutation testing, specialist pathway', 82, '#fb7185'],
+  Cardiovascular: ['Population risk launch', 'payer outcomes, adherence, lipid/BP monitoring, broad access', 86, '#22c55e'],
+  Metabolic: ['Chronic care launch', 'primary care workflow, renal dosing, persistence, HbA1c evidence', 80, '#f59e0b'],
+  Inflammation: ['Step-therapy launch', 'GI/CV risk positioning, rescue medication, formulary tiering', 74, '#a78bfa'],
+  CNS: ['Specialist evidence launch', 'cognition endpoints, caregiver outcomes, safety monitoring', 62, '#60a5fa'],
+  'Infectious Disease': ['Stewardship launch', 'susceptibility testing, resistance surveillance, access control', 76, '#14b8a6'],
+  Hematology: ['Rare-care launch', 'registry follow-up, hemolysis markers, specialty distribution', 78, '#f472b6'],
+};
+
+const launchReadinessDomains = [
+  ['Value evidence', 'clinical benefit, comparator, budget impact, subgroup story', 'target', '#38bdf8'],
+  ['Access operations', 'payer dossier, formulary, reimbursement, patient support', 'formulation', '#22c55e'],
+  ['Medical launch', 'KOL education, field medical, evidence response package', 'preclinical', '#a78bfa'],
+  ['Supply launch', 'inventory, serialization, release cadence, shortage prevention', 'cmc', '#f59e0b'],
+  ['Lifecycle evidence', 'RWE plan, indication expansion, safety commitments', 'lead', '#fb7185'],
+];
+
+const accessEvidencePack = [
+  ['Comparator value', 'active comparator, indirect treatment comparison, standard-of-care map', 78, '#38bdf8'],
+  ['Budget impact', 'eligible population, persistence, monitoring burden, offsets', 72, '#22c55e'],
+  ['Patient support', 'adherence, affordability, education, lab follow-up reminders', 84, '#f59e0b'],
+  ['Medical information', 'label questions, drug interaction scripts, evidence response', 76, '#a78bfa'],
+  ['Field quality', 'complaints, cold/humidity excursions, batch traceability', 68, '#fb7185'],
+];
+
+const launchChannelPlan = [
+  ['Specialty pharmacy', 'prior authorization, adherence, cold-chain or high-touch support', 74, '#38bdf8'],
+  ['Hospital formulary', 'P&T dossier, inpatient protocols, pharmacy education', 69, '#a78bfa'],
+  ['Retail distribution', 'inventory depth, substitution rules, counseling, refill continuity', 82, '#22c55e'],
+  ['Diagnostic network', 'biomarker testing, lab turnaround, result interpretation', 66, '#f59e0b'],
+  ['Patient registry', 'outcomes, safety, persistence, subgroup follow-up', 78, '#14b8a6'],
+];
+
+const lifecycleExpansionOptions = [
+  ['New indication', 'same target biology in adjacent disease or line of therapy', 72, '#38bdf8'],
+  ['Combination regimen', 'mechanism pairing, interaction review, dose adjustment', 64, '#a78bfa'],
+  ['Pediatric / geriatric', 'age-appropriate strength, palatability, renal/hepatic monitoring', 58, '#f59e0b'],
+  ['New strength', 'dose optimization, adherence, pack size, label clarity', 84, '#22c55e'],
+  ['Formulation switch', 'modified release, dispersible option, stability or taste improvement', 76, '#fb7185'],
 ];
 
 const analyticalPanels = [
@@ -1983,6 +2026,157 @@ const ScaleUpExplorer = ({ target, ligand, formId, comparatorId }) => {
   );
 };
 
+const LaunchReadinessRadar = ({ domains, launchScore }) => {
+  const center = 250;
+  const points = domains.map(([, , score], index) => {
+    const angle = -90 + index * (360 / domains.length);
+    const radius = score * 1.35;
+    const x = center + Math.cos((angle * Math.PI) / 180) * radius;
+    const y = 180 + Math.sin((angle * Math.PI) / 180) * radius;
+    return `${x},${y}`;
+  }).join(' ');
+  return (
+    <svg viewBox="0 0 500 360" className="h-80 w-full rounded-2xl border border-white/10 bg-slate-950/70">
+      <rect x="18" y="18" width="464" height="324" rx="24" fill="#020617" stroke="#1e293b" />
+      <text x="36" y="54" fill="#e2e8f0" fontSize="16" fontWeight="900">Launch readiness radar</text>
+      {[35, 70, 105].map(radius => (
+        <circle key={radius} cx={center} cy="180" r={radius} fill="none" stroke="#1e293b" strokeWidth="2" />
+      ))}
+      {domains.map(([label, , score, color], index) => {
+        const angle = -90 + index * (360 / domains.length);
+        const x = center + Math.cos((angle * Math.PI) / 180) * 124;
+        const y = 180 + Math.sin((angle * Math.PI) / 180) * 124;
+        const lx = center + Math.cos((angle * Math.PI) / 180) * 156;
+        const ly = 180 + Math.sin((angle * Math.PI) / 180) * 156;
+        return (
+          <g key={label}>
+            <line x1={center} y1="180" x2={x} y2={y} stroke="#334155" />
+            <circle cx={x} cy={y} r="5" fill={color} />
+            <text x={lx - 42} y={ly} fill="#cbd5e1" fontSize="11" fontWeight="800">{label}</text>
+            <text x={x - 8} y={y - 9} fill={color} fontSize="10" fontWeight="900">{score}</text>
+          </g>
+        );
+      })}
+      <polygon points={points} fill="#22c55e33" stroke="#22c55e" strokeWidth="4" />
+      <text x="210" y="190" fill="#e2e8f0" fontSize="38" fontWeight="900">{launchScore}</text>
+      <text x="196" y="218" fill="#94a3b8" fontSize="12">launch score</text>
+    </svg>
+  );
+};
+
+const AccessEvidenceBoard = ({ target, form, strategy }) => {
+  const formBoost = form.id === 'dispersible' ? 8 : form.id === 'effervescent' ? 3 : form.id === 'sustained' ? -5 : 0;
+  return (
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+      {accessEvidencePack.map(([label, detail, base, color], index) => {
+        const score = clamp(Math.round(base + formBoost + (strategy[2] - 76) * 0.24 - index), 0, 100);
+        const state = score >= 82 ? 'ready' : score >= 70 ? 'build' : score >= 58 ? 'gap' : 'blocker';
+        return (
+          <div key={label} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+            <div className="flex items-start justify-between gap-2">
+              <span>
+                <span className="block text-sm font-black text-white">{label}</span>
+                <span className="mt-1 block text-xs text-gray-500">{detail}</span>
+              </span>
+              <PillBadge color={score >= 70 ? '#86efac' : score >= 58 ? '#fbbf24' : '#fda4af'}>{state}</PillBadge>
+            </div>
+            <MiniBar label={`${target.area} fit`} value={score} color={color} />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const LaunchChannelMap = ({ launchScore }) => (
+  <div className="grid gap-3 md:grid-cols-5">
+    {launchChannelPlan.map(([channel, detail, base, color], index) => {
+      const score = clamp(Math.round(base * 0.58 + launchScore * 0.42 - index), 0, 100);
+      return (
+        <div key={channel} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+          <p className="text-sm font-black text-white">{channel}</p>
+          <p className="mt-1 min-h-12 text-xs text-gray-500">{detail}</p>
+          <MiniBar label="channel readiness" value={score} color={color} />
+        </div>
+      );
+    })}
+  </div>
+);
+
+const LifecycleOptionBoard = ({ result, target }) => (
+  <div className="grid gap-3 md:grid-cols-5">
+    {lifecycleExpansionOptions.map(([option, detail, base, color], index) => {
+      const biologyBoost = target.evidence >= 88 && option === 'New indication' ? 8 : target.area === 'CNS' ? -5 : 0;
+      const score = clamp(Math.round(base * 0.5 + result.scores.lead * 0.28 + result.scores.formulation * 0.22 + biologyBoost - index), 0, 100);
+      const priority = score >= 82 ? 'priority' : score >= 70 ? 'planned' : score >= 58 ? 'watch' : 'defer';
+      return (
+        <div key={option} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm font-black text-white">{option}</p>
+            <PillBadge color={score >= 70 ? '#86efac' : score >= 58 ? '#fbbf24' : '#fda4af'}>{priority}</PillBadge>
+          </div>
+          <p className="mt-2 min-h-12 text-xs text-gray-500">{detail}</p>
+          <MiniBar label="opportunity" value={score} color={color} />
+        </div>
+      );
+    })}
+  </div>
+);
+
+const MarketAccessLifecycleExplorer = ({ target, ligand, formId, comparatorId }) => {
+  const form = dosageForms.find(item => item.id === formId) || dosageForms[0];
+  const result = calculatePipelineScores(target, ligand, formId, comparatorId);
+  const strategy = marketAccessStrategies[target.area] || marketAccessStrategies.Cardiovascular;
+  const domainScores = launchReadinessDomains.map(([label, detail, key, color], index) => {
+    const score = clamp(Math.round((result.scores[key] || result.overall) * 0.62 + strategy[2] * 0.28 + form.release * 0.1 - index * 2), 0, 100);
+    return [label, detail, score, color];
+  });
+  const launchScore = Math.round(domainScores.reduce((sum, [, , score]) => sum + score, 0) / domainScores.length);
+  const decision = launchScore >= 84 ? ['Launch ready', '#22c55e'] : launchScore >= 72 ? ['Access build', '#38bdf8'] : launchScore >= 60 ? ['Evidence gap', '#f59e0b'] : ['Launch hold', '#fb7185'];
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 xl:grid-cols-[380px_1fr]">
+        <LaunchReadinessRadar domains={domainScores} launchScore={launchScore} />
+        <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-cyan-200">Market access decision</p>
+          <h3 className="mt-2 text-3xl font-black" style={{ color: decision[1] }}>{decision[0]}</h3>
+          <p className="mt-2 text-sm text-gray-300">{ligand} | {strategy[0]}</p>
+          <p className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 text-xs leading-relaxed text-gray-300">{strategy[1]}</p>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {domainScores.map(([label, detail, score, color]) => (
+              <div key={label} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                <MiniBar label={label} value={score} color={color} />
+                <p className="mt-2 text-[11px] text-gray-500">{detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <AccessEvidenceBoard target={target} form={form} strategy={strategy} />
+      <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+        <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-emerald-200">Distribution and evidence operations</p>
+            <h3 className="text-lg font-black text-white">Launch channel map</h3>
+          </div>
+          <p className="text-xs text-gray-500">Scores blend launch readiness with channel-specific complexity.</p>
+        </div>
+        <LaunchChannelMap launchScore={launchScore} />
+      </div>
+      <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
+        <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-amber-200">Lifecycle strategy</p>
+            <h3 className="text-lg font-black text-white">Post-launch growth and risk actions</h3>
+          </div>
+          <p className="text-xs text-gray-500">Phase 9 closes the loop from approval into access, field evidence, and lifecycle decisions.</p>
+        </div>
+        <LifecycleOptionBoard result={result} target={target} />
+      </div>
+    </div>
+  );
+};
+
 export default function DrugDiscoveryModule() {
   const [selectedTargetId, setSelectedTargetId] = useState('egfr');
   const [selectedArea, setSelectedArea] = useState('All');
@@ -2051,14 +2245,14 @@ export default function DrugDiscoveryModule() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-black text-cyan-100">
-                <Pill size={14} /> Phase 8
+                <Pill size={14} /> Phase 9
               </span>
-              <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-100">Manufacturing Scale-Up</span>
+              <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-100">Market Access and Lifecycle</span>
             </div>
             <h2 className="mt-4 text-2xl font-black leading-tight text-white md:text-4xl">Industry Drug Discovery Explorer</h2>
             <p className="mt-3 max-w-4xl text-sm leading-relaxed text-gray-300">
-              The module now extends clinical safety into manufacturing scale-up with batch ladders, CPP/CQA controls,
-              tech transfer readiness, packaging decisions, supply continuity, and commercial launch scoring.
+              The module now extends manufacturing scale-up into market access and lifecycle planning with launch readiness,
+              payer evidence, distribution channels, post-launch monitoring, and expansion strategy scoring.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <button onClick={loadTargetDatasets} className="btn-primary flex items-center gap-2 text-sm">
@@ -2090,7 +2284,7 @@ export default function DrugDiscoveryModule() {
         </div>
       </div>
 
-      <Panel title="Five-Phase Industry Buildout" icon={Sparkles}>
+      <Panel title="Nine-Phase Industry Buildout" icon={Sparkles}>
         <PhaseRoadmap />
       </Panel>
 
@@ -2274,6 +2468,15 @@ export default function DrugDiscoveryModule() {
 
           <Panel title="Phase 8 Manufacturing Scale-Up and Tech Transfer" icon={Boxes}>
             <ScaleUpExplorer
+              target={target}
+              ligand={primaryLigand}
+              formId={selectedFormId}
+              comparatorId={selectedComparatorId}
+            />
+          </Panel>
+
+          <Panel title="Phase 9 Market Access and Lifecycle Strategy" icon={BarChart3}>
+            <MarketAccessLifecycleExplorer
               target={target}
               ligand={primaryLigand}
               formId={selectedFormId}
