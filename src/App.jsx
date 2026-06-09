@@ -17,6 +17,7 @@ import { SubjectModulePage } from './pages/SubjectModulePage.jsx';
 import { SchoolChemistryMasteryPage } from './pages/SchoolChemistryMasteryPage.jsx';
 import { SeniorChemistryCorePage } from './pages/SeniorChemistryCorePage.jsx';
 import { AdvancedVisualChemistryPage } from './pages/AdvancedVisualChemistryPage.jsx';
+import { PracticeExamTutorPage } from './pages/PracticeExamTutorPage.jsx';
 import { useTheme } from './hooks/useTheme.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
 
@@ -38,6 +39,7 @@ const pageHashMap = {
   'school-mastery': 'school-mastery',
   'senior-core': 'senior-core',
   'advanced-visuals': 'advanced-visuals',
+  'practice-tutor': 'practice-tutor',
   'chemistry-visuals': 'visuals',
   'organic-visuals': 'visuals/organic',
   'organic-mechanisms': 'visuals/organic/mechanisms',
@@ -84,6 +86,7 @@ const hashPageMap = {
   'school-mastery': 'school-mastery',
   'senior-core': 'senior-core',
   'advanced-visuals': 'advanced-visuals',
+  'practice-tutor': 'practice-tutor',
   visuals: 'chemistry-visuals',
   'visuals/organic': 'organic-visuals',
   'visuals/organic/mechanisms': 'organic-mechanisms',
@@ -191,6 +194,7 @@ const pageStatusLabels = {
   'school-mastery': 'School Chemistry Mastery',
   'senior-core': 'Senior Chemistry Core',
   'advanced-visuals': 'Advanced Visual Chemistry',
+  'practice-tutor': 'Practice, Exams and Tutor',
   'chemistry-visuals': 'Chemistry Visuals',
   'organic-visuals': 'Organic Chemistry Visuals',
   'organic-mechanisms': 'Organic Mechanism Player',
@@ -243,6 +247,7 @@ const getLoadingDetail = (page) => {
   if (page === 'school-mastery') return 'Preparing grade path, experiments, practice, viva, and visual links...';
   if (page === 'senior-core') return 'Preparing senior chemistry tracks, formulae, mechanisms, and 3D routes...';
   if (page === 'advanced-visuals') return 'Preparing advanced visual modules, simulations, and 2D/3D launch paths...';
+  if (page === 'practice-tutor') return 'Preparing adaptive practice, exams, mistake notebook, flashcards, and tutor prompts...';
   if (page === 'chemistry-inventor') return 'Preparing builder palette, canvas, inspector, and simulation status...';
   return 'Preparing page content and interactive controls...';
 };
@@ -529,6 +534,8 @@ function App() {
         return <SeniorChemistryCorePage onNavigate={navigate} />;
       case 'advanced-visuals':
         return <AdvancedVisualChemistryPage onNavigate={navigate} />;
+      case 'practice-tutor':
+        return <PracticeExamTutorPage onNavigate={navigate} />;
       case 'organic-reaction-visualizer':
       case 'spectroscopy-interpreter':
       case 'biochemistry-module':
