@@ -126,6 +126,7 @@ export const navGroups = [
           { id: 'senior-core', label: 'Senior Chemistry Core', icon: Sigma },
           { id: 'advanced-visuals', label: 'Advanced Visual Chemistry', icon: Sparkles },
           { id: 'practice-tutor', label: 'Practice, Exams and Tutor', icon: FileQuestion },
+          { id: 'learning-command', label: 'Learning Command Center', icon: ListTree },
           { id: 'organic-reaction-visualizer', label: 'Organic Reaction Visualizer', icon: Route },
           { id: 'spectroscopy-interpreter', label: 'Spectroscopy Interpreter', icon: BarChart3 },
           { id: 'biochemistry-module', label: 'Biochemistry Module', icon: Brain },
@@ -158,7 +159,7 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor']);
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor', 'learning-command']);
 const flattenNavItems = (items) => items.flatMap(item => [item, ...flattenNavItems(item.subItems || [])]);
 const allNavItems = navGroups.flatMap(group => flattenNavItems(group.items));
 const pageLabelMap = Object.fromEntries(allNavItems.map(item => [item.id, item]));
