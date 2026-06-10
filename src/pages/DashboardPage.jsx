@@ -1,25 +1,25 @@
-import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star, FlaskConical, Lightbulb, GraduationCap, Clock, Heart, Sparkles } from 'lucide-react';
+import { Atom, TrendingUp, GitCompare, BookOpen, Layers, Zap, Star, FlaskConical, Lightbulb, GraduationCap, Clock, Heart, Sparkles, ArrowRight, BadgeCheck } from 'lucide-react';
 import { getCategoryInfo } from '../data/categories.js';
 import { useElements } from '../hooks/useElements.js';
 
 const StatCard = ({ label, value, color }) => (
-  <div className="glass rounded-2xl p-4 text-center">
+  <div className="glass rounded-xl p-4 text-center">
     <p className="text-2xl font-black" style={{ color }}>{value}</p>
-    <p className="text-xs text-gray-400 mt-1">{label}</p>
+    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500">{label}</p>
   </div>
 );
 
 const QuickActionCard = ({ icon: Icon, title, desc, color, onClick }) => (
   <button
     onClick={onClick}
-    className="glass rounded-2xl p-5 text-left hover:bg-white/[0.07] transition-all group border border-white/5 hover:border-white/15 flex flex-col gap-3"
+    className="group flex min-h-[132px] flex-col justify-between rounded-xl border border-white/10 bg-white/[0.045] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.075]"
   >
     <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${color}20` }}>
       <Icon size={20} style={{ color }} />
     </div>
     <div>
-      <p className="font-semibold text-gray-100 group-hover:text-white text-sm">{title}</p>
-      <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+      <p className="text-sm font-bold text-gray-100 group-hover:text-white">{title}</p>
+      <p className="mt-1 text-xs leading-relaxed text-gray-500">{desc}</p>
     </div>
   </button>
 );
@@ -53,34 +53,47 @@ export const DashboardPage = ({ onNavigate, onSelectElement, recentPages = [], f
   const streak = Math.max(1, new Set(recentPages).size);
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-8">
-      {/* Hero */}
-      <div className="text-center py-10 relative overflow-hidden rounded-3xl"
-        style={{ background: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(99,102,241,0.13) 0%, transparent 65%)' }}>
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-            <Atom size={16} className="text-white" />
+    <div className="mx-auto max-w-6xl space-y-7 p-4 md:p-6">
+      <section className="periodic-hero overflow-hidden rounded-2xl border border-white/10 p-5 md:p-7">
+        <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr] lg:items-center">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-emerald-200">
+              <BadgeCheck size={13} />
+              Offline-ready chemistry workspace
+            </div>
+            <h1 className="max-w-3xl text-3xl font-black leading-tight text-white md:text-5xl">
+              Chemistry Universe Pro
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-300 md:text-base">
+              A polished learning suite for elements, molecules, visual chemistry, exam practice, and classroom-ready lab tools.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button onClick={() => onNavigate('table')} className="btn-primary inline-flex items-center gap-2 text-sm">
+                Explore Periodic Table <ArrowRight size={15} />
+              </button>
+              <button onClick={() => onNavigate('chemistry-solver')} className="btn-secondary inline-flex items-center gap-2 text-sm">
+                Open Solver <Sparkles size={15} />
+              </button>
+            </div>
           </div>
-          <span className="text-xs text-gray-500 font-medium uppercase tracking-widest">Chemistry Universe</span>
+          <div className="grid grid-cols-2 gap-3">
+            <StatCard label="Elements" value="118" color="#818cf8" />
+            <StatCard label="Tools" value="50+" color="#34d399" />
+            <StatCard label="Curricula" value="6" color="#f472b6" />
+            <StatCard label="Modes" value="12" color="#fb923c" />
+          </div>
         </div>
-        <h1 className="text-3xl md:text-4xl font-black text-white leading-tight">
-          Chemistry Universe
-          <span className="text-gradient"> Powered by AI</span>
-        </h1>
-        <p className="text-gray-400 mt-2 text-sm max-w-md mx-auto">
-          Explore all 118 elements with trends, comparisons, visualizations, and quizzes.
-        </p>
-      </div>
+      </section>
 
       <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-3">
-        <div className="glass rounded-2xl border border-white/10 p-4">
+        <div className="glass rounded-xl border border-white/10 p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-black text-white">Continue Learning</p>
               <p className="text-xs text-gray-500 mt-1">Resume where you last explored.</p>
             </div>
-            <button onClick={() => onNavigate(resumePage)} className="btn-primary text-sm">
-              Resume {pageLabels[resumePage] || 'Lab'}
+            <button onClick={() => onNavigate(resumePage)} className="btn-primary inline-flex items-center gap-2 text-sm">
+              Resume <ArrowRight size={14} />
             </button>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -91,7 +104,7 @@ export const DashboardPage = ({ onNavigate, onSelectElement, recentPages = [], f
             ))}
           </div>
         </div>
-        <div className="glass rounded-2xl border border-white/10 p-4">
+        <div className="glass rounded-xl border border-white/10 p-4">
           <p className="text-sm font-black text-white">Study Progress</p>
           <p className="text-xs text-gray-500 mt-1">{streak} area{streak === 1 ? '' : 's'} visited recently.</p>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
@@ -100,15 +113,6 @@ export const DashboardPage = ({ onNavigate, onSelectElement, recentPages = [], f
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-3">
-        <StatCard label="Elements" value="118" color="#818cf8" />
-        <StatCard label="Groups" value="18" color="#34d399" />
-        <StatCard label="Periods" value="7" color="#f472b6" />
-        <StatCard label="Categories" value="10" color="#fb923c" />
-      </div>
-
-      {/* Quick actions */}
       <div>
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -160,11 +164,11 @@ export const DashboardPage = ({ onNavigate, onSelectElement, recentPages = [], f
                   </span>
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  #{dailyElement.atomicNumber} · Atomic mass: {dailyElement.atomicMass} u · {dailyElement.phase}
+                  #{dailyElement.atomicNumber} - Atomic mass: {dailyElement.atomicMass} u - {dailyElement.phase}
                 </p>
                 <p className="text-sm text-gray-300 mt-2 line-clamp-2 leading-relaxed">{dailyElement.summary}</p>
                 {dailyElement.commonUses?.length > 0 && (
-                  <p className="text-xs text-indigo-400 mt-2">Uses: {dailyElement.commonUses.slice(0, 3).join(' · ')}</p>
+                  <p className="text-xs text-indigo-400 mt-2">Uses: {dailyElement.commonUses.slice(0, 3).join(' - ')}</p>
                 )}
               </div>
             </div>
