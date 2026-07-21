@@ -24,6 +24,7 @@ export const navGroups = [
     items: [
       { id: 'atom', label: 'Atom Visualizer', icon: Atom },
       { id: 'molecule', label: '3D Molecules', icon: Box },
+      { id: 'ar-vr-mr', label: 'AR/VR/MR Chemistry', icon: Orbit },
       {
         id: 'chemistry-visuals',
         label: 'Chemistry Visuals',
@@ -160,7 +161,7 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor', 'learning-command', 'coverage-audit']);
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'ar-vr-mr', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor', 'learning-command', 'coverage-audit']);
 const flattenNavItems = (items) => items.flatMap(item => [item, ...flattenNavItems(item.subItems || [])]);
 const allNavItems = navGroups.flatMap(group => flattenNavItems(group.items));
 const pageLabelMap = Object.fromEntries(allNavItems.map(item => [item.id, item]));

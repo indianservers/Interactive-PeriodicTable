@@ -28,6 +28,7 @@ const MolecularSymmetryModule = lazy(() => import('./modules/molecular-symmetry/
 const ChemistrySolverModule = lazy(() => import('./modules/chemistry-solver/ChemistrySolverModule.jsx'));
 const ChemistryInventorStudio = lazy(() => import('./modules/chemistry-inventor/index.js'));
 const DrugDiscoveryModule = lazy(() => import('./modules/drug-discovery/DrugDiscoveryModule.jsx'));
+const ARVRMRModule = lazy(() => import('./modules/ar-vr-mr/ARVRMRModule.jsx'));
 
 const pageHashMap = {
   symmetry: 'molecular-symmetry',
@@ -38,6 +39,7 @@ const pageHashMap = {
   'chemistry-solver': 'chemistry-solver',
   'chemistry-inventor': 'chemistry-inventor',
   'drug-discovery': 'drug-discovery',
+  'ar-vr-mr': 'ar-vr-mr',
   'school-mastery': 'school-mastery',
   'senior-core': 'senior-core',
   'advanced-visuals': 'advanced-visuals',
@@ -87,6 +89,7 @@ const hashPageMap = {
   'chemistry-solver': 'chemistry-solver',
   'chemistry-inventor': 'chemistry-inventor',
   'drug-discovery': 'drug-discovery',
+  'ar-vr-mr': 'ar-vr-mr',
   'school-mastery': 'school-mastery',
   'senior-core': 'senior-core',
   'advanced-visuals': 'advanced-visuals',
@@ -197,6 +200,7 @@ const pageStatusLabels = {
   'chemistry-solver': 'Chemistry Solver',
   'chemistry-inventor': 'Chemistry Inventor Studio',
   'drug-discovery': 'Drug Discovery',
+  'ar-vr-mr': 'AR/VR/MR Chemistry',
   'school-mastery': 'School Chemistry Mastery',
   'senior-core': 'Senior Chemistry Core',
   'advanced-visuals': 'Advanced Visual Chemistry',
@@ -259,6 +263,7 @@ const getLoadingDetail = (page) => {
   if (page === 'learning-command') return 'Preparing learning paths, teacher assignments, printable artifacts, and readiness checks...';
   if (page === 'coverage-audit') return 'Preparing board coverage, missing pieces, 2D/3D readiness, and priority gap backlog...';
   if (page === 'chemistry-inventor') return 'Preparing builder palette, canvas, inspector, and simulation status...';
+  if (page === 'ar-vr-mr') return 'Preparing WebXR support checks, immersive scene, and AR/VR/MR controls...';
   return 'Preparing page content and interactive controls...';
 };
 
@@ -536,6 +541,12 @@ function App() {
         return (
           <Suspense fallback={<LoadingProgress title="Loading Drug Discovery Module" detail="Preparing AlphaFold, ChEMBL, PubChem, PDB, SAR, docking, and ADME workspaces..." height={680} reducedMotion={reducedMotion} />}>
             <DrugDiscoveryModule />
+          </Suspense>
+        );
+      case 'ar-vr-mr':
+        return (
+          <Suspense fallback={<LoadingProgress title="Loading AR/VR/MR Chemistry" detail="Preparing WebXR support checks, immersive scene, and XR launch controls..." height={680} reducedMotion={reducedMotion} />}>
+            <ARVRMRModule reducedMotion={reducedMotion} />
           </Suspense>
         );
       case 'school-mastery':
