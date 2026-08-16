@@ -24,7 +24,7 @@ export const XRMasteryDashboard = ({ experiences, progress, activeExperienceId }
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-cyan-300">
-            <Trophy size={14} /> Phase 3 mastery layer
+            <Trophy size={14} /> Mastery layer
           </p>
           <h3 className="mt-2 text-2xl font-black text-white">XR Learning Command</h3>
           <p className="mt-1 text-sm text-gray-400">Persistent progress, concept mastery, export, and assessment readiness.</p>

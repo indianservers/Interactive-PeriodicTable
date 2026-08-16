@@ -1,12 +1,14 @@
 export const seniorCoreTracks = [
   { id: 'class11', label: 'Class 11 / AP Inter 1', focus: 'Foundations, structure, bonding, numericals, equilibrium and GOC', color: '#8b5cf6' },
   { id: 'class12', label: 'Class 12 / AP Inter 2', focus: 'Solutions, electrochemistry, kinetics, coordination and advanced organic', color: '#ec4899' },
+  { id: 'ug', label: 'UG / College Bridge', focus: 'Spectroscopy, instrumental analysis, advanced physical chemistry and inorganic problem solving', color: '#818cf8' },
 ];
 
 export const seniorCoreDomains = [
   { id: 'physical', label: 'Physical Chemistry', color: '#38bdf8' },
   { id: 'organic', label: 'Organic Chemistry', color: '#22c55e' },
   { id: 'inorganic', label: 'Inorganic Chemistry', color: '#a78bfa' },
+  { id: 'analytical', label: 'Analytical and Spectroscopy', color: '#f59e0b' },
 ];
 
 export const seniorCoreChapters = [
@@ -190,6 +192,100 @@ export const seniorCoreChapters = [
     practice: ['Differentiate starch and cellulose.', 'Identify monomers of nylon-6,6.', 'Explain antiseptic vs antibiotic.'],
     examFocus: ['Biomolecule tests', 'Polymer classification', 'Everyday chemistry examples'],
   },
+  {
+    id: 'ug-spectroscopy',
+    track: 'ug',
+    domain: 'analytical',
+    title: 'Spectroscopy Interpretation Suite',
+    level: 'UG Bridge',
+    twoDRoute: 'spectroscopy-interpreter',
+    threeDRoute: 'spectroscopy-interpreter',
+    goal: 'Interpret IR, 1H NMR, 13C NMR, UV-Vis and mass spectra together to identify unknown organic compounds.',
+    concepts: ['Degrees of unsaturation', 'IR functional group regions', 'NMR chemical shift', 'Integration', 'Splitting', 'Mass fragmentation', 'UV chromophores'],
+    formulae: ['DBE = C - H/2 + N/2 + 1', 'n + 1 splitting rule', 'Beer-Lambert law: A = epsilon c l', 'm/z = ion mass/charge'],
+    visualTasks: ['Assign each spectrum peak to a bond, proton set or fragment', 'Run reverse spectroscopy challenges from clues to structure', 'Compare IR carbonyl regions for aldehyde, ketone, acid and ester'],
+    practice: ['Identify an ester from IR 1740 cm-1, quartet/triplet ethoxy pattern and M+ peak.', 'Use DBE to test whether an aromatic formula is possible.', 'Explain why D2O removes an exchangeable OH signal.'],
+    examFocus: ['Ignoring integration', 'Confusing aldehyde and ester carbonyl regions', 'Treating base peak as molecular ion'],
+  },
+  {
+    id: 'ug-advanced-physical',
+    track: 'ug',
+    domain: 'physical',
+    title: 'Advanced Physical Chemistry Data Lab',
+    level: 'UG Bridge',
+    twoDRoute: 'lab',
+    threeDRoute: 'physical-simulators',
+    goal: 'Fit and interpret equilibrium, kinetics, electrochemical and thermodynamic data rather than only substituting formulae.',
+    concepts: ['Linearization', 'Residuals', 'van Hoff plots', 'Arrhenius plots', 'Buffer capacity', 'Nernst concentration cells', 'Activity vs concentration'],
+    formulae: ['ln k = ln A - Ea/RT', 'ln K = -Delta H/R x 1/T + Delta S/R', 'E = E0 - RT/nF ln Q', 'beta = dCb/dpH'],
+    visualTasks: ['Compare zero, first and second order linear plots', 'Fit van Hoff slope to Delta H', 'Watch concentration-cell voltage change with Q'],
+    practice: ['Choose the correct integrated rate plot from concentration-time data.', 'Estimate Ea from two temperatures and rate constants.', 'Predict how ionic strength can shift apparent equilibrium behavior.'],
+    examFocus: ['Using Celsius in thermodynamic equations', 'Overtrusting a straight line without residual check', 'Log base mismatch'],
+  },
+  {
+    id: 'ug-coordination-inorganic',
+    track: 'ug',
+    domain: 'inorganic',
+    title: 'Coordination and Inorganic Problem Bank',
+    level: 'UG Bridge',
+    twoDRoute: 'inorganic-coordination',
+    threeDRoute: 'inorganic-deep-module',
+    goal: 'Solve coordination nomenclature, isomer counting, CFT, magnetism, color, HSAB and inorganic mechanism questions.',
+    concepts: ['Chelation', 'Ligand field strength', 'Spectrochemical series', 'CFSE', 'Jahn-Teller distortion', 'Linkage isomerism', 'HSAB principle', 'Labile vs inert complexes'],
+    formulae: ['mu = sqrt(n(n+2)) BM', 'Delta o vs pairing energy decides spin state', 'CFSE octahedral = -0.4t2g + 0.6eg occupancy', 'EAN = Z - oxidation state + ligand electrons'],
+    visualTasks: ['Build octahedral, tetrahedral and square-planar complexes', 'Toggle weak/strong field ligands and watch spin state change', 'Count cis/trans, fac/mer and linkage isomers'],
+    practice: ['Predict spin and magnetic moment for [Fe(CN)6]4-.', 'Name [Co(en)2Cl2]+ and identify possible stereoisomers.', 'Use HSAB to compare Ag+ binding with I- and F-.'],
+    examFocus: ['Oxidation state vs complex charge', 'High-spin/low-spin assumptions', 'Counting bidentate ligand donor atoms'],
+  },
+  {
+    id: 'ug-organic-synthesis',
+    track: 'ug',
+    domain: 'organic',
+    title: 'Advanced Organic Synthesis and Stereochemistry',
+    level: 'UG Bridge',
+    twoDRoute: 'organic-reaction-visualizer',
+    threeDRoute: 'retrosynthesis-planner',
+    goal: 'Plan multi-step synthesis using protecting groups, chemoselectivity, stereochemical outcomes and rearrangement logic.',
+    concepts: ['Chemoselectivity', 'Regioselectivity', 'Stereoselectivity', 'Protecting groups', 'Retrosynthesis', 'Pericyclic basics', 'Rearrangements', 'Enolate chemistry'],
+    formulae: ['Syn addition: hydroboration/oxidation', 'Anti addition: halogenation via halonium ion', 'Woodward-Hoffmann thermal 4n+2 allowed', 'Acetal protects aldehydes/ketones'],
+    visualTasks: ['Trace stereochemical outcome across two steps', 'Choose protecting group before Grignard reaction', 'Compare Claisen, aldol and Michael disconnections'],
+    practice: ['Plan benzaldehyde to cinnamic acid using a C-C bond-forming step.', 'Choose conditions to protect a ketone while reducing an ester.', 'Predict stereochemistry of bromination of cyclohexene.'],
+    examFocus: ['Forgetting workup', 'Protecting the wrong functional group', 'Drawing product without stereochemical consequence'],
+  },
+];
+
+export const phase2SeniorPacks = [
+  {
+    id: 'spectroscopy-unknown-pack',
+    title: 'Unknown Identification Pack',
+    band: 'Class 12 to UG',
+    route: 'spectroscopy-interpreter',
+    includes: ['DBE first-pass sheet', 'IR/NMR/MS peak assignment', 'Reverse challenge', 'Confidence rating'],
+    evidence: ['Every major peak assigned', 'At least two structures rejected with reason', 'Final structure matches all spectra'],
+  },
+  {
+    id: 'physical-data-pack',
+    title: 'Physical Chemistry Data Pack',
+    band: 'Class 12 / UG',
+    route: 'physical-simulators',
+    includes: ['Kinetics plot choice', 'van Hoff slope', 'Nernst concentration-cell task', 'Residual check'],
+    evidence: ['Graph axes and units correct', 'Slope/intercept interpreted', 'Assumption and error source stated'],
+  },
+  {
+    id: 'coordination-problem-pack',
+    title: 'Coordination Problem Pack',
+    band: 'Class 12 / UG',
+    route: 'inorganic-deep-module',
+    includes: ['Naming drill', 'Spin-state predictor', 'Isomer counter', 'Color/magnetism explanation'],
+    evidence: ['Oxidation state shown', 'Geometry justified', 'CFT occupancy drawn', 'Magnetic moment estimated'],
+  },
+];
+
+export const phase2Readiness = [
+  { id: 'spectroscopy-suite', title: 'Spectroscopy suite', status: 'Active', detail: 'IR, NMR, MS and UV-Vis interpretation are now mapped as a UG bridge lane.' },
+  { id: 'physical-data', title: 'Physical data reasoning', status: 'Active', detail: 'Kinetics, van Hoff, Nernst, residual and activity concepts are seeded for college-level tasks.' },
+  { id: 'coordination-bank', title: 'Coordination/inorganic bank', status: 'Active', detail: 'Spin, CFT, isomerism, HSAB, EAN and color/magnetism prompts are now part of the senior core.' },
+  { id: 'report-export', title: 'Exportable lab reports', status: 'Needed', detail: 'Printable/report generation is still represented as artifacts; actual PDF/CSV export remains a future improvement.' },
 ];
 
 export const seniorCoreStats = {
@@ -197,6 +293,7 @@ export const seniorCoreStats = {
   formulae: seniorCoreChapters.reduce((total, chapter) => total + chapter.formulae.length, 0),
   practice: seniorCoreChapters.reduce((total, chapter) => total + chapter.practice.length, 0),
   visualTasks: seniorCoreChapters.reduce((total, chapter) => total + chapter.visualTasks.length, 0),
+  packs: phase2SeniorPacks.length,
 };
 
 export const getSeniorCoreChapters = ({ track = 'class12', domain = 'all' } = {}) => (

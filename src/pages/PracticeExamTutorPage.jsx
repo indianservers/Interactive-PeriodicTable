@@ -43,7 +43,23 @@ export const PracticeExamTutorPage = ({ onNavigate }) => {
   const [activeSetId, setActiveSetId] = useState('senior-organic');
   const sets = useMemo(() => getPracticeSets(activeTrack), [activeTrack]);
   const activeSet = sets.find(set => set.id === activeSetId) || sets[0] || practiceQuestionSets[0];
-  const activeDeck = activeTrack === 'school' ? flashcardDecks[1] : activeTrack === 'entrance' ? flashcardDecks[2] : flashcardDecks[0];
+  const activeDeck = activeTrack === 'school'
+    ? flashcardDecks.find(deck => deck.id === 'school-safety')
+    : activeTrack === 'research' && activeSet.domain.includes('Cheminformatics')
+      ? flashcardDecks.find(deck => deck.id === 'cheminformatics')
+      : activeTrack === 'research'
+        ? flashcardDecks.find(deck => deck.id === 'research-methods')
+    : activeTrack === 'college' && activeSet.domain.includes('Inorganic')
+      ? flashcardDecks.find(deck => deck.id === 'coordination-cft')
+      : activeTrack === 'college' && activeSet.domain.includes('Organic')
+        ? flashcardDecks.find(deck => deck.id === 'organic-tests')
+        : activeTrack === 'college'
+          ? flashcardDecks.find(deck => deck.id === 'analytical-qc')
+          : activeTrack === 'senior' && activeSet.title.includes('Spectroscopy')
+            ? flashcardDecks.find(deck => deck.id === 'spectroscopy')
+            : activeTrack === 'entrance'
+              ? flashcardDecks.find(deck => deck.id === 'inorganic')
+              : flashcardDecks.find(deck => deck.id === 'formulae');
 
   const selectTrack = (trackId) => {
     const next = getPracticeSets(trackId);
@@ -210,7 +226,7 @@ export const PracticeExamTutorPage = ({ onNavigate }) => {
                 <h3 className="text-sm font-bold text-white">Mistake Notebook</h3>
               </div>
               <div className="space-y-2">
-                {mistakePatterns.slice(0, 4).map(mistake => (
+                {mistakePatterns.slice(0, 6).map(mistake => (
                   <button key={mistake.id} type="button" onClick={() => onNavigate?.(mistake.route)} className="w-full rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left hover:bg-white/[0.065]">
                     <p className="text-sm font-black text-white">{mistake.title}</p>
                     <p className="mt-1 text-xs text-gray-500">{mistake.symptom}</p>

@@ -1625,7 +1625,7 @@ const DossierSummarySheet = ({ target, ligand, formId, comparatorId }) => {
   return (
     <div className="grid gap-4 xl:grid-cols-[1fr_360px]">
       <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4">
-        <p className="text-xs font-bold uppercase tracking-widest text-cyan-200">Audit-ready development summary</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-cyan-200">Development summary</p>
         <div className="mt-3 divide-y divide-white/10 rounded-2xl border border-white/10 bg-black/20">
           {summaryRows.map(([label, value]) => (
             <div key={label} className="grid gap-2 p-3 md:grid-cols-[190px_1fr]">
@@ -1864,7 +1864,7 @@ const ManufacturingScaleUpExplorer = ({ target, ligand, formId }) => {
           <p className="text-xs font-bold uppercase tracking-widest text-emerald-200">Tech transfer summary</p>
           <h3 className="mt-2 text-2xl font-black capitalize text-white">{ligand} commercial process</h3>
           <p className="mt-2 text-sm leading-relaxed text-gray-300">
-            Phase 8 turns the development formula into a reproducible commercial process: scale-up batches,
+            Manufacturing scale-up turns the development formula into a reproducible commercial process: scale-up batches,
             critical process parameters, analytical transfer, packaging, and supply continuity.
           </p>
           <div className="mt-4 flex flex-wrap gap-1.5">
@@ -1976,7 +1976,7 @@ const ScaleUpExplorer = ({ target, ligand, formId, comparatorId }) => {
             <MiniBar label="supply continuity" value={supplyReadiness} color="#f59e0b" />
           </div>
           <p className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3 text-xs text-gray-300">
-            Phase 8 checks whether the formulation can survive scale, site transfer, packaging, validation, and routine commercial release.
+            This check tests whether the formulation can survive scale, site transfer, packaging, validation, and routine commercial release.
           </p>
         </div>
       </div>
@@ -2169,7 +2169,7 @@ const MarketAccessLifecycleExplorer = ({ target, ligand, formId, comparatorId })
             <p className="text-xs font-bold uppercase tracking-widest text-amber-200">Lifecycle strategy</p>
             <h3 className="text-lg font-black text-white">Post-launch growth and risk actions</h3>
           </div>
-          <p className="text-xs text-gray-500">Phase 9 closes the loop from approval into access, field evidence, and lifecycle decisions.</p>
+          <p className="text-xs text-gray-500">Lifecycle strategy closes the loop from approval into access, field evidence, and lifecycle decisions.</p>
         </div>
         <LifecycleOptionBoard result={result} target={target} />
       </div>
@@ -2245,7 +2245,7 @@ export default function DrugDiscoveryModule() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-black text-cyan-100">
-                <Pill size={14} /> Phase 9
+                <Pill size={14} /> Lifecycle Strategy
               </span>
               <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-100">Market Access and Lifecycle</span>
             </div>
@@ -2284,7 +2284,7 @@ export default function DrugDiscoveryModule() {
         </div>
       </div>
 
-      <Panel title="Nine-Phase Industry Buildout" icon={Sparkles}>
+      <Panel title="Industry Development Roadmap" icon={Sparkles}>
         <PhaseRoadmap />
       </Panel>
 
@@ -2303,7 +2303,7 @@ export default function DrugDiscoveryModule() {
         />
       </Panel>
 
-      <Panel title="Phase 1 Target Intelligence" icon={Target}>
+      <Panel title="Target Intelligence" icon={Target}>
         <EvidenceMatrix target={target} />
       </Panel>
 
@@ -2413,7 +2413,7 @@ export default function DrugDiscoveryModule() {
             </Panel>
           </div>
 
-          <Panel title="Phase 2 Molecule and Lead Explorer" icon={Pill}>
+          <Panel title="Molecule and Lead Explorer" icon={Pill}>
             <MoleculeLeadExplorer
               target={target}
               selectedLigand={primaryLigand}
@@ -2426,7 +2426,7 @@ export default function DrugDiscoveryModule() {
             />
           </Panel>
 
-          <Panel title="Phase 3 Tablet Formula Explorer" icon={Beaker}>
+          <Panel title="Tablet Formula Explorer" icon={Beaker}>
             <TabletFormulaExplorer
               selectedFormId={selectedFormId}
               onSelectForm={setSelectedFormId}
@@ -2434,11 +2434,11 @@ export default function DrugDiscoveryModule() {
             />
           </Panel>
 
-          <Panel title="Phase 4 Pharma QC Lab" icon={TestTube2}>
+          <Panel title="Pharma QC Lab" icon={TestTube2}>
             <QcReleaseDashboard formId={selectedFormId} selectedLigand={primaryLigand} />
           </Panel>
 
-          <Panel title="Phase 5 Industry Pipeline Simulator" icon={BadgeCheck}>
+          <Panel title="Industry Pipeline Simulator" icon={BadgeCheck}>
             <IndustryPipelineSimulator
               target={target}
               ligand={primaryLigand}
@@ -2448,7 +2448,7 @@ export default function DrugDiscoveryModule() {
             />
           </Panel>
 
-          <Panel title="Phase 6 Dossier Explorer" icon={BookOpen}>
+          <Panel title="Dossier Explorer" icon={BookOpen}>
             <DossierExplorer
               target={target}
               ligand={primaryLigand}
@@ -2457,7 +2457,7 @@ export default function DrugDiscoveryModule() {
             />
           </Panel>
 
-          <Panel title="Phase 7 RWE and Pharmacovigilance" icon={Activity}>
+          <Panel title="RWE and Pharmacovigilance" icon={Activity}>
             <ClinicalSafetyExplorer
               target={target}
               ligand={primaryLigand}
@@ -2466,7 +2466,7 @@ export default function DrugDiscoveryModule() {
             />
           </Panel>
 
-          <Panel title="Phase 8 Manufacturing Scale-Up and Tech Transfer" icon={Boxes}>
+          <Panel title="Manufacturing Scale-Up and Tech Transfer" icon={Boxes}>
             <ScaleUpExplorer
               target={target}
               ligand={primaryLigand}
@@ -2475,7 +2475,7 @@ export default function DrugDiscoveryModule() {
             />
           </Panel>
 
-          <Panel title="Phase 9 Market Access and Lifecycle Strategy" icon={BarChart3}>
+          <Panel title="Market Access and Lifecycle Strategy" icon={BarChart3}>
             <MarketAccessLifecycleExplorer
               target={target}
               ligand={primaryLigand}

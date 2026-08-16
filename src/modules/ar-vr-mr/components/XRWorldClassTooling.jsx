@@ -471,7 +471,7 @@ export const XRWorldClassTooling = ({ state, onStateChange }) => {
         <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
           <SectionHeading
             icon={Wand2}
-            eyebrow="Phase completion layer"
+            eyebrow="Creator toolkit"
             title="Author, teach, collaborate, import"
             detail="These are the core product systems that turn a nice XR demo into a serious chemistry learning tool."
           />

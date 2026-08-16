@@ -176,7 +176,7 @@ export const XRInteractionWorkbench = ({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-cyan-300">
-                <Sparkles size={14} /> Phase 2 flagship interaction
+                <Sparkles size={14} /> Flagship interaction
               </p>
               <h3 className="mt-2 flex items-center gap-2 text-2xl font-black text-white">
                 <ProfileIcon size={22} className="text-cyan-300" /> {profile.title}

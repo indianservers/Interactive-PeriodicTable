@@ -128,7 +128,8 @@ export const navGroups = [
           { id: 'advanced-visuals', label: 'Advanced Visual Chemistry', icon: Sparkles },
           { id: 'practice-tutor', label: 'Practice, Exams and Tutor', icon: FileQuestion },
           { id: 'learning-command', label: 'Learning Command Center', icon: ListTree },
-          { id: 'coverage-audit', label: 'Coverage Audit', icon: BadgeCheck },
+          { id: 'coverage-audit', label: 'Curriculum Map', icon: BadgeCheck },
+          { id: 'research-toolkit', label: 'Research Toolkit', icon: Microscope },
           { id: 'organic-reaction-visualizer', label: 'Organic Reaction Visualizer', icon: Route },
           { id: 'spectroscopy-interpreter', label: 'Spectroscopy Interpreter', icon: BarChart3 },
           { id: 'biochemistry-module', label: 'Biochemistry Module', icon: Brain },
@@ -161,7 +162,7 @@ const bottomItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'ar-vr-mr', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor', 'learning-command', 'coverage-audit']);
+const updatedPages = new Set(['lab', 'balancer', 'study-tools', 'symmetry', 'symmetry-operations', 'symmetry-point-groups', 'symmetry-practice', 'symmetry-teaching', 'chemistry-solver', 'chemistry-inventor', 'drug-discovery', 'ar-vr-mr', 'chemistry-visuals', 'organic-visuals', 'inorganic-visuals', 'bio-visuals', 'pharma-visuals', 'subject-modules', 'school-mastery', 'senior-core', 'advanced-visuals', 'practice-tutor', 'learning-command', 'coverage-audit', 'research-toolkit']);
 const flattenNavItems = (items) => items.flatMap(item => [item, ...flattenNavItems(item.subItems || [])]);
 const allNavItems = navGroups.flatMap(group => flattenNavItems(group.items));
 const pageLabelMap = Object.fromEntries(allNavItems.map(item => [item.id, item]));

@@ -125,23 +125,42 @@ const spectroscopySamples = {
   ethanol: {
     name: 'Ethanol', formula: 'CH3CH2OH',
     nmr: [{ x: 1.2, h: 62, label: 't, 3H' }, { x: 3.65, h: 78, label: 'q, 2H' }, { x: 2.1, h: 34, label: 'br, OH' }],
+    c13: [{ x: 18, h: 68, label: 'CH3' }, { x: 58, h: 86, label: 'CH2-O' }],
     ir: [{ x: 3350, h: 78, label: 'O-H broad' }, { x: 2950, h: 45, label: 'C-H' }, { x: 1050, h: 66, label: 'C-O' }],
     ms: [{ x: 31, h: 90, label: 'CH2OH+' }, { x: 45, h: 58, label: 'M-1' }, { x: 46, h: 42, label: 'M+' }],
-    clues: ['Broad O-H stretch', 'Ethyl triplet/quartet pair', 'm/z 31 alcohol fragment'],
+    uv: [{ x: 205, h: 42, label: 'sigma region' }],
+    cosy: [{ x: 1.2, h: 60, label: 'CH3-CH2' }, { x: 3.65, h: 78, label: 'CH2-CH3' }, { x: 2.1, h: 30, label: 'OH weak' }],
+    clues: ['Broad O-H stretch', 'Ethyl triplet/quartet pair', 'm/z 31 alcohol fragment', '13C shows two carbon environments', 'COSY connects the ethyl CH3 and CH2 signals'],
   },
   acetophenone: {
     name: 'Acetophenone', formula: 'C6H5COCH3',
     nmr: [{ x: 2.6, h: 70, label: 's, 3H' }, { x: 7.45, h: 54, label: 'Ar-H' }, { x: 7.9, h: 68, label: 'Ar-H' }],
+    c13: [{ x: 26, h: 58, label: 'COCH3' }, { x: 128, h: 54, label: 'Ar C' }, { x: 137, h: 48, label: 'ipso C' }, { x: 198, h: 92, label: 'C=O' }],
     ir: [{ x: 1685, h: 82, label: 'C=O' }, { x: 3050, h: 42, label: 'aryl C-H' }, { x: 1600, h: 44, label: 'aryl C=C' }],
     ms: [{ x: 43, h: 70, label: 'COCH3+' }, { x: 77, h: 55, label: 'Ph+' }, { x: 105, h: 92, label: 'benzoyl' }, { x: 120, h: 36, label: 'M+' }],
-    clues: ['Conjugated ketone carbonyl', 'Aromatic multiplet', 'Strong benzoyl fragment'],
+    uv: [{ x: 245, h: 66, label: 'aryl pi-pi*' }, { x: 278, h: 44, label: 'n-pi*' }],
+    cosy: [{ x: 7.45, h: 64, label: 'Ar ortho/meta' }, { x: 7.9, h: 72, label: 'Ar neighbors' }],
+    clues: ['Conjugated ketone carbonyl', 'Aromatic multiplet', 'Strong benzoyl fragment', '13C carbonyl near 198 ppm', 'UV band supports aromatic conjugation'],
   },
   ethylAcetate: {
     name: 'Ethyl acetate', formula: 'CH3COOCH2CH3',
     nmr: [{ x: 1.25, h: 58, label: 't, 3H' }, { x: 2.05, h: 60, label: 's, 3H' }, { x: 4.12, h: 78, label: 'q, 2H' }],
+    c13: [{ x: 14, h: 54, label: 'CH3CH2' }, { x: 21, h: 62, label: 'COCH3' }, { x: 60, h: 78, label: 'OCH2' }, { x: 171, h: 88, label: 'ester C=O' }],
     ir: [{ x: 1740, h: 88, label: 'ester C=O' }, { x: 1250, h: 70, label: 'C-O' }, { x: 2980, h: 44, label: 'C-H' }],
     ms: [{ x: 43, h: 90, label: 'acylium' }, { x: 61, h: 50, label: 'rearr.' }, { x: 88, h: 35, label: 'M+' }],
-    clues: ['Ester carbonyl near 1740 cm-1', 'Ethoxy quartet/triplet', 'Acetyl methyl singlet'],
+    uv: [{ x: 210, h: 38, label: 'weak carbonyl' }],
+    cosy: [{ x: 1.25, h: 60, label: 'Et CH3-CH2' }, { x: 4.12, h: 80, label: 'OCH2-CH3' }],
+    clues: ['Ester carbonyl near 1740 cm-1', 'Ethoxy quartet/triplet', 'Acetyl methyl singlet', '13C separates ester C=O from OCH2', 'No strong visible chromophore'],
+  },
+  benzaldehyde: {
+    name: 'Benzaldehyde', formula: 'C6H5CHO',
+    nmr: [{ x: 9.95, h: 82, label: 's, 1H CHO' }, { x: 7.55, h: 58, label: 'Ar-H' }, { x: 7.85, h: 68, label: 'Ar-H' }],
+    c13: [{ x: 128, h: 56, label: 'Ar C' }, { x: 134, h: 48, label: 'ipso C' }, { x: 192, h: 90, label: 'CHO C=O' }],
+    ir: [{ x: 1700, h: 84, label: 'aryl C=O' }, { x: 2820, h: 42, label: 'CHO C-H' }, { x: 2720, h: 36, label: 'CHO C-H' }],
+    ms: [{ x: 77, h: 52, label: 'Ph+' }, { x: 105, h: 100, label: 'PhCO+' }, { x: 106, h: 42, label: 'M+' }],
+    uv: [{ x: 250, h: 70, label: 'aryl pi-pi*' }, { x: 285, h: 48, label: 'n-pi*' }],
+    cosy: [{ x: 7.55, h: 60, label: 'Ar network' }, { x: 7.85, h: 72, label: 'Ar ortho' }, { x: 9.95, h: 30, label: 'CHO weak' }],
+    clues: ['Aldehyde proton near 10 ppm', 'Aldehyde C-H doublet region in IR', '13C aldehyde carbonyl near 192 ppm', 'Benzoyl fragment at m/z 105', 'UV supports aromatic carbonyl conjugation'],
   },
 };
 
@@ -329,7 +348,7 @@ function SpectroscopyInterpreter() {
           {Object.entries(spectroscopySamples).map(([id, item]) => <option key={id} value={id}>{item.name}</option>)}
         </select>
         <div className="mt-3 grid grid-cols-3 gap-2">
-          {['nmr', 'ir', 'ms'].map(type => (
+          {['nmr', 'c13', 'ir', 'ms', 'uv', 'cosy'].map(type => (
             <button key={type} onClick={() => setMode(type)} className={`rounded-lg border px-2 py-2 text-xs font-black uppercase ${mode === type ? 'border-sky-300/40 bg-sky-300/15 text-sky-50' : 'border-white/10 bg-white/[0.035] text-gray-400'}`}>{type}</button>
           ))}
         </div>
@@ -350,7 +369,7 @@ function SpectroscopyInterpreter() {
             scene="spectroscopy"
             variant={mode}
             title={`${sample.name} peak assignment`}
-            note={mode === 'nmr' ? 'Highlighted H environments' : mode === 'ir' ? 'Highlighted vibrating bonds' : 'Animated fragment path'}
+            note={mode === 'nmr' ? 'Highlighted H environments' : mode === 'c13' ? 'Highlighted carbon environments' : mode === 'cosy' ? 'Correlated proton neighborhoods' : mode === 'ir' ? 'Highlighted vibrating bonds' : mode === 'uv' ? 'Chromophore evidence' : 'Animated fragment path'}
             height={320}
           />
         </div>
@@ -682,12 +701,13 @@ function EnergyDiagram({ values, x, y, w, h, step }) {
 }
 
 function SpectrumSvg({ peaks, mode }) {
-  const maxX = mode === 'ir' ? 4000 : mode === 'nmr' ? 10 : 140;
+  const maxX = mode === 'ir' ? 4000 : mode === 'nmr' ? 10 : mode === 'c13' ? 220 : mode === 'uv' ? 400 : mode === 'cosy' ? 10 : 140;
+  const axisLabel = mode === 'nmr' ? 'delta ppm' : mode === 'c13' ? '13C ppm' : mode === 'ir' ? 'wavenumber cm-1' : mode === 'uv' ? 'wavelength nm' : mode === 'cosy' ? '1H correlation ppm' : 'm/z';
   return (
     <svg viewBox="0 0 780 320" className="h-80 w-full rounded-xl border border-white/10 bg-black/20">
       <line x1="50" y1="260" x2="740" y2="260" stroke="#475569" />
       <line x1="50" y1="30" x2="50" y2="260" stroke="#475569" />
-      <text x="50" y="290" fill="#94a3b8" fontSize="12">{mode === 'nmr' ? 'delta ppm' : mode === 'ir' ? 'wavenumber cm-1' : 'm/z'}</text>
+      <text x="50" y="290" fill="#94a3b8" fontSize="12">{axisLabel}</text>
       {peaks.map(peak => {
         const px = 50 + (mode === 'ir' ? (1 - peak.x / maxX) : peak.x / maxX) * 690;
         const y = 260 - peak.h * 2.1;

@@ -46,6 +46,44 @@ export const schoolMasteryChapters = [
     revision: ['Method-property table', 'Mixture flowcharts', 'Common lab apparatus'],
   },
   {
+    id: 'g6-air-water',
+    grade: 6,
+    title: 'Air, Water and Safe Observation',
+    boardTags: ['AP State', 'CBSE', 'IGCSE Bridge', 'IB MYP'],
+    difficulty: 'Foundation',
+    unit: 'airWater',
+    twoDRoute: 'chemistry-visuals',
+    threeDRoute: 'physical-simulators',
+    masteryGoal: 'Use careful observation to explain air, water, pollution, purification and safety in simple experiments.',
+    concepts: ['Air as a mixture', 'Oxygen for burning', 'Water cycle', 'Dissolved impurities', 'Potable water', 'Pollution sources', 'Lab safety symbols'],
+    experiments: [
+      { title: 'Candle under jar', setup: 'Cover a burning candle with a jar in a virtual setup and observe flame change.', result: 'Shows that combustion needs oxygen from air.' },
+      { title: 'Safe water treatment train', setup: 'Arrange settling, filtration, boiling and covered storage for muddy water.', result: 'Separates visible clarity from actual safety.' },
+    ],
+    practice: ['Why does a candle go out under a closed jar?', 'Arrange safe water steps for muddy water.', 'Write two rules for observing chemicals safely.'],
+    viva: ['Is air a pure substance or mixture?', 'Why should filtered water still be boiled sometimes?', 'Why should we waft instead of directly smelling chemicals?'],
+    revision: ['Air components', 'Water purification order', 'Observation and safety words'],
+  },
+  {
+    id: 'g6-changes',
+    grade: 6,
+    title: 'Changes Around Us',
+    boardTags: ['AP State', 'CBSE', 'IGCSE Bridge', 'IB MYP'],
+    difficulty: 'Foundation',
+    unit: 'materials',
+    twoDRoute: 'chemistry-visuals',
+    threeDRoute: 'molecule',
+    masteryGoal: 'Distinguish reversible, irreversible, physical and early chemical changes using daily-life evidence.',
+    concepts: ['Physical change', 'Chemical change', 'Reversible change', 'Irreversible change', 'Expansion', 'Contraction', 'New substance evidence'],
+    experiments: [
+      { title: 'Ice-water-steam loop', setup: 'Move water through cooling and heating states and record whether the material changes identity.', result: 'Builds reversible physical change from particle spacing.' },
+      { title: 'Rusting evidence board', setup: 'Compare iron nail conditions with air, water, oil coating and salt water.', result: 'Introduces slow chemical change and prevention.' },
+    ],
+    practice: ['Classify melting wax, burning paper and dissolving sugar.', 'Explain why rusting is not easily reversible.', 'Give one example each of expansion and contraction.'],
+    viva: ['What evidence suggests a new substance formed?', 'Why is freezing water reversible?', 'How can iron be protected from rusting?'],
+    revision: ['Change classification', 'Evidence table', 'Daily-life examples'],
+  },
+  {
     id: 'g7-acids-bases',
     grade: 7,
     title: 'Acids, Bases and Indicators',
@@ -63,6 +101,25 @@ export const schoolMasteryChapters = [
     practice: ['Predict litmus color for vinegar, soap and milk of magnesia.', 'Write a neutralization word equation.', 'Classify household examples safely.'],
     viva: ['Why does turmeric turn red-brown with base?', 'What is a neutral solution?', 'Why should acids be handled carefully?'],
     revision: ['Indicator colors', 'pH scale', 'Neutralization examples'],
+  },
+  {
+    id: 'g7-fibres',
+    grade: 7,
+    title: 'Fibres, Polymers and Useful Materials',
+    boardTags: ['AP State', 'CBSE', 'IGCSE Bridge', 'IB MYP'],
+    difficulty: 'Foundation',
+    unit: 'materials',
+    twoDRoute: 'chemistry-visuals',
+    threeDRoute: 'molecule',
+    masteryGoal: 'Compare natural and synthetic fibres through source, properties, care, burning behavior and environmental impact.',
+    concepts: ['Natural fibres', 'Synthetic fibres', 'Polymer chains', 'Absorbency', 'Strength', 'Burning caution', 'Biodegradability'],
+    experiments: [
+      { title: 'Fibre property station', setup: 'Compare cotton, wool, nylon and polyester by water absorption, strength and drying time.', result: 'Shows why fibre choice depends on use and environment.' },
+      { title: 'Polymer chain model', setup: 'Build bead chains for monomers and polymers, then stretch and fold them.', result: 'Makes synthetic fibre strength visible.' },
+    ],
+    practice: ['Why is cotton comfortable in summer?', 'Compare nylon and wool for rainwear.', 'State one environmental concern of synthetic fibres.'],
+    viva: ['What is a polymer?', 'Why do fibres have different uses?', 'Why should burning tests be done only virtually or by a teacher?'],
+    revision: ['Natural/synthetic table', 'Property-use matching', 'Polymer vocabulary'],
   },
   {
     id: 'g7-water-soil',
@@ -84,6 +141,25 @@ export const schoolMasteryChapters = [
     revision: ['Purification steps', 'Pollutants', 'Soil properties'],
   },
   {
+    id: 'g7-heat-lab',
+    grade: 7,
+    title: 'Heat, Temperature and Lab Measurements',
+    boardTags: ['AP State', 'CBSE', 'IGCSE Bridge', 'IB MYP'],
+    difficulty: 'Foundation',
+    unit: 'matter',
+    twoDRoute: 'chemistry-visuals',
+    threeDRoute: 'physical-simulators',
+    masteryGoal: 'Read temperature, compare heat transfer and record observations with units and uncertainty.',
+    concepts: ['Temperature', 'Heat transfer', 'Conduction', 'Convection', 'Radiation', 'Thermometer reading', 'Units', 'Fair test'],
+    experiments: [
+      { title: 'Thermometer reading drill', setup: 'Read liquid level at eye height and estimate between scale marks.', result: 'Reduces parallax and unit mistakes before quantitative labs.' },
+      { title: 'Cooling curve cup test', setup: 'Compare covered, uncovered and insulated cups over time.', result: 'Links graph slope to heat loss.' },
+    ],
+    practice: ['Record 37.5 C with correct unit and uncertainty.', 'Predict which cup cools fastest and why.', 'Identify one control variable in a cooling experiment.'],
+    viva: ['Why read a thermometer at eye level?', 'What is a fair test?', 'Why does insulation slow cooling?'],
+    revision: ['Temperature units', 'Graph axes', 'Fair-test vocabulary'],
+  },
+  {
     id: 'g8-metals-nonmetals',
     grade: 8,
     title: 'Metals and Non-Metals',
@@ -103,6 +179,25 @@ export const schoolMasteryChapters = [
     revision: ['Reactivity series', 'Oxide nature', 'Physical properties'],
   },
   {
+    id: 'g8-coal-petroleum',
+    grade: 8,
+    title: 'Coal, Petroleum and Industrial Fractions',
+    boardTags: ['AP State', 'CBSE', 'IGCSE Bridge', 'IB MYP'],
+    difficulty: 'Exam',
+    unit: 'airWater',
+    twoDRoute: 'environmental-chem',
+    threeDRoute: 'physical-simulators',
+    masteryGoal: 'Trace fossil fuel formation, fractional distillation, petrochemical uses and responsible energy choices.',
+    concepts: ['Fossil fuels', 'Carbonization', 'Petroleum refining', 'Fractions', 'Petrochemicals', 'Non-renewable resources', 'Cleaner alternatives'],
+    experiments: [
+      { title: 'Fractionating column sorter', setup: 'Place petroleum fractions by boiling range and everyday use.', result: 'Connects chain length to boiling point and fuel use.' },
+      { title: 'Fuel impact comparison', setup: 'Compare coal, petrol, LPG, biogas and hydrogen by energy and emissions.', result: 'Builds a chemistry-environment decision table.' },
+    ],
+    practice: ['Why is petroleum called a mixture?', 'Arrange fractions from low to high boiling point.', 'Give two reasons to conserve fossil fuels.'],
+    viva: ['What is fractional distillation?', 'Why are fossil fuels non-renewable?', 'What are petrochemicals used for?'],
+    revision: ['Fuel fractions', 'Boiling-point trend', 'Conservation arguments'],
+  },
+  {
     id: 'g8-combustion-fuels',
     grade: 8,
     title: 'Combustion, Fuels and Conservation',
@@ -120,6 +215,25 @@ export const schoolMasteryChapters = [
     practice: ['Explain why water extinguishes paper fire.', 'Compare complete and incomplete combustion.', 'List two effects of burning fossil fuels.'],
     viva: ['What is ignition temperature?', 'Why is carbon monoxide dangerous?', 'Why is LPG a cleaner household fuel?'],
     revision: ['Fire triangle', 'Pollutants', 'Calorific value'],
+  },
+  {
+    id: 'g8-pollution-conservation',
+    grade: 8,
+    title: 'Pollution, Conservation and Green Chemistry',
+    boardTags: ['AP State', 'CBSE', 'IGCSE Bridge', 'IB MYP'],
+    difficulty: 'Exam',
+    unit: 'airWater',
+    twoDRoute: 'environmental-chem',
+    threeDRoute: 'chemistry-inventor',
+    masteryGoal: 'Connect air and water pollutants to sources, effects, treatment and prevention choices.',
+    concepts: ['Air pollutants', 'Water pollutants', 'Particulates', 'Acid rain', 'Greenhouse gases', 'Waste treatment', 'Reduce-reuse-recycle'],
+    experiments: [
+      { title: 'Pollutant source map', setup: 'Match CO, SO2, NOx, plastic waste and sewage to source and effect.', result: 'Turns pollution into cause-effect chemistry rather than memorization.' },
+      { title: 'Treatment decision tree', setup: 'Choose filtration, neutralization, aeration, adsorption or biological treatment for sample scenarios.', result: 'Introduces environmental chemistry choices before senior calculations.' },
+    ],
+    practice: ['Match one pollutant to its source and health/environment effect.', 'Explain one way to reduce water pollution at home.', 'Choose a treatment for acidic wastewater.'],
+    viva: ['How does acid rain form?', 'Why are particulates harmful?', 'What makes a process greener?'],
+    revision: ['Pollutant table', 'Treatment methods', 'Prevention vs cure'],
   },
   {
     id: 'g9-matter',
@@ -248,3 +362,109 @@ export const schoolMasteryStats = {
 export const getSchoolMasteryByGrade = (grade = 10) => (
   schoolMasteryChapters.filter(chapter => chapter.grade === Number(grade))
 );
+
+export const schoolTeacherPacks = [
+  {
+    id: 'phase1-grade6-launch',
+    title: 'Grade 6 Foundation Launch Pack',
+    band: 'Grade 6',
+    route: 'school-mastery',
+    includes: ['Materials sorting worksheet', 'Separation flowchart lab', 'Air-water safety viva', 'Observation vocabulary cards'],
+    evidence: ['Property table completed', 'Mixture method chosen with reason', 'Safety rule stated before lab'],
+  },
+  {
+    id: 'phase1-middle-lab',
+    title: 'Middle School Lab Rotation',
+    band: 'Grades 7-8',
+    route: 'chemistry-inventor',
+    includes: ['Indicator lab', 'Cooling curve graph', 'Fuel impact table', 'Pollution treatment decision tree'],
+    evidence: ['Units and axes checked', 'Observation-to-inference written', 'One environmental decision justified'],
+  },
+  {
+    id: 'phase1-bridge',
+    title: 'School-to-College Bridge Pack',
+    band: 'Grade 10 to UG entry',
+    route: 'practice-tutor',
+    includes: ['Graph interpretation drill', 'Basic analytical data table', 'Viva-style oral prompts', 'Mistake notebook starter'],
+    evidence: ['Calculation setup visible', 'Graph conclusion stated', 'Wrong-step correction recorded'],
+  },
+];
+
+export const schoolLaunchReadiness = [
+  { id: 'coverage', title: 'Grade 6-8 concept coverage', status: 'Pilot-ready', detail: 'Core materials, changes, separation, air-water, indicators, fibres, fuels and pollution now have guided chapters.' },
+  { id: 'teacher-pack', title: 'Teacher worksheet pathway', status: 'Pilot-ready', detail: 'Each lower-school band has assignment evidence, viva prompts and printable-style deliverables.' },
+  { id: 'data-skills', title: 'Measurement and graph skills', status: 'In progress', detail: 'Thermometer, graph-axis and observation-to-inference tasks are available; exportable reports remain a future improvement.' },
+  { id: 'language', title: 'Multilingual/local vocabulary', status: 'Pilot-ready', detail: 'Telugu/Hindi/English starter glossary, local classroom examples and answer-key worksheet packs are available.' },
+];
+
+export const schoolLocalContextCards = [
+  {
+    id: 'water',
+    title: 'Local Water Investigation',
+    vocabulary: ['clear water', 'muddy water', 'hard water', 'boiling', 'filtration'],
+    prompt: 'Compare tap water, stored water and filtered water by appearance, smell-safe observation, residue after evaporation and pH.',
+    teacherCue: 'Do not let students taste samples; discuss why clear water can still be unsafe.',
+  },
+  {
+    id: 'fuels',
+    title: 'Household Fuel Comparison',
+    vocabulary: ['LPG', 'biogas', 'coal', 'smoke', 'complete combustion'],
+    prompt: 'Rank common fuels by smoke, convenience, pollution and energy usefulness using a classroom decision table.',
+    teacherCue: 'Use virtual flame visuals; real combustion demonstrations require ventilation and teacher control.',
+  },
+  {
+    id: 'materials',
+    title: 'Market Materials Sort',
+    vocabulary: ['steel', 'plastic', 'cotton', 'glass', 'rubber'],
+    prompt: 'Classify daily objects from a school bag or market by strength, flexibility, water resistance and recyclability.',
+    teacherCue: 'Ask students to justify material choice by property rather than memorizing the object name.',
+  },
+];
+
+export const schoolBilingualTerms = [
+  { en: 'mixture', te: 'మిశ్రమం', use: 'Air, soil, salt water' },
+  { en: 'filter', te: 'వడపోత చేయు', use: 'Separate sand from water' },
+  { en: 'evaporation', te: 'ఆవిరి కావడం', use: 'Recover salt from salt water' },
+  { en: 'acid', te: 'ఆమ్లం', use: 'Lemon juice, vinegar' },
+  { en: 'base', te: 'క్షారం', use: 'Soap solution, baking soda solution' },
+  { en: 'precipitate', te: 'అవక్షేపం', use: 'Solid formed in salt test' },
+];
+
+export const schoolMultilingualTerms = [
+  { en: 'mixture', te: 'మిశ్రమం', hi: 'मिश्रण', use: 'Air, soil, salt water' },
+  { en: 'filter', te: 'వడపోత చేయు', hi: 'छानना', use: 'Separate sand from water' },
+  { en: 'evaporation', te: 'ఆవిరి కావడం', hi: 'वाष्पीकरण', use: 'Recover salt from salt water' },
+  { en: 'acid', te: 'ఆమ్లం', hi: 'अम्ल', use: 'Lemon juice, vinegar' },
+  { en: 'base', te: 'క్షారం', hi: 'क्षार', use: 'Soap solution, baking soda solution' },
+  { en: 'precipitate', te: 'అవక్షేపం', hi: 'अवक्षेप', use: 'Solid formed in salt test' },
+];
+
+export const schoolWorksheetPacks = [
+  {
+    id: 'g6-separation-answer-key',
+    title: 'Grade 6 Separation Worksheet + Answer Key',
+    classBand: 'Grade 6',
+    route: 'school-mastery',
+    prompts: ['Choose method for rice + stones.', 'Recover salt from sand mixture.', 'Explain why dissolved sugar passes filter paper.'],
+    answerKey: ['Handpicking/sieving based on size.', 'Dissolve, filter sand, evaporate filtrate.', 'Sugar particles are dissolved and pass through pores.'],
+    marking: ['Method matched to property', 'Sequence complete', 'Reasoning uses particle idea'],
+  },
+  {
+    id: 'g7-indicator-answer-key',
+    title: 'Grade 7 Indicator Lab Worksheet + Answer Key',
+    classBand: 'Grade 7',
+    route: 'school-mastery',
+    prompts: ['Predict litmus color for lemon juice.', 'Explain turmeric change in soap solution.', 'Write one neutralization word equation.'],
+    answerKey: ['Blue litmus turns red.', 'Soap is basic; turmeric turns red-brown in base.', 'Acid + base -> salt + water.'],
+    marking: ['Correct indicator color', 'Acid/base identified', 'Equation has products'],
+  },
+  {
+    id: 'g8-fuel-pollution-key',
+    title: 'Grade 8 Fuel and Pollution Worksheet + Answer Key',
+    classBand: 'Grade 8',
+    route: 'environmental-chem',
+    prompts: ['Compare LPG and coal as fuels.', 'Name one pollutant from incomplete combustion.', 'Suggest one green chemistry prevention step.'],
+    answerKey: ['LPG burns cleaner and is easier to control; coal causes more smoke/ash.', 'Carbon monoxide or soot.', 'Reduce fuel use, improve combustion, treat emissions or choose cleaner fuel.'],
+    marking: ['Comparison has two properties', 'Pollutant/source linked', 'Prevention is realistic'],
+  },
+];

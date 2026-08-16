@@ -1,18 +1,29 @@
 import { useMemo, useState } from 'react';
 import {
-  BadgeCheck, Box, Brain, CheckCircle2, ClipboardList,
+  BadgeCheck, Box, Brain, CheckCircle2, ClipboardList, FileText,
   FlaskConical, GraduationCap, Layers3, ListChecks, Microscope, Route,
 } from 'lucide-react';
 import {
   getSchoolMasteryByGrade,
+  schoolLaunchReadiness,
+  schoolLocalContextCards,
   schoolMasteryChapters,
   schoolMasteryGrades,
   schoolMasteryStats,
+  schoolMultilingualTerms,
+  schoolTeacherPacks,
+  schoolWorksheetPacks,
 } from '../data/schoolChemistryMastery.js';
 
 const difficultyStyle = {
   Foundation: 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100',
   Exam: 'border-cyan-300/25 bg-cyan-300/10 text-cyan-100',
+};
+
+const readinessStyle = {
+  'Pilot-ready': 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100',
+  'In progress': 'border-cyan-300/25 bg-cyan-300/10 text-cyan-100',
+  Needed: 'border-amber-300/25 bg-amber-300/10 text-amber-100',
 };
 
 const VisualPreview = ({ unit }) => {
@@ -304,6 +315,119 @@ export const SchoolChemistryMasteryPage = ({ onNavigate }) => {
                   ))}
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <FileText size={16} className="text-cyan-300" />
+                <h3 className="text-sm font-bold text-white">Teacher Packs</h3>
+              </div>
+              <div className="grid gap-2">
+                {schoolTeacherPacks.map(pack => (
+                  <button key={pack.id} type="button" onClick={() => onNavigate?.(pack.route)} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left hover:bg-white/[0.065]">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-black text-white">{pack.title}</p>
+                      <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2 py-0.5 text-[10px] font-black text-cyan-100">{pack.band}</span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {pack.includes.map(item => <span key={item} className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{item}</span>)}
+                    </div>
+                    <div className="mt-2 space-y-1">
+                      {pack.evidence.map(item => <p key={item} className="flex gap-2 text-[11px] font-semibold text-emerald-100"><CheckCircle2 size={12} className="mt-0.5 shrink-0" />{item}</p>)}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <ListChecks size={16} className="text-emerald-300" />
+                <h3 className="text-sm font-bold text-white">School Launch Readiness</h3>
+              </div>
+              <div className="space-y-2">
+                {schoolLaunchReadiness.map(item => (
+                  <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-black text-white">{item.title}</p>
+                      <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-black ${readinessStyle[item.status] || readinessStyle.Needed}`}>{item.status}</span>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 xl:grid-cols-[1fr_0.85fr]">
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Route size={16} className="text-cyan-300" />
+                <h3 className="text-sm font-bold text-white">Local Classroom Context</h3>
+              </div>
+              <div className="grid gap-2">
+                {schoolLocalContextCards.map(card => (
+                  <div key={card.id} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                    <p className="text-sm font-black text-white">{card.title}</p>
+                    <p className="mt-1 text-xs text-gray-400">{card.prompt}</p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {card.vocabulary.map(word => <span key={word} className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{word}</span>)}
+                    </div>
+                    <p className="mt-2 rounded-lg border border-amber-300/15 bg-amber-300/10 px-2 py-1 text-[11px] font-semibold text-amber-50">{card.teacherCue}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Brain size={16} className="text-emerald-300" />
+                <h3 className="text-sm font-bold text-white">Telugu / Hindi / English Glossary</h3>
+              </div>
+              <div className="space-y-2">
+                {schoolMultilingualTerms.map(term => (
+                  <div key={term.en} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-black text-white">{term.en}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="rounded-lg border border-cyan-300/15 bg-cyan-300/10 px-2 py-0.5 text-[11px] font-black text-cyan-100">{term.te}</span>
+                        <span className="rounded-lg border border-emerald-300/15 bg-emerald-300/10 px-2 py-0.5 text-[11px] font-black text-emerald-100">{term.hi}</span>
+                      </div>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">{term.use}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="glass rounded-2xl p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <ClipboardList size={16} className="text-amber-300" />
+              <h3 className="text-sm font-bold text-white">Worksheet + Answer Key Packs</h3>
+            </div>
+            <div className="grid gap-2 lg:grid-cols-3">
+              {schoolWorksheetPacks.map(pack => (
+                <button key={pack.id} type="button" onClick={() => onNavigate?.(pack.route)} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left hover:bg-white/[0.065]">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-black text-white">{pack.title}</p>
+                    <span className="shrink-0 rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-0.5 text-[10px] font-black text-amber-100">{pack.classBand}</span>
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">Prompts: {pack.prompts.join(' | ')}</p>
+                  <div className="mt-2 space-y-1">
+                    {pack.answerKey.map((answer, index) => (
+                      <p key={`${pack.id}-${answer}`} className="flex gap-2 text-[11px] font-semibold text-emerald-100">
+                        <span className="shrink-0 text-emerald-300">A{index + 1}</span>{answer}
+                      </p>
+                    ))}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {pack.marking.map(item => <span key={item} className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{item}</span>)}
+                  </div>
+                </button>
+              ))}
             </div>
           </section>
         </main>

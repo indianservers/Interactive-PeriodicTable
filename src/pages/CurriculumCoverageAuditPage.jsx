@@ -7,8 +7,12 @@ import {
   boardCoverageStats,
   boardFilters,
   boardReadinessMatrix,
+  contentEnhancementPlan,
   curriculumStrands,
   gradeBandFilters,
+  launchContentQualityGates,
+  multilingualGlossary,
+  misconceptionDiagnostics,
   priorityGapBacklog,
 } from '../data/curriculumCoverageAudit.js';
 
@@ -26,6 +30,7 @@ const gradeLabel = {
   'grade9-10': 'Grades 9-10',
   'grade11-12': 'Grades 11-12',
   'ug-bridge': 'UG bridge',
+  research: 'Research / PhD',
 };
 
 const Gauge = ({ value }) => {
@@ -109,10 +114,10 @@ export const CurriculumCoverageAuditPage = ({ onNavigate }) => {
           <div>
             <div className="flex items-center gap-2 text-white">
               <ClipboardList size={22} className="text-cyan-300" />
-              <h2 className="text-xl font-black">Curriculum Coverage Audit</h2>
+              <h2 className="text-xl font-black">Curriculum Map</h2>
             </div>
             <p className="mt-1 max-w-3xl text-sm text-gray-400">
-              AP State, CBSE, IGCSE and IB Chemistry coverage from grades 6-12, mapped to interactive 2D, 3D, lab, practice and teacher-ready next builds.
+              AP State, CBSE, IGCSE and IB Chemistry from grades 6-12, mapped to interactive 2D, 3D, lab, practice and teacher-ready learning paths.
             </p>
           </div>
           <div className="grid grid-cols-5 gap-2 text-center">
@@ -305,6 +310,87 @@ export const CurriculumCoverageAuditPage = ({ onNavigate }) => {
                   <p className="mt-2 text-xs text-gray-500">{gap.tasks.slice(0, 2).join(', ')}</p>
                 </button>
               ))}
+            </div>
+          </section>
+
+          <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Sparkles size={16} className="text-cyan-300" />
+                <h3 className="text-sm font-bold text-white">Suggested Content Enhancements</h3>
+              </div>
+              <div className="grid gap-2">
+                {contentEnhancementPlan.map(item => (
+                  <button key={item.id} type="button" onClick={() => onNavigate?.(item.route)} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left hover:bg-white/[0.065]">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-black text-white">{item.title}</p>
+                      <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-0.5 text-[10px] font-black text-amber-100">{item.priority}</span>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">{item.why}</p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {item.additions.map(addition => <span key={addition} className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{addition}</span>)}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Target size={16} className="text-emerald-300" />
+                <h3 className="text-sm font-bold text-white">Launch Quality Gates</h3>
+              </div>
+              <div className="space-y-2">
+                {launchContentQualityGates.map(gate => (
+                  <div key={gate.gate} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-black text-white">{gate.gate}</p>
+                      <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2 py-0.5 text-[10px] font-black text-cyan-100">{gate.ready}</span>
+                    </div>
+                    <p className="mt-2 text-xs text-gray-500">Must add: {gate.mustHave.join(', ')}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 xl:grid-cols-[1fr_0.85fr]">
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <AlertTriangle size={16} className="text-amber-300" />
+                <h3 className="text-sm font-bold text-white">Misconception Diagnostics</h3>
+              </div>
+              <div className="grid gap-2 md:grid-cols-2">
+                {misconceptionDiagnostics.map(item => (
+                  <button key={item.id} type="button" onClick={() => onNavigate?.(item.route)} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left hover:bg-white/[0.065]">
+                    <p className="text-sm font-black text-white">{item.concept}</p>
+                    <p className="mt-1 text-xs font-semibold text-amber-100">{item.misconception}</p>
+                    <p className="mt-2 text-xs text-gray-500">{item.correction}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <BookOpen size={16} className="text-cyan-300" />
+                <h3 className="text-sm font-bold text-white">Telugu / Hindi / English Starter Glossary</h3>
+              </div>
+              <div className="space-y-2">
+                {multilingualGlossary.map(term => (
+                  <div key={term.en} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-black text-white">{term.en}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="rounded-lg border border-cyan-300/15 bg-cyan-300/10 px-2 py-0.5 text-[11px] font-black text-cyan-100">{term.te}</span>
+                        <span className="rounded-lg border border-emerald-300/15 bg-emerald-300/10 px-2 py-0.5 text-[11px] font-black text-emerald-100">{term.hi}</span>
+                      </div>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">{term.simple}</p>
+                    <p className="mt-1 text-[11px] font-semibold text-emerald-100">{term.example}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         </main>

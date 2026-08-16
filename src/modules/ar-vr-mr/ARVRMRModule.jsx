@@ -320,7 +320,7 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
                 15 wow XR concepts
               </span>
               <span className="rounded-full border border-violet-400/25 bg-violet-400/10 px-3 py-1 text-xs font-bold text-violet-100">
-                Phase 3 mastery polish
+                Mastery polish
               </span>
             </div>
             <h2 className="mt-4 text-3xl font-black leading-tight text-white md:text-4xl">Immersive Chemistry XR Studio</h2>
@@ -331,7 +331,7 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <MetricCard label="Concepts" value={xrConceptStats.total} detail="Curated immersive lessons" />
               <MetricCard label="Playable base" value={xrConceptStats.playable} detail="Scene seeds already interactive" />
-              <MetricCard label="Foundation specs" value={xrConceptStats.foundation + xrConceptStats.designSpec} detail="Ready for staged buildout" />
+              <MetricCard label="Foundation specs" value={xrConceptStats.foundation + xrConceptStats.designSpec} detail="Ready for guided lessons" />
             </div>
           </div>
           <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
@@ -490,7 +490,7 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
             <p className="mt-2 text-sm leading-relaxed text-gray-300">{activeExperience.objective}</p>
             <div className="mt-3 grid gap-2 text-xs">
               <div className="flex justify-between rounded-lg border border-white/10 bg-black/20 px-3 py-2">
-                <span className="text-gray-500">Phase</span>
+                <span className="text-gray-500">Learning layer</span>
                 <span className="font-bold text-gray-200">{activeExperience.phase}</span>
               </div>
               <div className="flex justify-between rounded-lg border border-white/10 bg-black/20 px-3 py-2">

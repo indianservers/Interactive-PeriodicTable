@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import {
   getSeniorCoreChapters,
+  phase2Readiness,
+  phase2SeniorPacks,
   seniorCoreChapters,
   seniorCoreDomains,
   seniorCoreStats,
@@ -15,12 +17,19 @@ const domainIcons = {
   physical: BarChart3,
   organic: FlaskConical,
   inorganic: Atom,
+  analytical: Calculator,
 };
 
 const domainStyles = {
   physical: 'border-cyan-300/25 bg-cyan-300/10 text-cyan-100',
   organic: 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100',
   inorganic: 'border-violet-300/25 bg-violet-300/10 text-violet-100',
+  analytical: 'border-amber-300/25 bg-amber-300/10 text-amber-100',
+};
+
+const readinessStyles = {
+  Active: 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100',
+  Needed: 'border-amber-300/25 bg-amber-300/10 text-amber-100',
 };
 
 const SeniorVisualPreview = ({ domain }) => {
@@ -85,14 +94,20 @@ export const SeniorChemistryCorePage = ({ onNavigate }) => {
   const [activeDomain, setActiveDomain] = useState('physical');
   const [activeChapterId, setActiveChapterId] = useState('solutions-electrochem');
   const chapters = useMemo(() => getSeniorCoreChapters({ track: activeTrack, domain: activeDomain }), [activeTrack, activeDomain]);
+  const visibleDomains = useMemo(() => (
+    seniorCoreDomains.filter(domain => getSeniorCoreChapters({ track: activeTrack, domain: domain.id }).length > 0)
+  ), [activeTrack]);
   const activeChapter = chapters.find(chapter => chapter.id === activeChapterId) || chapters[0] || seniorCoreChapters[0];
   const activeTrackMeta = seniorCoreTracks.find(track => track.id === activeTrack) || seniorCoreTracks[1];
 
   const selectTrack = (trackId) => {
-    const next = getSeniorCoreChapters({ track: trackId, domain: activeDomain });
-    const fallback = getSeniorCoreChapters({ track: trackId, domain: 'physical' });
+    const nextDomain = getSeniorCoreChapters({ track: trackId, domain: activeDomain }).length
+      ? activeDomain
+      : seniorCoreDomains.find(domain => getSeniorCoreChapters({ track: trackId, domain: domain.id }).length)?.id || 'physical';
+    const next = getSeniorCoreChapters({ track: trackId, domain: nextDomain });
     setActiveTrack(trackId);
-    setActiveChapterId(next[0]?.id || fallback[0]?.id || activeChapterId);
+    setActiveDomain(nextDomain);
+    setActiveChapterId(next[0]?.id || activeChapterId);
   };
 
   const selectDomain = (domainId) => {
@@ -114,7 +129,7 @@ export const SeniorChemistryCorePage = ({ onNavigate }) => {
               Class 11-12 chemistry with physical numericals, organic mechanisms, inorganic reasoning, formula sheets, exam traps, and 2D/3D tools.
             </p>
           </div>
-          <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-5">
             <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
               <p className="text-lg font-black text-white">{seniorCoreStats.chapters}</p>
               <p className="text-[10px] text-gray-500">chapters</p>
@@ -130,6 +145,10 @@ export const SeniorChemistryCorePage = ({ onNavigate }) => {
             <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
               <p className="text-lg font-black text-amber-100">{seniorCoreStats.practice}</p>
               <p className="text-[10px] text-gray-500">practice</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
+              <p className="text-lg font-black text-violet-100">{seniorCoreStats.packs}</p>
+              <p className="text-[10px] text-gray-500">study packs</p>
             </div>
           </div>
         </div>
@@ -166,7 +185,7 @@ export const SeniorChemistryCorePage = ({ onNavigate }) => {
               <h3 className="text-sm font-bold text-white">Domain</h3>
             </div>
             <div className="space-y-2">
-              {seniorCoreDomains.map(domain => {
+              {visibleDomains.map(domain => {
                 const Icon = domainIcons[domain.id] || Sigma;
                 return (
                   <button
@@ -309,10 +328,55 @@ export const SeniorChemistryCorePage = ({ onNavigate }) => {
               </div>
             </div>
           </section>
+
+          <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <ClipboardIcon />
+                <h3 className="text-sm font-bold text-white">Senior / UG Study Packs</h3>
+              </div>
+              <div className="grid gap-2">
+                {phase2SeniorPacks.map(pack => (
+                  <button key={pack.id} type="button" onClick={() => onNavigate?.(pack.route)} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left hover:bg-white/[0.065]">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-black text-white">{pack.title}</p>
+                      <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2 py-0.5 text-[10px] font-black text-cyan-100">{pack.band}</span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {pack.includes.map(item => <span key={item} className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{item}</span>)}
+                    </div>
+                    <div className="mt-2 space-y-1">
+                      {pack.evidence.map(item => <p key={item} className="flex gap-2 text-[11px] font-semibold text-emerald-100"><CheckCircle2 size={12} className="mt-0.5 shrink-0" />{item}</p>)}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass rounded-2xl p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <ListChecks size={16} className="text-emerald-300" />
+                <h3 className="text-sm font-bold text-white">Learning Readiness</h3>
+              </div>
+              <div className="space-y-2">
+                {phase2Readiness.map(item => (
+                  <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-black text-white">{item.title}</p>
+                      <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-black ${readinessStyles[item.status] || readinessStyles.Needed}`}>{item.status}</span>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
         </main>
       </section>
     </div>
   );
 };
+
+const ClipboardIcon = () => <BookOpen size={16} className="text-cyan-300" />;
 
 export default SeniorChemistryCorePage;

@@ -203,9 +203,10 @@ const BadgePill = ({ children, className = '', style }) => (
 );
 
 const newLabToolIds = new Set([
-  'unit-cell', 'crystal-defects', 'adsorption', 'named-reactions', 'functional-tests', 'isomerism',
+  'analytical-lab',
+  'unit-cell', 'crystal-defects', 'adsorption', 'surface-chemistry-deep', 'named-reactions', 'organic-reaction-bank', 'functional-tests', 'isomerism',
   'reactivity-series', 'quantum-numbers', 'gibbs', 'environmental-chem', 'cft', 'metallurgy',
-  'salt-analysis', 'pblock-advanced', 'drug-functional-groups', 'adme-ionization', 'isotonicity',
+  'salt-analysis', 'pblock-advanced', 'nuclear-chemistry', 'drug-functional-groups', 'adme-ionization', 'isotonicity',
   'clinical-buffers', 'pharma-analysis', 'radiopharma', 'enzyme-kinetics', 'amino-acid-pi',
   'protein-structure', 'carbohydrate-lab', 'lipid-membrane', 'nucleic-acid-lab',
   'vitamin-coenzyme-map', 'metabolism-atp', 'drug-class-studio', 'drug-metabolism-lab',
@@ -249,6 +250,126 @@ const namedReactionData = [
   { name: 'Bessemer Process', category: 'Inorganic', level: ['Class 12', 'JEE Main'], equation: 'Molten pig iron + O2 -> steel + oxides', conditions: 'Air blown through molten iron in converter', mechanism: 'Oxidative removal of C, Si, Mn impurities' },
 ];
 
+const surfaceModes = [
+  { id: 'isotherms', label: 'Isotherms' },
+  { id: 'catalysis', label: 'Catalysis' },
+  { id: 'colloids', label: 'Colloids' },
+  { id: 'emulsions', label: 'Emulsions' },
+  { id: 'micelles', label: 'Micelles' },
+  { id: 'exam', label: 'Exam Drill' },
+];
+
+const surfaceColloidSystems = {
+  'gold-sol': { name: 'Gold sol', charge: 'negative', kind: 'lyophobic', dispersed: 'Au particles', medium: 'water', coagulators: ['Al3+ strongest', 'Ba2+ moderate', 'Na+ weakest'], note: 'Needs stabilizing charge; trace electrolyte can coagulate it.' },
+  'ferric-hydroxide': { name: 'Ferric hydroxide sol', charge: 'positive', kind: 'lyophobic', dispersed: 'Fe(OH)3', medium: 'water', coagulators: ['PO4 3- strongest', 'SO4 2- moderate', 'Cl- weakest'], note: 'Negative counter-ions coagulate a positive sol.' },
+  starch: { name: 'Starch sol', charge: 'weakly negative', kind: 'lyophilic', dispersed: 'hydrated starch chains', medium: 'water', coagulators: ['salt plus alcohol', 'high electrolyte level'], note: 'Solvation gives extra stability and protective action.' },
+  soap: { name: 'Soap sol', charge: 'negative', kind: 'association colloid', dispersed: 'soap micelles', medium: 'water', coagulators: ['Ca2+ forms scum', 'Mg2+ forms scum'], note: 'Above CMC, soap ions aggregate into cleansing micelles.' },
+};
+
+const surfaceCatalystCases = [
+  { process: 'Haber process', catalyst: 'Fe with K2O/Al2O3 promoters', role: 'N2 and H2 adsorb, bonds weaken, NH3 desorbs.', poison: 'Sulfur compounds poison iron sites.' },
+  { process: 'Contact process', catalyst: 'V2O5', role: 'Cycles between oxidation states while SO2 becomes SO3.', poison: 'Dust or arsenic impurities reduce activity.' },
+  { process: 'Hydrogenation of alkenes', catalyst: 'Ni, Pd, or Pt', role: 'H2 and alkene adsorb on metal surface; syn addition is common.', poison: 'Lead salts can partially poison Pd for selective reductions.' },
+];
+
+const surfaceConceptCards = [
+  { title: 'Adsorption factors', points: ['Greater surface area increases adsorption.', 'Lower temperature favors physisorption.', 'Chemisorption may rise first with temperature due to activation energy.', 'Easily liquefiable gases are adsorbed more strongly.'] },
+  { title: 'Colloid preparation', points: ['Dispersion: arc, peptization, mechanical dispersion.', 'Condensation: hydrolysis, oxidation, reduction, double decomposition.', 'Peptization converts a precipitate into sol by adding a suitable electrolyte.'] },
+  { title: 'Colloid purification', points: ['Dialysis removes dissolved ions through a membrane.', 'Electrodialysis speeds ion removal using electric field.', 'Ultrafiltration separates colloid from crystalloids using fine filters.'] },
+  { title: 'Colloid properties', points: ['Tyndall effect proves scattering.', 'Brownian movement resists settling.', 'Electrophoresis reveals particle charge.', 'Coagulation occurs when charge protection is neutralized.'] },
+];
+
+const surfacePracticeScenarios = [
+  { prompt: 'A negative As2S3 sol is coagulated by NaCl, BaCl2, and AlCl3. Which is most effective?', answer: 'AlCl3, because Al3+ is the highest-valency counter-ion for a negative sol.' },
+  { prompt: 'Why does activated charcoal remove colored impurities?', answer: 'It has high surface area and adsorbs dye molecules onto its surface.' },
+  { prompt: 'Why does soap fail in hard water?', answer: 'Ca2+ and Mg2+ form insoluble scum with soap anions, reducing micelle formation.' },
+  { prompt: 'What happens when gelatin protects gold sol from NaCl?', answer: 'Gelatin acts as a lyophilic protective colloid and raises the coagulation resistance.' },
+  { prompt: 'A catalyst increases rate but product yield at equilibrium is unchanged. Why?', answer: 'It lowers activation energy for forward and reverse paths; it does not change Delta G or K.' },
+];
+
+const organicBankModes = [
+  { id: 'transformations', label: 'Transformations' },
+  { id: 'stereo', label: 'Stereo Outcomes' },
+  { id: 'rearrangements', label: 'Rearrangements' },
+  { id: 'pericyclic', label: 'Pericyclic' },
+  { id: 'protecting', label: 'Protecting Groups' },
+  { id: 'drills', label: 'Synthesis Drills' },
+  { id: 'quickcheck', label: 'Quick Check' },
+];
+
+const reagentTransformations = [
+  { id: 'alkene-alcohol', from: 'Alkene', to: 'Alcohol', reagents: ['H2O/H+ gives Markovnikov alcohol', 'BH3.THF then H2O2/OH- gives anti-Markovnikov alcohol', 'Hg(OAc)2/H2O then NaBH4 avoids rearrangement'], selectivity: 'Regiochemistry changes with reagent set.', caution: 'Acid hydration can rearrange through carbocations.' },
+  { id: 'alkene-epoxide-diol', from: 'Alkene', to: 'Epoxide or diol', reagents: ['mCPBA gives epoxide', 'OsO4/NMO gives syn diol', 'Cold alkaline KMnO4 gives syn diol', 'Epoxide opening in acid/base gives anti 1,2-diol'], selectivity: 'Oxidation conditions decide epoxide versus cis/trans diol.', caution: 'Hot KMnO4 can cleave alkenes instead of stopping at diol.' },
+  { id: 'alkyne-alkene-carbonyl', from: 'Alkyne', to: 'Alkene or carbonyl', reagents: ['H2/Lindlar gives cis alkene', 'Na/NH3(l) gives trans alkene', 'HgSO4/H2SO4/H2O gives Markovnikov ketone', 'BH3 then H2O2/OH- gives aldehyde from terminal alkyne'], selectivity: 'Partial reduction stereochemistry and hydration regiochemistry are reagent controlled.', caution: 'Uncontrolled hydrogenation reduces all the way to alkane.' },
+  { id: 'alcohol-halide', from: 'Alcohol', to: 'Alkyl halide', reagents: ['SOCl2/pyridine for R-Cl', 'PBr3 for R-Br', 'HX for tertiary alcohols'], selectivity: 'SN2 routes invert at chiral primary/secondary centers.', caution: 'Strong acid can cause elimination or rearrangement.' },
+  { id: 'carbonyl-alcohol', from: 'Aldehyde/ketone', to: 'Alcohol', reagents: ['NaBH4 mild reduction', 'LiAlH4 strong reduction', 'H2/Ni catalytic hydrogenation'], selectivity: 'Hydride attacks planar carbonyl from either face unless controlled.', caution: 'LiAlH4 also reduces acids, esters, and amides.' },
+  { id: 'alcohol-carbonyl', from: 'Alcohol', to: 'Carbonyl/acid', reagents: ['PCC stops primary alcohol at aldehyde', 'KMnO4 or K2Cr2O7 oxidizes primary alcohol to acid', 'Secondary alcohol gives ketone'], selectivity: 'Oxidation level is reagent controlled.', caution: 'Tertiary alcohols resist normal oxidation.' },
+  { id: 'acid-derivatives', from: 'Carboxylic acid derivative', to: 'Acid, ester, amide, or alcohol', reagents: ['SOCl2 converts acid to acid chloride', 'ROH/H+ forms ester', 'NH3 or amine forms amide', 'LiAlH4 reduces acid derivatives to alcohols'], selectivity: 'Acyl substitution follows leaving-group ability: acid chloride > anhydride > ester > amide.', caution: 'Grignard adds twice to acid chlorides/esters unless organocuprate or Weinreb amide control is used.' },
+  { id: 'aromatic-substitution', from: 'Benzene derivative', to: 'Substituted arene', reagents: ['Br2/FeBr3', 'HNO3/H2SO4', 'RCOCl/AlCl3', 'SO3/H2SO4'], selectivity: 'Directing effects decide ortho/para/meta products.', caution: 'Strongly deactivated rings resist Friedel-Crafts.' },
+  { id: 'carbon-chain', from: 'Carbonyl/halide', to: 'Longer carbon chain', reagents: ['RMgX then H3O+', 'NaCN then hydrolysis', 'acetylide ion then alkyl halide'], selectivity: 'New C-C bond forms at electrophilic carbon.', caution: 'Grignard reagents are destroyed by water, alcohols, and acids.' },
+  { id: 'amine-prep', from: 'Nitro, nitrile, amide, or halide', to: 'Amine', reagents: ['Sn/HCl or H2/Pd reduces nitro to aniline', 'LiAlH4 reduces nitrile or amide to amine', 'Gabriel synthesis gives primary amine', 'Hofmann rearrangement gives one-carbon-shorter amine'], selectivity: 'Choose route by carbon count and aryl/alkyl context.', caution: 'Direct alkylation of NH3 can over-alkylate.' },
+  { id: 'diazonium', from: 'Aniline', to: 'Aryl halide, phenol, nitrile, or azo dye', reagents: ['NaNO2/HCl at 0-5 C', 'CuCl/CuBr/CuCN', 'H2O/heat', 'phenol or aniline coupling'], selectivity: 'Diazonium chemistry swaps -NH2 for many groups.', caution: 'Keep diazonium salts cold; many decompose on warming.' },
+];
+
+const stereochemicalOutcomes = [
+  { reaction: 'SN2 substitution', outcome: 'Backside attack gives inversion of configuration.', cue: 'Strong nucleophile, primary/secondary substrate, polar aprotic solvent.' },
+  { reaction: 'SN1 substitution', outcome: 'Planar carbocation gives racemization with partial inversion excess.', cue: 'Tertiary or resonance-stabilized substrate, polar protic solvent.' },
+  { reaction: 'E2 elimination', outcome: 'Leaving group and beta-H must be anti-periplanar.', cue: 'Strong base; bulky base favors Hofmann product.' },
+  { reaction: 'Br2 addition to alkene', outcome: 'Anti addition through bromonium ion.', cue: 'Vicinal dibromide; no free carbocation rearrangement.' },
+  { reaction: 'Hydroboration oxidation', outcome: 'Syn addition, anti-Markovnikov alcohol.', cue: 'BH3.THF then H2O2/OH-.' },
+  { reaction: 'Diels-Alder reaction', outcome: 'Concerted suprafacial addition; endo product often favored kinetically.', cue: 'Electron-rich diene plus electron-poor dienophile.' },
+  { reaction: 'Epoxide opening', outcome: 'Anti opening; base attacks less substituted carbon, acid attacks more substituted carbon.', cue: 'Check acidic versus basic conditions before assigning regioselectivity.' },
+  { reaction: 'Catalytic hydrogenation', outcome: 'Syn addition of H2 on metal surface.', cue: 'Both hydrogens usually add from the same face of the alkene.' },
+];
+
+const rearrangementData = [
+  { name: 'Hydride or methyl shift', trigger: 'Carbocation intermediate', migration: '1,2-shift forms a more stable carbocation.', product: 'Rearranged alcohol, alkene, or substitution product.' },
+  { name: 'Pinacol rearrangement', trigger: 'Vicinal diol in acid', migration: 'Group migrates while water leaves.', product: 'Ketone or aldehyde after cation rearrangement.' },
+  { name: 'Beckmann rearrangement', trigger: 'Oxime with acid or PCl5', migration: 'Group anti to leaving group migrates to nitrogen.', product: 'Amide or lactam.' },
+  { name: 'Hofmann rearrangement', trigger: 'Amide with Br2/NaOH', migration: 'R group migrates from carbonyl carbon to nitrogen.', product: 'Primary amine with one fewer carbonyl carbon.' },
+  { name: 'Baeyer-Villiger oxidation', trigger: 'Ketone with peracid', migration: 'More migratory group moves next to oxygen.', product: 'Ester or lactone.' },
+];
+
+const pericyclicBasics = [
+  { name: 'Diels-Alder [4+2]', rule: 'Thermal suprafacial-suprafacial cycloaddition is allowed.', use: 'Builds six-membered rings with stereospecificity.' },
+  { name: 'Electrocyclic ring opening', rule: '4n pi systems: thermal conrotatory, photochemical disrotatory.', use: 'Predict cis/trans relationship after ring opening.' },
+  { name: 'Electrocyclic ring closure', rule: '4n+2 pi systems: thermal disrotatory, photochemical conrotatory.', use: 'Connects linear polyenes to cyclic dienes.' },
+  { name: '[3,3] sigmatropic shift', rule: 'Concerted migration through a six-membered transition state.', use: 'Claisen and Cope rearrangements move sigma bonds predictably.' },
+];
+
+const protectingGroups = [
+  { group: 'TMS ether', protects: 'Alcohol', install: 'TMSCl, imidazole or base', remove: 'TBAF or acid workup', when: 'Use when an -OH would quench Grignard or acylation chemistry.' },
+  { group: 'Acetal/ketal', protects: 'Aldehyde or ketone', install: 'Diol, acid catalyst, remove water', remove: 'Aqueous acid', when: 'Use when carbonyl must survive base, hydride, or Grignard steps.' },
+  { group: 'Boc carbamate', protects: 'Amine', install: 'Boc2O, base', remove: 'TFA or HCl', when: 'Use to suppress amine basicity/nucleophilicity.' },
+  { group: 'Benzyl ether', protects: 'Alcohol or phenol', install: 'BnBr, base', remove: 'H2/Pd-C', when: 'Use when acid/base stability is needed before hydrogenolysis.' },
+  { group: 'Ester', protects: 'Carboxylic acid', install: 'ROH, acid or diazomethane', remove: 'Hydrolysis', when: 'Use to mask acidity and improve organic solubility.' },
+];
+
+const synthesisDrills = [
+  { id: 'acetophenone', start: 'Benzene', target: 'Acetophenone', disconnection: 'Break the aryl-COCH3 bond back to benzene plus acetyl electrophile.', steps: ['Friedel-Crafts acylation with CH3COCl/AlCl3', 'Aqueous workup'], check: 'Acylation avoids polyalkylation and gives a meta-directing ketone product for later steps.', trap: 'Do not use Friedel-Crafts on strongly deactivated rings.' },
+  { id: 'p-nitroaniline', start: 'Aniline', target: 'p-Nitroaniline', disconnection: 'Keep aniline directing power but tame its basicity by temporary acyl protection.', steps: ['Protect -NH2 as acetanilide', 'Nitrate with HNO3/H2SO4 cold', 'Hydrolyze amide protecting group'], check: 'Protection prevents over-oxidation/protonation and controls para substitution.', trap: 'Direct nitration of aniline in acid gives poor control because anilinium is meta-directing.' },
+  { id: 'benzyl-alcohol', start: 'Toluene', target: 'Benzyl alcohol', disconnection: 'Convert benzylic C-H to benzylic leaving group, then substitute.', steps: ['Benzylic bromination with NBS/hv', 'Hydrolysis with aqueous base'], check: 'NBS selects benzylic substitution rather than aromatic bromination.', trap: 'Br2/FeBr3 brominates the ring, not the side chain.' },
+  { id: 'cyclohexene-dibromide', start: 'Cyclohexene', target: 'trans-1,2-dibromocyclohexane', disconnection: 'Recognize anti vicinal dibromide as alkene bromination.', steps: ['Add Br2 in CCl4', 'Anti opening of bromonium ion'], check: 'The vicinal dibromide forms by anti addition.', trap: 'Do not draw syn addition for bromonium ion opening.' },
+  { id: 'butanone', start: '2-butanol', target: 'Butanone', disconnection: 'Secondary alcohol is one oxidation level below ketone.', steps: ['Oxidize with PCC or K2Cr2O7/H+', 'Stop at ketone'], check: 'Secondary alcohol oxidation gives ketone, not acid.', trap: 'No carbon skeleton change is needed.' },
+  { id: 'anti-markovnikov-alcohol', start: '1-butene', target: '1-butanol', disconnection: 'Install OH at less substituted alkene carbon.', steps: ['BH3.THF', 'H2O2/OH- oxidative workup'], check: 'Hydroboration gives syn, anti-Markovnikov hydration without carbocation rearrangement.', trap: 'H2O/H+ would give mainly 2-butanol.' },
+  { id: 'carboxylic-acid-from-nitrile', start: '1-bromopropane', target: 'butanoic acid', disconnection: 'Add one carbon by cyanide, then hydrolyze nitrile.', steps: ['NaCN in polar aprotic solvent', 'Acidic or basic hydrolysis of nitrile'], check: 'Cyanide substitution extends the carbon chain by one carbon.', trap: 'Use primary halide for SN2; tertiary halide eliminates.' },
+];
+
+const organicCompatibilityRules = [
+  { problem: 'Grignard reagent present', avoid: 'Water, alcohol, carboxylic acid, phenol, amine N-H', fix: 'Protect acidic groups or run Grignard before deprotection.' },
+  { problem: 'Strong oxidizer planned', avoid: 'Unprotected aldehydes, sulfides, electron-rich aromatics', fix: 'Use PCC or chemoselective conditions when needed.' },
+  { problem: 'Friedel-Crafts step planned', avoid: 'Strongly deactivated or aniline-like basic rings', fix: 'Protect amines or choose acylation before deactivating substitution.' },
+  { problem: 'SN2 substitution planned', avoid: 'Tertiary alkyl halides and strong steric hindrance', fix: 'Use primary substrates, polar aprotic solvent, or change route.' },
+];
+
+const organicQuickPrompts = [
+  { prompt: 'Convert propene to 1-propanol.', answer: 'Use BH3.THF then H2O2/OH- for anti-Markovnikov hydration.' },
+  { prompt: 'Convert benzene to nitrobenzene.', answer: 'Use HNO3/H2SO4; nitronium ion performs electrophilic aromatic substitution.' },
+  { prompt: 'Predict stereochemistry for 2-bromobutane + CN- in DMSO.', answer: 'SN2 inversion at the reacting stereocenter.' },
+  { prompt: 'Protect an aldehyde before a Grignard step.', answer: 'Convert it to an acetal with ethylene glycol and acid, then deprotect with aqueous acid.' },
+  { prompt: 'Make a primary amine without over-alkylation.', answer: 'Use Gabriel phthalimide synthesis or reduce a nitrile/amides depending on carbon count.' },
+];
+
 const functionalTestData = [
   { name: "Tollens' test", detects: 'Aldehydes and reducing sugars', reagents: 'Ammoniacal AgNO3', positive: 'Bright silver mirror or black Ag deposit', negative: 'No silver mirror', example: 'Glucose or ethanal' },
   { name: "Fehling's test", detects: 'Aliphatic aldehydes and reducing sugars', reagents: 'Fehling A + Fehling B, warm', positive: 'Brick-red Cu2O precipitate', negative: 'Solution remains blue', example: 'Ethanal' },
@@ -268,6 +389,108 @@ const functionalQuizData = [
   { compound: 'Ethene', answer: "Baeyer's test", expected: 'Cold alkaline KMnO4 decolorizes.' },
   { compound: 'Acetic acid', answer: 'Sodium bicarbonate test', expected: 'CO2 effervescence.' },
   { compound: 'tert-Butyl alcohol', answer: 'Lucas test', expected: 'Immediate turbidity.' },
+];
+
+const analyticalModes = [
+  { id: 'gravimetry', label: 'Gravimetry', note: 'Precipitate, dry, weigh, and convert mass to analyte.' },
+  { id: 'volumetric', label: 'Volumetric', note: 'Direct, back, EDTA, iodometry, and iodimetry titration logic.' },
+  { id: 'calibration', label: 'Calibration', note: 'Build Beer-Lambert calibration curves and read unknowns.' },
+  { id: 'chromatography', label: 'Chromatography', note: 'Interpret Rf, retention, resolution, and purity.' },
+  { id: 'quality', label: 'Method QA', note: 'Recovery, precision, blanks, interferences, and reporting checks.' },
+];
+
+const gravimetricMethods = {
+  chloride: { analyte: 'Cl-', precipitate: 'AgCl', reagent: 'AgNO3', factor: 35.45 / 143.32, check: 'White curdy precipitate; soluble in NH3.', interference: 'Br- and I- also precipitate with Ag+.' },
+  sulfate: { analyte: 'SO4^2-', precipitate: 'BaSO4', reagent: 'BaCl2', factor: 96.06 / 233.39, check: 'Heavy white precipitate; insoluble in dilute acid.', interference: 'Avoid phosphate/carbonate contamination.' },
+  nickel: { analyte: 'Ni^2+', precipitate: 'Ni(DMG)2', reagent: 'Dimethylglyoxime', factor: 58.69 / 288.91, check: 'Red chelate precipitate in ammoniacal medium.', interference: 'pH and masking agents change recovery.' },
+  calcium: { analyte: 'Ca^2+', precipitate: 'CaC2O4.H2O', reagent: 'Ammonium oxalate', factor: 40.08 / 146.11, check: 'White calcium oxalate; ignition can convert to CaO for weighing.', interference: 'Mg2+ and phosphate can co-precipitate if pH is poorly controlled.' },
+  iron: { analyte: 'Fe^3+', precipitate: 'Fe2O3 after ignition', reagent: 'NH4OH, then ignition', factor: 111.69 / 159.69, check: 'Reddish-brown hydroxide ignites to constant-mass Fe2O3.', interference: 'Al3+ and Cr3+ hydroxides contaminate unless separated.' },
+};
+
+const volumetricMethods = {
+  'direct-acid-base': { label: 'Direct acid-base titration', analyte: 'Unknown monoprotic acid/base', factor: 1, unit: 'M', formula: 'Cunknown = Mtitrant x Vtitrant / Valiquot', endpoint: 'Sharp indicator color change near equivalence.' },
+  'back-titration': { label: 'Back titration', analyte: 'CaCO3 purity', factor: 100.09, unit: '% purity', formula: '% = M x (Vblank - Vsample) x Mr / sample mass x 100', endpoint: 'Excess acid left after dissolving sample is titrated.' },
+  complexometric: { label: 'Complexometric EDTA titration', analyte: 'Water hardness as CaCO3', factor: 100090, unit: 'mg/L as CaCO3', formula: 'Hardness = MEDTA x VEDTA x 100090 / Vsample', endpoint: 'Eriochrome Black T changes wine red to blue.' },
+  iodometry: { label: 'Iodometry', analyte: 'Cu2+ by thiosulfate', factor: 63.55, unit: 'mg Cu', formula: 'Cu2+ liberates I2; I2 is titrated by thiosulfate.', endpoint: 'Starch blue disappears near endpoint.' },
+  iodimetry: { label: 'Iodimetry', analyte: 'Ascorbic acid', factor: 176.12, unit: 'mg vitamin C', formula: 'Ascorbic acid reacts 1:1 with I2.', endpoint: 'First permanent blue starch-iodine color.' },
+  permanganometry: { label: 'Permanganometry', analyte: 'Fe2+ or oxalate', factor: 55.85, unit: 'mg Fe2+', formula: 'MnO4- self-indicates in acid; 1 mol MnO4- oxidizes 5 mol Fe2+.', endpoint: 'Faint permanent pink color.' },
+  argentometry: { label: 'Argentometric precipitation titration', analyte: 'Chloride by AgNO3', factor: 35.45, unit: 'mg Cl-', formula: 'Ag+ + Cl- -> AgCl; Mohr/Fajans/Volhard variants differ by indicator and medium.', endpoint: 'Chromate red-brown Ag2CrO4 or adsorption indicator color change.' },
+};
+
+const calibrationStandards = [
+  { c: 0, a: 0.002 },
+  { c: 2, a: 0.126 },
+  { c: 4, a: 0.247 },
+  { c: 6, a: 0.371 },
+  { c: 8, a: 0.493 },
+  { c: 10, a: 0.615 },
+];
+
+const chromatographySamples = {
+  ink: {
+    label: 'Ink mixture TLC',
+    solventFront: 8.0,
+    spots: [
+      { label: 'Yellow dye', distance: 2.2, color: '#facc15' },
+      { label: 'Blue dye', distance: 4.8, color: '#38bdf8' },
+      { label: 'Red dye', distance: 6.4, color: '#fb7185' },
+    ],
+    note: 'Different dye polarity gives different attraction to the stationary phase.',
+  },
+  analgesic: {
+    label: 'Analgesic tablet HPLC',
+    solventFront: 10,
+    spots: [
+      { label: 'Caffeine', distance: 2.7, color: '#a78bfa' },
+      { label: 'Paracetamol', distance: 4.1, color: '#22c55e' },
+      { label: 'Aspirin', distance: 7.2, color: '#f59e0b' },
+    ],
+    note: 'Peak order and area support identity, assay, and impurity decisions.',
+  },
+  aminoAcids: {
+    label: 'Amino acid paper chromatography',
+    solventFront: 7.5,
+    spots: [
+      { label: 'Glycine', distance: 1.9, color: '#60a5fa' },
+      { label: 'Alanine', distance: 3.1, color: '#34d399' },
+      { label: 'Leucine', distance: 5.9, color: '#f472b6' },
+    ],
+    note: 'Ninhydrin reveals amino acid spots after development.',
+  },
+};
+
+const analyticalWorkflowCards = [
+  { title: 'Sampling', detail: 'Use representative sample, clean container, preservation, label, and chain-of-custody where needed.' },
+  { title: 'Preparation', detail: 'Dissolve, digest, filter, mask interferences, dilute into calibration range, and record blanks.' },
+  { title: 'Measurement', detail: 'Run standards, blank, sample, duplicate, spike/recovery, and method control sample.' },
+  { title: 'Reporting', detail: 'Report units, method, dilution, significant figures, uncertainty, recovery correction, and detection limit.' },
+];
+
+const volumetricVariantNotes = [
+  ['Direct titration', 'Analyte reacts quickly and completely with titrant; endpoint closely matches equivalence point.'],
+  ['Back titration', 'Add excess known reagent, let slow/insoluble sample react, then titrate leftover reagent.'],
+  ['Complexometric', 'EDTA forms 1:1 metal complexes; pH buffer and masking agents control selectivity.'],
+  ['Iodometry', 'Analyte oxidizes iodide to iodine; iodine is titrated with thiosulfate.'],
+  ['Iodimetry', 'Standard iodine directly oxidizes a reducing analyte such as ascorbic acid.'],
+  ['Redox titration', 'Electron equivalents replace acid-base equivalents; permanganate can self-indicate.'],
+  ['Precipitation titration', 'Endpoint depends on first excess titrant or adsorption indicator after precipitate formation.'],
+];
+
+const chromatographyRules = [
+  ['Rf', 'Rf = spot distance / solvent front; same compound has similar Rf only under identical conditions.'],
+  ['Resolution', 'Rs about 1.5 or higher usually indicates baseline separation.'],
+  ['Retention', 'In HPLC/GC, identity is supported by retention time but confirmed with standards or spectra.'],
+  ['Peak area', 'Area is used for quantity after calibration or internal-standard correction.'],
+  ['Tailing', 'Peak tailing suggests adsorption, overload, active sites, or pH mismatch.'],
+  ['Mobile phase', 'Changing polarity, pH, or gradient changes retention and selectivity.'],
+];
+
+const analyticalPracticeScenarios = [
+  { prompt: 'A limestone tablet dissolves slowly and leaves insoluble material. Which titration style is best?', answer: 'Back titration: add excess acid to react with CaCO3, then titrate leftover acid.' },
+  { prompt: 'A water-hardness endpoint changes wine red to blue at pH 10. Which method is being used?', answer: 'Complexometric EDTA titration with Eriochrome Black T indicator.' },
+  { prompt: 'An unknown absorbance is higher than the highest standard.', answer: 'Dilute the sample and rerun; do not extrapolate beyond the calibration range.' },
+  { prompt: 'Two HPLC peaks have Rs = 0.8.', answer: 'They are poorly resolved; change mobile phase, column, gradient, pH, or temperature.' },
+  { prompt: 'A gravimetric precipitate is not washed well.', answer: 'Adsorbed ions or mother liquor cause positive error in precipitate mass.' },
 ];
 
 const structuralIsomerData = {
@@ -603,6 +826,60 @@ const saltSamples = {
   BaCO3: ['Dilute HCl gives brisk CO2; lime water turns milky.', 'Ba2+ gives apple green flame.', 'Add (NH4)2CO3 in group V gives white carbonate ppt.'],
 };
 
+const saltWorkflowStages = [
+  { id: 'preliminary', label: 'Preliminary', cue: 'Color, solubility, flame, dry heating, dilute acid action.' },
+  { id: 'anion', label: 'Anion Tests', cue: 'Use dilute acid group, concentrated acid clues, then confirmatory tests.' },
+  { id: 'cation', label: 'Cation Groups', cue: 'Add group reagents in order so earlier ions do not mask later ions.' },
+  { id: 'confirm', label: 'Confirm', cue: 'Run specific confirmatory tests and cross-check interference.' },
+  { id: 'viva', label: 'Viva', cue: 'Explain why each reagent is used and what false positives can occur.' },
+];
+
+const cationSeparationData = {
+  Pb2: { ion: 'Pb2+', group: 'I', reagent: 'Dilute HCl', observation: 'White PbCl2 ppt; dissolves in hot water, yellow PbCrO4 with K2CrO4.', confirm: 'Hot-water extract + K2CrO4 gives yellow precipitate.', color: '#f8fafc', interference: 'Pb2+ can also appear in Group II if not fully removed in Group I.' },
+  Ag: { ion: 'Ag+', group: 'I', reagent: 'Dilute HCl', observation: 'White curdy AgCl ppt; soluble in NH4OH, reprecipitates with HNO3.', confirm: 'AgCl dissolves in ammonium hydroxide due to diamminesilver complex.', color: '#e5e7eb', interference: 'Cl- in glassware or tap water can create false AgCl cloudiness.' },
+  Cu: { ion: 'Cu2+', group: 'II', reagent: 'H2S in acidic medium', observation: 'Black CuS ppt; blue solution; deep blue complex with NH4OH.', confirm: 'Add NH4OH: pale blue ppt dissolves to deep blue solution.', color: '#38bdf8', interference: 'Insufficient acidity lets Group IV sulphides precipitate too early.' },
+  Fe: { ion: 'Fe3+', group: 'III', reagent: 'NH4Cl + NH4OH', observation: 'Reddish-brown Fe(OH)3 precipitate.', confirm: 'KSCN gives blood-red ferric thiocyanate complex.', color: '#fb923c', interference: 'Fe2+ must be oxidized to Fe3+ for classic ferric confirmatory test.' },
+  Al: { ion: 'Al3+', group: 'III', reagent: 'NH4Cl + NH4OH', observation: 'White gelatinous Al(OH)3; dissolves in excess NaOH.', confirm: 'Aluminate solution gives white gelatinous ppt on acidification.', color: '#f1f5f9', interference: 'Zn(OH)2 is also amphoteric; group separation context matters.' },
+  Zn: { ion: 'Zn2+', group: 'IV', reagent: 'H2S in ammoniacal medium', observation: 'White ZnS precipitate.', confirm: 'Potassium ferrocyanide gives bluish-white zinc ferrocyanide ppt.', color: '#e2e8f0', interference: 'Too acidic medium prevents ZnS precipitation.' },
+  Ni: { ion: 'Ni2+', group: 'IV', reagent: 'H2S in ammoniacal medium', observation: 'Black NiS precipitate.', confirm: 'Dimethylglyoxime in ammoniacal medium gives red ppt.', color: '#ef4444', interference: 'Fe/Ni colors can confuse if Group III ions were not removed.' },
+  Ba: { ion: 'Ba2+', group: 'V', reagent: '(NH4)2CO3 with NH4Cl/NH4OH', observation: 'White BaCO3 ppt; apple green flame.', confirm: 'K2CrO4 gives yellow BaCrO4; sulphate gives insoluble BaSO4.', color: '#84cc16', interference: 'Carbonate anion must be removed before group V cation precipitation.' },
+  Ca: { ion: 'Ca2+', group: 'V', reagent: '(NH4)2CO3 with NH4Cl/NH4OH', observation: 'White CaCO3 ppt; brick-red flame.', confirm: 'Ammonium oxalate gives white CaC2O4 ppt.', color: '#fb7185', interference: 'Ba2+ and Sr2+ must be separated before Ca2+ confirmation.' },
+  NH4: { ion: 'NH4+', group: 'VI', reagent: 'NaOH warm', observation: 'Ammonia gas turns moist red litmus blue.', confirm: 'NH3 fumes form white smoke with HCl rod.', color: '#a78bfa', interference: 'Do NH4+ test before adding ammonium salts in group analysis.' },
+  Na: { ion: 'Na+', group: 'VI', reagent: 'Flame test', observation: 'Persistent golden-yellow flame.', confirm: 'Uranyl zinc acetate gives yellow crystalline ppt where used.', color: '#facc15', interference: 'Sodium contamination is common; cobalt glass is not useful for Na.' },
+};
+
+const anionConfirmatoryData = {
+  CO3: { ion: 'CO3^2-', group: 'Dilute acid group', reagent: 'Dilute HCl then lime water', observation: 'Brisk effervescence; CO2 turns lime water milky.', confirm: 'Milkiness disappears in excess CO2 due to bicarbonate formation.', interference: 'Sulphite also releases gas; confirm with lime water and odor/context.' },
+  SO4: { ion: 'SO4^2-', group: 'Barium test', reagent: 'BaCl2 after acidifying with dilute HCl', observation: 'Dense white BaSO4 ppt insoluble in acids.', confirm: 'Precipitate remains insoluble in dilute HCl/HNO3.', interference: 'Carbonate and sulphite must be removed by acidification first.' },
+  Cl: { ion: 'Cl-', group: 'Silver nitrate test', reagent: 'Dilute HNO3 then AgNO3', observation: 'White curdy AgCl ppt soluble in NH4OH.', confirm: 'Reprecipitation on acidifying ammoniacal solution with HNO3.', interference: 'Use HNO3, not HCl, before AgNO3 or you add chloride.' },
+  Br: { ion: 'Br-', group: 'Silver nitrate test', reagent: 'Dilute HNO3 then AgNO3', observation: 'Pale yellow AgBr partly soluble in NH4OH.', confirm: 'Chlorine water liberates bromine; organic layer orange-brown.', interference: 'Iodide gives darker yellow ppt; use oxidizing confirmation.' },
+  I: { ion: 'I-', group: 'Silver nitrate / starch test', reagent: 'AgNO3 or chlorine water + starch', observation: 'Yellow AgI insoluble in NH4OH; blue-black starch iodine.', confirm: 'Chlorine water oxidizes I- to I2; starch turns blue-black.', interference: 'Excess chlorine water can further oxidize iodine and discharge color.' },
+  NO3: { ion: 'NO3-', group: 'Brown ring test', reagent: 'Fresh FeSO4 then conc. H2SO4 down side', observation: 'Brown ring at junction.', confirm: 'Nitrosyl ferrous sulphate ring forms at acid interface.', interference: 'Nitrite interferes; destroy nitrite with sulphamic acid before nitrate test.' },
+  PO4: { ion: 'PO4^3-', group: 'Molybdate test', reagent: 'Ammonium molybdate + conc. HNO3 warm', observation: 'Canary-yellow ammonium phosphomolybdate ppt.', confirm: 'Yellow ppt intensifies on warming.', interference: 'Arsenate gives similar molybdate precipitate.' },
+  S: { ion: 'S^2-', group: 'Lead acetate test', reagent: 'Dilute acid gas to lead acetate paper', observation: 'Black PbS stain.', confirm: 'H2S smell and blackening of lead acetate paper.', interference: 'Do in ventilation; sulphide can mask metal sulphide colors.' },
+};
+
+const saltUnknowns = {
+  NaCl: { cation: 'Na', anion: 'Cl', appearance: 'White crystalline solid, soluble in water.', dryHeat: 'No gas; crackling may occur.', flame: 'Golden yellow', solubility: 'Soluble', clue: 'Common neutral salt with halide behavior.' },
+  CuSO4: { cation: 'Cu', anion: 'SO4', appearance: 'Blue crystalline solid; blue solution.', dryHeat: 'Hydrated crystals may lose water and become pale.', flame: 'Blue-green edge may appear', solubility: 'Soluble', clue: 'Color already suggests transition-metal cation.' },
+  NH4NO3: { cation: 'NH4', anion: 'NO3', appearance: 'White crystalline solid, very soluble.', dryHeat: 'May decompose on heating; no residue in simple school test.', flame: 'No characteristic flame', solubility: 'Soluble', clue: 'Ammonium and nitrate both require special tests.' },
+  BaCO3: { cation: 'Ba', anion: 'CO3', appearance: 'White powder, sparingly soluble.', dryHeat: 'No simple color change.', flame: 'Apple green', solubility: 'Insoluble in water, dissolves in acid with effervescence.', clue: 'Acid action is the fastest clue.' },
+  FeCl3: { cation: 'Fe', anion: 'Cl', appearance: 'Yellow-brown solid/solution.', dryHeat: 'May fume; hydrolysis color is common.', flame: 'No diagnostic flame', solubility: 'Soluble', clue: 'Ferric color plus chloride test.' },
+  AlPO4: { cation: 'Al', anion: 'PO4', appearance: 'White gelatinous solid, sparingly soluble.', dryHeat: 'No characteristic gas.', flame: 'No diagnostic flame', solubility: 'Sparingly soluble', clue: 'Amphoteric hydroxide and phosphate molybdate test.' },
+  ZnS: { cation: 'Zn', anion: 'S', appearance: 'White to pale solid, insoluble.', dryHeat: 'Acid releases H2S odor in conceptual test.', flame: 'No diagnostic flame', solubility: 'Insoluble; reacts with acid.', clue: 'Sulphide anion can interfere with metal sulphide group tests.' },
+  CaBr2: { cation: 'Ca', anion: 'Br', appearance: 'White hygroscopic solid.', dryHeat: 'No characteristic gas in simple test.', flame: 'Brick red', solubility: 'Soluble', clue: 'Calcium flame plus bromide confirmation.' },
+  NiCl2: { cation: 'Ni', anion: 'Cl', appearance: 'Green solid/solution.', dryHeat: 'Hydrated salt may lose water.', flame: 'No reliable flame', solubility: 'Soluble', clue: 'Dimethylglyoxime confirmation is decisive.' },
+};
+
+const saltVivaPrompts = [
+  ['Why is dilute HCl added first in group analysis?', 'It precipitates Group I chlorides before sulphide and hydroxide groups are tested.'],
+  ['Why is H2S passed in acidic medium for Group II?', 'Acid suppresses S2- concentration, so only very insoluble Group II sulphides precipitate.'],
+  ['Why add NH4Cl before NH4OH in Group III?', 'NH4Cl suppresses OH- concentration and prevents premature precipitation of later-group hydroxides.'],
+  ['Why acidify with HNO3 before AgNO3 halide tests?', 'HNO3 removes carbonate/sulphite interference without adding chloride.'],
+  ['Why test NH4+ before adding ammonium reagents?', 'Later NH4Cl/NH4OH additions contaminate the sample with ammonium ions.'],
+  ['Why can carbonate interfere with cation group V?', 'Carbonate can precipitate Ba2+, Sr2+, Ca2+ before the intended group step.'],
+];
+
 const flameReference = [
   ['Na', 'yellow'], ['K', 'lilac'], ['Ca', 'brick red'], ['Ba', 'apple green'], ['Cu', 'blue-green'], ['Sr', 'crimson'],
 ];
@@ -903,6 +1180,7 @@ const LAB_EXPERIMENTS = [
   { id: 'electrolysis', title: 'Electrolysis Cell', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Zap, topic: 'Redox', teaches: 'How electricity drives chemical changes.', steps: ['Choose an electrolyte.', 'Identify cathode and anode products.', 'Compare different solutions.'], tryThis: 'Switch from CuSO4 to NaCl(aq).', result: 'Different ions produce different gases or metals.', safety: 'Electrolysis can produce gases; use ventilation in real labs.', realWorld: 'Used in electroplating and metal extraction.' },
   { id: 'distillation', title: 'Distillation Apparatus', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: FlaskConical, topic: 'Separation', teaches: 'How boiling points separate liquids.', steps: ['Increase heat slowly.', 'Watch vapor move to the condenser.', 'Collect the condensed liquid.'], tryThis: 'Raise heat above 78 percent.', result: 'More volatile liquid vaporizes first.', safety: 'Never seal heated glassware.', realWorld: 'Used for purifying solvents and water.' },
   { id: 'chromatography', title: 'Chromatography', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: BarChart3, topic: 'Separation', teaches: 'How mixtures split into colored bands.', steps: ['Move the run time slider.', 'Watch colors travel different distances.', 'Compare the final band positions.'], tryThis: 'Run the slider to 100 percent.', result: 'Substances separate because they move at different speeds.', safety: 'Use safe solvents in classroom demos.', realWorld: 'Used in forensics and quality testing.' },
+  { id: 'analytical-lab', title: 'Full Analytical Chemistry Lab', tab: 'Advanced', type: 'Simulation', difficulty: 'Advanced', icon: BarChart3, topic: 'Analytical Chemistry', teaches: 'Quantitative analysis uses precipitation, titration, calibration, and separation data to identify and measure samples.', steps: ['Choose gravimetry, volumetric analysis, calibration, or chromatography.', 'Change sample and reagent values.', 'Read the calculation, endpoint, and interpretation.'], tryThis: 'Switch from back titration to EDTA hardness, then compare calibration and chromatography results.', result: 'A complete analysis connects sample preparation, stoichiometry, signal calibration, separation, and quality checks.', safety: 'Analytical reagents may be corrosive, oxidizing, toxic, or solvent-based; validate methods before real lab use.', realWorld: 'Used in water testing, pharma QC, ores, food, clinical labs, and environmental monitoring.' },
   { id: 'spectroscopy', title: 'Spectroscopy Viewer', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: RadioTower, topic: 'Light', teaches: 'Each element has a unique light fingerprint.', steps: ['Choose an element.', 'Look at the bright emission lines.', 'Compare line positions.'], tryThis: 'Compare hydrogen and sodium.', result: 'Line positions identify elements.', safety: 'Avoid looking directly into bright discharge lamps.', realWorld: 'Used to study stars and unknown samples.' },
   { id: 'ph-meter', title: 'pH Meter', tab: 'Solutions', type: 'Simulation', difficulty: 'Beginner', icon: Activity, topic: 'Acids', teaches: 'pH tells whether a solution is acidic, neutral, or basic.', steps: ['Choose a solution.', 'Read the pH value.', 'Use the bar to classify it.'], tryThis: 'Compare vinegar, water, and ammonia.', result: 'Low pH is acidic; high pH is basic.', safety: 'Do not taste unknown solutions.', realWorld: 'Used in pools, soil, and drinking water tests.' },
   { id: 'electrochemical-cell', title: 'Electrochemical Cell', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Zap, topic: 'Cells', teaches: 'How metal pairs create voltage.', steps: ['Pick two metals.', 'Read the voltage.', 'Change one metal and compare.'], tryThis: 'Try Zn and Cu.', result: 'A bigger potential difference gives more voltage.', safety: 'Real cells can leak corrosive electrolytes.', realWorld: 'The idea behind batteries.' },
@@ -920,17 +1198,19 @@ const LAB_EXPERIMENTS = [
   { id: 'hess', title: "Reaction Enthalpy (Hess's Law)", tab: 'Reactions', type: 'Calculator', difficulty: 'Advanced', icon: Activity, topic: 'Energy', teaches: 'Reaction enthalpies can be added.', steps: ['Enter two enthalpy values.', 'Add them to get total change.', 'Decide if heat is released or absorbed.'], tryThis: 'Use -286 and 44.', result: 'Negative total means exothermic.', realWorld: 'Used in thermochemistry.' },
   { id: 'colligative', title: 'Colligative Properties Calculator', tab: 'Solutions', type: 'Calculator', difficulty: 'Advanced', icon: Waves, topic: 'Solutions', teaches: 'Solutes change boiling and freezing points.', steps: ['Set molality.', 'Read boiling elevation.', 'Read freezing depression.'], tryThis: 'Increase molality.', result: 'More solute causes bigger temperature shifts.', realWorld: 'Explains antifreeze and salted roads.' },
   { id: 'adsorption', title: 'Adsorption Isotherms Lab', tab: 'Solutions', type: 'Visualizer', difficulty: 'Advanced', icon: Activity, topic: 'Surface Chemistry', teaches: 'Adsorption isotherms connect surface loading to pressure.', steps: ['Adjust Freundlich constants.', 'Adjust Langmuir constants.', 'Compare physisorption and chemisorption.'], tryThis: 'Increase b in Langmuir and watch saturation arrive earlier.', result: 'Freundlich is empirical; Langmuir approaches monolayer saturation.', realWorld: 'Used in catalysis, charcoal adsorption, and colloid chemistry.' },
+  { id: 'surface-chemistry-deep', title: 'Surface Chemistry Deep Module', tab: 'Advanced', type: 'Simulation', difficulty: 'Advanced', icon: Activity, topic: 'Surface Chemistry', teaches: 'Adsorption, catalysis, colloids, coagulation, emulsions, micelles, cleansing action, and Hardy-Schulze rule in one linked module.', steps: ['Choose a surface chemistry mode.', 'Change colloid, catalyst, electrolyte, emulsifier, or surfactant values.', 'Interpret the visible surface process and exam rule.'], tryThis: 'Open colloids, switch gold sol to ferric hydroxide sol, then increase counter-ion charge.', result: 'Surface phenomena depend on surface area, adsorption, charge stabilization, and amphiphile aggregation.', safety: 'Real colloids, catalysts, dyes, and surfactants may be irritants or powders; avoid inhalation and follow lab disposal rules.', realWorld: 'Used in catalysis, medicine, water treatment, detergents, paints, foods, and pharmaceuticals.' },
   { id: 'orbital-shape', title: 'Orbital Shape Viewer', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: Orbit, topic: 'Orbitals', teaches: 'Orbitals have different shapes.', steps: ['Choose s, p, d, or f.', 'Observe lobe count.', 'Read the note.'], tryThis: 'Compare s and p.', result: 'Orbital shape affects bonding direction.', realWorld: 'Core idea in molecular structure.' },
   { id: 'crystal-structure', title: 'Crystal Structure Viewer', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: Boxes, topic: 'Solids', teaches: 'Solids arrange particles in repeating patterns.', steps: ['Pick a structure.', 'Change lattice size.', 'Observe repeating units.'], tryThis: 'Increase lattice size.', result: 'Crystal properties depend on arrangement.', realWorld: 'Important in salts, metals, and minerals.' },
   { id: 'unit-cell', title: 'Unit Cell Calculator', tab: 'Basics', type: 'Calculator', difficulty: 'Advanced', icon: Boxes, topic: 'Solid State', teaches: 'Unit cell type controls Z, packing efficiency, coordination number, and density.', steps: ['Choose a unit cell.', 'Enter edge length and molar mass.', 'Calculate Z or density.'], tryThis: 'Compare BCC and FCC with the same edge length.', result: 'Density follows rho = ZM / (Na x a^3).', realWorld: 'Used to identify crystalline solids from X-ray density data.' },
   { id: 'crystal-defects', title: 'Crystal Defects Visualizer', tab: 'Basics', type: 'Visualizer', difficulty: 'Advanced', icon: ShieldAlert, topic: 'Solid State', teaches: 'Crystal defects change density, conductivity, and ionic movement.', steps: ['Toggle ionic or metal crystal.', 'Compare perfect, Schottky, and Frenkel grids.', 'Review n-type and p-type doping.'], tryThis: 'Switch from ionic to metal lattice and compare missing sites.', result: 'Schottky lowers density; Frenkel usually keeps density nearly unchanged.', realWorld: 'Explains semiconductors, AgCl defects, and NaCl vacancies.' },
   { id: 'named-reactions', title: 'Named Reactions Reference', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: BookOpen, topic: 'Organic', teaches: 'Named reactions connect reagents, conditions, and mechanism patterns.', steps: ['Search a reaction.', 'Filter by category or exam level.', 'Read reactants, conditions, and mechanism type.'], tryThis: 'Filter JEE Advanced and Organic together.', result: 'High-yield reactions become easier to compare before practice.', realWorld: 'Useful for synthesis planning and board/JEE revision.' },
+  { id: 'organic-reaction-bank', title: 'Organic Reaction Bank Depth', tab: 'Advanced', type: 'Practice', difficulty: 'Advanced', icon: BookOpen, topic: 'Organic', teaches: 'Reagent choice, stereochemical outcome, rearrangement risk, pericyclic rules, protecting groups, and multi-step synthesis strategy.', steps: ['Pick a bank section.', 'Compare reagents or reaction logic.', 'Run a synthesis drill and check why each step is chosen.'], tryThis: 'Use transformations for alkene to alcohol, then compare hydroboration in the stereo tab.', result: 'Organic synthesis becomes predictable when transformation, mechanism, stereochemistry, and compatibility are tracked together.', safety: 'Many organic reagents are corrosive, flammable, toxic, or moisture-sensitive; this is a learning model only.', realWorld: 'Used in exam synthesis, medicinal chemistry, polymer work, and route planning.' },
   { id: 'functional-tests', title: 'Functional Group Test Reference', tab: 'Advanced', type: 'Practice', difficulty: 'Advanced', icon: BadgeCheck, topic: 'Organic Tests', teaches: 'Qualitative tests identify functional groups from visible observations.', steps: ['Pick a test.', 'Read reagents and observations.', 'Try the reverse quiz.'], tryThis: 'Select iodoform, then answer the acetone quiz.', result: 'A positive result links compound class to a visible color or precipitate.', safety: 'Many qualitative reagents are corrosive or toxic in real labs.', realWorld: 'Used in practical organic analysis.' },
   { id: 'isomerism', title: 'Isomerism Explorer', tab: 'Advanced', type: 'Visualizer', difficulty: 'Advanced', icon: GitCompare, topic: 'Isomerism', teaches: 'Isomers share formula but differ in connectivity, geometry, or coordination arrangement.', steps: ['Enter a formula.', 'Review structural isomers.', 'Compare stereochemical and coordination examples.'], tryThis: 'Try C4H10, C2H6O, C3H6O, or C4H8.', result: 'Structural, stereo, and coordination isomerism use different comparison rules.', realWorld: 'Explains drug activity, organic products, and coordination chemistry questions.' },
   { id: 'reactivity-series', title: 'Reactivity Series & Displacement Simulator', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Zap, topic: 'Reactivity', teaches: 'A more reactive metal displaces a less reactive metal from its salt solution.', steps: ['Pick a metal and salt solution.', 'Check if displacement happens.', 'Compare water and acid reactions.'], tryThis: 'Try Cu with ZnSO4 and then Zn with CuSO4.', result: 'Metals above another metal in the series can displace it.', safety: 'Reactive metals and acids require teacher supervision.', realWorld: 'Explains extraction, corrosion, and displacement reactions.' },
   { id: 'quantum-numbers', title: 'Quantum Numbers Explorer', tab: 'Atoms', type: 'Calculator', difficulty: 'Advanced', icon: Atom, topic: 'Quantum', teaches: 'Quantum numbers describe electron shells, subshells, orbitals, and spin.', steps: ['Set n, l, ml, and ms.', 'Check validity.', 'Use wavelength, uncertainty, and photoelectric calculators.'], tryThis: 'Set n=3 and l=2 to see a 3d orbital.', result: 'Only combinations obeying l < n and -l <= ml <= l are allowed.', realWorld: 'Foundation for atomic structure and spectra.' },
   { id: 'gibbs', title: 'Gibbs Free Energy & Thermodynamic Spontaneity', tab: 'Reactions', type: 'Calculator', difficulty: 'Advanced', icon: Activity, topic: 'Thermodynamics', teaches: 'Delta G combines enthalpy, entropy, and temperature to predict spontaneity.', steps: ['Enter Delta H and Delta S.', 'Change temperature.', 'Read Delta G and K.'], tryThis: 'Use positive Delta H and positive Delta S, then raise T.', result: 'A reaction is spontaneous when Delta G is negative.', realWorld: 'Used to predict reaction feasibility and equilibrium.' },
-  { id: 'environmental-chem', title: 'Environmental Chemistry', tab: 'Advanced', type: 'Reference', difficulty: 'Intermediate', icon: Waves, topic: 'Environment', teaches: 'Atmospheric chemistry, pollution, water quality, and smog depend on reaction pathways.', steps: ['Switch tabs.', 'Review key equations.', 'Connect pollutants to effects.'], tryThis: 'Compare photochemical and classical smog.', result: 'Environmental chemistry links molecular reactions to real-world health and climate effects.', realWorld: 'Useful for Class 11 environmental chemistry and NEET revision.' },
+  { id: 'environmental-chem', title: 'Environmental Chemistry Deep Module', tab: 'Advanced', type: 'Simulation', difficulty: 'Intermediate', icon: Waves, topic: 'Environment', teaches: 'Ozone depletion, photochemical smog, water hardness, BOD/COD, eutrophication, and pollutant treatment.', steps: ['Choose an environmental chemistry section.', 'Adjust water-quality or treatment values.', 'Connect reaction pathways to environmental impact and control.'], tryThis: 'Calculate BOD/COD, then switch to eutrophication and raise phosphate.', result: 'Environmental chemistry connects reaction mechanisms, analytical water-quality values, and practical pollution control.', realWorld: 'Useful for Class 11 environmental chemistry, NEET revision, water testing, wastewater treatment, and air-pollution control.' },
   { id: 'drug-functional-groups', title: 'Drug Functional Groups Map', tab: 'Advanced', type: 'Reference', difficulty: 'Intermediate', icon: BadgeCheck, topic: 'Medicinal Chemistry', teaches: 'Functional groups control solubility, binding, stability, and metabolism in drug molecules.', steps: ['Compare acids, bases, amides, esters, and aromatics.', 'Connect each group to pKa or hydrogen bonding.', 'Predict how the group changes absorption or metabolism.'], tryThis: 'Search amine, carboxylic acid, ester, or amide.', result: 'Drug-like molecules balance polarity, shape, and ionization.', realWorld: 'Used in medicinal chemistry, pharmacy, and pharmacology.' },
   { id: 'adme-ionization', title: 'ADME, pKa and Ionization Guide', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: Activity, topic: 'Pharmacokinetics', teaches: 'Absorption, distribution, metabolism, and excretion depend strongly on charge, polarity, and pH.', steps: ['Identify acidic or basic groups.', 'Compare pH with pKa.', 'Estimate whether the molecule is mostly ionized.'], tryThis: 'Compare a weak acid at stomach pH and blood pH.', result: 'Ionized forms are usually more water soluble; neutral forms cross membranes more easily.', realWorld: 'Used to reason about drug absorption and dosing.' },
   { id: 'isotonicity', title: 'Isotonicity and Osmotic Pressure', tab: 'Solutions', type: 'Calculator', difficulty: 'Advanced', icon: Calculator, topic: 'Pharma Solutions', teaches: 'Osmotic pressure explains why injections and eye drops must match body-fluid tonicity.', steps: ['Review molarity and van Hoff factor.', 'Compare hypotonic, isotonic, and hypertonic solutions.', 'Link osmotic pressure to cell swelling or shrinking.'], tryThis: 'Compare normal saline with pure water.', result: 'Body-compatible solutions are designed near physiological osmolarity.', realWorld: 'Used in IV fluids, ophthalmic preparations, and medical labs.' },
@@ -957,7 +1237,7 @@ const LAB_EXPERIMENTS = [
   { id: 'toxicology-chelation', title: 'Toxicology and Chelation Visualizer', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: ShieldAlert, topic: 'Toxicology', teaches: 'Toxins harm by binding metals/proteins, blocking enzymes, or shifting equilibria; chelation can trap some metals.', steps: ['Compare toxin binding targets.', 'Watch ligand capture.', 'Connect chemistry to treatment concept.'], tryThis: 'Compare lead chelation with CO poisoning.', result: 'Toxicity often comes from strong binding at the wrong biochemical site.', safety: 'Toxicology topics are conceptual; real exposure needs medical care.', realWorld: 'Used in poisoning, occupational health, and coordination chemistry.' },
   { id: 'cft', title: 'Crystal Field Theory Visualizer', tab: 'Advanced', type: 'Visualizer', difficulty: 'Advanced', icon: Orbit, topic: 'Coordination', teaches: 'Ligand geometry splits d orbitals, changing color, CFSE, and magnetism.', steps: ['Choose geometry.', 'Set d-electron count.', 'Compare strong and weak field filling.'], tryThis: 'Try d6 octahedral in strong and weak field modes.', result: 'Splitting and pairing decide unpaired electrons and magnetic moment.', realWorld: 'Explains transition metal complex color and spin state.' },
   { id: 'metallurgy', title: 'Metallurgy & Extraction Flowchart', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: Boxes, topic: 'Metallurgy', teaches: 'Ore extraction follows concentration, reduction, and refining logic.', steps: ['Select a metal.', 'Click each extraction step.', 'Review equations and Ellingham idea.'], tryThis: 'Compare Al electrolysis with Fe blast furnace reduction.', result: 'Reduction route depends on metal reactivity and oxide stability.', realWorld: 'Core industrial chemistry for metals.' },
-  { id: 'salt-analysis', title: 'Qualitative Salt Analysis Guide', tab: 'Advanced', type: 'Practice', difficulty: 'Advanced', icon: BadgeCheck, topic: 'Salt Analysis', teaches: 'Systematic cation and anion tests identify unknown salts.', steps: ['Review cation groups.', 'Review anion tests.', 'Pick a sample salt for test sequence.'], tryThis: 'Choose CuSO4 and follow both ion confirmations.', result: 'Group reagents narrow ions before confirmatory tests.', safety: 'Qualitative analysis reagents can be toxic, acidic, or release gases.', realWorld: 'Used in practical exams and analytical chemistry.' },
+  { id: 'salt-analysis', title: 'Full Qualitative Salt Analysis Simulator', tab: 'Advanced', type: 'Practice', difficulty: 'Advanced', icon: BadgeCheck, topic: 'Salt Analysis', teaches: 'Systematic reagent order separates cation groups and confirms anions while avoiding masking and interference.', steps: ['Start with preliminary clues.', 'Confirm the anion with the correct reagent.', 'Separate cation groups in order.', 'Run confirmatory tests and answer viva prompts.'], tryThis: 'Choose CuSO4, then move through anion, cation, confirm, and viva stages.', result: 'A complete unknown workflow identifies cation and anion by observation, group separation, confirmation, and interference checks.', safety: 'Qualitative analysis reagents can be toxic, acidic, sulphide-releasing, or ammonia-producing; use ventilation and teacher supervision.', realWorld: 'Used in practical exams, inorganic analysis, water testing, and analytical chemistry training.' },
   { id: 'pblock-advanced', title: 'p-Block Groups 15-18 Reference', tab: 'Advanced', type: 'Reference', difficulty: 'Advanced', icon: BookOpen, topic: 'p-Block', teaches: 'Groups 15 to 18 show key oxyacids, allotropes, interhalogens, and xenon structures.', steps: ['Open a group tab.', 'Review structures and trends.', 'Connect VSEPR to noble gas compounds.'], tryThis: 'Compare chlorine oxoacid strength across oxidation states.', result: 'p-block trends often depend on oxidation state, bonding, and size effects.', realWorld: 'High-yield JEE Advanced inorganic reference.' },
   { id: 'hybridization', title: 'Hybridization Animator', tab: 'Molecules', type: 'Visualizer', difficulty: 'Advanced', icon: Orbit, topic: 'Bonding', teaches: 'Hybrid orbitals explain common shapes.', steps: ['Choose a hybridization.', 'Observe orbital count.', 'Connect it to geometry.'], tryThis: 'Compare sp2 and sp3.', result: 'Hybridization predicts bond directions.', realWorld: 'Used in organic chemistry.' },
   { id: 'vsepr', title: 'VSEPR Shape Builder', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: Boxes, topic: 'Shapes', teaches: 'Electron domains determine molecular shape.', steps: ['Set bonded atoms.', 'Set lone pairs.', 'Read the shape and angle.'], tryThis: 'Use 2 bonds and 2 lone pairs.', result: 'Lone pairs bend molecular shapes.', realWorld: 'Explains water shape and polarity.' },
@@ -965,6 +1245,7 @@ const LAB_EXPERIMENTS = [
   { id: 'mechanism', title: 'Reaction Mechanism Player', tab: 'Reactions', type: 'Visualizer', difficulty: 'Advanced', icon: ChevronRight, topic: 'Organic', teaches: 'Reactions happen in steps.', steps: ['Choose a mechanism.', 'Move through steps.', 'Read each event.'], tryThis: 'Compare SN1 and SN2.', result: 'Mechanism controls product and rate.', realWorld: 'Used in synthesis planning.' },
   { id: 'imf', title: 'Intermolecular Forces Demo', tab: 'Molecules', type: 'Visualizer', difficulty: 'Intermediate', icon: Waves, topic: 'Forces', teaches: 'Attractions between molecules affect properties.', steps: ['Choose a force type.', 'Observe relative strength.', 'Connect to boiling point.'], tryThis: 'Select hydrogen bonding.', result: 'Stronger forces usually mean higher boiling points.', realWorld: 'Explains water behavior.' },
   { id: 'nuclear-decay', title: 'Nuclear Decay Simulator', tab: 'Atoms', type: 'Visualizer', difficulty: 'Intermediate', icon: RadioTower, topic: 'Nuclear', teaches: 'Radioactive nuclei change over time.', steps: ['Choose decay mode.', 'Adjust half-lives.', 'Watch remaining parent material.'], tryThis: 'Move to 4 half-lives.', result: 'Each half-life halves the remaining sample.', safety: 'Real radioactive materials need strict controls.', realWorld: 'Used in dating and medicine.' },
+  { id: 'nuclear-chemistry', title: 'Nuclear Chemistry Lab', tab: 'Atoms', type: 'Simulation', difficulty: 'Advanced', icon: RadioTower, topic: 'Nuclear Chemistry', teaches: 'Decay series, nuclear equations, binding energy, mass defect, fission/fusion energetics, shielding, and radiation dose.', steps: ['Choose a nuclear chemistry mode.', 'Balance mass number and atomic number.', 'Compare energy release and shielding effect.'], tryThis: 'Build the U-238 decay fragment, then compare lead shielding for beta and gamma radiation.', result: 'Nuclear chemistry conserves nucleon number and charge while mass defect explains large energy changes.', safety: 'Radiation work requires trained supervision, time-distance-shielding controls, monitoring, and legal compliance.', realWorld: 'Used in dating, nuclear power, radiotherapy, PET/SPECT imaging, sterilization, and materials testing.' },
   { id: 'phase-diagram', title: 'Phase Diagram Explorer', tab: 'Basics', type: 'Visualizer', difficulty: 'Intermediate', icon: BarChart3, topic: 'States', teaches: 'Temperature and pressure determine phase.', steps: ['Change temperature.', 'Change pressure.', 'Read the phase.'], tryThis: 'Raise pressure and temperature.', result: 'Matter can become solid, liquid, gas, or supercritical.', realWorld: 'Used in weather and industrial processes.' },
   { id: 'mo-diagram', title: 'Molecular Orbital Diagram', tab: 'Molecules', type: 'Visualizer', difficulty: 'Advanced', icon: Orbit, topic: 'Orbitals', teaches: 'Molecular orbitals explain bond order and magnetism.', steps: ['Choose a molecule.', 'Read bond order.', 'Check magnetic behavior.'], tryThis: 'Choose O2.', result: 'O2 is paramagnetic in MO theory.', realWorld: 'Explains observations Lewis structures miss.' },
   { id: 'rate-lab', title: 'Reaction Rate Lab', tab: 'Reactions', type: 'Simulation', difficulty: 'Intermediate', icon: Activity, topic: 'Kinetics', teaches: 'Temperature and concentration affect reaction speed.', steps: ['Change temperature.', 'Change concentration.', 'Watch curve steepness.'], tryThis: 'Increase both sliders.', result: 'Higher temperature and concentration usually increase rate.', safety: 'Fast reactions can heat or foam.', realWorld: 'Used in food, medicine, and manufacturing.' },
@@ -1000,6 +1281,7 @@ const labFocusTopics = [
   { id: 'bonding', label: 'Bonding', desc: 'Bonds, shapes, polarity, molecules' },
   { id: 'reactions', label: 'Reactions', desc: 'Equations, redox, rates, heat' },
   { id: 'solutions', label: 'Solutions', desc: 'pH, concentration, solubility, buffers' },
+  { id: 'analytical', label: 'Analytical', desc: 'Gravimetry, titrations, calibration, chromatography' },
   { id: 'inorganic', label: 'Inorganic', desc: 'p-block, coordination, CFT, metallurgy, salt analysis, crystals' },
   { id: 'organic', label: 'Organic', desc: 'Mechanisms, polymers, biomolecules' },
   { id: 'bio', label: 'Bio', desc: 'Enzymes, proteins, sugars, lipids, DNA, metabolism' },
@@ -1019,6 +1301,10 @@ const prerequisiteMap = {
   electrolysis: 'Know oxidation, reduction, anode, and cathode first.',
   'electrochemical-cell': 'Know redox potential and electron flow first.',
   colligative: 'Know molality and solution concentration first.',
+  'analytical-lab': 'Know mole ratios, concentration units, endpoints, calibration graphs, and separation basics.',
+  'surface-chemistry-deep': 'Know surface area, adsorption, solution charge, and basic intermolecular forces first.',
+  'organic-reaction-bank': 'Know functional groups, nucleophiles/electrophiles, leaving groups, and basic mechanisms first.',
+  'environmental-chem': 'Know air composition, oxidation, acids, dissolved oxygen, ions, and water-quality units.',
   mechanism: 'Know nucleophiles, leaving groups, and bond breaking first.',
   'enzyme-kinetics': 'Know enzymes as catalysts, active sites, substrate, product, and reaction rate.',
   'amino-acid-pi': 'Know acids, bases, zwitterions, and alpha-amino acid functional groups.',
@@ -1039,6 +1325,8 @@ const prerequisiteMap = {
   'pharma-buffer-lab': 'Know buffer capacity, target pH, pKa, and compatibility.',
   'pharma-analysis': 'Know titration, chromatography, spectroscopy, and impurity testing basics.',
   radiopharma: 'Know isotopes, half-life, decay type, tracer targeting, and radiation safety.',
+  'salt-analysis': 'Know solubility, precipitation, amphoteric hydroxides, flame tests, and common anion confirmatory reactions.',
+  'nuclear-chemistry': 'Know atomic number, mass number, isotopes, half-life, and conservation of mass number and charge.',
   'electrolyte-panel': 'Know ions, charge balance, osmolarity, and body-fluid compartments.',
   'hemoglobin-oxygen': 'Know equilibrium, cooperative binding, heme iron, pH, and CO2 effects.',
   'diagnostic-color-tests': 'Know redox tests, complex formation, precipitation, and absorbance.',
@@ -1056,6 +1344,10 @@ const commonMistakes = {
   equilibrium: 'A catalyst changes speed, not the equilibrium position.',
   colligative: 'Use molality, not molarity, for boiling and freezing point calculations.',
   electrolysis: 'Do not mix up electrode sign conventions for electrolytic and galvanic cells.',
+  'analytical-lab': 'Do not report an analytical result without blank correction, dilution factor, units, and method limits.',
+  'surface-chemistry-deep': 'Do not apply Hardy-Schulze by total salt amount only; the charge of the counter-ion is the key idea.',
+  'organic-reaction-bank': 'Do not choose reagents by product name alone; check mechanism, stereochemistry, rearrangement risk, and functional-group compatibility.',
+  'environmental-chem': 'Do not confuse stratospheric ozone protection with tropospheric ozone pollution; high BOD/COD usually means polluted water.',
   'enzyme-kinetics': 'Do not assume rate rises forever; active sites saturate near Vmax.',
   'amino-acid-pi': 'Do not treat every amino acid as neutral at all pH values; net charge changes with pH.',
   'protein-structure': 'Do not confuse denaturation with peptide-bond hydrolysis; unfolding can occur without breaking the backbone.',
@@ -1075,6 +1367,8 @@ const commonMistakes = {
   'pharma-buffer-lab': 'Do not maximize buffer strength blindly; comfort and compatibility can suffer.',
   'pharma-analysis': 'Do not use one assay to prove everything; identity, purity, strength, and release are different checks.',
   radiopharma: 'Do not pick an isotope by radiation type alone; half-life, targeting, and clearance matter.',
+  'salt-analysis': 'Do not skip reagent order; early contamination or unremoved groups can create false positives.',
+  'nuclear-chemistry': 'Do not balance nuclear equations by chemical valency; conserve mass number A and atomic number Z.',
   'electrolyte-panel': 'Do not compare ions only by charge; compartment and concentration range matter.',
   'hemoglobin-oxygen': 'Do not confuse oxygen binding with oxidation of iron to Fe3+.',
   'diagnostic-color-tests': 'Do not read color intensity without controls, calibration, and timing.',
@@ -1091,6 +1385,10 @@ const formulaNotes = {
   'gas-law': 'PV = nRT.',
   hess: 'Delta H total = sum of adjusted reaction enthalpies.',
   colligative: 'Delta Tb = Kb x m and Delta Tf = Kf x m.',
+  'analytical-lab': 'Analytical result = stoichiometry or signal model applied to a prepared sample, then corrected for dilution, blanks, and recovery.',
+  'surface-chemistry-deep': 'Freundlich: x/m = kP^(1/n); Langmuir: x/m = aP/(1+bP); coagulating power rises sharply with counter-ion valency.',
+  'organic-reaction-bank': 'A synthesis route is a sequence of chemoselective transformations with stereochemical control and protection when functional groups conflict.',
+  'environmental-chem': 'BOD = (D1 - D2) x dilution; COD = (blank - sample) x N x 8000 / mL sample; hardness as CaCO3 = 2.497Ca + 4.118Mg.',
   'rate-lab': 'Rate generally increases with concentration and temperature.',
   calorimetry: 'q = m c Delta T.',
   solubility: 'Precipitation is predicted by comparing Q with Ksp.',
@@ -1113,6 +1411,8 @@ const formulaNotes = {
   'pharma-buffer-lab': 'Useful buffer range is usually near pKa +/- 1 pH unit.',
   'pharma-analysis': 'Assay proves amount; chromatography separates impurities; dissolution tests release.',
   radiopharma: 'Remaining activity follows A = A0 / 2^n after n half-lives.',
+  'salt-analysis': 'Qualitative analysis depends on selective precipitation: lower Ksp groups precipitate first under controlled acidity/basicity.',
+  'nuclear-chemistry': 'Mass defect = separated nucleon mass - nuclear mass; E = Delta m x 931.5 MeV per u; dose equivalent = absorbed dose x radiation weighting factor.',
   'electrolyte-panel': 'Electroneutrality and osmolarity link ions to water balance.',
   'hemoglobin-oxygen': 'Bohr effect: lower pH and higher CO2 shift oxygen release toward tissues.',
   'diagnostic-color-tests': 'Many color tests use redox change, complex formation, precipitation, or enzymatic color generation.',
@@ -1126,6 +1426,10 @@ const miniQuiz = {
   stoichiometry: { q: 'What must be done before mole-ratio calculations?', a: 'Balance the chemical equation.' },
   vsepr: { q: 'What determines molecular shape in VSEPR?', a: 'Bonding pairs and lone-pair electron domains.' },
   electrolysis: { q: 'What drives a non-spontaneous reaction in electrolysis?', a: 'External electrical energy.' },
+  'analytical-lab': { q: 'Why are calibration and blank correction important?', a: 'They separate the analyte signal from instrument/reagent background and convert signal into concentration.' },
+  'surface-chemistry-deep': { q: 'In Hardy-Schulze rule, what controls coagulating power most strongly?', a: 'The valency of the counter-ion; higher opposite charge coagulates more strongly.' },
+  'organic-reaction-bank': { q: 'Why might two reagents give alcohols from the same alkene but different products?', a: 'They can follow different mechanisms and regiochemistry, such as Markovnikov hydration versus anti-Markovnikov hydroboration.' },
+  'environmental-chem': { q: 'Why does eutrophication lower dissolved oxygen?', a: 'Nutrients cause algal blooms; microbial decomposition of dead algae consumes oxygen and raises BOD.' },
   'enzyme-kinetics': { q: 'Why does the enzyme rate curve level off?', a: 'Active sites become saturated, so rate approaches Vmax.' },
   'amino-acid-pi': { q: 'What happens to net amino acid charge near pI?', a: 'The net charge is close to zero, often as a zwitterion.' },
   'protein-structure': { q: 'What changes during denaturation?', a: 'The folded structure is disrupted while peptide bonds may remain intact.' },
@@ -1137,6 +1441,8 @@ const miniQuiz = {
   isotonicity: { q: 'Why does NaCl count more particles than glucose?', a: 'NaCl dissociates into ions, increasing osmotic particle count.' },
   'clinical-buffers': { q: 'What is the main blood buffer pair?', a: 'Carbonic acid/bicarbonate, linked to CO2 handling.' },
   radiopharma: { q: 'Why is half-life important for medical isotopes?', a: 'It balances useful detection or therapy with safe clearance.' },
+  'salt-analysis': { q: 'Why is reagent order important in salt analysis?', a: 'It separates groups selectively and prevents later ions or added reagents from masking earlier confirmations.' },
+  'nuclear-chemistry': { q: 'What must be conserved in a nuclear equation?', a: 'Total mass number and total atomic number must balance on both sides.' },
   'electrolyte-panel': { q: 'Which ion is the major extracellular cation?', a: 'Sodium ion, Na+.' },
   'hemoglobin-oxygen': { q: 'What does low pH do to oxygen release?', a: 'It shifts hemoglobin toward releasing oxygen in tissues.' },
   'toxicology-chelation': { q: 'What is chelation?', a: 'Binding a metal ion with a ligand that has multiple donor atoms.' },
@@ -1366,6 +1672,79 @@ const mechanismData = {
   E2: ['Base removes beta-H', 'C-H and C-LG bonds break', 'C=C pi bond forms', 'Alkene product forms'],
 };
 
+const nuclearModes = [
+  { id: 'series', label: 'Decay Series' },
+  { id: 'equations', label: 'Equations' },
+  { id: 'binding', label: 'Binding Energy' },
+  { id: 'energetics', label: 'Fission/Fusion' },
+  { id: 'dose', label: 'Shielding & Dose' },
+];
+
+const nuclearDecayModes = {
+  alpha: { label: 'Alpha', particle: 'He-4 nucleus', deltaA: -4, deltaZ: -2, symbol: '4/2 He', shield: 'paper, skin, or a few cm air', hazard: 'dangerous if inhaled or ingested' },
+  'beta-minus': { label: 'Beta minus', particle: 'electron + antineutrino', deltaA: 0, deltaZ: 1, symbol: '0/-1 e', shield: 'plastic, glass, or thin metal', hazard: 'skin and internal hazard' },
+  'beta-plus': { label: 'Beta plus', particle: 'positron + neutrino', deltaA: 0, deltaZ: -1, symbol: '0/+1 e', shield: 'shield annihilation gamma photons too', hazard: 'PET-style gamma dose after annihilation' },
+  gamma: { label: 'Gamma', particle: 'high-energy photon', deltaA: 0, deltaZ: 0, symbol: 'gamma', shield: 'dense lead or thick concrete', hazard: 'deep penetrating external dose' },
+};
+
+const nuclearSeriesTemplates = {
+  'u-238': { name: 'U-238 series', start: { symbol: 'U', z: 92, a: 238 }, steps: ['alpha', 'beta-minus', 'beta-minus', 'alpha', 'alpha'], final: 'Ra-226 path fragment' },
+  'th-232': { name: 'Th-232 series', start: { symbol: 'Th', z: 90, a: 232 }, steps: ['alpha', 'alpha', 'beta-minus', 'beta-minus', 'alpha'], final: 'Ra-224 path fragment' },
+  'c-14': { name: 'C-14 dating', start: { symbol: 'C', z: 6, a: 14 }, steps: ['beta-minus'], final: 'N-14' },
+};
+
+const nuclearEquationPrompts = [
+  { id: 'u-alpha', parent: '238/92 U', decay: 'alpha', answer: '234/90 Th + 4/2 He', reason: 'Alpha decay lowers mass number by 4 and atomic number by 2.' },
+  { id: 'c-beta', parent: '14/6 C', decay: 'beta-minus', answer: '14/7 N + 0/-1 e', reason: 'Beta minus keeps A same and raises Z by 1.' },
+  { id: 'p-beta-plus', parent: '30/15 P', decay: 'beta-plus', answer: '30/14 Si + 0/+1 e', reason: 'Beta plus keeps A same and lowers Z by 1.' },
+  { id: 'ra-alpha', parent: '226/88 Ra', decay: 'alpha', answer: '222/86 Rn + 4/2 He', reason: 'Mass and charge are conserved on both sides.' },
+];
+
+const nuclearBindingIsotopes = {
+  'he-4': { label: 'He-4', z: 2, n: 2, mass: 4.002603 },
+  'c-12': { label: 'C-12', z: 6, n: 6, mass: 12.000000 },
+  'fe-56': { label: 'Fe-56', z: 26, n: 30, mass: 55.934937 },
+  'u-235': { label: 'U-235', z: 92, n: 143, mass: 235.043929 },
+};
+
+const nuclearEnergeticExamples = {
+  fission: { label: 'U-235 fission', reactantsMass: 236.0526, productsMass: 235.8351, products: 'Ba-141 + Kr-92 + 3n', note: 'Large nuclei split into medium nuclei plus neutrons; chain reaction depends on neutron economy.' },
+  fusion: { label: 'D-T fusion', reactantsMass: 5.030151, productsMass: 5.011268, products: 'He-4 + n', note: 'Light nuclei fuse; high temperature overcomes Coulomb repulsion.' },
+  annihilation: { label: 'Positron annihilation', reactantsMass: 0.001097, productsMass: 0, products: '2 gamma photons', note: 'Mass converts almost completely to photon energy, used in PET detection.' },
+};
+
+const shieldingMaterials = {
+  paper: { label: 'Paper/skin', hvl: { alpha: 0.01, beta: 0.12, gamma: 12 } },
+  plastic: { label: 'Plastic', hvl: { alpha: 0.01, beta: 0.45, gamma: 9 } },
+  aluminum: { label: 'Aluminum', hvl: { alpha: 0.01, beta: 0.9, gamma: 3.8 } },
+  lead: { label: 'Lead', hvl: { alpha: 0.01, beta: 0.35, gamma: 0.9 } },
+  concrete: { label: 'Concrete', hvl: { alpha: 0.01, beta: 1.6, gamma: 6.1 } },
+};
+
+const radiationWeighting = { alpha: 20, beta: 1, gamma: 1 };
+const PROTON_MASS_U = 1.007276;
+const NEUTRON_MASS_U = 1.008665;
+const U_TO_MEV = 931.5;
+
+const environmentalTabs = ['Ozone', 'Smog', 'Water Hardness', 'BOD/COD', 'Eutrophication', 'Treatment'];
+
+const pollutantTreatmentMethods = [
+  { method: 'Primary treatment', target: 'Suspended solids', chemistry: 'Screening and sedimentation remove grit and settleable particles.', output: 'Lower turbidity and sludge formation.' },
+  { method: 'Secondary treatment', target: 'Biodegradable organics', chemistry: 'Aerobic microbes oxidize organic matter, lowering BOD.', output: 'Cleaner effluent after activated sludge or trickling filter.' },
+  { method: 'Tertiary treatment', target: 'Nutrients and trace pollutants', chemistry: 'Phosphate precipitation, nitrification-denitrification, carbon adsorption, membranes.', output: 'Lower eutrophication risk and fewer micropollutants.' },
+  { method: 'Flue-gas desulfurization', target: 'SO2', chemistry: 'CaCO3/CaO slurry absorbs SO2 to form calcium sulfite/sulfate.', output: 'Less acid rain precursor emission.' },
+  { method: 'Catalytic converter', target: 'CO, NOx, hydrocarbons', chemistry: 'Pt/Pd/Rh catalyze oxidation of CO/HC and reduction of NOx.', output: 'Less photochemical smog precursor load.' },
+  { method: 'Activated carbon', target: 'Dyes, odors, organic micropollutants', chemistry: 'High surface area adsorbs nonpolar and aromatic pollutants.', output: 'Improved taste, color, and trace organic removal.' },
+];
+
+const smogMechanismSteps = [
+  ['NO2 photolysis', 'NO2 + hv -> NO + O'],
+  ['Ozone formation', 'O + O2 -> O3'],
+  ['Radical oxidation', 'Hydrocarbons -> RO2 radicals'],
+  ['NO to NO2 recycling', 'RO2 + NO -> RO + NO2'],
+  ['PAN/oxidants', 'Acyl peroxy radicals + NO2 -> PAN'],
+];
+
 const phaseAt = (temp, pressure) => {
   if (pressure > 150 && temp > 374) return 'supercritical fluid';
   if (temp < 0) return pressure < 0.006 ? 'vapor' : 'solid';
@@ -1458,6 +1837,16 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const [mechanismStep, setMechanismStep] = useState(1);
   const [imfType, setImfType] = useState('hydrogen bonding');
   const [decayMode, setDecayMode] = useState('alpha');
+  const [nuclearMode, setNuclearMode] = useState('series');
+  const [nuclearSeries, setNuclearSeries] = useState('u-238');
+  const [nuclearSeriesSteps, setNuclearSeriesSteps] = useState(3);
+  const [nuclearEquationId, setNuclearEquationId] = useState('u-alpha');
+  const [nuclearBindingIso, setNuclearBindingIso] = useState('fe-56');
+  const [nuclearEnergeticCase, setNuclearEnergeticCase] = useState('fission');
+  const [radiationType, setRadiationType] = useState('gamma');
+  const [shieldMaterial, setShieldMaterial] = useState('lead');
+  const [shieldThickness, setShieldThickness] = useState(3);
+  const [absorbedDose, setAbsorbedDose] = useState(0.02);
   const [phaseTemp, setPhaseTemp] = useState(25);
   const [phasePressure, setPhasePressure] = useState(1);
   const [moMolecule, setMoMolecule] = useState('O2');
@@ -1498,12 +1887,45 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const [langmuirA, setLangmuirA] = useState(4);
   const [langmuirB, setLangmuirB] = useState(0.8);
   const [adsorptionMode, setAdsorptionMode] = useState('physisorption');
+  const [surfaceMode, setSurfaceMode] = useState('isotherms');
+  const [surfaceColloid, setSurfaceColloid] = useState('gold-sol');
+  const [surfaceCounterCharge, setSurfaceCounterCharge] = useState(2);
+  const [surfaceElectrolyteConc, setSurfaceElectrolyteConc] = useState(0.01);
+  const [surfaceCatalystTemp, setSurfaceCatalystTemp] = useState(450);
+  const [surfaceCatalystArea, setSurfaceCatalystArea] = useState(60);
+  const [surfaceCatalystCase, setSurfaceCatalystCase] = useState(surfaceCatalystCases[0].process);
+  const [surfaceEmulsifier, setSurfaceEmulsifier] = useState(55);
+  const [surfaceSurfactantConc, setSurfaceSurfactantConc] = useState(1.4);
+  const [surfacePracticeIndex, setSurfacePracticeIndex] = useState(0);
+  const [organicBankMode, setOrganicBankMode] = useState('transformations');
+  const [organicTransformation, setOrganicTransformation] = useState('alkene-alcohol');
+  const [organicRearrangement, setOrganicRearrangement] = useState('Hydride or methyl shift');
+  const [organicDrill, setOrganicDrill] = useState('acetophenone');
+  const [organicPromptIndex, setOrganicPromptIndex] = useState(0);
   const [namedReactionSearch, setNamedReactionSearch] = useState('');
   const [namedReactionCategory, setNamedReactionCategory] = useState('All');
   const [namedReactionTrack, setNamedReactionTrack] = useState('All');
   const [selectedFunctionalTest, setSelectedFunctionalTest] = useState(functionalTestData[0].name);
   const [functionalQuizIndex, setFunctionalQuizIndex] = useState(0);
   const [functionalQuizAnswer, setFunctionalQuizAnswer] = useState('');
+  const [analyticalMode, setAnalyticalMode] = useState('gravimetry');
+  const [gravimetricAnalyte, setGravimetricAnalyte] = useState('chloride');
+  const [gravSampleMl, setGravSampleMl] = useState(100);
+  const [gravPrecipMass, setGravPrecipMass] = useState(0.287);
+  const [volumetricMethod, setVolumetricMethod] = useState('complexometric');
+  const [volTitrantM, setVolTitrantM] = useState(0.01);
+  const [volTitrantMl, setVolTitrantMl] = useState(12.5);
+  const [volBlankMl, setVolBlankMl] = useState(25);
+  const [volAliquotMl, setVolAliquotMl] = useState(50);
+  const [volSampleMass, setVolSampleMass] = useState(0.25);
+  const [unknownAbsorbance, setUnknownAbsorbance] = useState(0.335);
+  const [dilutionFactor, setDilutionFactor] = useState(10);
+  const [chromSample, setChromSample] = useState('analgesic');
+  const [chromPeakWidth, setChromPeakWidth] = useState(0.42);
+  const [analyticalRecovery, setAnalyticalRecovery] = useState(98);
+  const [analyticalRsd, setAnalyticalRsd] = useState(1.8);
+  const [analyticalNoiseAbs, setAnalyticalNoiseAbs] = useState(0.006);
+  const [analyticalPracticeIndex, setAnalyticalPracticeIndex] = useState(0);
   const [isomerFormula, setIsomerFormula] = useState('C4H10');
   const [reactivityMetal, setReactivityMetal] = useState('Zn');
   const [reactivitySalt, setReactivitySalt] = useState('CuSO4');
@@ -1524,7 +1946,19 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const [kirchhoffT1, setKirchhoffT1] = useState(298);
   const [kirchhoffT2, setKirchhoffT2] = useState(500);
   const [kirchhoffCp, setKirchhoffCp] = useState(24);
-  const [environmentTab, setEnvironmentTab] = useState('Atmosphere');
+  const [environmentTab, setEnvironmentTab] = useState('Ozone');
+  const [waterCaMgL, setWaterCaMgL] = useState(48);
+  const [waterMgMgL, setWaterMgMgL] = useState(18);
+  const [bodInitialDo, setBodInitialDo] = useState(8.6);
+  const [bodFinalDo, setBodFinalDo] = useState(4.2);
+  const [bodDilutionFactor, setBodDilutionFactor] = useState(2);
+  const [codBlankMl, setCodBlankMl] = useState(12.6);
+  const [codSampleMl, setCodSampleMl] = useState(7.8);
+  const [codNormality, setCodNormality] = useState(0.1);
+  const [codAliquotMl, setCodAliquotMl] = useState(50);
+  const [phosphateMgL, setPhosphateMgL] = useState(0.18);
+  const [nitrateMgL, setNitrateMgL] = useState(7);
+  const [treatmentMethod, setTreatmentMethod] = useState('Secondary treatment');
   const [cftGeometry, setCftGeometry] = useState('Octahedral');
   const [cftElectrons, setCftElectrons] = useState(6);
   const [cftField, setCftField] = useState('strong');
@@ -1532,6 +1966,11 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const [metallurgyMetal, setMetallurgyMetal] = useState('Fe');
   const [metallurgyStep, setMetallurgyStep] = useState(0);
   const [saltAnalysisSample, setSaltAnalysisSample] = useState('NaCl');
+  const [saltWorkflowStage, setSaltWorkflowStage] = useState('preliminary');
+  const [saltCationTest, setSaltCationTest] = useState('Na');
+  const [saltAnionTest, setSaltAnionTest] = useState('Cl');
+  const [saltReagentStep, setSaltReagentStep] = useState(0);
+  const [saltVivaIndex, setSaltVivaIndex] = useState(0);
   const [pblockGroup, setPblockGroup] = useState('Group 15');
   const [bioMedicalStage, setBioMedicalStage] = useState(0);
   const [language, setLanguage] = useLocalStorage('cu-language', 'en');
@@ -1621,6 +2060,35 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const mechanismSteps = mechanismData[mechanism];
   const phase = phaseAt(phaseTemp, phasePressure);
   const mo = moData[moMolecule];
+  const selectedNuclearSeries = nuclearSeriesTemplates[nuclearSeries] || nuclearSeriesTemplates['u-238'];
+  const nuclearSeriesRows = selectedNuclearSeries.steps.slice(0, nuclearSeriesSteps).reduce((rows, modeId, index) => {
+    const previous = rows[rows.length - 1];
+    const modeInfo = nuclearDecayModes[modeId];
+    rows.push({
+      step: index + 1,
+      mode: modeInfo.label,
+      symbol: previous.symbol,
+      a: previous.a + modeInfo.deltaA,
+      z: previous.z + modeInfo.deltaZ,
+      emitted: modeInfo.symbol,
+    });
+    return rows;
+  }, [{ step: 0, mode: 'Parent', symbol: selectedNuclearSeries.start.symbol, a: selectedNuclearSeries.start.a, z: selectedNuclearSeries.start.z, emitted: '-' }]);
+  const nuclearSeriesProduct = nuclearSeriesRows[nuclearSeriesRows.length - 1];
+  const selectedNuclearEquation = nuclearEquationPrompts.find(item => item.id === nuclearEquationId) || nuclearEquationPrompts[0];
+  const selectedBindingIso = nuclearBindingIsotopes[nuclearBindingIso] || nuclearBindingIsotopes['fe-56'];
+  const separatedNucleonMass = (selectedBindingIso.z * PROTON_MASS_U) + (selectedBindingIso.n * NEUTRON_MASS_U);
+  const massDefect = separatedNucleonMass - selectedBindingIso.mass;
+  const bindingEnergy = massDefect * U_TO_MEV;
+  const bindingPerNucleon = bindingEnergy / Math.max(1, selectedBindingIso.z + selectedBindingIso.n);
+  const selectedEnergeticCase = nuclearEnergeticExamples[nuclearEnergeticCase] || nuclearEnergeticExamples.fission;
+  const energeticMassDefect = Math.max(0, selectedEnergeticCase.reactantsMass - selectedEnergeticCase.productsMass);
+  const energeticMev = energeticMassDefect * U_TO_MEV;
+  const energeticJoulePerEvent = energeticMev * 1.60218e-13;
+  const selectedShield = shieldingMaterials[shieldMaterial] || shieldingMaterials.lead;
+  const hvl = selectedShield.hvl[radiationType] || selectedShield.hvl.gamma;
+  const transmittedFraction = 100 / (2 ** (shieldThickness / Math.max(0.001, hvl)));
+  const doseEquivalent = absorbedDose * (radiationWeighting[radiationType] || 1);
   const simTitration = strongAcidStrongBaseTitration(0.1, 25, 0.1, simTitrationDrops * 0.05);
   const probePh = { water: 7, vinegar: 2.8, ammonia: 11.2, cola: 2.5, soap: 10.5 }[probeSolution];
   const eqShift = eqReactant > 1 ? 'shifts toward products' : eqReactant < 1 ? 'shifts toward reactants' : eqTemp > 40 ? 'temperature shift depends on reaction heat' : 'near equilibrium';
@@ -1640,6 +2108,17 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const unitCellCalculatedZ = (unitCellDensity * AVOGADRO * (unitCellAcm ** 3)) / Math.max(0.0001, unitCellMolarMass);
   const unitCellCalculatedDensity = (unitCellZInput * unitCellMolarMass) / (AVOGADRO * Math.max(1e-30, unitCellAcm ** 3));
   const goldNumberExample = 10 / 0.2;
+  const selectedSurfaceColloid = surfaceColloidSystems[surfaceColloid] || surfaceColloidSystems['gold-sol'];
+  const selectedCatalystCase = surfaceCatalystCases.find(item => item.process === surfaceCatalystCase) || surfaceCatalystCases[0];
+  const hardySchulzePower = surfaceElectrolyteConc * (surfaceCounterCharge ** 6) * 100;
+  const catalystActivity = Math.min(100, Math.max(5, (surfaceCatalystArea * 0.9) + ((surfaceCatalystTemp - 300) * 0.16)));
+  const emulsionStability = Math.min(100, Math.max(5, surfaceEmulsifier * 1.05 - Math.abs(surfaceEmulsifier - 65) * 0.25));
+  const micelleFormed = surfaceSurfactantConc >= 1;
+  const selectedTransformation = reagentTransformations.find(item => item.id === organicTransformation) || reagentTransformations[0];
+  const selectedRearrangement = rearrangementData.find(item => item.name === organicRearrangement) || rearrangementData[0];
+  const selectedSynthesisDrill = synthesisDrills.find(item => item.id === organicDrill) || synthesisDrills[0];
+  const activeSurfacePractice = surfacePracticeScenarios[surfacePracticeIndex % surfacePracticeScenarios.length];
+  const activeOrganicPrompt = organicQuickPrompts[organicPromptIndex % organicQuickPrompts.length];
   const filteredNamedReactions = namedReactionData.filter(reaction => {
     const query = namedReactionSearch.trim().toLowerCase();
     const matchesQuery = !query || [reaction.name, reaction.equation, reaction.conditions, reaction.mechanism].join(' ').toLowerCase().includes(query);
@@ -1650,6 +2129,42 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const selectedTest = functionalTestData.find(test => test.name === selectedFunctionalTest) || functionalTestData[0];
   const activeFunctionalQuiz = functionalQuizData[functionalQuizIndex % functionalQuizData.length];
   const functionalQuizCorrect = functionalQuizAnswer && functionalQuizAnswer === activeFunctionalQuiz.answer;
+  const selectedGravimetricMethod = gravimetricMethods[gravimetricAnalyte] || gravimetricMethods.chloride;
+  const gravAnalyteMassG = gravPrecipMass * selectedGravimetricMethod.factor;
+  const gravMgPerL = (gravAnalyteMassG * 1000) / Math.max(0.001, gravSampleMl / 1000);
+  const selectedVolumetricMethod = volumetricMethods[volumetricMethod] || volumetricMethods.complexometric;
+  const volumetricMoles = volTitrantM * (volTitrantMl / 1000);
+  const volumetricBlankMoles = volTitrantM * (Math.max(0, volBlankMl - volTitrantMl) / 1000);
+  const volumetricResult = (() => {
+    if (volumetricMethod === 'direct-acid-base') return volumetricMoles / Math.max(0.0001, volAliquotMl / 1000);
+    if (volumetricMethod === 'back-titration') return (volumetricBlankMoles * selectedVolumetricMethod.factor / Math.max(0.0001, volSampleMass)) * 100;
+    if (volumetricMethod === 'complexometric') return (volumetricMoles * selectedVolumetricMethod.factor) / Math.max(0.001, volAliquotMl);
+    return volumetricMoles * selectedVolumetricMethod.factor * 1000;
+  })();
+  const calN = calibrationStandards.length;
+  const calMeanX = calibrationStandards.reduce((sum, point) => sum + point.c, 0) / calN;
+  const calMeanY = calibrationStandards.reduce((sum, point) => sum + point.a, 0) / calN;
+  const calSlope = calibrationStandards.reduce((sum, point) => sum + ((point.c - calMeanX) * (point.a - calMeanY)), 0)
+    / calibrationStandards.reduce((sum, point) => sum + ((point.c - calMeanX) ** 2), 0);
+  const calIntercept = calMeanY - calSlope * calMeanX;
+  const calSst = calibrationStandards.reduce((sum, point) => sum + ((point.a - calMeanY) ** 2), 0);
+  const calSse = calibrationStandards.reduce((sum, point) => sum + ((point.a - ((calSlope * point.c) + calIntercept)) ** 2), 0);
+  const calR2 = 1 - (calSse / Math.max(1e-12, calSst));
+  const calLod = (3.3 * analyticalNoiseAbs) / Math.max(1e-6, calSlope);
+  const calLoq = (10 * analyticalNoiseAbs) / Math.max(1e-6, calSlope);
+  const unknownConcentration = Math.max(0, (unknownAbsorbance - calIntercept) / calSlope);
+  const finalUnknownConcentration = unknownConcentration * dilutionFactor;
+  const recoveryCorrectedConcentration = finalUnknownConcentration / Math.max(0.01, analyticalRecovery / 100);
+  const selectedChromatography = chromatographySamples[chromSample] || chromatographySamples.analgesic;
+  const chromRfRows = selectedChromatography.spots.map((spot, index, spots) => {
+    const nextSpot = spots[index + 1];
+    const rf = spot.distance / selectedChromatography.solventFront;
+    const resolution = nextSpot ? (2 * Math.abs(nextSpot.distance - spot.distance)) / Math.max(0.01, chromPeakWidth * 2) : null;
+    return { ...spot, rf, resolution };
+  });
+  const chromMinResolution = Math.min(...chromRfRows.map(row => row.resolution).filter(value => value !== null));
+  const theoreticalPlates = 16 * ((selectedChromatography.solventFront / Math.max(0.01, chromPeakWidth)) ** 2);
+  const activeAnalyticalPractice = analyticalPracticeScenarios[analyticalPracticeIndex % analyticalPracticeScenarios.length];
   const structuralIsomers = structuralIsomerData[isomerFormula.replace(/\s/g, '')] || [];
   const selectedReactivityMetal = reactivityMetals.find(metal => metal.symbol === reactivityMetal) || reactivityMetals[5];
   const selectedSaltSolution = saltSolutions.find(solution => solution.salt === reactivitySalt) || saltSolutions[2];
@@ -1675,6 +2190,13 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const gibbsK = Math.exp((-gibbsValue * 1000) / (GAS_R * gibbsTemp));
   const gibbsCrossover = gibbsDeltaS === 0 ? null : gibbsDeltaH / (gibbsDeltaS / 1000);
   const kirchhoffH2 = kirchhoffH1 + (kirchhoffCp / 1000) * (kirchhoffT2 - kirchhoffT1);
+  const hardnessAsCaCO3 = (waterCaMgL * 2.497) + (waterMgMgL * 4.118);
+  const hardnessClass = hardnessAsCaCO3 < 75 ? 'soft' : hardnessAsCaCO3 < 150 ? 'moderately hard' : hardnessAsCaCO3 < 300 ? 'hard' : 'very hard';
+  const bodValue = Math.max(0, (bodInitialDo - bodFinalDo) * bodDilutionFactor);
+  const codValue = Math.max(0, ((codBlankMl - codSampleMl) * codNormality * 8000) / Math.max(0.1, codAliquotMl));
+  const eutrophicationRisk = Math.min(100, (phosphateMgL * 220) + (nitrateMgL * 4));
+  const eutrophicationLabel = eutrophicationRisk < 30 ? 'low' : eutrophicationRisk < 65 ? 'moderate' : 'high';
+  const selectedTreatmentMethod = pollutantTreatmentMethods.find(item => item.method === treatmentMethod) || pollutantTreatmentMethods[1];
   const cftFilled = fillCftLevels(cftGeometry, cftElectrons, cftField);
   const cftMoment = Math.sqrt(cftFilled.unpaired * (cftFilled.unpaired + 2));
   const cftWavelength = 1240 / Math.max(0.1, cftDelta);
@@ -1682,6 +2204,27 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
   const cftComplement = cftWavelength < 450 ? '#facc15' : cftWavelength < 500 ? '#ef4444' : cftWavelength < 570 ? '#a855f7' : cftWavelength < 620 ? '#2563eb' : '#14b8a6';
   const selectedMetallurgy = metallurgyData[metallurgyMetal] || metallurgyData.Fe;
   const activeMetallurgyStep = selectedMetallurgy[metallurgyStep] || selectedMetallurgy[0];
+  const activeSaltUnknown = saltUnknowns[saltAnalysisSample] || saltUnknowns.NaCl;
+  const expectedSaltCation = cationSeparationData[activeSaltUnknown.cation] || cationSeparationData.Na;
+  const expectedSaltAnion = anionConfirmatoryData[activeSaltUnknown.anion] || anionConfirmatoryData.Cl;
+  const selectedSaltCationTest = cationSeparationData[saltCationTest] || expectedSaltCation;
+  const selectedSaltAnionTest = anionConfirmatoryData[saltAnionTest] || expectedSaltAnion;
+  const saltCationMatch = selectedSaltCationTest.ion === expectedSaltCation.ion;
+  const saltAnionMatch = selectedSaltAnionTest.ion === expectedSaltAnion.ion;
+  const saltSequence = [
+    ['1', 'Preliminary observation', activeSaltUnknown.appearance],
+    ['2', 'Dry heat / solubility / flame', `${activeSaltUnknown.dryHeat} Flame: ${activeSaltUnknown.flame}.`],
+    ['3', 'Anion group test', `${expectedSaltAnion.reagent}: ${expectedSaltAnion.observation}`],
+    ['4', 'Cation group separation', `${expectedSaltCation.reagent}: ${expectedSaltCation.observation}`],
+    ['5', 'Confirmatory test', `${expectedSaltCation.confirm} Also confirm ${expectedSaltAnion.ion}: ${expectedSaltAnion.confirm}`],
+  ];
+  const activeSaltSequenceStep = saltSequence[Math.min(saltReagentStep, saltSequence.length - 1)];
+  const saltInterferenceAlerts = [
+    activeSaltUnknown.cation === 'NH4' ? 'Test NH4+ before using NH4Cl, NH4OH, or (NH4)2CO3 group reagents.' : '',
+    ['CO3', 'S'].includes(activeSaltUnknown.anion) ? `${expectedSaltAnion.ion} can interfere with cation separation; remove/confirm anion before group reagents.` : '',
+    ['Cl', 'Br', 'I'].includes(activeSaltUnknown.anion) ? 'Use dilute HNO3 before AgNO3; HCl would add chloride and spoil the halide test.' : '',
+    expectedSaltCation.group === 'I' ? 'Remove Group I precipitate completely before passing H2S for Group II.' : '',
+  ].filter(Boolean);
 
   const timeline = useMemo(() => elements
     .filter(el => el.yearDiscovered)
@@ -1741,6 +2284,7 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
       bonding: itemTags.units.some(unit => ['bonding', 'coordination'].includes(unit)),
       reactions: itemTags.units.some(unit => ['reactions', 'thermo', 'equilibrium', 'electrochem', 'kinetics'].includes(unit)),
       solutions: itemTags.units.some(unit => ['acidBase', 'solutions'].includes(unit)),
+      analytical: item.id === 'analytical-lab' || itemTags.units.some(unit => ['practical', 'clinical', 'pharmaceutical'].includes(unit)) || ['chromatography', 'titration', 'solubility', 'salt-analysis', 'pharma-analysis', 'diagnostic-color-tests'].includes(item.id),
       inorganic: itemTags.units.some(unit => ['inorganic', 'coordination', 'periodic', 'atoms'].includes(unit)) || ['salt-analysis', 'pblock-advanced', 'cft', 'metallurgy', 'unit-cell', 'crystal-defects', 'crystal-structure', 'reactivity-series', 'molecule-links'].includes(item.id),
       organic: itemTags.units.some(unit => ['organicBasics', 'organicAdvanced', 'biomolecules'].includes(unit)),
       bio: itemTags.units.includes('biomolecules') || ['enzyme-kinetics', 'amino-acid-pi', 'protein-structure', 'carbohydrate-lab', 'lipid-membrane', 'nucleic-acid-lab', 'vitamin-coenzyme-map', 'metabolism-atp'].includes(item.id),
@@ -1812,6 +2356,7 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
             || ['salt-analysis', 'pblock-advanced', 'cft', 'metallurgy', 'unit-cell', 'crystal-defects', 'crystal-structure', 'reactivity-series', 'molecule-links'].includes(item.id);
         }
         if (nextFocus === 'organic') return itemTags.units.some(unit => ['organicBasics', 'organicAdvanced', 'biomolecules'].includes(unit));
+        if (nextFocus === 'analytical') return item.id === 'analytical-lab' || itemTags.units.includes('practical');
         if (nextFocus === 'bio') return itemTags.units.includes('biomolecules');
         if (nextFocus === 'pharma') return itemTags.units.includes('pharmaceutical') || itemTags.tracks.includes('pharma');
         return false;
@@ -1869,6 +2414,30 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
     if (activeExperiment.id === 'vsepr') return `${vsepr.shape}, ${geometry.angle}`;
     if (activeExperiment.id === 'rate-lab') return `Rate factor ${rateK.toFixed(2)}`;
     if (activeExperiment.id === 'solubility') return precipitates ? 'Precipitate forms' : 'No precipitate yet';
+    if (activeExperiment.id === 'salt-analysis') return `${saltAnalysisSample}: ${expectedSaltCation.ion} confirmed by ${expectedSaltCation.reagent}; ${expectedSaltAnion.ion} confirmed by ${expectedSaltAnion.reagent}`;
+    if (activeExperiment.id === 'analytical-lab') {
+      if (analyticalMode === 'gravimetry') return `${selectedGravimetricMethod.analyte}: ${gravMgPerL.toFixed(1)} mg/L by ${selectedGravimetricMethod.precipitate} gravimetry`;
+      if (analyticalMode === 'volumetric') return `${selectedVolumetricMethod.label}: ${volumetricResult.toFixed(volumetricMethod === 'direct-acid-base' ? 4 : 2)} ${selectedVolumetricMethod.unit}`;
+      if (analyticalMode === 'calibration') return `Unknown ${finalUnknownConcentration.toFixed(1)} mg/L; R2 ${calR2.toFixed(4)}, LOD ${calLod.toFixed(2)} mg/L`;
+      if (analyticalMode === 'chromatography') return `${selectedChromatography.label}: Rs min ${chromMinResolution.toFixed(2)}, plates approx ${theoreticalPlates.toFixed(0)}`;
+      return `Recovery-corrected result ${recoveryCorrectedConcentration.toFixed(1)} mg/L; RSD ${analyticalRsd.toFixed(1)}%.`;
+    }
+    if (activeExperiment.id === 'surface-chemistry-deep') return `${selectedSurfaceColloid.name}: Hardy-Schulze index ${hardySchulzePower.toFixed(1)}; micelles ${micelleFormed ? 'formed' : 'below CMC'}.`;
+    if (activeExperiment.id === 'organic-reaction-bank') return `${selectedTransformation.from} to ${selectedTransformation.to}: ${selectedTransformation.reagents[0]}.`;
+    if (activeExperiment.id === 'nuclear-chemistry') {
+      if (nuclearMode === 'binding') return `${selectedBindingIso.label}: mass defect ${massDefect.toFixed(4)} u, binding energy ${bindingPerNucleon.toFixed(2)} MeV/nucleon`;
+      if (nuclearMode === 'energetics') return `${selectedEnergeticCase.label}: ${energeticMev.toFixed(1)} MeV released per event`;
+      if (nuclearMode === 'dose') return `${selectedShield.label} transmits ${transmittedFraction.toFixed(2)}%; equivalent dose ${doseEquivalent.toFixed(3)} Sv`;
+      if (nuclearMode === 'equations') return `${selectedNuclearEquation.parent} ${selectedNuclearEquation.decay} -> ${selectedNuclearEquation.answer}`;
+      return `${selectedNuclearSeries.name}: after ${nuclearSeriesSteps} step(s), A=${nuclearSeriesProduct.a}, Z=${nuclearSeriesProduct.z}`;
+    }
+    if (activeExperiment.id === 'environmental-chem') {
+      if (environmentTab === 'Water Hardness') return `Hardness ${hardnessAsCaCO3.toFixed(0)} mg/L as CaCO3: ${hardnessClass}.`;
+      if (environmentTab === 'BOD/COD') return `BOD ${bodValue.toFixed(1)} mg/L; COD ${codValue.toFixed(0)} mg/L.`;
+      if (environmentTab === 'Eutrophication') return `Nutrient risk ${eutrophicationRisk.toFixed(0)}%: ${eutrophicationLabel}.`;
+      if (environmentTab === 'Treatment') return `${selectedTreatmentMethod.method}: targets ${selectedTreatmentMethod.target}.`;
+      return `${environmentTab}: atmospheric reaction pathway and pollutant impacts.`;
+    }
     return activeExperiment.result;
   };
   const saveSnapshot = (slot) => {
@@ -2100,6 +2669,296 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
             <div className="h-44 rounded-xl bg-yellow-50/90 border border-white/10 relative mt-4">
               {['#ef4444', '#22c55e', '#3b82f6'].map((color, i) => <span key={color} className="absolute left-1/2 -translate-x-1/2 w-28 h-3 rounded-full" style={{ background: color, bottom: `${12 + chromTime * (0.25 + i * 0.12)}%` }} />)}
               <span className="absolute left-8 right-8 bottom-5 border-t border-gray-500/40" />
+            </div>
+          </Bench>
+        );
+      case 'analytical-lab':
+        return (
+          <Bench title="Full Analytical Chemistry Lab" result={activeResultText()}>
+            <div className="space-y-4">
+              <div className="grid md:grid-cols-5 gap-2">
+                {analyticalModes.map(mode => (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    onClick={() => setAnalyticalMode(mode.id)}
+                    className={`rounded-xl border p-3 text-left transition-colors ${analyticalMode === mode.id ? 'border-cyan-300/40 bg-cyan-400/10 text-cyan-50' : 'border-white/10 bg-white/[0.035] text-gray-300 hover:bg-white/[0.06]'}`}
+                  >
+                    <span className="text-xs font-black uppercase tracking-widest">{mode.label}</span>
+                    <span className="mt-1 block text-[11px] text-gray-500">{mode.note}</span>
+                  </button>
+                ))}
+              </div>
+
+              {analyticalMode === 'gravimetry' && (
+                <div className="grid lg:grid-cols-[1fr_320px] gap-4">
+                  <div className="space-y-3">
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div>
+                        <ControlLabel>Analyte</ControlLabel>
+                        <select value={gravimetricAnalyte} onChange={e => setGravimetricAnalyte(e.target.value)} className="input text-sm">
+                          {Object.entries(gravimetricMethods).map(([id, method]) => <option key={id} value={id}>{method.analyte} as {method.precipitate}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <ControlLabel>Sample volume: {gravSampleMl} mL</ControlLabel>
+                        <input type="range" min="10" max="500" value={gravSampleMl} onChange={e => setGravSampleMl(Number(e.target.value))} className="w-full" />
+                      </div>
+                      <div>
+                        <ControlLabel>Precipitate mass: {gravPrecipMass.toFixed(3)} g</ControlLabel>
+                        <input type="range" min="0.02" max="1.5" step="0.001" value={gravPrecipMass} onChange={e => setGravPrecipMass(Number(e.target.value))} className="w-full" />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Reagent</p>
+                        <p className="mt-1 text-lg font-black text-white">{selectedGravimetricMethod.reagent}</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Analyte Mass</p>
+                        <p className="mt-1 text-lg font-black text-cyan-100">{(gravAnalyteMassG * 1000).toFixed(2)} mg</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Concentration</p>
+                        <p className="mt-1 text-lg font-black text-emerald-100">{gravMgPerL.toFixed(1)} mg/L</p>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-3 text-xs text-cyan-50">
+                      Mass factor = analyte molar mass / precipitate molar mass. Dry precipitate mass x factor gives analyte mass.
+                    </div>
+                    <div className="grid md:grid-cols-4 gap-2 text-xs">
+                      {[
+                        ['Digest', 'Heat precipitate in mother liquor so particles grow and adsorbed impurities drop.'],
+                        ['Wash', 'Remove mother liquor with volatile/electrolyte wash that does not dissolve precipitate.'],
+                        ['Ignite/dry', 'Bring precipitate to known constant composition before weighing.'],
+                        ['Error check', selectedGravimetricMethod.interference],
+                      ].map(([title, note]) => (
+                        <div key={title} className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                          <p className="font-black text-white">{title}</p>
+                          <p className="mt-1 text-gray-300">{note}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <svg viewBox="0 0 260 240" className="h-72 w-full rounded-xl border border-white/10 bg-slate-950/70">
+                    <rect x="38" y="28" width="88" height="142" rx="18" fill="#0f172a" stroke="#334155" />
+                    <path d="M46 118 C68 104, 94 132, 118 114 L118 158 L46 158Z" fill="#38bdf855" />
+                    <circle cx="76" cy="132" r={12 + Math.min(28, gravPrecipMass * 24)} fill="#e2e8f0" opacity="0.9" />
+                    <circle cx="92" cy="145" r={8 + Math.min(20, gravPrecipMass * 16)} fill="#cbd5e1" opacity="0.85" />
+                    <rect x="154" y="62" width="68" height="112" rx="10" fill="#111827" stroke="#64748b" />
+                    <rect x="168" y="50" width="40" height="16" rx="6" fill="#475569" />
+                    <rect x="166" y="170" width="44" height="18" rx="5" fill="#94a3b8" />
+                    <text x="44" y="202" fill="#cbd5e1" fontSize="11">{selectedGravimetricMethod.precipitate} precipitate</text>
+                    <text x="150" y="202" fill="#cbd5e1" fontSize="11">drying oven</text>
+                    <text x="42" y="222" fill="#94a3b8" fontSize="9">{selectedGravimetricMethod.check}</text>
+                  </svg>
+                </div>
+              )}
+
+              {analyticalMode === 'volumetric' && (
+                <div className="grid lg:grid-cols-[1fr_300px] gap-4">
+                  <div className="space-y-3">
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div>
+                        <ControlLabel>Method</ControlLabel>
+                        <select value={volumetricMethod} onChange={e => setVolumetricMethod(e.target.value)} className="input text-sm">
+                          {Object.entries(volumetricMethods).map(([id, method]) => <option key={id} value={id}>{method.label}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <ControlLabel>Titrant M: {volTitrantM.toFixed(3)}</ControlLabel>
+                        <input type="range" min="0.001" max="0.2" step="0.001" value={volTitrantM} onChange={e => setVolTitrantM(Number(e.target.value))} className="w-full" />
+                      </div>
+                      <div>
+                        <ControlLabel>Titre: {volTitrantMl.toFixed(2)} mL</ControlLabel>
+                        <input type="range" min="0.1" max="50" step="0.05" value={volTitrantMl} onChange={e => setVolTitrantMl(Number(e.target.value))} className="w-full" />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div>
+                        <ControlLabel>Blank: {volBlankMl.toFixed(1)} mL</ControlLabel>
+                        <input type="range" min="0.1" max="60" step="0.1" value={volBlankMl} onChange={e => setVolBlankMl(Number(e.target.value))} className="w-full" />
+                      </div>
+                      <div>
+                        <ControlLabel>Aliquot: {volAliquotMl.toFixed(1)} mL</ControlLabel>
+                        <input type="range" min="5" max="250" step="1" value={volAliquotMl} onChange={e => setVolAliquotMl(Number(e.target.value))} className="w-full" />
+                      </div>
+                      <div>
+                        <ControlLabel>Sample mass: {volSampleMass.toFixed(3)} g</ControlLabel>
+                        <input type="range" min="0.02" max="2" step="0.01" value={volSampleMass} onChange={e => setVolSampleMass(Number(e.target.value))} className="w-full" />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Analyte</p>
+                        <p className="mt-1 text-sm font-bold text-white">{selectedVolumetricMethod.analyte}</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Result</p>
+                        <p className="mt-1 text-lg font-black text-emerald-100">{volumetricResult.toFixed(volumetricMethod === 'direct-acid-base' ? 4 : 2)} {selectedVolumetricMethod.unit}</p>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Endpoint</p>
+                        <p className="mt-1 text-xs text-gray-300">{selectedVolumetricMethod.endpoint}</p>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-violet-300/20 bg-violet-300/10 p-3 text-xs text-violet-50">{selectedVolumetricMethod.formula}</div>
+                    <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-2 text-xs">
+                      {volumetricVariantNotes.map(([title, note]) => (
+                        <div key={title} className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                          <p className="font-black text-white">{title}</p>
+                          <p className="mt-1 text-gray-300">{note}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <svg viewBox="0 0 260 250" className="h-72 w-full rounded-xl border border-white/10 bg-slate-950/70">
+                    <rect x="112" y="24" width="22" height="144" rx="8" fill="#0f172a" stroke="#94a3b8" />
+                    <rect x="118" y="36" width="10" height={Math.max(12, 116 - volTitrantMl * 1.7)} fill="#38bdf8" opacity="0.7" />
+                    <path d="M123 168 L123 196" stroke="#94a3b8" strokeWidth="4" />
+                    <circle cx="123" cy="204" r="4" fill="#38bdf8" />
+                    <path d="M72 208 C88 178, 158 178, 174 208 L166 230 H80Z" fill="#22c55e33" stroke="#34d399" strokeWidth="3" />
+                    <text x="86" y="226" fill="#bbf7d0" fontSize="10">sample aliquot</text>
+                    <text x="60" y="18" fill="#cbd5e1" fontSize="11">{selectedVolumetricMethod.label}</text>
+                    <text x="48" y="244" fill="#94a3b8" fontSize="9">{volTitrantMl.toFixed(2)} mL endpoint reading</text>
+                  </svg>
+                </div>
+              )}
+
+              {analyticalMode === 'calibration' && (
+                <div className="grid lg:grid-cols-[1fr_320px] gap-4">
+                  <div className="space-y-3">
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <ControlLabel>Unknown absorbance: {unknownAbsorbance.toFixed(3)}</ControlLabel>
+                        <input type="range" min="0.02" max="0.75" step="0.001" value={unknownAbsorbance} onChange={e => setUnknownAbsorbance(Number(e.target.value))} className="w-full" />
+                      </div>
+                      <div>
+                        <ControlLabel>Dilution factor: {dilutionFactor}x</ControlLabel>
+                        <input type="range" min="1" max="50" step="1" value={dilutionFactor} onChange={e => setDilutionFactor(Number(e.target.value))} className="w-full" />
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Slope</p><p className="mt-1 text-lg font-black text-cyan-100">{calSlope.toFixed(4)}</p></div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Unknown</p><p className="mt-1 text-lg font-black text-emerald-100">{unknownConcentration.toFixed(2)} mg/L</p></div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Original sample</p><p className="mt-1 text-lg font-black text-amber-100">{finalUnknownConcentration.toFixed(1)} mg/L</p></div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[10px] font-black uppercase tracking-widest text-gray-500">R2</p><p className="mt-1 text-lg font-black text-white">{calR2.toFixed(4)}</p></div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[10px] font-black uppercase tracking-widest text-gray-500">LOD</p><p className="mt-1 text-lg font-black text-white">{calLod.toFixed(2)} mg/L</p></div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[10px] font-black uppercase tracking-widest text-gray-500">LOQ</p><p className="mt-1 text-lg font-black text-white">{calLoq.toFixed(2)} mg/L</p></div>
+                    </div>
+                    <div>
+                      <ControlLabel>Instrument noise sigma A: {analyticalNoiseAbs.toFixed(3)}</ControlLabel>
+                      <input type="range" min="0.001" max="0.03" step="0.001" value={analyticalNoiseAbs} onChange={e => setAnalyticalNoiseAbs(Number(e.target.value))} className="w-full" />
+                    </div>
+                    <p className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-3 text-xs text-cyan-50">Calibration equation: A = {calSlope.toFixed(4)}C + {calIntercept.toFixed(4)}. Keep unknown absorbance inside the standard range for best accuracy; use standard addition when matrix effects are suspected.</p>
+                  </div>
+                  <svg viewBox="0 0 280 240" className="h-72 w-full rounded-xl border border-white/10 bg-slate-950/70">
+                    <line x1="38" y1="200" x2="250" y2="200" stroke="#64748b" />
+                    <line x1="38" y1="28" x2="38" y2="200" stroke="#64748b" />
+                    <polyline points={calibrationStandards.map(point => `${38 + point.c * 19},${200 - point.a * 250}`).join(' ')} fill="none" stroke="#38bdf8" strokeWidth="3" />
+                    {calibrationStandards.map(point => <circle key={point.c} cx={38 + point.c * 19} cy={200 - point.a * 250} r="5" fill="#22c55e" />)}
+                    <line x1="38" x2="250" y1={200 - unknownAbsorbance * 250} y2={200 - unknownAbsorbance * 250} stroke="#f59e0b" strokeDasharray="5 5" />
+                    <circle cx={38 + unknownConcentration * 19} cy={200 - unknownAbsorbance * 250} r="8" fill="#f59e0b" stroke="#fde68a" strokeWidth="2" />
+                    <text x="104" y="224" fill="#94a3b8" fontSize="10">Concentration</text>
+                    <text x="48" y="38" fill="#94a3b8" fontSize="10">Absorbance</text>
+                  </svg>
+                </div>
+              )}
+
+              {analyticalMode === 'chromatography' && (
+                <div className="grid lg:grid-cols-[1fr_320px] gap-4">
+                  <div className="space-y-3">
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <ControlLabel>Sample</ControlLabel>
+                        <select value={chromSample} onChange={e => setChromSample(e.target.value)} className="input text-sm">
+                          {Object.entries(chromatographySamples).map(([id, sample]) => <option key={id} value={id}>{sample.label}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <ControlLabel>Peak width: {chromPeakWidth.toFixed(2)} cm</ControlLabel>
+                        <input type="range" min="0.1" max="1.5" step="0.01" value={chromPeakWidth} onChange={e => setChromPeakWidth(Number(e.target.value))} className="w-full" />
+                      </div>
+                    </div>
+                    <div className="overflow-hidden rounded-xl border border-white/10">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-white/[0.05] text-gray-400">
+                          <tr><th className="p-2">Component</th><th className="p-2">Distance</th><th className="p-2">Rf</th><th className="p-2">Resolution to next</th></tr>
+                        </thead>
+                        <tbody>
+                          {chromRfRows.map(row => (
+                            <tr key={row.label} className="border-t border-white/10">
+                              <td className="p-2 font-bold text-white">{row.label}</td>
+                              <td className="p-2 text-gray-300">{row.distance.toFixed(1)} cm</td>
+                              <td className="p-2 text-cyan-200">{row.rf.toFixed(2)}</td>
+                              <td className="p-2 text-gray-300">{row.resolution ? row.resolution.toFixed(2) : '-'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className={`rounded-xl border p-3 text-xs ${chromMinResolution >= 1.5 ? 'border-emerald-300/20 bg-emerald-300/10 text-emerald-50' : 'border-amber-300/20 bg-amber-300/10 text-amber-50'}`}>
+                      {selectedChromatography.note} Minimum resolution is {chromMinResolution.toFixed(2)}; values above about 1.5 usually mean baseline separation.
+                    </p>
+                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-2 text-xs">
+                      {chromatographyRules.map(([title, note]) => (
+                        <div key={title} className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                          <p className="font-black text-white">{title}</p>
+                          <p className="mt-1 text-gray-300">{note}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <svg viewBox="0 0 260 260" className="h-72 w-full rounded-xl border border-white/10 bg-yellow-50/95">
+                    <rect x="82" y="24" width="96" height="210" rx="8" fill="#f8fafc" stroke="#94a3b8" />
+                    <line x1="94" y1="214" x2="166" y2="214" stroke="#64748b" strokeWidth="2" />
+                    <line x1="94" y1="42" x2="166" y2="42" stroke="#38bdf8" strokeWidth="2" strokeDasharray="5 5" />
+                    {chromRfRows.map(row => (
+                      <g key={row.label}>
+                        <ellipse cx="130" cy={214 - row.rf * 172} rx={22 + chromPeakWidth * 7} ry="7" fill={row.color} opacity="0.86" />
+                        <text x="178" y={218 - row.rf * 172} fill="#334155" fontSize="8">{row.label}</text>
+                      </g>
+                    ))}
+                    <text x="92" y="238" fill="#334155" fontSize="9">origin</text>
+                    <text x="174" y="45" fill="#334155" fontSize="9">front {selectedChromatography.solventFront} cm</text>
+                  </svg>
+                </div>
+              )}
+              {analyticalMode === 'quality' && (
+                <div className="grid lg:grid-cols-[300px_1fr] gap-4">
+                  <div className="space-y-3">
+                    <div><ControlLabel>Recovery {analyticalRecovery}%</ControlLabel><input type="range" min="70" max="120" step="0.5" value={analyticalRecovery} onChange={e => setAnalyticalRecovery(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Replicate RSD {analyticalRsd.toFixed(1)}%</ControlLabel><input type="range" min="0.1" max="8" step="0.1" value={analyticalRsd} onChange={e => setAnalyticalRsd(Number(e.target.value))} className="w-full" /></div>
+                    <ControlLabel>Practice scenario</ControlLabel>
+                    <select value={analyticalPracticeIndex} onChange={e => setAnalyticalPracticeIndex(Number(e.target.value))} className="input text-sm">
+                      {analyticalPracticeScenarios.map((item, index) => <option key={item.prompt} value={index}>Scenario {index + 1}</option>)}
+                    </select>
+                    <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                      <p className="text-xs text-gray-500">Prompt</p>
+                      <p className="mt-2 text-sm font-bold text-white">{activeAnalyticalPractice.prompt}</p>
+                    </div>
+                    <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/10 p-3 text-sm text-emerald-50">{activeAnalyticalPractice.answer}</div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="grid sm:grid-cols-3 gap-2">
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[10px] text-gray-500">Measured</p><p className="text-lg font-black text-white">{finalUnknownConcentration.toFixed(1)} mg/L</p></div>
+                      <div className="rounded-xl border border-cyan-400/20 bg-cyan-500/10 p-3"><p className="text-[10px] text-cyan-300">Recovery corrected</p><p className="text-lg font-black text-white">{recoveryCorrectedConcentration.toFixed(1)} mg/L</p></div>
+                      <div className={`rounded-xl border p-3 ${analyticalRsd <= 2 ? 'border-emerald-400/20 bg-emerald-500/10' : 'border-amber-400/20 bg-amber-500/10'}`}><p className="text-[10px] text-gray-300">Precision</p><p className="text-lg font-black text-white">{analyticalRsd <= 2 ? 'good' : 'review'}</p></div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-2 text-xs">
+                      {analyticalWorkflowCards.map(card => (
+                        <div key={card.title} className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                          <p className="font-black text-white">{card.title}</p>
+                          <p className="mt-1 text-gray-300">{card.detail}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 p-3 text-xs text-amber-50">Report checklist: method name, sample prep, blank correction, dilution factor, calibration range, recovery, RSD, LOD/LOQ, units, and significant figures.</div>
+                  </div>
+                </div>
+              )}
             </div>
           </Bench>
         );
@@ -2337,6 +3196,172 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
             </div>
           </Bench>
         );
+      case 'surface-chemistry-deep':
+        return (
+          <Bench title="Surface Chemistry Deep Module" result={`${surfaceModes.find(mode => mode.id === surfaceMode)?.label}: ${activeResultText()}`}>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {surfaceModes.map(mode => (
+                <button key={mode.id} onClick={() => setSurfaceMode(mode.id)} className={`btn-secondary text-xs px-3 py-2 ${surfaceMode === mode.id ? 'bg-cyan-500/20 text-cyan-100 border-cyan-400/30' : ''}`}>{mode.label}</button>
+              ))}
+            </div>
+            {surfaceMode === 'isotherms' && (
+              <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-4">
+                <div>
+                  <IsothermPlot freundlichK={freundlichK} freundlichN={freundlichN} langmuirA={langmuirA} langmuirB={langmuirB} />
+                  <div className="grid sm:grid-cols-2 gap-3 mt-3">
+                    <div><ControlLabel>Freundlich k {freundlichK.toFixed(1)}</ControlLabel><input type="range" min="0.2" max="4" step="0.1" value={freundlichK} onChange={e => setFreundlichK(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Freundlich n {freundlichN.toFixed(1)}</ControlLabel><input type="range" min="1" max="5" step="0.1" value={freundlichN} onChange={e => setFreundlichN(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Langmuir a {langmuirA.toFixed(1)}</ControlLabel><input type="range" min="0.5" max="8" step="0.1" value={langmuirA} onChange={e => setLangmuirA(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Langmuir b {langmuirB.toFixed(1)}</ControlLabel><input type="range" min="0.1" max="3" step="0.1" value={langmuirB} onChange={e => setLangmuirB(Number(e.target.value))} className="w-full" /></div>
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-1 gap-3 text-xs">
+                  <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="font-black text-cyan-100">Freundlich</p><p className="text-gray-300 mt-1">Empirical, useful at moderate pressure; log(x/m) vs log P gives slope 1/n.</p></div>
+                  <div className="rounded-xl bg-amber-500/10 border border-amber-400/20 p-3"><p className="font-black text-amber-100">Langmuir</p><p className="text-gray-300 mt-1">Assumes fixed equivalent sites and monolayer saturation on the surface.</p></div>
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300">Physisorption is weak, reversible, and often multilayer. Chemisorption is specific, stronger, commonly monolayer, and may need activation energy.</div>
+                </div>
+                <div className="lg:col-span-2 grid md:grid-cols-2 xl:grid-cols-4 gap-3 text-xs">
+                  {surfaceConceptCards.map(card => (
+                    <article key={card.title} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                      <h5 className="text-sm font-black text-white">{card.title}</h5>
+                      <div className="mt-2 space-y-1 text-gray-300">
+                        {card.points.map(point => <p key={point}>{point}</p>)}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+            {surfaceMode === 'catalysis' && (
+              <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Catalyst case</ControlLabel>
+                  <select value={surfaceCatalystCase} onChange={e => setSurfaceCatalystCase(e.target.value)} className="input text-sm">{surfaceCatalystCases.map(item => <option key={item.process}>{item.process}</option>)}</select>
+                  <div><ControlLabel>Temperature {surfaceCatalystTemp} C</ControlLabel><input type="range" min="250" max="800" value={surfaceCatalystTemp} onChange={e => setSurfaceCatalystTemp(Number(e.target.value))} className="w-full" /></div>
+                  <div><ControlLabel>Active surface area {surfaceCatalystArea}%</ControlLabel><input type="range" min="10" max="100" value={surfaceCatalystArea} onChange={e => setSurfaceCatalystArea(Number(e.target.value))} className="w-full" /></div>
+                  <MiniBar label="relative catalytic activity" value={catalystActivity} color="#22c55e" />
+                </div>
+                <div className="space-y-3">
+                  <svg viewBox="0 0 260 150" className="w-full h-56 rounded-xl bg-black/20 border border-white/10">
+                    <rect x="25" y="105" width="210" height="18" rx="8" fill="#94a3b8" />
+                    {Array.from({ length: 9 }, (_, i) => <circle key={i} cx={42 + i * 22} cy="99" r="7" fill={i % 2 ? '#f59e0b' : '#38bdf8'} />)}
+                    <path d="M55 40 C85 12, 115 12, 140 42 S195 76, 216 44" fill="none" stroke="#f472b6" strokeWidth="3" />
+                    <text x="52" y="34" fill="#cbd5e1" fontSize="9">adsorb</text>
+                    <text x="113" y="28" fill="#cbd5e1" fontSize="9">activate</text>
+                    <text x="183" y="36" fill="#cbd5e1" fontSize="9">desorb</text>
+                    <text x="36" y="140" fill="#94a3b8" fontSize="9">Surface sites lower activation energy; poisons block sites.</text>
+                  </svg>
+                  <div className="grid sm:grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-gray-500">Catalyst</p><p className="font-bold text-white">{selectedCatalystCase.catalyst}</p></div>
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-gray-500">Poison risk</p><p className="font-bold text-white">{selectedCatalystCase.poison}</p></div>
+                  </div>
+                  <p className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-3 text-xs text-emerald-50">{selectedCatalystCase.role}</p>
+                </div>
+              </div>
+            )}
+            {surfaceMode === 'colloids' && (
+              <div className="grid lg:grid-cols-[260px_1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Colloid system</ControlLabel>
+                  <select value={surfaceColloid} onChange={e => setSurfaceColloid(e.target.value)} className="input text-sm">{Object.entries(surfaceColloidSystems).map(([id, item]) => <option key={id} value={id}>{item.name}</option>)}</select>
+                  <div><ControlLabel>Counter-ion charge {surfaceCounterCharge}+</ControlLabel><input type="range" min="1" max="3" value={surfaceCounterCharge} onChange={e => setSurfaceCounterCharge(Number(e.target.value))} className="w-full" /></div>
+                  <div><ControlLabel>Electrolyte concentration {surfaceElectrolyteConc.toFixed(3)} M</ControlLabel><input type="range" min="0.001" max="0.05" step="0.001" value={surfaceElectrolyteConc} onChange={e => setSurfaceElectrolyteConc(Number(e.target.value))} className="w-full" /></div>
+                  <MiniBar label="Hardy-Schulze coagulation index" value={hardySchulzePower} color="#f87171" />
+                </div>
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-4 gap-2">
+                    {[
+                      ['Type', selectedSurfaceColloid.kind],
+                      ['Charge', selectedSurfaceColloid.charge],
+                      ['Dispersed phase', selectedSurfaceColloid.dispersed],
+                      ['Medium', selectedSurfaceColloid.medium],
+                    ].map(([label, value]) => <div key={label} className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">{label}</p><p className="text-sm font-black text-white">{value}</p></div>)}
+                  </div>
+                  <svg viewBox="0 0 280 140" className="w-full h-52 rounded-xl bg-black/20 border border-white/10">
+                    {Array.from({ length: 22 }, (_, i) => <circle key={i} cx={24 + (i % 11) * 22} cy={28 + Math.floor(i / 11) * 42 + (i % 3) * 4} r={5 + (i % 2)} fill={selectedSurfaceColloid.charge.includes('positive') ? '#f472b6' : '#38bdf8'} opacity="0.85" />)}
+                    {Array.from({ length: surfaceCounterCharge * 4 }, (_, i) => <text key={i} x={35 + i * 18} y={118 - (i % 2) * 12} fill="#fbbf24" fontSize="11">{surfaceCounterCharge === 1 ? '+' : surfaceCounterCharge === 2 ? '2+' : '3+'}</text>)}
+                    <text x="16" y="132" fill="#94a3b8" fontSize="9">Oppositely charged ions compress the electric double layer and cause coagulation.</text>
+                  </svg>
+                  <div className="grid md:grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3 text-cyan-50">{selectedSurfaceColloid.note}</div>
+                    <div className="rounded-xl bg-amber-500/10 border border-amber-400/20 p-3 text-amber-50">Coagulating trend: {selectedSurfaceColloid.coagulators.join(' > ')}.</div>
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-2 text-xs">
+                    {['Electrophoresis: particles move toward the oppositely charged electrode.', 'Coagulation value: minimum electrolyte concentration needed to coagulate a sol.', 'Protection: lyophilic colloids can shield lyophobic sols; lower gold number means better protection.'].map(note => (
+                      <div key={note} className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300">{note}</div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            {surfaceMode === 'emulsions' && (
+              <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-4">
+                <div className="space-y-3">
+                  <div><ControlLabel>Emulsifier strength {surfaceEmulsifier}%</ControlLabel><input type="range" min="0" max="100" value={surfaceEmulsifier} onChange={e => setSurfaceEmulsifier(Number(e.target.value))} className="w-full" /></div>
+                  <MiniBar label="emulsion stability" value={emulsionStability} color="#a78bfa" />
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-xs text-gray-300">Oil-in-water emulsions disperse oil droplets in water; water-in-oil emulsions disperse water droplets in oil. Emulsifiers sit at the interface and reduce interfacial tension.</div>
+                </div>
+                <svg viewBox="0 0 280 150" className="w-full h-56 rounded-xl bg-black/20 border border-white/10">
+                  <rect x="20" y="20" width="240" height="105" rx="18" fill="#38bdf8" opacity="0.16" />
+                  {Array.from({ length: 8 }, (_, i) => <circle key={i} cx={48 + (i % 4) * 55} cy={48 + Math.floor(i / 4) * 42} r={12 + (i % 3)} fill="#f59e0b" opacity="0.82" stroke="#f8fafc" strokeWidth={surfaceEmulsifier / 35} />)}
+                  <text x="30" y="140" fill="#94a3b8" fontSize="9">Emulsifier coating prevents droplets from merging.</text>
+                </svg>
+              </div>
+            )}
+            {surfaceMode === 'micelles' && (
+              <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-4">
+                <div className="space-y-3">
+                  <div><ControlLabel>Surfactant concentration {surfaceSurfactantConc.toFixed(1)} x CMC</ControlLabel><input type="range" min="0.1" max="3" step="0.1" value={surfaceSurfactantConc} onChange={e => setSurfaceSurfactantConc(Number(e.target.value))} className="w-full" /></div>
+                  <div className={`rounded-xl border p-3 text-sm ${micelleFormed ? 'bg-emerald-500/10 border-emerald-400/20 text-emerald-50' : 'bg-amber-500/10 border-amber-400/20 text-amber-50'}`}>{micelleFormed ? 'Above CMC: micelles form and trap oily dirt in hydrophobic cores.' : 'Below CMC: mostly individual surfactant ions; cleansing is weaker.'}</div>
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-xs text-gray-300">Cleansing action: hydrophobic tails dissolve in grease, hydrophilic heads stay in water, agitation breaks grease into micelles that rinse away.</div>
+                </div>
+                <svg viewBox="0 0 280 170" className="w-full h-60 rounded-xl bg-black/20 border border-white/10">
+                  <circle cx="140" cy="80" r="35" fill="#f59e0b" opacity="0.75" />
+                  {Array.from({ length: micelleFormed ? 18 : 7 }, (_, i) => {
+                    const angle = (Math.PI * 2 * i) / (micelleFormed ? 18 : 7);
+                    const x1 = 140 + Math.cos(angle) * 43;
+                    const y1 = 80 + Math.sin(angle) * 43;
+                    const x2 = 140 + Math.cos(angle) * 24;
+                    const y2 = 80 + Math.sin(angle) * 24;
+                    return <g key={i}><line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#94a3b8" strokeWidth="2" /><circle cx={x1} cy={y1} r="4" fill="#38bdf8" /></g>;
+                  })}
+                  <text x="92" y="84" fill="#111827" fontSize="10" fontWeight="800">oil/grease</text>
+                  <text x="28" y="150" fill="#94a3b8" fontSize="9">Heads face water; tails face oil. Hard water Ca2+/Mg2+ can form scum.</text>
+                </svg>
+              </div>
+            )}
+            {surfaceMode === 'exam' && (
+              <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Scenario</ControlLabel>
+                  <select value={surfacePracticeIndex} onChange={e => setSurfacePracticeIndex(Number(e.target.value))} className="input text-sm">
+                    {surfacePracticeScenarios.map((item, index) => <option key={item.prompt} value={index}>Question {index + 1}</option>)}
+                  </select>
+                  <div className="rounded-xl bg-black/20 border border-white/10 p-4">
+                    <p className="text-xs text-gray-500">Prompt</p>
+                    <p className="mt-2 text-sm font-bold text-white">{activeSurfacePractice.prompt}</p>
+                  </div>
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-4 text-sm text-emerald-50">{activeSurfacePractice.answer}</div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                  {[
+                    ['Hardy-Schulze', 'For a negative sol: Al3+ > Ba2+ > Na+. For a positive sol: PO4 3- > SO4 2- > Cl-.'],
+                    ['Micelles', 'Form only above CMC and above Kraft temperature for soaps.'],
+                    ['Emulsions', 'Oil-in-water conducts better than water-in-oil and feels less greasy.'],
+                    ['Catalysis', 'Promoters increase activity; poisons reduce activity by blocking active sites.'],
+                    ['Adsorption', 'Positive adsorption concentrates solute at surface; negative adsorption depletes it.'],
+                    ['Colloid charge', 'Charge often comes from preferential ion adsorption on particle surface.'],
+                  ].map(([title, note]) => (
+                    <article key={title} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                      <h5 className="font-black text-white">{title}</h5>
+                      <p className="mt-2 text-gray-300">{note}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Bench>
+        );
       case 'orbital-shape':
         return (
           <Bench title="Orbital Shape Viewer" result={orbital.note}>
@@ -2404,6 +3429,151 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
             <ControlLabel>Half-lives elapsed: {decayHalfLives}</ControlLabel>
             <input type="range" min="0" max="8" value={decayHalfLives} onChange={e => setDecayHalfLives(Number(e.target.value))} className="w-full" />
             <MiniBar label="parent isotope remaining" value={decayRemaining} color="#f87171" />
+          </Bench>
+        );
+      case 'nuclear-chemistry':
+        return (
+          <Bench title="Nuclear Chemistry Lab" result={activeResultText()}>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {nuclearModes.map(mode => (
+                <button key={mode.id} onClick={() => setNuclearMode(mode.id)} className={`btn-secondary text-xs px-3 py-2 ${nuclearMode === mode.id ? 'bg-rose-500/20 text-rose-100 border-rose-400/30' : ''}`}>{mode.label}</button>
+              ))}
+            </div>
+            {nuclearMode === 'series' && (
+              <div className="grid lg:grid-cols-[260px_1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Series template</ControlLabel>
+                  <select value={nuclearSeries} onChange={e => setNuclearSeries(e.target.value)} className="input text-sm">
+                    {Object.entries(nuclearSeriesTemplates).map(([id, item]) => <option key={id} value={id}>{item.name}</option>)}
+                  </select>
+                  <div><ControlLabel>Steps shown {nuclearSeriesSteps}</ControlLabel><input type="range" min="1" max={selectedNuclearSeries.steps.length} value={nuclearSeriesSteps} onChange={e => setNuclearSeriesSteps(Number(e.target.value))} className="w-full" /></div>
+                  <div className="rounded-xl bg-black/20 border border-white/10 p-3 text-xs text-gray-300">Decay series are built by applying alpha and beta changes repeatedly while conserving A and Z at every step.</div>
+                </div>
+                <div className="space-y-2">
+                  {nuclearSeriesRows.map(row => (
+                    <div key={`${row.step}-${row.a}-${row.z}`} className="grid grid-cols-[64px_1fr_100px] gap-2 items-center rounded-xl bg-white/[0.04] border border-white/10 p-3 text-xs">
+                      <span className="font-black text-white">Step {row.step}</span>
+                      <span className="font-mono text-cyan-100">{row.a}/{row.z} {row.symbol}</span>
+                      <span className="text-gray-400">{row.emitted}</span>
+                    </div>
+                  ))}
+                  <p className="rounded-xl bg-rose-500/10 border border-rose-400/20 p-3 text-xs text-rose-50">Series note: {selectedNuclearSeries.final}. Full natural series continue until a stable lead isotope.</p>
+                </div>
+              </div>
+            )}
+            {nuclearMode === 'equations' && (
+              <div className="grid lg:grid-cols-[300px_1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Nuclear equation prompt</ControlLabel>
+                  <select value={nuclearEquationId} onChange={e => setNuclearEquationId(e.target.value)} className="input text-sm">
+                    {nuclearEquationPrompts.map(item => <option key={item.id} value={item.id}>{item.parent} {item.decay}</option>)}
+                  </select>
+                  <div className="rounded-xl bg-black/20 border border-white/10 p-4">
+                    <p className="text-xs text-gray-500">Balance</p>
+                    <p className="mt-2 text-lg font-black text-white font-mono">{`${selectedNuclearEquation.parent} -> ? + ${nuclearDecayModes[selectedNuclearEquation.decay].symbol}`}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-4">
+                    <p className="text-xs text-emerald-300">Answer</p>
+                    <p className="mt-2 text-xl font-black text-white font-mono">{selectedNuclearEquation.answer}</p>
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-2 text-xs">
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-gray-500">Particle</p><p className="font-bold text-white">{nuclearDecayModes[selectedNuclearEquation.decay].particle}</p></div>
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-gray-500">Delta A</p><p className="font-bold text-white">{nuclearDecayModes[selectedNuclearEquation.decay].deltaA}</p></div>
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-gray-500">Delta Z</p><p className="font-bold text-white">{nuclearDecayModes[selectedNuclearEquation.decay].deltaZ}</p></div>
+                  </div>
+                  <p className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3 text-xs text-cyan-50">{selectedNuclearEquation.reason}</p>
+                </div>
+              </div>
+            )}
+            {nuclearMode === 'binding' && (
+              <div className="grid lg:grid-cols-[260px_1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Isotope</ControlLabel>
+                  <select value={nuclearBindingIso} onChange={e => setNuclearBindingIso(e.target.value)} className="input text-sm">
+                    {Object.entries(nuclearBindingIsotopes).map(([id, item]) => <option key={id} value={id}>{item.label}</option>)}
+                  </select>
+                  <div className="rounded-xl bg-black/20 border border-white/10 p-3 text-xs text-gray-300">Mass defect compares separated protons/neutrons with actual nuclear mass. Larger binding energy per nucleon usually means greater nuclear stability.</div>
+                </div>
+                <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-2">
+                  {[
+                    ['Z protons', selectedBindingIso.z],
+                    ['N neutrons', selectedBindingIso.n],
+                    ['Mass defect', `${massDefect.toFixed(4)} u`],
+                    ['Binding/nucleon', `${bindingPerNucleon.toFixed(2)} MeV`],
+                  ].map(([label, value]) => <div key={label} className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">{label}</p><p className="text-lg font-black text-white">{value}</p></div>)}
+                  <svg viewBox="0 0 260 120" className="sm:col-span-2 xl:col-span-4 w-full h-40 rounded-xl bg-black/20 border border-white/10">
+                    <line x1="25" y1="92" x2="235" y2="92" stroke="#64748b" />
+                    <line x1="25" y1="20" x2="25" y2="92" stroke="#64748b" />
+                    {Object.values(nuclearBindingIsotopes).map((iso, index) => {
+                      const defect = ((iso.z * PROTON_MASS_U) + (iso.n * NEUTRON_MASS_U) - iso.mass) * U_TO_MEV / (iso.z + iso.n);
+                      return <circle key={iso.label} cx={45 + index * 58} cy={92 - defect * 7} r="6" fill={iso.label === selectedBindingIso.label ? '#fb7185' : '#38bdf8'} />;
+                    })}
+                    <text x="35" y="112" fill="#94a3b8" fontSize="8">Binding energy per nucleon comparison</text>
+                  </svg>
+                </div>
+              </div>
+            )}
+            {nuclearMode === 'energetics' && (
+              <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Reaction type</ControlLabel>
+                  <select value={nuclearEnergeticCase} onChange={e => setNuclearEnergeticCase(e.target.value)} className="input text-sm">
+                    {Object.entries(nuclearEnergeticExamples).map(([id, item]) => <option key={id} value={id}>{item.label}</option>)}
+                  </select>
+                  <div className="rounded-xl bg-black/20 border border-white/10 p-3 text-center">
+                    <p className="text-xs text-gray-500">Products</p>
+                    <p className="text-lg font-black text-white">{selectedEnergeticCase.products}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-3 gap-2">
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Mass lost</p><p className="text-lg font-black text-white">{energeticMassDefect.toFixed(4)} u</p></div>
+                    <div className="rounded-xl bg-rose-500/10 border border-rose-400/20 p-3"><p className="text-[10px] text-rose-300">Energy</p><p className="text-lg font-black text-white">{energeticMev.toFixed(1)} MeV</p></div>
+                    <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="text-[10px] text-cyan-300">Per event</p><p className="text-lg font-black text-white">{energeticJoulePerEvent.toExponential(2)} J</p></div>
+                  </div>
+                  <p className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-xs text-gray-300">{selectedEnergeticCase.note}</p>
+                  <div className="grid md:grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-xl bg-amber-500/10 border border-amber-400/20 p-3 text-amber-50">Fission: neutron-induced splitting, critical mass, moderators, control rods, and shielding matter.</div>
+                    <div className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-3 text-emerald-50">Fusion: high binding gain for light nuclei, but needs extreme temperature and confinement.</div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {nuclearMode === 'dose' && (
+              <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Radiation type</ControlLabel>
+                  <select value={radiationType} onChange={e => setRadiationType(e.target.value)} className="input text-sm">
+                    <option value="alpha">Alpha</option><option value="beta">Beta</option><option value="gamma">Gamma</option>
+                  </select>
+                  <ControlLabel>Shield material</ControlLabel>
+                  <select value={shieldMaterial} onChange={e => setShieldMaterial(e.target.value)} className="input text-sm">
+                    {Object.entries(shieldingMaterials).map(([id, item]) => <option key={id} value={id}>{item.label}</option>)}
+                  </select>
+                  <div><ControlLabel>Thickness {shieldThickness.toFixed(1)} cm</ControlLabel><input type="range" min="0" max="20" step="0.1" value={shieldThickness} onChange={e => setShieldThickness(Number(e.target.value))} className="w-full" /></div>
+                  <div><ControlLabel>Absorbed dose {absorbedDose.toFixed(3)} Gy</ControlLabel><input type="range" min="0.001" max="0.2" step="0.001" value={absorbedDose} onChange={e => setAbsorbedDose(Number(e.target.value))} className="w-full" /></div>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-3 gap-2">
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">HVL</p><p className="text-lg font-black text-white">{hvl.toFixed(2)} cm</p></div>
+                    <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="text-[10px] text-cyan-300">Transmitted</p><p className="text-lg font-black text-white">{transmittedFraction.toFixed(2)}%</p></div>
+                    <div className="rounded-xl bg-rose-500/10 border border-rose-400/20 p-3"><p className="text-[10px] text-rose-300">Equivalent dose</p><p className="text-lg font-black text-white">{doseEquivalent.toFixed(3)} Sv</p></div>
+                  </div>
+                  <MiniBar label="radiation transmitted after shielding" value={transmittedFraction} color="#fb7185" />
+                  <div className="grid md:grid-cols-3 gap-2 text-xs">
+                    {Object.entries(nuclearDecayModes).map(([id, item]) => (
+                      <div key={id} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                        <p className="font-black text-white">{item.label}</p>
+                        <p className="mt-1 text-gray-300">Shield: {item.shield}</p>
+                        <p className="mt-1 text-gray-500">{item.hazard}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </Bench>
         );
       case 'phase-diagram':
@@ -2589,6 +3759,178 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
             </div>
           </Bench>
         );
+      case 'organic-reaction-bank':
+        return (
+          <Bench title="Organic Reaction Bank Depth" result={activeResultText()}>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {organicBankModes.map(mode => (
+                <button key={mode.id} onClick={() => setOrganicBankMode(mode.id)} className={`btn-secondary text-xs px-3 py-2 ${organicBankMode === mode.id ? 'bg-emerald-500/20 text-emerald-100 border-emerald-400/30' : ''}`}>{mode.label}</button>
+              ))}
+            </div>
+            {organicBankMode === 'transformations' && (
+              <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+                <div>
+                  <ControlLabel>Transformation</ControlLabel>
+                  <select value={organicTransformation} onChange={e => setOrganicTransformation(e.target.value)} className="input text-sm">
+                    {reagentTransformations.map(item => <option key={item.id} value={item.id}>{item.from} to {item.to}</option>)}
+                  </select>
+                  <div className="mt-3 rounded-xl bg-black/20 border border-white/10 p-3 text-center">
+                    <p className="text-xs text-gray-500">Route target</p>
+                    <p className="text-lg font-black text-white">{selectedTransformation.from}</p>
+                    <p className="text-cyan-300 font-mono">-&gt;</p>
+                    <p className="text-lg font-black text-white">{selectedTransformation.to}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid md:grid-cols-3 gap-2">
+                    {selectedTransformation.reagents.map(reagent => (
+                      <div key={reagent} className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-3 text-xs text-emerald-50">
+                        <p className="font-mono">{reagent}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-gray-500">Selectivity</p><p className="text-gray-200 mt-1">{selectedTransformation.selectivity}</p></div>
+                    <div className="rounded-xl bg-amber-500/10 border border-amber-400/20 p-3"><p className="text-amber-200 font-bold">Watch out</p><p className="text-amber-50 mt-1">{selectedTransformation.caution}</p></div>
+                  </div>
+                  <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-2 text-xs">
+                    {organicCompatibilityRules.map(rule => (
+                      <article key={rule.problem} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                        <h5 className="font-black text-white">{rule.problem}</h5>
+                        <p className="mt-2 text-rose-200">Avoid: {rule.avoid}</p>
+                        <p className="mt-2 text-cyan-100">Fix: {rule.fix}</p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            {organicBankMode === 'stereo' && (
+              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
+                {stereochemicalOutcomes.map(item => (
+                  <article key={item.reaction} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                    <h5 className="text-sm font-black text-white">{item.reaction}</h5>
+                    <p className="mt-2 text-xs text-cyan-100">{item.outcome}</p>
+                    <p className="mt-3 rounded-lg bg-black/20 border border-white/10 p-2 text-xs text-gray-400">{item.cue}</p>
+                  </article>
+                ))}
+              </div>
+            )}
+            {organicBankMode === 'rearrangements' && (
+              <div className="grid lg:grid-cols-[260px_1fr] gap-4">
+                <div>
+                  <ControlLabel>Rearrangement</ControlLabel>
+                  <select value={organicRearrangement} onChange={e => setOrganicRearrangement(e.target.value)} className="input text-sm">{rearrangementData.map(item => <option key={item.name}>{item.name}</option>)}</select>
+                  <svg viewBox="0 0 220 125" className="w-full h-40 mt-3 rounded-xl bg-black/20 border border-white/10">
+                    <circle cx="45" cy="62" r="18" fill="#38bdf8" opacity="0.82" />
+                    <path d="M75 62 C105 20, 130 20, 158 62" fill="none" stroke="#f59e0b" strokeWidth="3" />
+                    <circle cx="178" cy="62" r="18" fill="#f472b6" opacity="0.82" />
+                    <text x="31" y="66" fill="#0f172a" fontSize="10" fontWeight="800">start</text>
+                    <text x="160" y="66" fill="#0f172a" fontSize="10" fontWeight="800">new</text>
+                    <text x="62" y="112" fill="#94a3b8" fontSize="9">1,2 migration reorganizes connectivity</text>
+                  </svg>
+                </div>
+                <div className="grid md:grid-cols-3 gap-2 text-xs">
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-gray-500">Trigger</p><p className="text-white font-bold mt-1">{selectedRearrangement.trigger}</p></div>
+                  <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="text-cyan-300">Migration</p><p className="text-cyan-50 font-bold mt-1">{selectedRearrangement.migration}</p></div>
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-3"><p className="text-emerald-300">Product logic</p><p className="text-emerald-50 font-bold mt-1">{selectedRearrangement.product}</p></div>
+                </div>
+              </div>
+            )}
+            {organicBankMode === 'pericyclic' && (
+              <div className="grid md:grid-cols-2 gap-3">
+                {pericyclicBasics.map(item => (
+                  <article key={item.name} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <h5 className="text-sm font-black text-white">{item.name}</h5>
+                      <BadgePill className="bg-violet-500/15 text-violet-300 border-violet-500/25">concerted</BadgePill>
+                    </div>
+                    <p className="mt-2 text-xs text-violet-100">{item.rule}</p>
+                    <p className="mt-2 text-xs text-gray-400">{item.use}</p>
+                  </article>
+                ))}
+              </div>
+            )}
+            {organicBankMode === 'protecting' && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="text-gray-400 border-b border-white/10">
+                    <tr><th className="py-2 pr-3">Group</th><th className="py-2 pr-3">Protects</th><th className="py-2 pr-3">Install</th><th className="py-2 pr-3">Remove</th><th className="py-2">Use when</th></tr>
+                  </thead>
+                  <tbody>
+                    {protectingGroups.map(item => (
+                      <tr key={item.group} className="border-b border-white/5">
+                        <td className="py-2 pr-3 font-bold text-white">{item.group}</td>
+                        <td className="py-2 pr-3 text-cyan-100">{item.protects}</td>
+                        <td className="py-2 pr-3 text-gray-300">{item.install}</td>
+                        <td className="py-2 pr-3 text-gray-300">{item.remove}</td>
+                        <td className="py-2 text-gray-400">{item.when}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {organicBankMode === 'drills' && (
+              <div className="grid lg:grid-cols-[260px_1fr] gap-4">
+                <div>
+                  <ControlLabel>Synthesis target</ControlLabel>
+                  <select value={organicDrill} onChange={e => setOrganicDrill(e.target.value)} className="input text-sm">{synthesisDrills.map(item => <option key={item.id} value={item.id}>{item.target}</option>)}</select>
+                  <div className="mt-3 rounded-xl bg-black/20 border border-white/10 p-3">
+                    <p className="text-[10px] text-gray-500">Start</p>
+                    <p className="text-base font-black text-white">{selectedSynthesisDrill.start}</p>
+                    <p className="text-[10px] text-gray-500 mt-3">Target</p>
+                    <p className="text-base font-black text-emerald-200">{selectedSynthesisDrill.target}</p>
+                  </div>
+                  <div className="mt-3 rounded-xl bg-violet-500/10 border border-violet-400/20 p-3 text-xs text-violet-50">
+                    <p className="font-bold text-violet-200">Retrosynthetic clue</p>
+                    <p className="mt-1">{selectedSynthesisDrill.disconnection}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {selectedSynthesisDrill.steps.map((step, index) => (
+                    <div key={step} className="flex gap-3 rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                      <span className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-400/30 text-emerald-100 flex items-center justify-center text-sm font-black">{index + 1}</span>
+                      <p className="text-sm text-gray-200 pt-1">{step}</p>
+                    </div>
+                  ))}
+                  <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3 text-xs text-cyan-50">{selectedSynthesisDrill.check}</div>
+                  <div className="rounded-xl bg-amber-500/10 border border-amber-400/20 p-3 text-xs text-amber-50"><span className="font-bold text-amber-200">Common trap:</span> {selectedSynthesisDrill.trap}</div>
+                </div>
+              </div>
+            )}
+            {organicBankMode === 'quickcheck' && (
+              <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-4">
+                <div className="space-y-3">
+                  <ControlLabel>Prompt</ControlLabel>
+                  <select value={organicPromptIndex} onChange={e => setOrganicPromptIndex(Number(e.target.value))} className="input text-sm">
+                    {organicQuickPrompts.map((item, index) => <option key={item.prompt} value={index}>Prompt {index + 1}</option>)}
+                  </select>
+                  <div className="rounded-xl bg-black/20 border border-white/10 p-4">
+                    <p className="text-xs text-gray-500">Question</p>
+                    <p className="mt-2 text-sm font-bold text-white">{activeOrganicPrompt.prompt}</p>
+                  </div>
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-4 text-sm text-emerald-50">{activeOrganicPrompt.answer}</div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3 text-xs">
+                  {[
+                    ['Reagent-first thinking', 'Map substrate class, product class, oxidation level, and skeleton change before choosing reagent.'],
+                    ['Stereo check', 'Ask whether the mechanism is planar, backside, syn addition, anti addition, or concerted.'],
+                    ['Rearrangement check', 'If a carbocation appears, test hydride/methyl shift before final product.'],
+                    ['Protection check', 'Protect only when a functional group would react under the planned conditions.'],
+                    ['Pericyclic check', 'Count pi electrons and decide thermal versus photochemical mode.'],
+                    ['Route economy', 'Prefer routes that control selectivity and avoid unnecessary protection steps.'],
+                  ].map(([title, note]) => (
+                    <article key={title} className="rounded-xl bg-white/[0.04] border border-white/10 p-3">
+                      <h5 className="font-black text-white">{title}</h5>
+                      <p className="mt-2 text-gray-300">{note}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Bench>
+        );
       case 'reactivity-series':
         return (
           <Bench title="Reactivity Series & Displacement Simulator" result={reactivityEquation}>
@@ -2707,41 +4049,125 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
         );
       case 'environmental-chem':
         return (
-          <Bench title="Environmental Chemistry" result="Atmospheric composition, pollution pathways, water quality, and smog chemistry summarized for Class 11 revision.">
+          <Bench title="Environmental Chemistry" result={activeResultText()}>
             <div className="flex flex-wrap gap-2 mb-4">
-              {['Atmosphere', 'Pollution', 'Water', 'Smog'].map(tab => (
+              {environmentalTabs.map(tab => (
                 <button key={tab} onClick={() => setEnvironmentTab(tab)} className={`btn-secondary text-xs ${environmentTab === tab ? 'bg-emerald-500/20 text-emerald-200' : ''}`}>{tab}</button>
               ))}
             </div>
-            {environmentTab === 'Atmosphere' && (
+            {environmentTab === 'Ozone' && (
               <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-4">
                 <AtmosphereSketch />
                 <div className="grid gap-3 text-xs">
                   <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="font-bold text-white">Composition</p><p className="text-gray-400 mt-1">Dry air is about 78% N2, 21% O2, 0.93% Ar, and about 0.04% CO2, with variable water vapor.</p></div>
-                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="font-bold text-white">Ozone layer</p><p className="text-gray-400 mt-1">{'O2 + UV -> O + O; O + O2 -> O3. Ozone absorbs harmful UV radiation in the stratosphere.'}</p></div>
-                  <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3"><p className="font-bold text-red-100">CFC destruction chain</p><p className="text-red-100/80 mt-1">{'CCl2F2 + UV -> Cl radical; Cl + O3 -> ClO + O2; ClO + O -> Cl + O2. Chlorine is regenerated.'}</p></div>
+                  <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="font-bold text-cyan-100">Chapman cycle</p><p className="text-cyan-50/90 mt-1">{'O2 + UV -> O + O; O + O2 -> O3; O3 + UV -> O2 + O. Stratospheric ozone absorbs harmful UV-B.'}</p></div>
+                  <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3"><p className="font-bold text-red-100">CFC destruction chain</p><p className="text-red-100/80 mt-1">{'CCl2F2 + UV -> Cl radical; Cl + O3 -> ClO + O2; ClO + O -> Cl + O2. Chlorine is regenerated, so one radical can destroy many ozone molecules.'}</p></div>
+                  <div className="grid sm:grid-cols-3 gap-2">
+                    {['Polar stratospheric clouds activate chlorine reservoirs.', 'Ozone thinning increases UV exposure and biological damage.', 'Montreal Protocol targeted CFC and halon emissions.'].map(item => <div key={item} className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300">{item}</div>)}
+                  </div>
                 </div>
               </div>
             )}
-            {environmentTab === 'Pollution' && (
-              <div className="grid md:grid-cols-2 gap-3 text-xs">
-                {['CO2: GWP 1', 'CH4: GWP about 28', 'N2O: GWP about 265', 'CFCs: very high GWP'].map(item => <div key={item} className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-200">{item}</div>)}
-                <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-amber-100">{'Acid rain: SO2 + H2O -> H2SO3; NOx oxidizes and hydrates to HNO3.'}</div>
-                <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-amber-100">{'Marble damage: CaCO3 + H2SO4 -> CaSO4 + CO2 + H2O.'}</div>
-              </div>
-            )}
-            {environmentTab === 'Water' && (
-              <div className="grid md:grid-cols-2 gap-3 text-xs">
-                <div className="rounded-xl bg-cyan-500/10 border border-cyan-500/20 p-3 text-cyan-100"><p className="font-bold">BOD</p><p className="mt-1">Biochemical oxygen demand is oxygen used by microbes to decompose organic matter in water. High BOD means more pollution.</p></div>
-                <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300"><p className="font-bold text-white">Hardness</p><p className="mt-1">Temporary hardness: bicarbonates of Ca/Mg. Permanent hardness: chlorides and sulfates of Ca/Mg.</p></div>
-                {['Boiling removes temporary hardness.', 'Lime treatment precipitates CaCO3/Mg(OH)2.', 'Ion exchange swaps Ca2+/Mg2+ for Na+ or H+.', 'Zeolite softening exchanges hard-water ions.'].map(item => <div key={item} className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300">{item}</div>)}
-              </div>
-            )}
             {environmentTab === 'Smog' && (
-              <div className="grid md:grid-cols-3 gap-3 text-xs">
-                <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="font-bold text-white">Classical smog</p><p className="text-gray-400 mt-1">Cool, humid, reducing smog from smoke, fog, SO2, and particulates.</p></div>
-                <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="font-bold text-white">Photochemical smog</p><p className="text-gray-400 mt-1">Warm, sunny, oxidizing smog from NOx and hydrocarbons; contains O3 and PAN.</p></div>
-                <div className="rounded-xl bg-violet-500/10 border border-violet-500/20 p-3"><p className="font-bold text-violet-100">PAN formation</p><p className="text-violet-100/80 mt-1">Hydrocarbon radicals + O2 + NO2 form peroxyacetyl nitrate, an eye-irritating oxidant.</p></div>
+              <div className="space-y-4">
+                <div className="grid md:grid-cols-3 gap-3 text-xs">
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="font-bold text-white">Classical smog</p><p className="text-gray-400 mt-1">Cool, humid, reducing smog from smoke, fog, SO2, and particulates.</p></div>
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="font-bold text-white">Photochemical smog</p><p className="text-gray-400 mt-1">Warm, sunny, oxidizing smog from NOx and hydrocarbons; contains O3, aldehydes, and PAN.</p></div>
+                  <div className="rounded-xl bg-violet-500/10 border border-violet-500/20 p-3"><p className="font-bold text-violet-100">PAN formation</p><p className="text-violet-100/80 mt-1">Hydrocarbon radicals + O2 + NO2 form peroxyacetyl nitrate, an eye-irritating oxidant.</p></div>
+                </div>
+                <div className="grid md:grid-cols-5 gap-2 text-xs">
+                  {smogMechanismSteps.map(([title, equation], index) => (
+                    <div key={title} className="rounded-xl bg-black/20 border border-white/10 p-3">
+                      <p className="text-[10px] text-gray-500">Step {index + 1}</p>
+                      <p className="font-black text-white">{title}</p>
+                      <p className="mt-2 font-mono text-cyan-100">{equation}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid md:grid-cols-2 gap-3 text-xs">
+                  <div className="rounded-xl bg-amber-500/10 border border-amber-400/20 p-3 text-amber-50">{'Acid rain: SO2 + H2O -> H2SO3; NOx oxidizes and hydrates to HNO3. Marble damage: CaCO3 + H2SO4 -> CaSO4 + CO2 + H2O.'}</div>
+                  <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300">Control: reduce NOx and hydrocarbons using catalytic converters, clean fuels, vapor recovery, and public transport planning.</div>
+                </div>
+              </div>
+            )}
+            {environmentTab === 'Water Hardness' && (
+              <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+                <div className="space-y-3">
+                  <div><ControlLabel>Ca2+ {waterCaMgL} mg/L</ControlLabel><input type="range" min="0" max="180" value={waterCaMgL} onChange={e => setWaterCaMgL(Number(e.target.value))} className="w-full" /></div>
+                  <div><ControlLabel>Mg2+ {waterMgMgL} mg/L</ControlLabel><input type="range" min="0" max="90" value={waterMgMgL} onChange={e => setWaterMgMgL(Number(e.target.value))} className="w-full" /></div>
+                  <MiniBar label="hardness as CaCO3" value={Math.min(100, hardnessAsCaCO3 / 4)} color="#38bdf8" />
+                </div>
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-3 gap-2">
+                    <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="text-[10px] text-cyan-300">Total hardness</p><p className="text-xl font-black text-white">{hardnessAsCaCO3.toFixed(0)} mg/L</p></div>
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Class</p><p className="text-xl font-black text-white">{hardnessClass}</p></div>
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Formula</p><p className="text-xs font-mono text-gray-200">Ca x 2.497 + Mg x 4.118</p></div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-2 text-xs">
+                    {['Temporary hardness: Ca/Mg bicarbonates, removable by boiling or lime.', 'Permanent hardness: Ca/Mg chlorides and sulfates, removed by washing soda, zeolite, or ion exchange.', 'Soap test: hard water wastes soap by forming insoluble Ca/Mg salts.', 'EDTA titration: EBT endpoint changes wine red to blue.'].map(item => <div key={item} className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300">{item}</div>)}
+                  </div>
+                </div>
+              </div>
+            )}
+            {environmentTab === 'BOD/COD' && (
+              <div className="grid lg:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-3 gap-2">
+                    <div><ControlLabel>Initial DO {bodInitialDo.toFixed(1)}</ControlLabel><input type="range" min="0" max="12" step="0.1" value={bodInitialDo} onChange={e => setBodInitialDo(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Final DO {bodFinalDo.toFixed(1)}</ControlLabel><input type="range" min="0" max="12" step="0.1" value={bodFinalDo} onChange={e => setBodFinalDo(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Dilution {bodDilutionFactor.toFixed(1)}x</ControlLabel><input type="range" min="1" max="10" step="0.5" value={bodDilutionFactor} onChange={e => setBodDilutionFactor(Number(e.target.value))} className="w-full" /></div>
+                  </div>
+                  <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="text-[10px] text-cyan-300">BOD</p><p className="text-2xl font-black text-white">{bodValue.toFixed(1)} mg/L</p><p className="text-xs text-cyan-50 mt-1">BOD = (D1 - D2) x dilution factor, usually over 5 days at 20 C.</p></div>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-4 gap-2">
+                    <div><ControlLabel>Blank {codBlankMl.toFixed(1)} mL</ControlLabel><input type="range" min="1" max="25" step="0.1" value={codBlankMl} onChange={e => setCodBlankMl(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Sample {codSampleMl.toFixed(1)} mL</ControlLabel><input type="range" min="1" max="25" step="0.1" value={codSampleMl} onChange={e => setCodSampleMl(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>N {codNormality.toFixed(2)}</ControlLabel><input type="range" min="0.02" max="0.25" step="0.01" value={codNormality} onChange={e => setCodNormality(Number(e.target.value))} className="w-full" /></div>
+                    <div><ControlLabel>Aliquot {codAliquotMl} mL</ControlLabel><input type="range" min="10" max="100" value={codAliquotMl} onChange={e => setCodAliquotMl(Number(e.target.value))} className="w-full" /></div>
+                  </div>
+                  <div className="rounded-xl bg-rose-500/10 border border-rose-400/20 p-3"><p className="text-[10px] text-rose-300">COD</p><p className="text-2xl font-black text-white">{codValue.toFixed(0)} mg/L</p><p className="text-xs text-rose-50 mt-1">COD = (blank - sample) x N x 8000 / sample volume.</p></div>
+                </div>
+              </div>
+            )}
+            {environmentTab === 'Eutrophication' && (
+              <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+                <div className="space-y-3">
+                  <div><ControlLabel>Phosphate {phosphateMgL.toFixed(2)} mg/L</ControlLabel><input type="range" min="0" max="1.2" step="0.01" value={phosphateMgL} onChange={e => setPhosphateMgL(Number(e.target.value))} className="w-full" /></div>
+                  <div><ControlLabel>Nitrate {nitrateMgL.toFixed(1)} mg/L</ControlLabel><input type="range" min="0" max="40" step="0.5" value={nitrateMgL} onChange={e => setNitrateMgL(Number(e.target.value))} className="w-full" /></div>
+                  <MiniBar label={`${eutrophicationLabel} risk`} value={eutrophicationRisk} color="#22c55e" />
+                </div>
+                <div className="grid md:grid-cols-2 gap-3 text-xs">
+                  {[
+                    ['Nutrient input', 'Fertilizer runoff, sewage, detergents, and animal waste add nitrate/phosphate.'],
+                    ['Algal bloom', 'Fast algal growth blocks light and changes pH/oxygen balance.'],
+                    ['Decomposition', 'Dead algae are decomposed by microbes, increasing BOD.'],
+                    ['Hypoxia', 'Dissolved oxygen falls; fish and aerobic organisms die.'],
+                    ['Control', 'Nutrient removal, riparian buffers, sewage treatment, phosphate-free detergents.'],
+                    ['Indicator', 'High phosphate is often the limiting trigger in freshwater systems.'],
+                  ].map(([title, note]) => <div key={title} className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="font-black text-white">{title}</p><p className="mt-1 text-gray-300">{note}</p></div>)}
+                </div>
+              </div>
+            )}
+            {environmentTab === 'Treatment' && (
+              <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+                <div>
+                  <ControlLabel>Treatment method</ControlLabel>
+                  <select value={treatmentMethod} onChange={e => setTreatmentMethod(e.target.value)} className="input text-sm">
+                    {pollutantTreatmentMethods.map(item => <option key={item.method}>{item.method}</option>)}
+                  </select>
+                  <div className="mt-3 rounded-xl bg-black/20 border border-white/10 p-3 text-xs text-gray-300">Match treatment to pollutant type: particulate, biodegradable organic, nutrient, gas-phase acid precursor, vehicle exhaust, or trace organic.</div>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-3 gap-2">
+                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3"><p className="text-[10px] text-gray-500">Target</p><p className="font-black text-white">{selectedTreatmentMethod.target}</p></div>
+                    <div className="sm:col-span-2 rounded-xl bg-cyan-500/10 border border-cyan-400/20 p-3"><p className="text-[10px] text-cyan-300">Chemistry</p><p className="font-bold text-cyan-50">{selectedTreatmentMethod.chemistry}</p></div>
+                  </div>
+                  <p className="rounded-xl bg-emerald-500/10 border border-emerald-400/20 p-3 text-xs text-emerald-50">{selectedTreatmentMethod.output}</p>
+                  <div className="grid md:grid-cols-3 gap-2 text-xs">
+                    {['Reduce at source first.', 'Separate physical solids before chemical polishing.', 'Track pH, BOD, COD, nutrients, turbidity, and toxicity after treatment.'].map(item => <div key={item} className="rounded-xl bg-white/[0.04] border border-white/10 p-3 text-gray-300">{item}</div>)}
+                  </div>
+                </div>
               </div>
             )}
           </Bench>
@@ -2834,51 +4260,250 @@ export const ChemistryLabPage = ({ initialFocusTopic = 'all', initialExperimentI
         );
       case 'salt-analysis':
         return (
-          <Bench title="Qualitative Salt Analysis Guide" result={`${saltAnalysisSample}: ${saltSamples[saltAnalysisSample][0]}`}>
-            <div className="grid lg:grid-cols-2 gap-4">
-              <div className="rounded-xl bg-white/[0.035] border border-white/10 p-4">
-                <h5 className="text-sm font-black text-white mb-3">Cation Analysis</h5>
-                <div className="space-y-2">
-                  {saltAnalysisGroups.map(([group, ions, observation]) => (
-                    <div key={group} className="rounded-lg bg-black/20 border border-white/10 p-3 text-xs">
-                      <p className="font-bold text-cyan-100">{group}</p>
-                      <p className="text-gray-300 mt-1">{ions}</p>
-                      <p className="text-gray-500 mt-1">{observation}</p>
+          <Bench title="Full Qualitative Salt Analysis Simulator" result={`${saltAnalysisSample}: ${expectedSaltCation.ion} and ${expectedSaltAnion.ion}`}>
+            <div className="space-y-4">
+              <div className="grid lg:grid-cols-[280px_1fr] gap-4">
+                <div className="space-y-3">
+                  <div>
+                    <ControlLabel>Unknown salt sample</ControlLabel>
+                    <select
+                      value={saltAnalysisSample}
+                      onChange={e => {
+                        const next = e.target.value;
+                        const sample = saltUnknowns[next] || saltUnknowns.NaCl;
+                        setSaltAnalysisSample(next);
+                        setSaltCationTest(sample.cation);
+                        setSaltAnionTest(sample.anion);
+                        setSaltReagentStep(0);
+                      }}
+                      className="input text-sm"
+                    >
+                      {Object.keys(saltUnknowns).map(sample => <option key={sample}>{sample}</option>)}
+                    </select>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Preliminary clues</p>
+                    <div className="mt-3 space-y-2 text-xs text-gray-300">
+                      <p><span className="text-cyan-300 font-semibold">Appearance:</span> {activeSaltUnknown.appearance}</p>
+                      <p><span className="text-cyan-300 font-semibold">Solubility:</span> {activeSaltUnknown.solubility}</p>
+                      <p><span className="text-cyan-300 font-semibold">Dry heat:</span> {activeSaltUnknown.dryHeat}</p>
+                      <p><span className="text-cyan-300 font-semibold">Flame:</span> {activeSaltUnknown.flame}</p>
+                      <p className="text-amber-200"><span className="font-semibold">Clue:</span> {activeSaltUnknown.clue}</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-              <div className="rounded-xl bg-white/[0.035] border border-white/10 p-4">
-                <h5 className="text-sm font-black text-white mb-3">Anion Analysis</h5>
-                <div className="space-y-2">
-                  {anionTests.map(([ion, reagent, observation]) => (
-                    <div key={ion} className="rounded-lg bg-black/20 border border-white/10 p-3 text-xs">
-                      <p className="font-bold text-violet-100">{ion}</p>
-                      <p className="text-gray-300 mt-1">{reagent}</p>
-                      <p className="text-gray-500 mt-1">{observation}</p>
+                  </div>
+                  <div className="rounded-xl border border-amber-300/20 bg-amber-300/10 p-3">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-200">Interference logic</p>
+                    <div className="mt-2 space-y-2 text-xs text-amber-50">
+                      {(saltInterferenceAlerts.length ? saltInterferenceAlerts : ['No major special interference for this sample, but still follow reagent order.']).map(alert => <p key={alert}>{alert}</p>)}
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 grid lg:grid-cols-[260px_1fr] gap-4">
-              <div>
-                <ControlLabel>Pick a salt</ControlLabel>
-                <select value={saltAnalysisSample} onChange={e => setSaltAnalysisSample(e.target.value)} className="input text-sm">
-                  {Object.keys(saltSamples).map(sample => <option key={sample}>{sample}</option>)}
-                </select>
-                <div className="mt-3 rounded-xl bg-black/20 border border-white/10 p-3">
-                  <p className="text-xs font-bold text-white mb-2">Flame colors</p>
-                  <div className="grid grid-cols-2 gap-1 text-xs text-gray-300">
-                    {flameReference.map(([ion, color]) => <span key={ion}>{ion}: {color}</span>)}
+                  </div>
+                  <div className="rounded-xl bg-black/20 border border-white/10 p-3">
+                    <p className="text-xs font-bold text-white mb-2">Flame colors</p>
+                    <div className="grid grid-cols-2 gap-1 text-xs text-gray-300">
+                      {flameReference.map(([ion, color]) => <span key={ion}>{ion}: {color}</span>)}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
-                <h5 className="text-sm font-black text-white">Step-by-step sequence</h5>
-                <ol className="mt-3 space-y-2 text-sm text-emerald-50">
-                  {saltSamples[saltAnalysisSample].map((step, index) => <li key={step}>{index + 1}. {step}</li>)}
-                </ol>
+
+                <div className="space-y-4">
+                  <div className="grid md:grid-cols-5 gap-2">
+                    {saltWorkflowStages.map(stage => (
+                      <button
+                        key={stage.id}
+                        type="button"
+                        onClick={() => setSaltWorkflowStage(stage.id)}
+                        className={`rounded-xl border p-3 text-left ${saltWorkflowStage === stage.id ? 'border-cyan-300/40 bg-cyan-400/10 text-cyan-50' : 'border-white/10 bg-white/[0.035] text-gray-300 hover:bg-white/[0.06]'}`}
+                      >
+                        <span className="text-[10px] font-black uppercase tracking-widest">{stage.label}</span>
+                        <span className="mt-1 block text-[11px] text-gray-500">{stage.cue}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {saltWorkflowStage === 'preliminary' && (
+                    <div className="grid lg:grid-cols-[1fr_320px] gap-4">
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        {[
+                          ['Color clue', activeSaltUnknown.appearance],
+                          ['Solubility clue', activeSaltUnknown.solubility],
+                          ['Dry heating clue', activeSaltUnknown.dryHeat],
+                          ['Flame clue', activeSaltUnknown.flame],
+                        ].map(([label, value]) => (
+                          <div key={label} className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</p>
+                            <p className="mt-2 text-sm font-semibold text-white">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <svg viewBox="0 0 300 230" className="h-72 w-full rounded-xl border border-white/10 bg-slate-950/70">
+                        <rect x="46" y="42" width="88" height="126" rx="18" fill="#0f172a" stroke="#334155" />
+                        <path d="M56 126 C76 106, 106 142, 124 118 L124 154 L56 154Z" fill={expectedSaltCation.color} opacity="0.35" />
+                        <circle cx="92" cy="128" r="18" fill={expectedSaltCation.color} opacity="0.8" />
+                        <rect x="176" y="62" width="58" height="108" rx="12" fill="#111827" stroke="#64748b" />
+                        <path d="M180 168 C194 140, 216 140, 230 168" fill="#fb718533" stroke="#fb7185" />
+                        <text x="54" y="196" fill="#cbd5e1" fontSize="11">unknown solution</text>
+                        <text x="168" y="196" fill="#cbd5e1" fontSize="11">flame / heat clue</text>
+                        <text x="52" y="24" fill="#94a3b8" fontSize="10">Start with observations before adding group reagents.</text>
+                      </svg>
+                    </div>
+                  )}
+
+                  {saltWorkflowStage === 'anion' && (
+                    <div className="grid lg:grid-cols-[1fr_300px] gap-4">
+                      <div className="space-y-3">
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div>
+                            <ControlLabel>Try anion confirmatory test</ControlLabel>
+                            <select value={saltAnionTest} onChange={e => setSaltAnionTest(e.target.value)} className="input text-sm">
+                              {Object.entries(anionConfirmatoryData).map(([id, test]) => <option key={id} value={id}>{test.ion}</option>)}
+                            </select>
+                          </div>
+                          <div className={`rounded-xl border p-3 ${saltAnionMatch ? 'border-emerald-300/25 bg-emerald-300/10 text-emerald-50' : 'border-amber-300/25 bg-amber-300/10 text-amber-50'}`}>
+                            <p className="text-[10px] font-black uppercase tracking-widest">{saltAnionMatch ? 'Correct anion' : 'Compare observation'}</p>
+                            <p className="mt-1 text-sm font-bold">{saltAnionMatch ? `${expectedSaltAnion.ion} confirmed` : `Expected clue fits ${expectedSaltAnion.ion}`}</p>
+                          </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                            <p className="text-xs font-black text-white">Selected test</p>
+                            <p className="mt-2 text-xs text-gray-300"><span className="text-cyan-300">Reagent:</span> {selectedSaltAnionTest.reagent}</p>
+                            <p className="mt-1 text-xs text-gray-300"><span className="text-cyan-300">Observation:</span> {selectedSaltAnionTest.observation}</p>
+                            <p className="mt-1 text-xs text-gray-300"><span className="text-cyan-300">Confirm:</span> {selectedSaltAnionTest.confirm}</p>
+                          </div>
+                          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                            <p className="text-xs font-black text-white">Expected for unknown</p>
+                            <p className="mt-2 text-xs text-gray-300"><span className="text-emerald-300">Ion:</span> {expectedSaltAnion.ion}</p>
+                            <p className="mt-1 text-xs text-gray-300"><span className="text-emerald-300">Group:</span> {expectedSaltAnion.group}</p>
+                            <p className="mt-1 text-xs text-amber-200"><span className="font-semibold">Interference:</span> {expectedSaltAnion.interference}</p>
+                          </div>
+                        </div>
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                          {anionTests.map(([ion, reagent, observation]) => (
+                            <div key={ion} className="rounded-lg bg-black/15 border border-white/10 p-2">
+                              <p className="text-xs font-bold text-white">{ion}</p>
+                              <p className="text-[11px] text-gray-500">{reagent}</p>
+                              <p className="text-[11px] text-gray-300 mt-1">{observation}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <svg viewBox="0 0 260 250" className="h-72 w-full rounded-xl border border-white/10 bg-slate-950/70">
+                        <rect x="74" y="42" width="112" height="156" rx="18" fill="#0f172a" stroke="#334155" />
+                        <path d="M84 142 C106 120, 146 166, 176 132 L176 184 L84 184Z" fill="#38bdf855" />
+                        <circle cx="126" cy="140" r="18" fill={saltAnionMatch ? '#22c55e' : '#f59e0b'} opacity="0.85" />
+                        <circle cx="148" cy="154" r="13" fill="#e2e8f0" opacity="0.75" />
+                        <text x="72" y="222" fill="#cbd5e1" fontSize="10">{selectedSaltAnionTest.ion}: {selectedSaltAnionTest.observation.slice(0, 34)}</text>
+                      </svg>
+                    </div>
+                  )}
+
+                  {saltWorkflowStage === 'cation' && (
+                    <div className="grid lg:grid-cols-[1fr_300px] gap-4">
+                      <div className="space-y-2">
+                        {saltAnalysisGroups.map(([group, ions, observation]) => {
+                          const activeGroup = group.includes(`Group ${expectedSaltCation.group}`);
+                          return (
+                            <div key={group} className={`grid sm:grid-cols-[190px_1fr] gap-2 rounded-xl border p-3 ${activeGroup ? 'border-emerald-300/30 bg-emerald-300/10' : 'border-white/10 bg-white/[0.035]'}`}>
+                              <p className="text-xs font-bold text-cyan-100">{group}</p>
+                              <p className="text-xs text-gray-300">{ions} - {observation}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="space-y-3">
+                        <ControlLabel>Try cation confirmatory route</ControlLabel>
+                        <select value={saltCationTest} onChange={e => setSaltCationTest(e.target.value)} className="input text-sm">
+                          {Object.entries(cationSeparationData).map(([id, test]) => <option key={id} value={id}>{test.ion} - Group {test.group}</option>)}
+                        </select>
+                        <div className={`rounded-xl border p-3 ${saltCationMatch ? 'border-emerald-300/25 bg-emerald-300/10 text-emerald-50' : 'border-amber-300/25 bg-amber-300/10 text-amber-50'}`}>
+                          <p className="text-xs font-black">{saltCationMatch ? 'Cation route matches' : 'Cation route mismatch'}</p>
+                          <p className="mt-2 text-xs">{saltCationMatch ? selectedSaltCationTest.confirm : `Expected ${expectedSaltCation.ion}: ${expectedSaltCation.observation}`}</p>
+                        </div>
+                        <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-gray-300">
+                          <p><span className="text-cyan-300">Reagent:</span> {selectedSaltCationTest.reagent}</p>
+                          <p className="mt-1"><span className="text-cyan-300">Observation:</span> {selectedSaltCationTest.observation}</p>
+                          <p className="mt-1 text-amber-200"><span className="font-semibold">Interference:</span> {selectedSaltCationTest.interference}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {saltWorkflowStage === 'confirm' && (
+                    <div className="grid lg:grid-cols-[1fr_320px] gap-4">
+                      <div className="space-y-3">
+                        <ControlLabel>Reagent sequence step {saltReagentStep + 1} of {saltSequence.length}</ControlLabel>
+                        <input type="range" min="0" max={saltSequence.length - 1} value={saltReagentStep} onChange={e => setSaltReagentStep(Number(e.target.value))} className="w-full" />
+                        <div className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-4">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-cyan-200">{activeSaltSequenceStep[1]}</p>
+                          <p className="mt-2 text-sm font-semibold text-white">{activeSaltSequenceStep[2]}</p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                          <div className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 p-3">
+                            <p className="text-xs font-black text-emerald-100">Cation confirmed</p>
+                            <p className="mt-2 text-sm text-white">{expectedSaltCation.ion}</p>
+                            <p className="mt-1 text-xs text-emerald-50">{expectedSaltCation.confirm}</p>
+                          </div>
+                          <div className="rounded-xl border border-violet-300/20 bg-violet-300/10 p-3">
+                            <p className="text-xs font-black text-violet-100">Anion confirmed</p>
+                            <p className="mt-2 text-sm text-white">{expectedSaltAnion.ion}</p>
+                            <p className="mt-1 text-xs text-violet-50">{expectedSaltAnion.confirm}</p>
+                          </div>
+                        </div>
+                        <ol className="space-y-2 text-xs text-gray-300">
+                          {saltSequence.map(([number, title, detail], index) => (
+                            <li key={title} className={`rounded-lg border p-2 ${index <= saltReagentStep ? 'border-cyan-300/25 bg-cyan-300/10 text-cyan-50' : 'border-white/10 bg-white/[0.03]'}`}>
+                              <span className="font-black">{number}. {title}:</span> {detail}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                      <svg viewBox="0 0 300 260" className="h-80 w-full rounded-xl border border-white/10 bg-slate-950/70">
+                        {saltSequence.map(([number, title], index) => {
+                          const active = index <= saltReagentStep;
+                          return (
+                            <g key={title}>
+                              {index > 0 && <line x1="150" y1={38 + (index - 1) * 45} x2="150" y2={65 + (index - 1) * 45} stroke={active ? '#22d3ee' : '#334155'} strokeWidth="4" />}
+                              <circle cx="150" cy={28 + index * 45} r={active ? 17 : 13} fill={active ? '#22c55e' : '#1e293b'} stroke={active ? '#bbf7d0' : '#64748b'} strokeWidth="3" />
+                              <text x="146" y={32 + index * 45} fill={active ? '#052e16' : '#cbd5e1'} fontSize="11" fontWeight="900">{number}</text>
+                              <text x="176" y={32 + index * 45} fill="#cbd5e1" fontSize="10">{title}</text>
+                            </g>
+                          );
+                        })}
+                        <text x="52" y="246" fill="#94a3b8" fontSize="10">Do tests in order to avoid masking and contamination.</text>
+                      </svg>
+                    </div>
+                  )}
+
+                  {saltWorkflowStage === 'viva' && (
+                    <div className="grid lg:grid-cols-[1fr_320px] gap-4">
+                      <div className="space-y-3">
+                        <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Viva prompt</p>
+                          <p className="mt-2 text-lg font-black text-white">{saltVivaPrompts[saltVivaIndex][0]}</p>
+                          <p className="mt-3 text-sm text-emerald-100">{saltVivaPrompts[saltVivaIndex][1]}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {saltVivaPrompts.map((prompt, index) => (
+                            <button key={prompt[0]} onClick={() => setSaltVivaIndex(index)} className={`btn-secondary text-xs ${saltVivaIndex === index ? 'bg-cyan-500/20 text-cyan-200' : ''}`}>Q{index + 1}</button>
+                          ))}
+                        </div>
+                        <div className="rounded-xl border border-amber-300/20 bg-amber-300/10 p-3 text-xs text-amber-50">
+                          Final answer format: sample contains {expectedSaltCation.ion} cation and {expectedSaltAnion.ion} anion, therefore the salt is consistent with {saltAnalysisSample}.
+                        </div>
+                      </div>
+                      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+                        <p className="text-xs font-black text-white">Exam checklist</p>
+                        <ul className="mt-3 space-y-2 text-xs text-gray-300">
+                          <li>1. State preliminary observation.</li>
+                          <li>2. Record reagent and exact observation.</li>
+                          <li>3. Separate cation group before confirmation.</li>
+                          <li>4. Confirm anion with a specific test.</li>
+                          <li>5. Mention interference or why order matters.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </Bench>

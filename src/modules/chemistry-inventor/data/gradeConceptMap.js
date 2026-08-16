@@ -1,4 +1,8 @@
 export const gradeConceptMap = {
+  6: {
+    title: 'Grade 6 Materials and Separation Foundations',
+    concepts: ['Materials and properties', 'Soluble and insoluble substances', 'Mixtures', 'Handpicking', 'Sieving', 'Sedimentation', 'Decantation', 'Filtration', 'Evaporation', 'Air and water basics', 'Safe observation'],
+  },
   7: {
     title: 'Grade 7 Chemistry Foundations',
     concepts: ['Mixtures', 'Solutions', 'Separation techniques', 'Physical and chemical changes', 'Acids and bases using indicators', 'Basic lab safety'],
@@ -17,4 +21,4 @@ export const gradeConceptMap = {
   },
 };
 
-export const getGradeLevel = value => Number(String(value).replace(/\D/g, '')) || 7;
+export const getGradeLevel = value => Number(String(value).replace(/\D/g, '')) || 6;

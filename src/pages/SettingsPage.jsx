@@ -118,7 +118,7 @@ export const SettingsPage = ({
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">About</h3>
         <div className="text-xs text-gray-400 space-y-1">
           <p>Chemistry Universe — Periodic Table Pro</p>
-          <p>Version 1.0 · Phase 1</p>
+          <p>Version 1.0</p>
           <p>118 elements · All data stored locally</p>
           <p className="mt-2 text-gray-600">Data sourced from standard chemistry references. Null values shown where data is not available. Atom shell diagrams are educational Bohr models, not quantum-mechanical representations.</p>
         </div>

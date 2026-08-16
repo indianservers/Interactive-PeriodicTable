@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import {
   commandCenterStats,
+  implementationPhases,
   learnerProfiles,
   learningPathTemplates,
   printableArtifacts,
@@ -14,6 +15,10 @@ import {
 } from '../data/learningCommandCenter.js';
 
 const statusStyle = {
+  Active: 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100',
+  Next: 'border-cyan-300/25 bg-cyan-300/10 text-cyan-100',
+  Later: 'border-violet-300/25 bg-violet-300/10 text-violet-100',
+  'Pilot-ready': 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100',
   Planned: 'border-slate-300/20 bg-slate-300/10 text-slate-200',
   'Ready for build': 'border-cyan-300/25 bg-cyan-300/10 text-cyan-100',
   'In progress': 'border-emerald-300/25 bg-emerald-300/10 text-emerald-100',
@@ -66,13 +71,17 @@ export const LearningCommandCenterPage = ({ onNavigate }) => {
               <h2 className="text-xl font-black">Learning Command Center</h2>
             </div>
             <p className="mt-1 max-w-3xl text-sm text-gray-400">
-              Personal paths, teacher assignments, printable artifacts, classroom rubrics, progress checkpoints and production-readiness tracking.
+              Personal paths, teacher assignments, printable artifacts, classroom rubrics, progress checkpoints and classroom-ready tracking.
             </p>
           </div>
-          <div className="grid grid-cols-5 gap-2 text-center">
+          <div className="grid grid-cols-3 gap-2 text-center sm:grid-cols-6">
             <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
               <p className="text-lg font-black text-white">{commandCenterStats.profiles}</p>
               <p className="text-[10px] text-gray-500">profiles</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
+              <p className="text-lg font-black text-violet-100">{commandCenterStats.phases}</p>
+              <p className="text-[10px] text-gray-500">tracks</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
               <p className="text-lg font-black text-cyan-100">{commandCenterStats.paths}</p>
@@ -91,6 +100,29 @@ export const LearningCommandCenterPage = ({ onNavigate }) => {
               <p className="text-[10px] text-gray-500">checks</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="glass rounded-2xl p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Target size={16} className="text-cyan-300" />
+          <h3 className="text-sm font-bold text-white">Learning Launch Plan</h3>
+        </div>
+        <div className="grid gap-3 lg:grid-cols-3">
+          {implementationPhases.map(phase => (
+            <button key={phase.id} type="button" onClick={() => onNavigate?.(phase.route)} className="rounded-xl border border-white/10 bg-white/[0.035] p-3 text-left hover:bg-white/[0.065]">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black ${statusStyle[phase.status] || statusStyle.Planned}`}>{phase.status}</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{phase.window}</span>
+              </div>
+              <p className="mt-3 text-sm font-black text-white">{phase.title}</p>
+              <p className="mt-1 text-xs text-gray-500">{phase.goal}</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {phase.deliverables.map(item => <span key={item} className="rounded-lg border border-white/10 bg-black/15 px-2 py-1 text-[10px] font-bold text-gray-300">{item}</span>)}
+              </div>
+              <p className="mt-3 rounded-lg border border-emerald-300/15 bg-emerald-300/10 px-2 py-1 text-[11px] font-semibold text-emerald-100">{phase.launchGate}</p>
+            </button>
+          ))}
         </div>
       </section>
 
