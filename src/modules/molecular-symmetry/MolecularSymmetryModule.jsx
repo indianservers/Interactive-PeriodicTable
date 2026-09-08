@@ -17,6 +17,7 @@ import TheoryCard from './components/TheoryCard.jsx';
 import AdvancedTeachingSuite from './components/AdvancedTeachingSuite.jsx';
 import ClassroomExtensions from './components/ClassroomExtensions.jsx';
 import LecturePdfCompanion from './components/LecturePdfCompanion.jsx';
+import SymmetryLabDashboard from './components/SymmetryLabDashboard.jsx';
 import { getMoleculeById } from './data/moleculeData.js';
 import { useLocalStorage } from '../../hooks/useLocalStorage.js';
 import { loadSymmetryProgress } from './utils/localProgressStore.js';
@@ -298,8 +299,9 @@ export function MolecularSymmetryModule({ section = 'visualizer', currentPage = 
   const applyOperation = useCallback(() => {
     if (!selectedElement) return;
     setOperationResult(validateSymmetryOperation(molecule, { ...selectedElement, power: operationPower }));
-    setProgress(0);
-    setIsPlaying(true);
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    setProgress(reduceMotion ? 1 : 0);
+    setIsPlaying(!reduceMotion);
   }, [molecule, selectedElement, operationPower]);
 
   const resetOperation = () => {
@@ -375,6 +377,53 @@ export function MolecularSymmetryModule({ section = 'visualizer', currentPage = 
   const mainGridClass = showTeachingTools
     ? 'grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)]'
     : 'grid gap-3 xl:grid-cols-[280px_minmax(0,1fr)_340px]';
+
+  if (activeSection.section === 'visualizer') {
+    const previewResult = mode === 'Learn' && availableElement
+      ? validateSymmetryOperation(molecule, { ...availableElement, power: operationPower })
+      : null;
+    return (
+      <SymmetryLabDashboard
+        molecule={molecule}
+        moleculeId={moleculeId}
+        onMoleculeChange={setMoleculeId}
+        mode={mode}
+        onModeChange={setMode}
+        selectedElement={selectedElement}
+        onElementChange={setSelectedElement}
+        operationResult={operationResult}
+        previewResult={previewResult}
+        progress={progress}
+        isPlaying={isPlaying}
+        speed={speed}
+        operationPower={operationPower}
+        onOperationPowerChange={setOperationPower}
+        onApply={applyOperation}
+        onPause={() => setIsPlaying(false)}
+        onStep={() => {
+          if (!operationResult && selectedElement) setOperationResult(validateSymmetryOperation(molecule, { ...selectedElement, power: operationPower }));
+          setProgress(value => Math.min(1, value + 0.2));
+        }}
+        onReset={resetOperation}
+        onSpeedChange={setSpeed}
+        onProgressChange={value => {
+          setIsPlaying(false);
+          if (!operationResult && selectedElement) setOperationResult(validateSymmetryOperation(molecule, { ...selectedElement, power: operationPower }));
+          setProgress(value);
+        }}
+        showLabels={showLabels}
+        onToggleLabels={() => setShowLabels(value => !value)}
+        showElements={showElements}
+        onToggleElements={() => setShowElements(value => !value)}
+        showGhost={showGhost}
+        onToggleGhost={() => setShowGhost(value => !value)}
+        bondStyle={bondStyle}
+        onBondStyleChange={setBondStyle}
+        viewerRef={viewerRef}
+        completedCount={progressState.completed?.length || 0}
+      />
+    );
+  }
 
   return (
     <div data-symmetry-module className={`page-transition min-h-screen p-4 md:p-6 ${moduleContrast ? 'high-contrast' : ''}`}>

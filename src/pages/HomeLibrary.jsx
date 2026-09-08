@@ -1,0 +1,21 @@
+import { ArrowUpRight, Search, X, ChevronRight } from 'lucide-react';
+import ConceptIcon from '../components/ConceptIcon.jsx';
+import { categoryPng, subgroupPng, conceptPng } from '../data/homeIconManifest.js';
+import { chemistryCategories, libraryEntries } from '../data/homeLibrary.js';
+export default function HomeLibrary({query,setQuery,category,setCategory,subgroup,setSubgroup,onNavigate}) {
+ const selected=chemistryCategories.find(c=>c.id===category);
+ const words=query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+ const matches=e=>words.every(w=>`${e.title} ${e.description} ${e.subgroup} ${e.categoryTitle}`.toLowerCase().includes(w));
+ const results=libraryEntries.filter(e=>(category==='all'||e.category===category)&&(subgroup==='all'||e.subgroup===subgroup)&&matches(e));
+ const choose=id=>{setCategory(id);setSubgroup('all')};
+ return <section className="home-library" id="home-library" aria-labelledby="library-title">
+  <div className="library-heading"><div><span className="hub-eyebrow">YOUR CHEMISTRY WORKSPACE</span><h2 id="library-title">Explore the chemistry library<span>{libraryEntries.length} tools & experiences</span></h2><p>From your first atom to your next discovery. Choose a subject and dive in.</p></div><button className="library-reset" onClick={()=>{choose('all');setQuery('')}}>View all <ArrowUpRight size={16}/></button></div>
+  <div className="library-categories" aria-label="Chemistry categories">{chemistryCategories.map(c=><button key={c.id} style={{'--category-color':c.color}} className={`library-category ${category===c.id?'selected':''}`} aria-pressed={category===c.id} onClick={()=>choose(c.id)}><ConceptIcon icon={categoryPng[c.id]}/><b>{c.title}</b><span>{c.groups.reduce((n,g)=>n+g.entries.length,0)} experiences <ChevronRight size={13}/></span></button>)}</div>
+  <div className="library-browser"><div className="library-toolbar"><div className="library-breadcrumb"><button onClick={()=>choose('all')} aria-pressed={category==='all'}>All categories</button>{selected&&<><ChevronRight size={14}/><strong>{selected.title}</strong></>}</div><label className="library-search"><Search size={16}/><input aria-label="Search chemistry library" placeholder="Find a simulator, topic or tool…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<button aria-label="Clear library search" onClick={()=>setQuery('')}><X size={14}/></button>}</label></div>
+  {selected&&<div className="library-subcategories" aria-label="Subcategories"><button aria-pressed={subgroup==='all'} onClick={()=>setSubgroup('all')}>All {selected.title.toLowerCase()}</button>{selected.groups.map(g=><button key={g.name} aria-pressed={subgroup===g.name} onClick={()=>setSubgroup(g.name)}><ConceptIcon icon={subgroupPng[g.name]}/>{g.name}</button>)}</div>}
+  <div className="library-result-count" role="status">{results.length} {results.length===1?'experience':'experiences'}{query&&<> matching “{query}”</>}{selected&&<span>{selected.description}</span>}</div>
+  {results.length===0?<div className="library-empty"><Search size={30}/><h3>No matching experiences</h3><p>Try a topic such as gas, proteins, symmetry or reactions.</p><button onClick={()=>{choose('all');setQuery('')}}>Clear filters & browse all</button></div>:<div className="library-groups">{chemistryCategories.filter(c=>category==='all'||c.id===category).flatMap(c=>c.groups.map(g=>{const entries=results.filter(e=>e.category===c.id&&e.subgroup===g.name);return entries.length>0&&<section className="library-group" key={`${c.id}-${g.name}`} style={{'--category-color':c.color}}><header><ConceptIcon icon={subgroupPng[g.name]}/><div><span>{c.title}</span><h3>{g.name}</h3></div><small>{entries.length}</small></header><div>{entries.map(e=><a href={`#/${e.path}`} key={e.id} onClick={event=>{if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey&&event.button===0){event.preventDefault();onNavigate(e.id)}}}><ConceptIcon icon={conceptPng[e.id]}/><div><b>{e.title}</b><p>{e.description}</p></div><ArrowUpRight size={16}/></a>)}</div></section>}))}</div>}
+ </div><div className="library-bottom"><span><span className="library-dot"/> A whole world of chemistry. One place to explore.</span><a href="#/modules" onClick={e=>{e.preventDefault();onNavigate('subject-modules')}}>Explore subject modules <ArrowUpRight size={15}/></a></div>
+ </section>
+}
+

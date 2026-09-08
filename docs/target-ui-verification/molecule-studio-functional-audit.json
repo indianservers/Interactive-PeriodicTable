@@ -1,0 +1,36 @@
+{
+  "results": [
+    {
+      "route": "#molecule",
+      "canvas": true,
+      "initial": "OAtom (O3)"
+    },
+    {
+      "oxygenPalette": true,
+      "markerVisible": false
+    },
+    {
+      "notes": true
+    },
+    {
+      "properties": true
+    },
+    {
+      "dragNotice": true
+    },
+    {
+      "bondNotice": true
+    },
+    {
+      "spacefillToggles": true
+    },
+    {
+      "save": true
+    },
+    {
+      "load": true
+    }
+  ],
+  "errors": [],
+  "passed": false
+}

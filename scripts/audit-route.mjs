@@ -1,0 +1,12 @@
+const [url] = process.argv.slice(2);
+const targets = await fetch("http://127.0.0.1:9224/json/list").then((r) => r.json());
+const target = targets.find((item) => item.type === "page" && item.url === url) ?? targets.find((item) => item.type === "page" && item.url.includes("127.0.0.1:5173")) ?? targets.find((item) => item.type === "page");
+if (!target) throw new Error("No CDP page target");
+const socket = new WebSocket(target.webSocketDebuggerUrl);
+let sequence = 0; const pending = new Map();
+socket.addEventListener("message", ({ data }) => { const message = JSON.parse(data); const wait = pending.get(message.id); if (!wait) return; pending.delete(message.id); message.error ? wait.reject(message.error) : wait.resolve(message.result); });
+await new Promise((resolve, reject) => { socket.addEventListener("open", resolve, { once: true }); socket.addEventListener("error", reject, { once: true }); });
+const command = (method, params = {}) => new Promise((resolve, reject) => { const id = ++sequence; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
+await command("Page.navigate", { url }); await new Promise((resolve) => setTimeout(resolve, 1600));
+const expression = `JSON.stringify((()=>{const root=[...document.querySelectorAll('.grid')].find(x=>x.querySelector('main'));const scene=document.querySelector('svg[aria-label="Procedural membrane and transport scene"]');return {title:document.title,body:document.body.innerText.slice(0,120),grid:root?getComputedStyle(root).gridTemplateColumns:null,scene:scene?(()=>{const r=scene.getBoundingClientRect();return [Math.round(r.x),Math.round(r.y),Math.round(r.width),Math.round(r.height)]})():null,children:root?[...root.children].map(x=>({tag:x.tagName,cls:x.className,rect:(()=>{const r=x.getBoundingClientRect();return [Math.round(r.x),Math.round(r.y),Math.round(r.width),Math.round(r.height)]})()})):[]}})())`;
+const result = await command("Runtime.evaluate", { expression, returnByValue: true }); console.log(result.result.value); socket.close();

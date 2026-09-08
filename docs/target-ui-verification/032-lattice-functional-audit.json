@@ -1,0 +1,10 @@
+{
+  "calculationChecks": true,
+  "spacingChangesScene": true,
+  "values": "b = 0.785 Å⁻¹G = (1 1 0)|G| = 1.111 Å⁻¹dₕₖₗ = 5.657 Å",
+  "zoneChangesScene": true,
+  "keyboardRotates": true,
+  "resetReadout": true,
+  "noUnrelatedDrawer": true,
+  "errors": []
+}

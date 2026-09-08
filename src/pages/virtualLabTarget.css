@@ -1,0 +1,492 @@
+.vlab {
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 100px 290px minmax(600px, 1fr) 300px;
+  grid-template-rows: 73px 1fr 276px;
+  color: #deebfb;
+  background: #030d19;
+  font-family: Inter, system-ui, sans-serif;
+}
+.vlab * {
+  box-sizing: border-box;
+}
+.vlab button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.vl-top {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: 500px 1fr;
+  border-bottom: 1px solid #2b4055;
+  background: rgba(4, 17, 31, 0.95);
+  z-index: 5;
+}
+.vl-brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 17px;
+}
+.vl-brand svg {
+  width: 42px;
+  height: 42px;
+  color: #38c5ff;
+}
+.vl-brand b {
+  display: block;
+  font-size: 27px;
+}
+.vl-brand span {
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  color: #aec0d6;
+}
+.vl-top > div:last-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 25px;
+  border-left: 1px solid #283e54;
+  background: rgba(8, 25, 42, 0.72);
+}
+.vl-top h1 {
+  margin: 0;
+  font-size: 21px;
+}
+.vl-top p {
+  margin: 4px 0 0;
+  color: #96aac2;
+  font-size: 12px;
+}
+.vl-nav {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+  border-right: 1px solid #253b50;
+  background: rgba(4, 18, 33, 0.93);
+  z-index: 3;
+}
+.vl-nav button {
+  height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  color: #c0d0e3;
+  font-size: 10px;
+}
+.vl-nav button svg {
+  width: 25px;
+}
+.vl-nav button.active {
+  background: linear-gradient(90deg, #0a4b8d, #102d5d);
+  box-shadow: inset 4px 0 #26cfff;
+  color: white;
+}
+.vl-reagents {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 16px 10px;
+  border-right: 1px solid #263e55;
+  background: rgba(5, 19, 34, 0.92);
+  z-index: 3;
+}
+.vl-reagents h2 {
+  margin: 0 3px 14px;
+  font-size: 16px;
+}
+.vl-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 12px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #0c223a;
+}
+.vl-tabs button {
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: #aec0d5;
+  font-size: 10px;
+}
+.vl-tabs button.active {
+  color: white;
+  background: #10558e;
+  box-shadow: inset 0 -3px #36c7ff;
+}
+.vl-reagent {
+  width: 100%;
+  height: 74px;
+  display: grid;
+  grid-template-columns: 16px 42px 1fr 15px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+  padding: 0 9px;
+  border: 1px solid #223b52;
+  border-radius: 8px;
+  background: #0b1e33;
+  text-align: left;
+}
+.vl-reagent > i,
+.vl-reagent > em {
+  color: #8fa5bb;
+  font-style: normal;
+}
+.vl-reagent span b,
+.vl-reagent span small {
+  display: block;
+}
+.vl-reagent span b {
+  font-size: 12px;
+}
+.vl-reagent span small {
+  margin-top: 4px;
+  color: #c3d1df;
+  font-size: 11px;
+}
+.vl-bottle {
+  position: relative !important;
+  width: 26px;
+  height: 38px;
+  border: 1px solid #8095a8;
+  border-radius: 5px 5px 7px 7px;
+  background: linear-gradient(#dbe8f3, #8398aa) !important;
+}
+.vl-bottle:before {
+  content: "";
+  position: absolute;
+  width: 17px;
+  height: 8px;
+  left: 4px;
+  top: -5px;
+  border-radius: 3px;
+  background: var(--cap);
+}
+.vl-stage {
+  grid-column: 3;
+  grid-row: 2;
+  position: relative;
+  background:
+    linear-gradient(rgba(1, 9, 18, 0.08), rgba(1, 9, 18, 0.2)),
+    url("/assets/dashboard/titration-lab.png") center/cover;
+}
+.vl-reading {
+  position: absolute;
+  top: 35px;
+  left: 47%;
+  padding: 13px 16px;
+  border: 1px solid #55718a;
+  border-radius: 9px;
+  background: rgba(4, 18, 32, 0.82);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+}
+.vl-reading b,
+.vl-reading span {
+  display: block;
+  font-size: 10px;
+}
+.vl-reading strong {
+  display: block;
+  margin: 5px 0;
+  color: #62d7ff;
+  font-size: 25px;
+}
+.vl-reading span {
+  color: #c2d0df;
+  line-height: 1.4;
+}
+.vl-drop {
+  position: absolute;
+  left: 50.6%;
+  top: 47%;
+  width: 7px;
+  height: 13px;
+  border-radius: 50% 50% 60% 60%;
+  background: #6bd4ff;
+  animation: drop 1.3s infinite;
+}
+.vl-stage.swirl:after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 40px;
+  left: 43%;
+  bottom: 70px;
+  border: 3px solid rgba(255, 102, 214, 0.65);
+  border-radius: 50%;
+  animation: spin 0.5s linear infinite;
+}
+@keyframes drop {
+  to {
+    transform: translateY(55px);
+    opacity: 0;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.vl-right {
+  grid-column: 4;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: 108px 292px 1fr;
+  gap: 10px;
+  padding: 0 8px;
+  background: rgba(3, 14, 27, 0.95);
+}
+.vl-right section {
+  padding: 10px 12px;
+  border: 1px solid #263e55;
+  border-radius: 8px;
+  background: #081a2d;
+}
+.vl-right h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+.vl-right h3 svg {
+  width: 20px;
+}
+.vl-right section > p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+  color: #c3d2e2;
+  font-size: 9px;
+}
+.vl-right section > p svg {
+  width: 12px;
+  color: #9ce3ff;
+}
+.vl-metric {
+  height: 69px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 7px 0;
+  padding: 0 18px;
+  border: 1px solid #253f57;
+  border-radius: 8px;
+  background: #0a1d31;
+}
+.vl-metric > svg {
+  width: 28px;
+  height: 36px;
+  color: #49d1ff;
+}
+.vl-metric span {
+  color: #cbd8e7;
+  font-size: 10px;
+}
+.vl-metric strong {
+  display: block;
+  margin-top: 5px;
+  color: #8ddcff;
+  font-size: 22px;
+}
+.vl-safety h3 svg {
+  color: #ffb328;
+}
+.vl-safety > p {
+  color: #d4deea !important;
+}
+.vl-safety > p:before {
+  color: #ffc02e;
+}
+.vl-safety button {
+  width: 100%;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 8px;
+  border: 1px solid #29445d;
+  border-radius: 8px;
+  background: #07182a;
+  color: #afd0ea;
+  font-size: 10px;
+}
+.vl-safety button svg {
+  width: 25px;
+  color: #36cfff;
+}
+.vl-safety button i {
+  width: 35px;
+  height: 19px;
+  margin-left: auto;
+  border-radius: 15px;
+  background: #2b4056;
+  position: relative;
+}
+.vl-safety button i:after {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: white;
+  transition: 0.2s;
+}
+.vl-safety button.on i {
+  background: #198ed9;
+}
+.vl-safety button.on i:after {
+  left: 18px;
+}
+.vl-bottom {
+  grid-column: 1/-1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 360px minmax(550px, 1fr) 515px;
+  border-top: 1px solid #2b4358;
+  background: rgba(4, 17, 30, 0.98);
+  z-index: 4;
+}
+.vl-bottom > div {
+  padding: 10px 14px;
+  border-right: 1px solid #2b4358;
+}
+.vl-bottom h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+.vl-controls > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.vl-controls button {
+  height: 65px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 17px;
+  border: 1px solid #35526d;
+  border-radius: 9px;
+  background: #0b1e33;
+  font-size: 11px;
+}
+.vl-controls button:first-child {
+  border-color: #2cb1ff;
+  background: linear-gradient(120deg, #097ee2, #1765dc);
+}
+.vl-controls button:nth-child(3) {
+  border-color: #914bc8;
+  background: linear-gradient(120deg, #5d287e, #7922aa);
+}
+.vl-controls button svg {
+  width: 23px;
+}
+.vl-controls button.on {
+  box-shadow: 0 0 18px rgba(49, 198, 255, 0.25);
+  border-color: #36c9ff;
+}
+.vl-chart svg {
+  width: 100%;
+  height: 220px;
+}
+.vl-chart .grid line {
+  stroke: #294258;
+  stroke-width: 1;
+}
+.vl-chart polyline {
+  fill: none;
+  stroke: #f119b5;
+  stroke-width: 3;
+}
+.vl-chart circle {
+  fill: #ffca2b;
+}
+.vl-chart .equiv {
+  stroke: #dceaf9;
+  stroke-dasharray: 5 4;
+}
+.vl-chart text {
+  fill: #ffcd27;
+  font-size: 11px;
+}
+.vl-notes > div {
+  font-size: 10px;
+  line-height: 1.35;
+  color: #d5e0ec;
+}
+.vl-notes p {
+  margin: 5px 0 8px;
+}
+.vl-notes strong {
+  display: block;
+  margin: 9px 0 0 120px;
+  color: #fff;
+  font-size: 12px;
+}
+@media (max-width: 1100px) {
+  .vlab {
+    grid-template-columns: 80px 240px minmax(480px, 1fr) 260px;
+  }
+  .vl-bottom {
+    grid-template-columns: 310px 1fr 400px;
+  }
+  .vl-brand {
+    padding-left: 10px;
+  }
+  .vl-brand b {
+    font-size: 21px;
+  }
+}
+@media (max-width: 850px) {
+  .vlab {
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+  .vl-top {
+    height: 80px;
+    display: block;
+    padding: 10px 14px;
+  }
+  .vl-brand {
+    padding: 0;
+  }
+  .vl-brand span,
+  .vl-top > div:last-child,
+  .vl-nav {
+    display: none;
+  }
+  .vl-reagents {
+    padding: 14px;
+  }
+  .vl-stage {
+    height: 520px;
+  }
+  .vl-right {
+    display: grid;
+    grid-template-rows: auto;
+  }
+  .vl-bottom {
+    display: block;
+  }
+  .vl-chart svg {
+    height: auto;
+  }
+  .vl-notes strong {
+    margin-left: 0;
+  }
+}

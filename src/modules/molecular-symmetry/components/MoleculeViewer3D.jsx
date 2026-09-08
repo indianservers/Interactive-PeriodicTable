@@ -47,6 +47,7 @@ function addMolecule(group, molecule, atoms, options = {}) {
   });
 
   atoms.forEach(atom => {
+    const mappingColor = options.mappingColors?.get(atom.id);
     const radius = (atom.radius || 0.32) * (options.spaceFill ? 1.75 : 1);
     const geometry = new THREE.SphereGeometry(radius, 32, 32);
     const material = new THREE.MeshStandardMaterial({
@@ -55,9 +56,9 @@ function addMolecule(group, molecule, atoms, options = {}) {
       metalness: 0.08,
       transparent: options.opacity < 1,
       opacity: options.opacity ?? 1,
-      emissive: new THREE.Color(options.emissive || atom.color || '#111827'),
-      emissiveIntensity: options.highlightIds?.has(atom.id) ? 0.38 : 0.04,
-      wireframe: options.wireframe,
+      emissive: new THREE.Color(mappingColor || options.emissive || atom.color || '#111827'),
+      emissiveIntensity: mappingColor ? 0.42 : options.highlightIds?.has(atom.id) ? 0.38 : 0.04,
+      wireframe: Boolean(options.wireframe),
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(...atom.position);
@@ -78,7 +79,7 @@ function addMolecule(group, molecule, atoms, options = {}) {
     if (options.highlightIds?.has(atom.id)) {
       const ring = new THREE.Mesh(
         new THREE.SphereGeometry(radius * 1.35, 32, 32),
-        new THREE.MeshBasicMaterial({ color: options.fixedIds?.has(atom.id) ? 0x22c55e : 0xf97316, transparent: true, opacity: 0.18, wireframe: true }),
+        new THREE.MeshBasicMaterial({ color: mappingColor || (options.fixedIds?.has(atom.id) ? 0x22c55e : 0xf97316), transparent: true, opacity: 0.28, wireframe: true }),
       );
       ring.position.copy(mesh.position);
       group.add(ring);
@@ -91,13 +92,16 @@ function addAxis(group, element) {
   const direction = new THREE.Vector3(axis.x, axis.y, axis.z);
   const start = direction.clone().multiplyScalar(-2.5);
   const end = direction.clone().multiplyScalar(2.5);
-  group.add(makeBond(start, end, 0x60a5fa, 0.035, 0.92));
+  const axisMesh = makeBond(start, end, 0x60a5fa, 0.035, 0.92);
+  axisMesh.userData.symmetryElementId = element.id;
+  group.add(axisMesh);
   const cone = new THREE.Mesh(
     new THREE.ConeGeometry(0.14, 0.42, 24),
     new THREE.MeshBasicMaterial({ color: 0x8b5cf6 }),
   );
   cone.position.copy(end);
   cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+  cone.userData.symmetryElementId = element.id;
   group.add(cone);
 }
 
@@ -110,6 +114,7 @@ function addPlane(group, element) {
   const n = new THREE.Vector3(normal.x, normal.y, normal.z);
   plane.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), n);
   plane.position.set(...(element.planePoint || [0, 0, 0]));
+  plane.userData.symmetryElementId = element.id;
   group.add(plane);
   const edge = new THREE.LineSegments(
     new THREE.EdgesGeometry(plane.geometry),
@@ -117,6 +122,7 @@ function addPlane(group, element) {
   );
   edge.quaternion.copy(plane.quaternion);
   edge.position.copy(plane.position);
+  edge.userData.symmetryElementId = element.id;
   group.add(edge);
 }
 
@@ -126,12 +132,14 @@ function addInversionCentre(group, element) {
     new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.95 }),
   );
   sphere.position.set(...(element.center || [0, 0, 0]));
+  sphere.userData.symmetryElementId = element.id;
   group.add(sphere);
   const glow = new THREE.Mesh(
     new THREE.SphereGeometry(0.34, 32, 32),
     new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.14 }),
   );
   glow.position.copy(sphere.position);
+  glow.userData.symmetryElementId = element.id;
   group.add(glow);
 }
 
@@ -156,6 +164,8 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
   bondStyle = 'ball-stick',
   height = 580,
   onAtomSelect,
+  onElementSelect,
+  className = '',
 }, ref) {
   const mountRef = useRef(null);
   const rendererRef = useRef(null);
@@ -168,6 +178,18 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
   const rafRef = useRef(null);
   const raycasterRef = useRef(new THREE.Raycaster());
   const pointerRef = useRef(new THREE.Vector2());
+
+  const setCameraView = (view) => {
+    if (!cameraRef.current || !controlsRef.current) return;
+    const points = molecule.atoms.map(atom => new THREE.Vector3(...atom.position));
+    const box = new THREE.Box3().setFromPoints(points);
+    const center = box.getCenter(new THREE.Vector3());
+    const distance = Math.max(box.getSize(new THREE.Vector3()).length(), 3) * 1.6;
+    const direction = view === 'top' ? [0, 1, 0.001] : view === 'right' ? [1, 0, 0] : [0, 0, 1];
+    cameraRef.current.position.set(center.x + direction[0] * distance, center.y + direction[1] * distance, center.z + direction[2] * distance);
+    controlsRef.current.target.copy(center);
+    controlsRef.current.update();
+  };
 
   const displayedAtoms = useMemo(() => {
     if (!operationResult?.transformedAtoms) return molecule.atoms;
@@ -184,6 +206,7 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
       renderer.render(sceneRef.current, cameraRef.current);
       return renderer.domElement.toDataURL('image/png');
     },
+    setView: setCameraView,
   }), [molecule]);
 
   useEffect(() => {
@@ -194,18 +217,20 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
     scene.fog = new THREE.Fog(0x07111f, 18, 38);
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / height, 0.1, 200);
+    const measuredHeight = () => container.clientHeight || (typeof height === 'number' ? height : 580);
+    const initialHeight = measuredHeight();
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / initialHeight, 0.1, 200);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, height);
+    renderer.setSize(container.clientWidth, initialHeight);
     renderer.shadowMap.enabled = true;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(container.clientWidth, height);
+    labelRenderer.setSize(container.clientWidth, initialHeight);
     labelRenderer.domElement.style.cssText = 'position:absolute;inset:0;pointer-events:none;';
     container.appendChild(labelRenderer.domElement);
     labelRendererRef.current = labelRenderer;
@@ -248,16 +273,18 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
     tick();
 
     const resize = () => {
-      camera.aspect = container.clientWidth / height;
+      const nextHeight = measuredHeight();
+      camera.aspect = container.clientWidth / nextHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, height);
-      labelRenderer.setSize(container.clientWidth, height);
+      renderer.setSize(container.clientWidth, nextHeight);
+      labelRenderer.setSize(container.clientWidth, nextHeight);
     };
-    window.addEventListener('resize', resize);
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(container);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
-      window.removeEventListener('resize', resize);
+      resizeObserver.disconnect();
       clearGroup(moleculeGroupRef.current);
       clearGroup(overlayGroupRef.current);
       renderer.dispose();
@@ -273,6 +300,8 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
     const mapping = operationResult?.mapping || [];
     const changedIds = new Set(mapping.filter(item => item.valid).map(item => item.from));
     const fixedIds = new Set(mapping.filter(item => item.unchanged).map(item => item.from));
+    const palette = ['#22d3ee', '#a78bfa', '#34d399', '#fbbf24', '#fb7185'];
+    const mappingColorMap = new Map(mapping.map((item, index) => [item.from, palette[index % palette.length]]));
     if (showGhost && operationResult?.transformedAtoms) {
       addMolecule(group, molecule, molecule.atoms, {
         atomColor: '#cbd5e1',
@@ -289,6 +318,7 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
       wireframe: bondStyle === 'wireframe',
       highlightIds: changedIds,
       fixedIds,
+      mappingColors: mappingColorMap,
     });
   }, [molecule, displayedAtoms, operationResult, showGhost, showLabels, bondStyle]);
 
@@ -307,11 +337,21 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
   }, [molecule]);
 
   const handlePointerDown = (event) => {
-    if (!onAtomSelect || !rendererRef.current || !cameraRef.current || !sceneRef.current) return;
+    if ((!onAtomSelect && !onElementSelect) || !rendererRef.current || !cameraRef.current || !sceneRef.current) return;
     const rect = rendererRef.current.domElement.getBoundingClientRect();
     pointerRef.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     pointerRef.current.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     raycasterRef.current.setFromCamera(pointerRef.current, cameraRef.current);
+    const overlayTargets = [];
+    overlayGroupRef.current?.traverse(obj => {
+      if ((obj.isMesh || obj.isLineSegments) && obj.userData.symmetryElementId) overlayTargets.push(obj);
+    });
+    const overlayHit = raycasterRef.current.intersectObjects(overlayTargets, true)[0];
+    if (overlayHit?.object?.userData?.symmetryElementId && onElementSelect) {
+      onElementSelect(overlayHit.object.userData.symmetryElementId);
+      return;
+    }
+    if (!onAtomSelect) return;
     const targets = [];
     moleculeGroupRef.current?.traverse(obj => {
       if (obj.isMesh && obj.userData.atomId) targets.push(obj);
@@ -324,9 +364,16 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
     <div
       ref={mountRef}
       onPointerDown={handlePointerDown}
-      className="relative min-h-[420px] overflow-hidden rounded-xl border border-white/10 bg-slate-950"
+      onKeyDown={event => {
+        if (event.key === '1') setCameraView('front');
+        if (event.key === '2') setCameraView('right');
+        if (event.key === '3') setCameraView('top');
+        if (event.key.toLowerCase() === 'r' && cameraRef.current && controlsRef.current) fitCamera(cameraRef.current, controlsRef.current, molecule.atoms);
+      }}
+      tabIndex={0}
+      className={`relative ${typeof height === 'number' ? 'min-h-[420px]' : 'min-h-0'} overflow-hidden rounded-xl border border-white/10 bg-slate-950 ${className}`}
       style={{ height }}
-      aria-label={`3D symmetry viewer for ${molecule.name}`}
+      aria-label={`3D symmetry viewer for ${molecule.name}. Press 1 for front, 2 for right, 3 for top, or R to reset the camera.`}
       role="application"
     />
   );

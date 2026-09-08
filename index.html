@@ -14,6 +14,19 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Remove workers left by older local sessions before Vite loads modules.
+      // Without this, a cache-first worker can serve a different React bundle.
+      if (window.navigator.serviceWorker && ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+        const key = 'chemistry-local-sw-cleared-v3';
+        if (!window.sessionStorage.getItem(key)) {
+          window.sessionStorage.setItem(key, '1');
+          window.navigator.serviceWorker.getRegistrations()
+            .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
+            .then(() => window.location.reload());
+        }
+      }
+    </script>
+    <script type="module" src="/src/main.jsx?v=20260908-3"></script>
   </body>
 </html>

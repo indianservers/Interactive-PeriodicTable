@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Activity, Atom, BadgeCheck, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock,
+  Activity, Atom, BadgeCheck, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock, Droplets,
   FileQuestion, FlaskConical, FlaskRound, GitCompare, GraduationCap, Heart,
   LayoutDashboard, Lightbulb, ListTree, Microscope, Orbit, PanelLeftClose,
   PanelLeftOpen, Pill, Puzzle, Route, Scale, Search, Settings, Sigma, Sparkles,
@@ -23,6 +23,13 @@ export const navGroups = [
     icon: Microscope,
     items: [
       { id: 'atom', label: 'Atom Visualizer', icon: Atom },
+      { id: 'atom-builder', label: 'Build an Atom', icon: CircleDot },
+      { id: 'gas-properties', label: 'Gas Properties', icon: Activity },
+      { id: 'reaction-leftovers', label: 'Reactants & Leftovers', icon: FlaskConical },
+      { id: 'acid-base-solutions', label: 'Acid-Base Solutions', icon: FlaskRound },
+      { id: 'molecule-polarity', label: 'Molecule Polarity', icon: Orbit },
+      { id: 'molecules-light', label: 'Molecules and Light', icon: Waves },
+      { id: 'states-matter', label: 'States of Matter', icon: Droplets },
       { id: 'molecule', label: '3D Molecules', icon: Box },
       { id: 'ar-vr-mr', label: 'AR/VR/MR Chemistry', icon: Orbit },
       {

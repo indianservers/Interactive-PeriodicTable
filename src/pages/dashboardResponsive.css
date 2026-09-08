@@ -1,0 +1,70 @@
+@media (max-width: 900px) {
+  .dash-workspace {
+    grid-template-columns: 1fr;
+  }
+  .dash-right {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .dash-recent {
+    grid-column: 1/-1;
+  }
+  .dash-molecule-card {
+    height: 520px;
+    grid-template-columns: 190px minmax(250px, 1fr) 150px;
+  }
+  .dash-modules {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 650px) {
+  .dash-main {
+    padding: 18px 14px;
+  }
+  .dash-intro {
+    height: auto;
+    margin-bottom: 18px;
+  }
+  .dash-intro h1 {
+    font-size: 31px;
+  }
+  .dash-hand {
+    display: none;
+  }
+  .dash-molecule-card {
+    height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 330px auto auto;
+  }
+  .dash-molecule-info {
+    padding: 20px;
+  }
+  .dash-canvas-wrap {
+    grid-row: 2;
+  }
+  .dash-molecule-controls {
+    padding: 16px 20px;
+  }
+  .dash-control-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dash-viewbar {
+    flex-wrap: wrap;
+  }
+  .dash-bond-readout {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+  .dash-right {
+    grid-template-columns: 1fr;
+  }
+  .dash-recent {
+    grid-column: auto;
+  }
+  .dash-modules {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dash-module {
+    min-height: 158px;
+  }
+}

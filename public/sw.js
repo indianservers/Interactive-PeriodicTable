@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const APP_SHELL_CACHE = `chemistry-universe-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `chemistry-universe-runtime-${CACHE_VERSION}`;
 const CORE_ASSETS = [
@@ -65,6 +65,14 @@ async function networkFirstHtml(request) {
 
 self.addEventListener('fetch', event => {
   if (!isCacheableRequest(event.request)) return;
+
+  // Never cache Vite/dev traffic. This also lets a newly versioned worker
+  // recover clients that were previously controlled by a stale worker.
+  const requestUrl = new URL(event.request.url);
+  if (['localhost', '127.0.0.1'].includes(requestUrl.hostname)) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   if (isNavigationRequest(event.request)) {
     event.respondWith(networkFirstHtml(event.request));

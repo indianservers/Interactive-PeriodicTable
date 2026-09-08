@@ -1,269 +1,349 @@
-import { useMemo, useState } from 'react';
-import {
-  Atom, BadgeCheck, BarChart3, Box, Brain, CheckCircle2, Factory, FlaskConical,
-  GraduationCap, Layers3, Microscope, Orbit, Radiation, Sparkles, Trees, Wand2,
-} from 'lucide-react';
-import {
-  advancedVisualDomains,
-  advancedVisualModules,
-  advancedVisualStats,
-  getAdvancedVisualModules,
-} from '../data/advancedVisualChemistry.js';
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Box, FlaskConical, Home, Search, Settings, Move, RotateCcw, Network, Activity, BookOpen, Download, FolderOpen, CircleHelp, Wrench, Table2 } from "lucide-react";
+import "./advancedVisualChemistryTarget.css";
+import AdvancedGalleryPreview from "./AdvancedGalleryPreview.jsx";
+import {exportChart} from './advancedVisualExport.js';
 
-const domainIcons = {
-  mechanisms: Wand2,
-  analytical: Microscope,
-  industrial: Factory,
-  materials: Box,
-  environment: Trees,
-  nuclear: Radiation,
-};
-
-const Preview = ({ domain }) => {
-  if (domain === 'industrial') {
-    return (
-      <svg viewBox="0 0 380 210" className="h-64 w-full rounded-2xl border border-white/10 bg-black/20">
-        <rect x="34" y="110" width="60" height="58" rx="10" fill="#38bdf855" stroke="#67e8f9" strokeWidth="3" />
-        <rect x="160" y="70" width="70" height="98" rx="14" fill="#f59e0b55" stroke="#fcd34d" strokeWidth="3" />
-        <rect x="290" y="104" width="50" height="64" rx="10" fill="#22c55e55" stroke="#86efac" strokeWidth="3" />
-        <path d="M94 138 H160 M230 118 H290" stroke="#e2e8f0" strokeWidth="5" markerEnd="url(#flow)" />
-        <defs><marker id="flow" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#e2e8f0" /></marker></defs>
-        <text x="38" y="191" fill="#cbd5e1" fontSize="13">Reactants</text>
-        <text x="162" y="191" fill="#cbd5e1" fontSize="13">Catalyst/process</text>
-        <text x="286" y="191" fill="#cbd5e1" fontSize="13">Product</text>
-      </svg>
-    );
-  }
-
-  if (domain === 'nuclear') {
-    return (
-      <svg viewBox="0 0 380 210" className="h-64 w-full rounded-2xl border border-white/10 bg-black/20">
-        {Array.from({ length: 20 }, (_, index) => (
-          <circle key={index} cx={120 + (index % 5) * 18} cy={74 + Math.floor(index / 5) * 18} r="8" fill={index % 2 ? '#38bdf8' : '#fb7185'} />
-        ))}
-        <path d="M226 104 H292" stroke="#facc15" strokeWidth="5" markerEnd="url(#decay)" />
-        <defs><marker id="decay" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#facc15" /></marker></defs>
-        <circle cx="320" cy="104" r="28" fill="#a78bfa" />
-        <text x="42" y="184" fill="#cbd5e1" fontSize="13">Nucleus decay, isotope change and half-life curve</text>
-      </svg>
-    );
-  }
-
-  if (domain === 'analytical') {
-    return (
-      <svg viewBox="0 0 380 210" className="h-64 w-full rounded-2xl border border-white/10 bg-black/20">
-        <line x1="34" y1="168" x2="338" y2="168" stroke="#64748b" />
-        <line x1="34" y1="38" x2="34" y2="168" stroke="#64748b" />
-        {[62, 112, 172, 248, 304].map((x, index) => (
-          <rect key={x} x={x} y={70 + index * 10} width="14" height={98 - index * 13} fill={['#38bdf8', '#22c55e', '#facc15', '#fb7185', '#a78bfa'][index]} />
-        ))}
-        <polyline points="36,160 72,150 118,128 168,112 216,84 292,52 336,46" fill="none" stroke="#f8fafc" strokeWidth="3" />
-        <text x="62" y="190" fill="#cbd5e1" fontSize="13">Spectrum + calibration + chromatogram preview</text>
-      </svg>
-    );
-  }
-
-  if (domain === 'environment') {
-    return (
-      <svg viewBox="0 0 380 210" className="h-64 w-full rounded-2xl border border-white/10 bg-black/20">
-        <circle cx="86" cy="78" r="28" fill="#facc15" />
-        <path d="M34 150 C94 106 118 186 180 138 S286 112 344 150" fill="none" stroke="#38bdf8" strokeWidth="5" />
-        {['NOx', 'SO2', 'O3', 'CO2'].map((label, index) => (
-          <g key={label}>
-            <circle cx={158 + index * 44} cy={74 + (index % 2) * 30} r="20" fill="#14b8a655" stroke="#5eead4" />
-            <text x={158 + index * 44} y={79 + (index % 2) * 30} textAnchor="middle" fontSize="12" fill="#ccfbf1" fontWeight="900">{label}</text>
-          </g>
-        ))}
-        <text x="70" y="190" fill="#cbd5e1" fontSize="13">Air, water and pollutant transformation model</text>
-      </svg>
-    );
-  }
-
-  return (
-    <div className="relative h-64 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-      {Array.from({ length: 18 }, (_, index) => (
-        <span
-          key={index}
-          className="absolute grid h-9 w-9 place-items-center rounded-full border border-cyan-200/20 bg-cyan-300/20 text-xs font-black text-cyan-50"
-          style={{ left: `${8 + (index % 6) * 14}%`, top: `${14 + Math.floor(index / 6) * 25}%` }}
-        >
-          {index % 4 === 0 ? 'C' : index % 4 === 1 ? 'O' : index % 4 === 2 ? 'N' : 'H'}
-        </span>
-      ))}
-      <div className="absolute bottom-4 left-4 rounded-xl border border-white/10 bg-black/45 px-3 py-2 text-xs font-bold text-gray-200">3D molecule/material preview</div>
-    </div>
-  );
-};
-
+const AdvancedOrbitalScene = lazy(() => import('./AdvancedOrbitalScene.jsx'));
+const AdvancedChartExperiment = lazy(() => import('./AdvancedChartExperiment.jsx'));
+const AdvancedLatticeExperiment = lazy(() => import('./AdvancedLatticeExperiment.jsx'));
+const AdvancedSurfaceExperiment = lazy(() => import('./AdvancedSurfaceExperiment.jsx'));
+const AdvancedDynamicsExperiment = lazy(() => import('./AdvancedDynamicsExperiment.jsx'));
+const AdvancedVisualLegacyLibrary = lazy(() => import('./AdvancedVisualLegacyLibrary.jsx'));
+const gallery = [
+  [
+    "orbital",
+    "Ethene π molecular orbital",
+    "Molecular orbital • Electron density",
+  ],
+  ["surface", "Potential energy surface", "Reaction dynamics"],
+  ["rdf", "Radial distribution function", "Structure in condensed phase"],
+  ["reaction", "Reaction coordinate", "Energy profile • Transition state"],
+  ["lattice", "Crystal reciprocal lattice", "Brillouin zone • k-space"],
+  ["nmr", "NMR coupling tree", "Spin-spin splitting"],
+  ["dynamics", "Molecular dynamics", "Time evolution • Trajectories"],
+];
 export const AdvancedVisualChemistryPage = ({ onNavigate }) => {
-  const [activeDomain, setActiveDomain] = useState('mechanisms');
-  const [activeModuleId, setActiveModuleId] = useState('mechanism-theater');
-  const modules = useMemo(() => getAdvancedVisualModules(activeDomain), [activeDomain]);
-  const activeModule = modules.find(module => module.id === activeModuleId) || modules[0] || advancedVisualModules[0];
-
-  const selectDomain = (domainId) => {
-    const next = getAdvancedVisualModules(domainId);
-    setActiveDomain(domainId);
-    setActiveModuleId(next[0]?.id || activeModuleId);
-  };
-
+  const [selected, setSelected] = useState("orbital"),
+    [iso, setIso] = useState(0.03),
+    [orbital, setOrbital] = useState("HOMO (π)"),
+    [nodal, setNodal] = useState(true),
+    [atoms, setAtoms] = useState(true),
+    [surface, setSurface] = useState(true),
+    [density, setDensity] = useState(false),
+    [playing, setPlaying] = useState(false),
+    [tab, setTab] = useState("Molecular orbital"),
+    [preset, setPreset] = useState("Default"),
+    [speed, setSpeed] = useState(1),
+    [clipping, setClipping] = useState("None"),
+    [library, setLibrary] = useState(false),
+    [query, setQuery] = useState("");
+  const sceneRef = useRef();
+  const pageRef = useRef();
+  const compactMenuRef = useRef();
+  function compactAction(action) {
+    if (compactMenuRef.current) compactMenuRef.current.open = false;
+    action();
+  }
+  function exportCurrentView() {
+    if (selected === 'orbital') return sceneRef.current?.exportImage();
+    const workspace = pageRef.current?.querySelector('.avc-chart-workspace');
+    const canvas = workspace?.querySelector('canvas');
+    if (canvas) canvas.dispatchEvent(new Event('avc-export'));
+    else {
+      const chart = workspace?.querySelector('svg');
+      if (chart) exportChart(chart, `chemistry-${selected}.svg`);
+    }
+  }
+  const dialogRef = useRef();
+  useEffect(()=>{
+    if(!library) return;
+    const opener=document.activeElement;
+    const dialog=dialogRef.current;
+    const background=Array.from(pageRef.current.children).filter(node=>node!==dialog);
+    const previousInert=background.map(node=>node.inert);
+    background.forEach(node=>{node.inert=true;});
+    dialog.querySelector('button')?.focus();
+    const handleKey=e=>{
+      if(e.key==='Escape'){e.preventDefault();setLibrary(false);}
+      if(e.key==='Tab'){
+        const controls=Array.from(dialog.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')).filter(el=>!el.disabled&&el.getClientRects().length);
+        const first=controls[0],last=controls.at(-1);
+        if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}
+        else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+      }
+    };
+    dialog.addEventListener('keydown',handleKey);
+    return ()=>{dialog.removeEventListener('keydown',handleKey);background.forEach((node,i)=>{node.inert=previousInert[i];});opener?.focus();};
+  },[library]);
+  function reset() {
+    setIso(.03); setOrbital("HOMO (π)"); setNodal(true); setAtoms(true);
+    setSurface(true); setDensity(false); setPlaying(false); setTab("Molecular orbital");
+    setPreset("Default"); setSpeed(1); setClipping("None"); sceneRef.current?.reset();
+  }
   return (
-    <div className="mx-auto max-w-7xl space-y-4 p-4 md:p-6">
-      <section className="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-950 via-cyan-950/45 to-emerald-950/35 p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-white">
-              <GraduationCap size={22} className="text-cyan-300" />
-              <h2 className="text-xl font-black">Advanced Visual Chemistry</h2>
-            </div>
-            <p className="mt-1 max-w-3xl text-sm text-gray-400">
-              High-impact visual modules for mechanisms, analytical chemistry, industry, materials, environment, nuclear chemistry and bio-medicinal structures.
-            </p>
-          </div>
-          <div className="grid grid-cols-4 gap-2 text-center">
-            <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
-              <p className="text-lg font-black text-white">{advancedVisualStats.modules}</p>
-              <p className="text-[10px] text-gray-500">modules</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
-              <p className="text-lg font-black text-cyan-100">{advancedVisualStats.concepts}</p>
-              <p className="text-[10px] text-gray-500">concepts</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
-              <p className="text-lg font-black text-emerald-100">{advancedVisualStats.visualTasks}</p>
-              <p className="text-[10px] text-gray-500">tasks</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.055] px-3 py-2">
-              <p className="text-lg font-black text-amber-100">{advancedVisualStats.roadmapItems}</p>
-              <p className="text-[10px] text-gray-500">next builds</p>
-            </div>
-          </div>
+    <div className="avc-app" ref={pageRef}>
+      <header>
+        <svg viewBox="0 0 48 56" aria-hidden="true"><g stroke="currentColor" strokeWidth="1.5" fill="none"><path d="M24 9L39 18V36L24 45L9 36V18Z M24 9V1M9 18L2 14M39 18L46 14M9 36L2 42M39 36L46 42M24 45V54"/>{[[24,9],[39,18],[39,36],[24,45],[9,36],[9,18]].map(([x,y])=><circle key={`${x}-${y}`} cx={x} cy={y} r="2" fill="currentColor"/>)}</g></svg>
+        <div>
+          <h1>Advanced Chemistry Visuals</h1>
+          <p>
+            Explore molecular structure, reactivity and dynamics through
+            interactive visualizations
+          </p>
         </div>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-[285px_1fr]">
-        <aside className="glass h-fit rounded-2xl p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <Orbit size={16} className="text-cyan-300" />
-            <h3 className="text-sm font-bold text-white">Advanced Domains</h3>
+        <label>
+          <Search />
+          <input aria-label="Search visualizations" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search molecules, properties, or topics..." />
+        </label>
+        <button onClick={()=>onNavigate?.("table")}><Table2/> Periodic Table</button>
+        <button onClick={()=>setLibrary(true)}><Wrench/> Tools</button>
+        <button onClick={()=>onNavigate?.("settings")}>
+          <Settings /> Settings
+        </button>
+        <b>AC</b>
+        <i>
+          Science
+          <br />
+          Visualized
+          <br />
+          Further
+        </i>
+      </header>
+      <aside>
+        {[
+          [Home, "Home"],
+          [Box, "Visualizations"],
+          [Network, "Molecules"],
+          [FlaskConical, "Reactions"],
+          [Activity, "Spectroscopy"],
+          [Box, "Materials"],
+          [BookOpen, "Learn"],
+        ].map(([I, n], i) => (
+          <button className={i === 1 ? "active" : ""} key={n} onClick={()=>i===0?onNavigate?.("dashboard"):i===2?onNavigate?.("molecule"):setLibrary(true)}>
+            <I />
+            {n}
+          </button>
+        ))}
+        <footer>
+          <button onClick={()=>setLibrary(true)}><FolderOpen/> Projects</button><button onClick={exportCurrentView}><Download/> Export</button><button onClick={()=>setLibrary(true)}><CircleHelp/> Help</button>
+          <small>
+            Compute
+            <br />
+            Visualize
+            <br />
+            Understand
+            <br />A Brighter Chemical World
+          </small>
+        </footer>
+      </aside>
+      <nav className="avc-compact-actions" aria-label="Visualization navigation" onKeyDown={e=>{
+        if(e.key==='Escape'&&compactMenuRef.current?.open){compactMenuRef.current.open=false;compactMenuRef.current.querySelector('summary')?.focus();}
+      }}>
+        <details ref={compactMenuRef}>
+          <summary>Navigate</summary>
+          <div>
+            {[["Home","dashboard"],["Molecules","molecule"],["Periodic Table","table"],["Settings","settings"]].map(([label,route])=>
+              <button key={route} onClick={()=>compactAction(()=>onNavigate?.(route))}>{label}</button>
+            )}
+            <button onClick={()=>compactAction(()=>setLibrary(true))}>Lessons and tools</button>
           </div>
-          <div className="space-y-2">
-            {advancedVisualDomains.map(domain => {
-              const Icon = domainIcons[domain.id] || Sparkles;
-              return (
+        </details>
+        <button onClick={()=>setLibrary(true)}>Library</button>
+        <button onClick={exportCurrentView}>Export</button>
+        <input aria-label="Search visualization gallery" placeholder="Search gallery…" value={query} onChange={e=>setQuery(e.target.value)}/>
+      </nav>
+      <main>
+        <section className="avc-gallery">
+          <header>
+            <h2>Visualization Gallery</h2>
+            <p>Select a system to explore</p>
+          </header>
+          {gallery.filter(g=>g.join(" ").toLowerCase().includes(query.toLowerCase())).map((g, i) => (
+            <button
+              className={`${g[0]} ${selected === g[0] ? "active" : ""}`}
+              onClick={() => {setSelected(g[0]); setPlaying(false);}}
+              key={g[0]}
+            >
+              <AdvancedGalleryPreview kind={g[0]} />
+              <span>
+                <b>{g[1]}</b>
+                <small>{g[2]}</small>
+              </span>
+            </button>
+          ))}
+          {!gallery.some(g=>g.join(' ').toLowerCase().includes(query.toLowerCase()))&&<p role="status" className="avc-no-results">No visualizations match “{query}”. Try a molecule or topic, or clear the search.</p>}
+        </section>
+        {selected==='dynamics'?<Suspense fallback={<p>Loading molecular dynamics…</p>}><AdvancedDynamicsExperiment/></Suspense>:selected==='surface'?<Suspense fallback={<p>Loading energy surface…</p>}><AdvancedSurfaceExperiment/></Suspense>:selected==='lattice'?<Suspense fallback={<p>Loading reciprocal lattice…</p>}><AdvancedLatticeExperiment/></Suspense>:['reaction','rdf','nmr'].includes(selected) ? <Suspense fallback={<p>Loading experiment…</p>}><AdvancedChartExperiment key={selected} kind={selected}/></Suspense> : <>
+        <section className="avc-stage">
+          <header>
+            <div>
+              <h2>Ethene π molecular orbital</h2>
+              <p>
+                C₂H₄　|　{orbital.split(" ")[0]}　|　Isosurface of molecular
+                orbital (± phase)
+              </p>
+            </div>
+            <button onClick={() => sceneRef.current?.rotate()}>
+              <Move aria-hidden="true"/><small>Rotate</small>
+            </button>
+            <button onClick={() => sceneRef.current?.zoom()}>
+              <Search aria-hidden="true"/><small>Zoom</small>
+            </button>
+            <button
+              onClick={reset}
+            >
+              <RotateCcw aria-hidden="true"/><small>Reset</small>
+            </button>
+          </header>
+          <div className="avc-scene-slot">
+            <Suspense fallback={<p>Loading molecular orbital…</p>}>
+              <AdvancedOrbitalScene ref={sceneRef} {...{iso,orbital,nodal,atoms,surface,density,playing,speed,clipping,tab,preset}} />
+            </Suspense>
+            {nodal && !orbital.startsWith('σ') && <span className="avc-plane-label">Nodal plane<br />(π node)</span>}
+          </div>
+          <nav>
+            {["Molecular orbital", "Electron density (|ψ|²)", "Both"].map(
+              (x) => (
                 <button
-                  key={domain.id}
-                  type="button"
-                  onClick={() => selectDomain(domain.id)}
-                  className={`flex w-full items-center gap-2 rounded-xl border px-3 py-2 text-sm font-black transition-colors ${
-                    activeDomain === domain.id ? 'border-white/20 bg-white/[0.09] text-white' : 'border-white/10 bg-white/[0.035] text-gray-400 hover:text-gray-200'
-                  }`}
+                  className={tab === x ? "active" : ""}
+                  onClick={() => setTab(x)}
+                  key={x}
                 >
-                  <Icon size={15} style={{ color: domain.color }} />
-                  {domain.label}
+                  {x}
                 </button>
-              );
-            })}
-          </div>
+              ),
+            )}
+          </nav>
+        </section>
+        <section className="avc-energy">
+          <h2>Energy levels (ethene)</h2>
+          <svg viewBox="0 0 200 355" role="img" aria-label="Schematic orbital energy ordering: occupied sigma levels below HOMO, LUMO above HOMO. Energies are illustrative.">
+            <path d="M30 20V327" stroke="#9eb6d2"/>
+            {[4,0,-4,-8,-12,-16].map((e,i)=><g key={e}><text x="22" y={27+i*57} textAnchor="end" fill="#b9cce5" fontSize="12">{e}</text><path d={`M27 ${23+i*57}h9`} stroke="#9eb6d2"/></g>)}
+            {[[2.2,'LUMO (π*)'],[-3.8,'HOMO (π)'],[-9.6,'σ (C–H)'],[-14.6,'σ (C–C)']].map(([e,label])=><g key={label} fill={orbital===label?'#b083ff':'#c9dbec'}><path d={`M50 ${23+(4-e)*14.25}h65`} stroke="currentColor" style={{color:orbital===label?'#b083ff':'#c9dbec'}} strokeWidth="2"/><text x="121" y={27+(4-e)*14.25} fontSize="11">{label}</text></g>)}
+            <text x="12" y="216" transform="rotate(-90 12 216)" fill="#a0b4ce" fontSize="11">Energy (eV, schematic)</text>
+            <text x="69" y="132" fill="#b083ff" fontSize="22">↑↓</text>
+          </svg>
+        </section>
+        <aside className="avc-controls">
+          <h2>Visualization Controls</h2>
+          <label>
+            Orbital
+            <select
+              value={orbital}
+              onChange={(e) => setOrbital(e.target.value)}
+            >
+              <option>HOMO (π)</option>
+              <option>LUMO (π*)</option>
+              <option>σ (C–C)</option>
+            </select>
+          </label>
+          <label>
+            Isovalue<output>{iso.toFixed(2)}</output>
+            <input
+              aria-label="Isovalue"
+              type="range"
+              min=".01"
+              max=".08"
+              step=".01"
+              value={iso}
+              onChange={(e) => setIso(+e.target.value)}
+            />
+          </label>
+          <h3>Phase colors</h3>
+          <p>
+            <i className="red" />
+            Positive phase (+)
+          </p>
+          <p>
+            <i className="blue" />
+            Negative phase (−)
+          </p>
+          {[
+            ["Show nodal plane", nodal, setNodal],
+            ["Show atoms", atoms, setAtoms],
+            ["Show isosurface", surface, setSurface],
+            ["Compare electron density", density, setDensity],
+          ].map(([n, v, f]) => (
+            <button aria-pressed={v} className={v ? "on" : ""} onClick={() => f(!v)} key={n}>
+              {n}
+              <i />
+            </button>
+          ))}
+          <label>
+            Clipping plane
+            <select value={clipping} onChange={e=>setClipping(e.target.value)}>
+              <option>None</option>
+              <option>XY</option>
+              <option>XZ</option>
+            </select>
+          </label>
+          <label>
+            Animation speed<output>{speed.toFixed(1)}×</output>
+            <input aria-label="Animation speed" type="range" min=".1" max="2" step=".1" value={speed} onChange={e=>setSpeed(+e.target.value)}/>
+          </label>
+          <button className="play" onClick={() => setPlaying(!playing)}>
+            {playing ? "Ⅱ Pause animation" : "▶ Play animation"}
+          </button>
+          <h3>Presets</h3>
+          <nav>
+            {["Default", "High detail", "Transparent", "Publication"].map(
+              (x) => (
+                <button
+                  className={preset === x ? "active" : ""}
+                  onClick={() => setPreset(x)}
+                  key={x}
+                >
+                  {x}
+                </button>
+              ),
+            )}
+          </nav>
         </aside>
-
-        <main className="min-w-0 space-y-4">
-          <section className="glass rounded-2xl p-4">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">{activeDomain}</p>
-                <h3 className="mt-1 text-lg font-black text-white">Advanced module stack</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {modules.map(module => (
-                  <button
-                    key={module.id}
-                    type="button"
-                    onClick={() => setActiveModuleId(module.id)}
-                    className={`rounded-xl border px-3 py-2 text-xs font-black transition-colors ${
-                      activeModule.id === module.id ? 'border-cyan-300/40 bg-cyan-300/15 text-cyan-50' : 'border-white/10 bg-white/[0.035] text-gray-400 hover:text-gray-200'
-                    }`}
-                  >
-                    {module.title}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="grid gap-4 xl:grid-cols-[1fr_0.95fr]">
-            <div className="glass rounded-2xl p-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-2 py-0.5 text-[10px] font-black text-cyan-100">{activeModule.level}</span>
-                    <span className="rounded-full border border-white/10 bg-black/15 px-2 py-0.5 text-[10px] font-bold text-gray-300">{activeModule.domain}</span>
-                  </div>
-                  <h3 className="mt-3 text-2xl font-black text-white">{activeModule.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-400">{activeModule.summary}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => onNavigate?.(activeModule.twoDRoute)} className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-xs font-black text-cyan-100 hover:bg-cyan-300/15">
-                    <Box size={14} /> 2D
-                  </button>
-                  <button type="button" onClick={() => onNavigate?.(activeModule.threeDRoute)} className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-xs font-black text-emerald-100 hover:bg-emerald-300/15">
-                    <Layers3 size={14} /> 3D
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <div className="rounded-xl border border-white/10 bg-black/15 p-3">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Brain size={14} className="text-cyan-200" />
-                    <p className="text-xs font-black text-white">Concepts</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {activeModule.concepts.map(concept => (
-                      <span key={concept} className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] font-bold text-gray-300">{concept}</span>
-                    ))}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-white/10 bg-black/15 p-3">
-                  <div className="mb-2 flex items-center gap-2">
-                    <BadgeCheck size={14} className="text-amber-200" />
-                    <p className="text-xs font-black text-white">Build Next</p>
-                  </div>
-                  <div className="space-y-1.5">
-                    {activeModule.buildNext.map(item => (
-                      <p key={item} className="rounded-lg border border-white/10 bg-black/20 px-2 py-1 text-[11px] font-bold text-gray-300">{item}</p>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="glass rounded-2xl p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <BarChart3 size={16} className="text-cyan-300" />
-                <h3 className="text-sm font-bold text-white">Visual System Preview</h3>
-              </div>
-              <Preview domain={activeModule.domain} />
-            </div>
-          </section>
-
-          <section className="glass rounded-2xl p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <Layers3 size={16} className="text-emerald-300" />
-              <h3 className="text-sm font-bold text-white">Visual Tasks</h3>
-            </div>
-            <div className="grid gap-2 lg:grid-cols-3">
-              {activeModule.visualTasks.map(task => (
-                <p key={task} className="flex gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-gray-300">
-                  <CheckCircle2 size={13} className="mt-0.5 shrink-0 text-emerald-300" />{task}
-                </p>
-              ))}
-            </div>
-          </section>
-        </main>
-      </section>
+        <section className="avc-about">
+          <article>
+            <h2>About this visualization</h2>
+            <p>
+              This qualitative LCAO model of ethene arises from side-on
+              overlap of the carbon p<sub>z</sub> orbitals, giving bonding π
+              electron density above and below the molecular plane. The nodal
+              plane lies in the plane of the molecule, where a π wavefunction
+              changes sign (red/blue indicates phase). LUMO adds a node between the carbons. Isovalues are in arbitrary amplitude units; this is not a calculated ab initio density.
+            </p>
+          </article>
+          <div className="formula">
+            <svg viewBox="0 0 120 100" role="img" aria-label="Planar ethene: two carbons joined by a double bond, each bonded to two hydrogens.">
+              <g stroke="currentColor" strokeWidth="1.5" fill="none">
+                <path d="M47 46H73 M47 51H73 M35 39L22 20 M35 57L22 77 M85 39L98 20 M85 57L98 77"/>
+              </g>
+              <g fill="currentColor" fontSize="18" textAnchor="middle">
+                <text x="38" y="55">C</text><text x="82" y="55">C</text>
+                <text x="17" y="18">H</text><text x="103" y="18">H</text>
+                <text x="17" y="94">H</text><text x="103" y="94">H</text>
+              </g>
+            </svg>
+            <small>C₂H₄ · Planar (D₂h)</small>
+          </div>
+          <ul>
+            {[
+              "Interactive 3D orbital isosurface",
+              "Phase and nodal plane visualization",
+              "Energy level diagram",
+              "Compare with electron density",
+              "Multiple related chemical systems",
+            ].map((x) => (
+              <li key={x}>✓　{x}</li>
+            ))}
+          </ul>
+        </section>
+        </>}
+      </main>
+      {library && <div ref={dialogRef} className="avc-library-overlay" role="dialog" aria-modal="true" aria-label="Advanced chemistry lesson library">
+        <button onClick={()=>setLibrary(false)}>Close lesson library ×</button>
+        <Suspense fallback={<p>Loading lessons…</p>}><AdvancedVisualLegacyLibrary onNavigate={onNavigate}/></Suspense>
+      </div>}
     </div>
   );
 };
-
 export default AdvancedVisualChemistryPage;

@@ -1,0 +1,12 @@
+import {writeFile} from 'node:fs/promises';
+const targets=await(await fetch('http://127.0.0.1:9224/json/list')).json();const ws=new WebSocket(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
+await new Promise(r=>ws.addEventListener('open',r,{once:true}));let id=0;const pending=new Map(),errors=[];
+ws.onmessage=({data})=>{const m=JSON.parse(data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result);}else if(m.method==='Runtime.exceptionThrown'&&!m.params.exceptionDetails.url?.startsWith('chrome-extension:'))errors.push(m.params.exceptionDetails.text);};
+function cmd(method,params={}){return new Promise((resolve,reject)=>{const n=++id;pending.set(n,{resolve,reject});ws.send(JSON.stringify({id:n,method,params}));});}
+async function ev(expression){const r=await cmd('Runtime.evaluate',{expression,returnByValue:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.text);return r.result.value;}
+const wait=ms=>new Promise(r=>setTimeout(r,ms)),read=()=>ev(`document.querySelector('.avc-chart-readouts').textContent`),click=text=>ev(`Array.from(document.querySelectorAll('.avc-chart-experiment button')).find(b=>b.textContent.includes('${text}')).click()`);
+await cmd('Runtime.enable');errors.length=0;await ev(`document.querySelector('.avc-gallery button.dynamics').click()`);await wait(700);
+const initial=await read();await click('Run dynamics');await wait(650);await click('Pause dynamics');await wait(200);const paused=await read();await wait(300);const stopped=await read();await click('Step 0.020');await wait(100);const stepped=await read();
+await ev(`(()=>{const e=document.querySelector('input[aria-label="Set kinetic temperature"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,'2');e.dispatchEvent(new Event('input',{bubbles:true}));})()`);await wait(100);const heated=await read();
+const cap=await cmd('Page.captureScreenshot',{format:'png'});await writeFile('docs/target-ui-verification/032-dynamics-experiment.png',Buffer.from(cap.data,'base64'));
+await click('Reset dynamics');await wait(150);const reset=await read();const result={runAdvances:initial!==paused,pauseStable:paused===stopped,stepAdvances:stepped!==paused,temperatureSetToTwo:heated.includes('T*: 2.000'),resetReproducible:reset===initial,initial,heated,errors};console.log(JSON.stringify(result));await writeFile('docs/target-ui-verification/032-dynamics-functional-audit.json',JSON.stringify(result,null,2));ws.close();

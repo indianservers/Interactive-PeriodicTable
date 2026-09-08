@@ -1,0 +1,581 @@
+.dd-app {
+  height: 100vh;
+  overflow: hidden;
+  background: #06131f;
+  color: #e8f3ff;
+  font:
+    14px Inter,
+    system-ui;
+  padding: 62px 0 0 195px;
+}
+.dd-app * {
+  box-sizing: border-box;
+}
+.dd-app > header {
+  position: fixed;
+  z-index: 8;
+  inset: 0 0 auto;
+  height: 62px;
+  background: #081a2a;
+  border-bottom: 1px solid #1e3d55;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 15px;
+}
+.dd-app > header > svg {
+  width: 42px;
+  height: 42px;
+  color: #23b6ff;
+}
+.dd-app h1 {
+  font-size: 25px;
+  margin: 0;
+}
+.dd-app > header p {
+  margin: 0;
+  color: #8eabc2;
+}
+.dd-app > header > label {
+  margin-left: auto;
+  width: 600px;
+  height: 38px;
+  border: 1px solid #28465d;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+.dd-app > header label svg {
+  width: 19px;
+}
+.dd-app > header input {
+  flex: 1;
+  background: none;
+  border: 0;
+  color: #fff;
+  padding: 8px;
+}
+.dd-app > header nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.dd-app > header nav button {
+  border: 0;
+  background: none;
+  color: #c0d0df;
+  display: flex;
+  gap: 8px;
+}
+.dd-app > header nav svg {
+  width: 18px;
+}
+.dd-app > header nav span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #345988;
+}
+.dd-app > header nav small {
+  display: block;
+  font-weight: 400;
+  color: #8fa8bd;
+}
+.dd-app > aside {
+  position: fixed;
+  z-index: 7;
+  left: 0;
+  top: 62px;
+  bottom: 0;
+  width: 195px;
+  background: #071827;
+  border-right: 1px solid #1c3a50;
+  padding-top: 10px;
+}
+.dd-app > aside button {
+  width: 100%;
+  height: 49px;
+  border: 0;
+  background: none;
+  color: #b4c9db;
+  text-align: left;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 19px;
+}
+.dd-app > aside button svg {
+  width: 22px;
+  color: #acc9e0;
+}
+.dd-app > aside button.active {
+  border-left: 4px solid #2fc2ff;
+  background: linear-gradient(90deg, #16436a, transparent);
+  color: #fff;
+}
+.dd-app > aside p {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  height: 140px;
+  padding: 15px;
+  background:
+    linear-gradient(#164467aa, #07111c),
+    radial-gradient(circle, #576e7e, #07111c);
+  color: #d5e9f8;
+}
+.dd-app > main {
+  height: calc(100vh - 62px);
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: minmax(560px, 1.18fr) minmax(475px, 1fr) 305px;
+  grid-template-rows: minmax(570px, 1fr) 225px 38px;
+  gap: 10px;
+  overflow: hidden;
+}
+.dd-pocket,
+.dd-lead,
+.dd-right article,
+.dd-analogs {
+  border: 1px solid #203e53;
+  border-radius: 7px;
+  background: #081a29;
+  overflow: hidden;
+}
+.dd-pocket {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+}
+.dd-pocket > header {
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto;
+  padding: 10px 14px;
+  background: linear-gradient(#071826e8, transparent);
+}
+.dd-pocket h2,
+.dd-lead h2,
+.dd-right h2,
+.dd-analogs h2 {
+  font-size: 20px;
+  margin: 0;
+}
+.dd-pocket header p {
+  margin: 4px 0;
+  color: #91aabe;
+}
+.dd-surface {
+  position: absolute;
+  inset: 0 0 45px;
+  background:
+    radial-gradient(
+      ellipse at 42% 48%,
+      transparent 0 14%,
+      #912f3266 17%,
+      #37659cbb 28%,
+      #132d49 52%,
+      #07131e 72%
+    ),
+    radial-gradient(circle at 75% 35%, #5e86b8, #102235 35%);
+}
+.dd-surface:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, #628ab4aa 0 5%, transparent 6%),
+    radial-gradient(circle at 82% 70%, #96423e88 0 10%, transparent 11%);
+}
+.dd-ligand {
+  position: absolute;
+  z-index: 2;
+  left: 28%;
+  right: 28%;
+  top: 38%;
+  height: 155px;
+}
+.dd-ligand:before,
+.dd-ligand:after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 50%;
+  height: 10px;
+  background: #c8d6df;
+  transform: rotate(12deg);
+}
+.dd-ligand:after {
+  transform: rotate(-20deg);
+}
+.dd-ligand i {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  margin: 26px 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #fff8, #384554 45%, #0a1016);
+  box-shadow: 0 0 8px #000;
+}
+.dd-ligand i:nth-child(2),
+.dd-ligand i:nth-child(6) {
+  background: #2575ef;
+}
+.dd-ligand i:nth-child(4),
+.dd-ligand i:nth-child(7) {
+  background: #ed3434;
+}
+.dd-lines {
+  position: absolute;
+  z-index: 3;
+  inset: 120px 80px;
+  color: #eaf4fd;
+  line-height: 2.5;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent 0 25px,
+    #53ff6722 26px 28px
+  );
+}
+.dd-pocket > footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45px;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 5px 15px;
+}
+.dd-pocket > footer button,
+.dd-pocket > footer select {
+  height: 32px;
+  border: 1px solid #28495f;
+  background: #0a1e30;
+  color: #c8d9e8;
+  border-radius: 5px;
+  padding: 0 14px;
+}
+.dd-pocket > footer button:first-child {
+  margin-right: auto;
+  color: #74c8ff;
+}
+.dd-lead {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+}
+.dd-lead > header {
+  height: 70px;
+  padding: 10px 13px;
+  border-bottom: 1px solid #1f3b50;
+}
+.dd-lead > header p {
+  margin: 3px 0;
+  color: #a8bdcd;
+}
+.dd-lead > header span {
+  position: absolute;
+  right: 20px;
+  top: 17px;
+  border: 1px solid #208963;
+  border-radius: 20px;
+  background: #0c4e3b;
+  color: #74ecb0;
+  padding: 5px 12px;
+}
+.dd-lead > nav {
+  height: 40px;
+  display: flex;
+}
+.dd-lead > nav button {
+  flex: 1;
+  border: 0;
+  background: none;
+  color: #9eb5c9;
+}
+.dd-lead > nav button.active {
+  border-bottom: 2px solid #2ca5ff;
+  color: #55bdff;
+}
+.dd-structure {
+  height: 310px;
+  margin: 10px;
+  border: 1px solid #1e3d51;
+  display: grid;
+  place-items: center;
+  background: #07131e;
+}
+.dd-structure b {
+  font:
+    22px/1.4 Georgia,
+    serif;
+  text-align: center;
+}
+.dd-structure.three b {
+  transform: rotate(-10deg);
+  text-shadow: 4px 4px 4px #379fff;
+}
+.dd-smiles {
+  display: flex;
+  margin: 0 10px;
+  gap: 8px;
+}
+.dd-smiles button,
+.dd-smiles span {
+  height: 39px;
+  border: 1px solid #28475d;
+  background: #0a1e30;
+  color: #bed0df;
+  padding: 10px;
+}
+.dd-smiles span {
+  flex: 1;
+  overflow: hidden;
+}
+.dd-lead > footer {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: 8px;
+}
+.dd-lead > footer button {
+  height: 42px;
+  border: 1px solid #31516a;
+  border-radius: 5px;
+  background: #0c2031;
+  color: #c6d7e5;
+}
+.dd-lead > footer .primary {
+  background: #237ded;
+  color: #fff;
+}
+.dd-right {
+  grid-column: 3;
+  grid-row: 1/3;
+  display: grid;
+  grid-template-rows: 1fr 260px;
+  gap: 10px;
+}
+.dd-right article {
+  padding: 11px;
+}
+.dd-props svg {
+  width: 100%;
+  height: 250px;
+}
+.dd-props svg .grid {
+  fill: none;
+  stroke: #546a7d;
+}
+.dd-props svg .range {
+  fill: #a152dc33;
+  stroke: #a863e7;
+  stroke-width: 2;
+}
+.dd-props svg .value {
+  fill: #20cdf344;
+  stroke: #27d5f1;
+  stroke-width: 2;
+}
+.dd-props svg text {
+  fill: #9fb5c9;
+  font-size: 10px;
+}
+.dd-right dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  margin: 0;
+}
+.dd-right dt,
+.dd-right dd {
+  border-bottom: 1px solid #203c51;
+  padding: 6px 3px;
+  margin: 0;
+  font-size: 11px;
+}
+.dd-right dd {
+  text-align: right;
+}
+.dd-right .pass {
+  color: #48e991;
+  font-weight: 700;
+}
+.dd-adme h2 {
+  font-size: 17px;
+}
+.dd-adme h2 button {
+  float: right;
+  background: #1679ed;
+  color: #fff;
+  border: 0;
+  padding: 7px 11px;
+  border-radius: 4px;
+}
+.dd-analogs {
+  grid-column: 1/3;
+  grid-row: 2;
+}
+.dd-analogs > header {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+.dd-analogs header h2 {
+  font-size: 14px;
+}
+.dd-analogs header button {
+  height: 34px;
+  border: 0;
+  background: none;
+  color: #9cb4c8;
+  margin-left: 20px;
+}
+.dd-analogs header button.active {
+  border-bottom: 2px solid #38c6ff;
+  color: #48d3ff;
+}
+.dd-analogs header select {
+  margin-left: auto;
+  background: #0b1d2e;
+  color: #b8cbdc;
+  border: 1px solid #28455b;
+  padding: 5px;
+}
+.dd-analogs > div {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  padding: 4px 38px;
+}
+.dd-analogs > div button {
+  height: 170px;
+  border: 1px solid #203e53;
+  background: #0a1b2a;
+  color: #d7e6f2;
+  text-align: left;
+  padding: 7px;
+}
+.dd-analogs > div button.active {
+  border: 2px solid #6a65ff;
+  background: #12284a;
+}
+.dd-analogs button span {
+  display: block;
+  height: 80px;
+  font:
+    13px/1.5 Georgia,
+    serif;
+  text-align: center;
+  padding-top: 14px;
+}
+.dd-analogs button b,
+.dd-analogs button strong,
+.dd-analogs button small {
+  display: block;
+}
+.dd-analogs button strong {
+  color: #61f29b;
+}
+.dd-app main > footer {
+  grid-column: 1/4;
+  grid-row: 3;
+  border: 1px solid #1d3d52;
+  border-radius: 18px;
+  padding: 9px 90px;
+  color: #4cc4ff;
+}
+.dd-app main > footer span {
+  float: right;
+  color: #9db9cd;
+}
+@media (max-width: 1200px) {
+  .dd-app {
+    height: auto;
+    min-height: 100vh;
+    padding-left: 0;
+    overflow: auto;
+  }
+  .dd-app > aside {
+    display: none;
+  }
+  .dd-app > main {
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .dd-pocket,
+  .dd-lead {
+    min-height: 600px;
+  }
+  .dd-right {
+    grid-column: 1/3;
+    grid-row: auto;
+    grid-template-columns: 1fr 1fr;
+  }
+  .dd-analogs {
+    grid-column: 1/3;
+    grid-row: auto;
+  }
+  .dd-app main > footer {
+    grid-column: 1/3;
+    grid-row: auto;
+  }
+  .dd-app > header > label {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .dd-app {
+    padding-top: 95px;
+  }
+  .dd-app > header {
+    height: 95px;
+    padding: 8px;
+  }
+  .dd-app h1 {
+    font-size: 19px;
+  }
+  .dd-app > header nav button {
+    display: none;
+  }
+  .dd-app > main {
+    display: block;
+    padding: 7px;
+  }
+  .dd-app main > section,
+  .dd-right article {
+    margin-bottom: 8px;
+  }
+  .dd-pocket,
+  .dd-lead {
+    height: 600px;
+  }
+  .dd-right {
+    display: block;
+  }
+  .dd-analogs > div {
+    overflow: auto;
+    display: flex;
+  }
+  .dd-analogs > div button {
+    min-width: 130px;
+  }
+  .dd-app main > footer {
+    display: none;
+  }
+}
+.dd-notice { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:20; padding:9px 14px; border:1px solid #2ca8ed; border-radius:7px; background:#08243b; color:#c7efff; box-shadow:0 8px 24px #0008; font-size:12px; }

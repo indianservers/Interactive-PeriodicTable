@@ -1,0 +1,393 @@
+.savedchem {
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 197px minmax(800px, 1fr) 478px;
+  grid-template-rows: 60px 1fr;
+  color: #eaf3ff;
+  background: radial-gradient(circle at 60% 35%, #09294a, #03142a 62%, #020b18);
+  font-family: Inter, system-ui, sans-serif;
+}
+.savedchem * {
+  box-sizing: border-box;
+}
+.savedchem button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.savedchem > header {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid #254660;
+  background: #04162a;
+}
+.savedchem > header > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 310px;
+}
+.savedchem > header > div svg {
+  width: 38px;
+  height: 38px;
+  color: #3bd8ef;
+}
+.savedchem > header > div b {
+  font-size: 17px;
+}
+.savedchem > header label {
+  width: 565px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 13px;
+  border: 1px solid #294b67;
+  border-radius: 7px;
+  background: #092038;
+}
+.savedchem > header label svg {
+  width: 16px;
+}
+.savedchem > header input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: white;
+}
+.savedchem > header i {
+  margin-left: auto;
+  color: #b2c6dc;
+  font: italic 11px Georgia;
+}
+.savedchem > header > span {
+  margin-left: 35px;
+}
+.sc-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 11px 5px;
+  border-right: 1px solid #24445e;
+}
+.sc-nav > button {
+  height: 43px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  color: #bed0e4;
+  font-size: 11px;
+}
+.sc-nav > button svg {
+  width: 20px;
+}
+.sc-nav > button.active {
+  background: linear-gradient(90deg, #1051a6, #12366e);
+  box-shadow: inset 4px 0 #28c7ff;
+}
+.sc-nav blockquote {
+  margin-top: auto;
+  color: #aec2d8;
+  font: italic 12px/1.45 Georgia;
+}
+.sc-nav blockquote b {
+  display: block;
+  margin-top: 15px;
+  font-size: 55px;
+  color: #42a3e9;
+}
+.savedchem > main {
+  padding: 18px 20px;
+  overflow: hidden;
+}
+.sc-title h1 {
+  margin: 0;
+  font: 700 39px Georgia;
+}
+.sc-title p {
+  margin: 3px 0 20px;
+  color: #9ed0f9;
+  font: italic 19px Georgia;
+}
+.sc-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.sc-filters button {
+  height: 35px;
+  padding: 0 18px;
+  border: 1px solid #294e6d;
+  border-radius: 8px;
+  background: #071a30;
+  font-size: 9px;
+}
+.sc-filters button.active {
+  background: #0d4f8d;
+  border-color: #1ca9ff;
+}
+.sc-filters span {
+  margin-left: auto;
+  font-size: 9px;
+}
+.sc-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+}
+.sc-card {
+  grid-column: span 4;
+  height: 325px;
+  padding: 10px;
+  border: 1px solid #2b5372;
+  border-radius: 9px;
+  background: #061a31;
+  text-align: left;
+}
+.sc-card:nth-child(n + 4) {
+  grid-column: span 3;
+  height: 305px;
+}
+.sc-card.selected {
+  border: 2px solid #28a9ff;
+  box-shadow: 0 0 13px #126bba;
+}
+.sc-art {
+  height: 120px;
+  display: grid;
+  place-items: center;
+  color: #d8e8f7;
+  background: radial-gradient(circle, #244d7e, #06162a 65%);
+  font: 20px Georgia;
+}
+.sc-art.benzene,
+.sc-art.aspirin,
+.sc-art.cisplatin {
+  font-size: 24px;
+}
+.sc-art.curve {
+  background: linear-gradient(145deg, #07182d, #082b55);
+  color: #36c9ff;
+}
+.sc-art.lattice {
+  background: radial-gradient(circle, #57c8a5 0 5%, #3539aa 6% 9%, #06162a 10%);
+  background-size: 24px 24px;
+}
+.sc-art.sn2,
+.sc-art.aldol {
+  font: 18px monospace;
+}
+.sc-card em {
+  display: inline-block;
+  margin-top: 5px;
+  border: 1px solid #28cfa7;
+  border-radius: 10px;
+  padding: 2px 6px;
+  color: #40e5bb;
+  font-size: 7px;
+  font-style: normal;
+}
+.sc-card h3 {
+  margin: 7px 0;
+  font-size: 13px;
+}
+.sc-card p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #abc0d6;
+  font-size: 8px;
+}
+.sc-card small {
+  display: block;
+  margin: 9px 0;
+  color: #9fb4c9;
+  font-size: 8px;
+}
+.sc-card small > b {
+  float: right;
+}
+.sc-card small > i {
+  display: inline-block;
+  width: 85px;
+  height: 6px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #2de1d5 var(--p), #1a3450 0);
+}
+.sc-card footer {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #2c5680;
+  border-radius: 6px;
+  background: #0a2b4e;
+  font-size: 9px;
+}
+.sc-card footer svg {
+  width: 14px;
+}
+.sc-detail {
+  padding: 18px 16px;
+  border-left: 1px solid #27475f;
+  background: #04162a;
+}
+.sc-head em {
+  display: inline-block;
+  border: 1px solid #25c99d;
+  border-radius: 10px;
+  padding: 3px 8px;
+  color: #35e2b6;
+  font-size: 8px;
+}
+.sc-head span {
+  float: right;
+  font-size: 9px;
+}
+.sc-head span svg {
+  width: 15px;
+  color: #ffd044;
+  vertical-align: middle;
+}
+.sc-head h2 {
+  margin: 9px 0 0;
+  font-size: 27px;
+}
+.sc-head p {
+  margin: 3px 0;
+  color: #b1c7dd;
+}
+.sc-detail > nav {
+  display: flex;
+  margin-top: 13px;
+  border-bottom: 1px solid #2a4a67;
+}
+.sc-detail > nav button {
+  flex: 1;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  font-size: 9px;
+}
+.sc-detail > nav button.active {
+  color: #5ed1ff;
+  border-bottom: 3px solid #28a9ff;
+}
+.sc-big {
+  height: 315px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, #123d6a, #05172c 62%);
+  font: 28px Georgia;
+}
+.sc-big > aside {
+  position: absolute;
+  right: 0;
+  top: 15px;
+  display: grid;
+}
+.sc-big > aside button {
+  width: 57px;
+  height: 58px;
+  border: 0;
+  border-bottom: 1px solid #264964;
+  background: #06182d;
+}
+.sc-big > aside small {
+  display: block;
+  font-size: 7px;
+}
+.sc-detail > section {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #2a4d69;
+  border-radius: 7px;
+  background: #071a2f;
+}
+.sc-detail section h3 {
+  margin: 0 0 7px;
+  font-size: 10px;
+}
+.sc-detail section dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  margin: 0;
+}
+.sc-detail section dt,
+.sc-detail section dd {
+  margin: 3px 0;
+  color: #aec0d4;
+  font-size: 8px;
+}
+.sc-detail section p {
+  font: 10px/1.45 Georgia;
+  color: #c5d2df;
+}
+.sc-resume {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 12px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #167ff3, #195ddb);
+  font-weight: 800;
+}
+.sc-resume svg {
+  width: 18px;
+}
+.sc-resume svg:nth-last-child(2) {
+  margin-left: auto;
+}
+@media (max-width: 900px) {
+  .savedchem {
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+  .savedchem > header {
+    height: 60px;
+  }
+  .savedchem > header > div {
+    width: auto;
+  }
+  .savedchem > header i {
+    display: none;
+  }
+  .savedchem > header label {
+    width: auto;
+    flex: 1;
+    margin-left: 15px;
+  }
+  .sc-nav {
+    display: none;
+  }
+  .sc-filters {
+    overflow: auto;
+  }
+  .sc-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sc-detail {
+    border: 0;
+  }
+  .sc-big {
+    height: 350px;
+  }
+}
+@media (max-width: 520px) {
+  .sc-grid {
+    grid-template-columns: 1fr;
+  }
+}
