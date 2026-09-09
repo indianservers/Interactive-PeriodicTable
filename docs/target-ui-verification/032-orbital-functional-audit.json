@@ -1,0 +1,65 @@
+{
+  "checks": [
+    {
+      "name": "Isovalue changes geometry",
+      "renderChanged": true
+    },
+    {
+      "name": "HOMO to LUMO changes nodes",
+      "renderChanged": true
+    },
+    {
+      "name": "Atoms toggle",
+      "renderChanged": true
+    },
+    {
+      "name": "Density representation",
+      "renderChanged": true
+    },
+    {
+      "name": "Publication scene style",
+      "renderChanged": true
+    },
+    {
+      "name": "Transparent surface preset",
+      "renderChanged": true
+    },
+    {
+      "name": "Clipping section",
+      "renderChanged": true
+    },
+    {
+      "name": "Density-only representation",
+      "renderChanged": true
+    },
+    {
+      "name": "Rotate camera/model",
+      "renderChanged": true
+    },
+    {
+      "name": "Zoom camera",
+      "renderChanged": true
+    },
+    {
+      "name": "Play advances model",
+      "renderChanged": true
+    },
+    {
+      "name": "Pause freezes render",
+      "pass": true
+    },
+    {
+      "name": "Reset initial state",
+      "pass": true
+    },
+    {
+      "name": "Lesson drawer receives focus",
+      "pass": true
+    },
+    {
+      "name": "Escape closes drawer and restores focus",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,653 @@
+.avc-app {
+  --line: #1d344c;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 55% 42%, #0b2438, #061627 60%, #071423);
+  color: #dceaff;
+  font-family: Inter, "Segoe UI", sans-serif;
+}
+.avc-scene-slot { position:absolute; inset:90px 226px 63px 0; }
+.avc-webgl { width:100%; height:100%; }
+.avc-webgl canvas { display:block; width:100%; height:100%; touch-action:none; }
+.avc-plane-label { position:absolute; right:10px; top:45%; font-size:11px; color:#bfd2e6; pointer-events:none; }
+.avc-library-overlay { position:fixed; z-index:20; inset:30px; overflow:auto; background:#09192b; border:1px solid #4fc4e6; border-radius:12px; padding:15px; }
+.avc-library-overlay>button { position:sticky; top:0; z-index:1; background:#133e5c; color:white; border:1px solid #4fc4e6; border-radius:6px; padding:10px 18px; }
+.avc-app>aside>footer>button { display:flex;align-items:center;gap:14px;height:40px;border:0;background:none;color:inherit;cursor:pointer; }
+.avc-app>aside>footer>button svg {width:17px;height:17px;flex-shrink:0;}
+.avc-stage header button>svg {display:block;width:21px;height:21px;margin:0 auto 7px;}
+.avc-app button:focus-visible,.avc-app canvas:focus-visible { outline:2px solid #5fe0ff; outline-offset:2px; }
+.avc-app * {
+  box-sizing: border-box;
+}
+.avc-compact-actions {display:none;}
+.avc-no-results {font-size:13px;line-height:1.5;color:#a9bfd4;overflow-wrap:anywhere;}
+.avc-gallery-preview {width:132px;height:100%;flex-shrink:0;}
+.avc-gallery>button.nmr,.avc-gallery>button.dynamics {position:relative;}
+.avc-gallery>button.nmr .avc-gallery-preview,.avc-gallery>button.dynamics .avc-gallery-preview {width:100%;height:100px;}
+.avc-app > header {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 0 22px 0 34px;
+  border-bottom: 1px solid var(--line);
+  background: #081929;
+}
+.avc-app > header > svg {
+  width: 42px;
+  height: 42px;
+  margin-right: 63px;
+  color: #3d8eff;
+}
+.avc-app > header h1 {
+  margin: 0;
+  font-size: 25px;
+}
+.avc-app > header p {
+  margin: 3px 0;
+  color: #91a7bd;
+  font-size: 11px;
+}
+.avc-app > header label {
+  display: flex;
+  align-items: center;
+  width: 327px;
+  height: 37px;
+  margin-left: auto;
+  padding: 0 12px;
+  border: 1px solid #203a54;
+  border-radius: 7px;
+}
+.avc-app > header label svg {
+  width: 15px;
+}
+.avc-app > header input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  padding-left: 9px;
+  color: #c9d9e8;
+}
+.avc-app > header button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: none;
+  color: #c4d4e4;
+  font-size: 11px;
+}
+.avc-app > header button svg {
+  width: 16px;
+}
+.avc-app > header > b {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #34506c;
+  border-radius: 50%;
+  background: #11263b;
+}
+.avc-app > header > i {
+  padding-left: 19px;
+  border-left: 1px solid var(--line);
+  color: #8ca4ba;
+  font:
+    italic 10px/1.45 Georgia,
+    serif;
+}
+.avc-app > aside {
+  position: absolute;
+  left: 0;
+  top: 72px;
+  bottom: 0;
+  width: 142px;
+  border-right: 1px solid var(--line);
+  background: #081a2a;
+}
+.avc-app > aside > button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  height: 50px;
+  padding: 0 22px;
+  border: 0;
+  border-left: 4px solid transparent;
+  background: none;
+  color: #a9bfd4;
+  font-size: 11px;
+}
+.avc-app > aside > button svg {
+  width:20px;height:20px;flex-shrink:0;stroke-width:1.5;
+}
+.avc-app > aside > button.active {
+  border-left-color: #3ac8ff;
+  background: #133c5e;
+  color: #4ed5ff;
+}
+.avc-app > aside > footer {
+  position: absolute;
+  left: 22px;
+  bottom: 20px;
+  line-height: 3.6;
+  font-size: 10px;
+}
+.avc-app > aside > footer small {
+  display: block;
+  margin-top: 55px;
+  color: #7a91a9;
+  line-height: 1.5;
+}
+.avc-app > main {
+  position: absolute;
+  left: 142px;
+  right: 0;
+  top: 72px;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 305px minmax(620px, 1fr) 225px 248px;
+  grid-template-rows: minmax(590px, 1fr) 186px;
+  gap: 11px;
+  padding: 12px 12px 10px;
+  overflow: hidden;
+}
+.avc-app main > section,
+.avc-controls {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #091a2b;
+}
+.avc-gallery {
+  grid-row: 1/3;
+  padding: 6px;
+}
+.avc-gallery > header {
+  height: 48px;
+  padding: 0 0 0 1px;
+}
+.avc-gallery h2,
+.avc-controls h2,
+.avc-energy h2,
+.avc-about h2 {
+  margin: 0;
+  font-size: 14px;
+}
+.avc-gallery header p {
+  margin: 3px 0;
+  color: #91a9be;
+  font-size: 9px;
+}
+.avc-gallery > button {
+  display: flex;
+  width: 100%;
+  height: 104px;
+  margin-bottom: 9px;
+  padding: 7px;
+  border: 1px solid #203b55;
+  border-radius: 7px;
+  background: #0a1d30;
+  color: #c8d9ea;
+  text-align: left;
+  cursor: pointer;
+}
+.avc-gallery > button.active {
+  border-color: #39d2ff;
+  box-shadow: 0 0 0 1px #39d2ff;
+}
+.avc-gallery > button i {
+  display: grid;
+  place-items: center;
+  width: 132px;
+  border-radius: 5px;
+  background: radial-gradient(circle, #83475c, #121f35 62%);
+  color: #f56185;
+  font-size: 44px;
+  font-style: normal;
+}
+.avc-gallery > button.surface i {
+  background: radial-gradient(circle, #ec864f, #422056 30%, #14213a 65%);
+}
+.avc-gallery > button.rdf i,
+.avc-gallery > button.reaction i {
+  background: #071728;
+  color: #36dafb;
+}
+.avc-gallery > button.lattice i {
+  background: radial-gradient(circle, #2672c7, #071728 70%);
+}
+.avc-gallery > button.nmr,
+.avc-gallery > button.dynamics {
+  display: inline-flex;
+  width: calc(50% - 6px);
+  height: 180px;
+  vertical-align: top;
+}
+.avc-gallery > button.dynamics {
+  margin-left: 7px;
+}
+.avc-gallery > button.nmr i,
+.avc-gallery > button.dynamics i {
+  width: 100%;
+  height: 95px;
+}
+.avc-gallery > button.nmr span,
+.avc-gallery > button.dynamics span {
+  position: absolute;
+  margin-top: 101px;
+  width: 120px;
+}
+.avc-gallery button span {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 7px;
+}
+.avc-gallery button b {
+  font-size: 9px;
+}
+.avc-gallery button small {
+  margin-top: 5px;
+  color: #8fa8bd;
+  font-size: 8px;
+  line-height: 1.4;
+}
+.avc-stage {
+  position: relative;
+  grid-column: 2/4;
+  grid-row: 1;
+  overflow: hidden;
+}
+.avc-stage > header {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  height: 90px;
+  padding: 16px;
+}
+.avc-stage header > div {
+  margin-right: auto;
+}
+.avc-stage header h2 {
+  margin: 0;
+  font-size: 23px;
+}
+.avc-stage header p {
+  margin: 5px 0;
+  color: #9db2c8;
+  font-size: 12px;
+}
+.avc-stage header button {
+  width: 66px;
+  height: 65px;
+  margin-left: 8px;
+  border: 1px solid #233e57;
+  border-radius: 7px;
+  background: #0c2034;
+  color: #b8cee2;
+  font-size: 22px;
+}
+.avc-stage header button small {
+  display: block;
+  font-size: 9px;
+}
+.avc-stage > nav {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  bottom: 17px;
+  display: flex;
+}
+.avc-stage > nav button {
+  flex: 1;
+  height: 38px;
+  border: 1px solid #28435d;
+  background: #0b1e31;
+  color: #9fb7cd;
+  font-size: 9px;
+}
+.avc-stage > nav button.active {
+  border-color: #38d3ff;
+  color: #60defd;
+}
+.avc-energy {
+  position: relative;
+  z-index: 2;
+  grid-column: 3;
+  grid-row: 1;
+  margin-top:106px;
+  align-self:start;
+  height:428px;
+  padding:12px;
+}
+.avc-energy>svg {width:100%;height:365px; margin-top:12px;}
+.avc-gallery button b {font-size:11px;}
+.avc-gallery button small {font-size:10px;}
+.avc-energy > div {
+  position: relative;
+  height: 410px;
+  margin-top: 22px;
+  padding-left: 30px;
+  border-left: 1px solid #7694ae;
+}
+.avc-energy span {
+  display: block;
+  height: 74px;
+  margin-left: -45px;
+  font-size: 9px;
+}
+.avc-energy i {
+  display: inline-block;
+  width: 70px;
+  margin-right: 7px;
+  border-top: 2px solid #c7d9e8;
+}
+.avc-energy i.homo {
+  border-color: #a85aff;
+}
+.avc-controls {
+  grid-column: 4;
+  grid-row: 1/3;
+  padding: 15px;
+}
+.avc-controls label {
+  display: block;
+  margin: 17px 0 8px;
+  font-size: 10px;
+}
+.avc-controls select {
+  width: 100%;
+  height: 36px;
+  margin-top: 7px;
+  padding: 0 10px;
+  border: 1px solid #29445e;
+  border-radius: 5px;
+  background: #091a2b;
+  color: #e1ebf5;
+}
+.avc-controls output {
+  float: right;
+  padding: 5px 10px;
+  border: 1px solid #263f58;
+}
+.avc-controls input {
+  width: 100%;
+  accent-color: #48d6ff;
+}
+.avc-controls h3 {
+  margin: 19px 0 9px;
+  font-size: 11px;
+}
+.avc-controls > p {
+  font-size: 10px;
+}
+.avc-controls > p i {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+.avc-controls i.red {
+  background: #ec4b67;
+}
+.avc-controls i.blue {
+  background: #5169f4;
+}
+.avc-controls > button:not(.play) {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 35px;
+  border: 0;
+  background: none;
+  color: #bdd0e2;
+  text-align: left;
+  font-size: 10px;
+}
+.avc-controls > button > i {
+  width: 34px;
+  height: 19px;
+  border-radius: 10px;
+  background: #2b4059;
+}
+.avc-controls > button.on > i {
+  background: #28c7e8;
+}
+.avc-controls > button > i:after {
+  content: "";
+  display: block;
+  width: 13px;
+  height: 13px;
+  margin: 3px;
+  border-radius: 50%;
+  background: #d9e9f3;
+}
+.avc-controls > button.on > i:after {
+  margin-left: 18px;
+}
+.avc-controls .play {
+  width: 100%;
+  height: 43px;
+  margin-top: 16px;
+  border: 1px solid #3889d5;
+  border-radius: 6px;
+  background: #12345a;
+  color: #59c9ff;
+}
+.avc-controls nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.avc-controls nav button {
+  height: 34px;
+  border: 1px solid #29445d;
+  border-radius: 5px;
+  background: none;
+  color: #a9bfd3;
+  font-size: 9px;
+}
+.avc-controls nav button.active {
+  border-color: #39cffe;
+  background: #13405d;
+  color: #fff;
+}
+.avc-about {
+  grid-column: 2/4;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: 1fr 140px 240px;
+  gap: 15px;
+  padding: 14px;
+}
+.avc-about p {
+  font-size: 9px;
+  line-height: 1.5;
+  color: #9bb2c6;
+}
+.avc-about .formula {
+  text-align: center;
+  padding-top: 28px;
+  font:
+    18px/1.3 Georgia,
+    serif;
+}
+.avc-about .formula small {
+  display:block;
+  font:12px/1.6 "Segoe UI",sans-serif;
+}
+.avc-about .formula svg {display:block;width:100%;height:95px;font-family:"Segoe UI",sans-serif;}
+.avc-about ul {
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+  color: #a9bfd3;
+  font-size: 9px;
+  line-height: 2;
+}
+.avc-about li::first-letter {
+  color: #39dc9d;
+}
+/* Match the reference's readable desktop type hierarchy. Keep these after
+   the component rules so smaller legacy declarations do not override them. */
+.avc-app > header p {font-size:14px;}
+.avc-app > header > div {flex:0 0 590px;}
+.avc-app > header label {margin-left:0;}
+.avc-app > header label {flex-shrink:0;}
+.avc-app > header button {font-size:12px;white-space:nowrap;}
+.avc-gallery {background:transparent!important;border-color:transparent!important;}
+.avc-gallery h2 {font-size:17px;font-weight:600;}
+.avc-gallery header p {font-size:12px;}
+.avc-gallery button b {font-weight:500;}
+.avc-controls h2,.avc-about h2 {font-size:16px;}
+.avc-controls label,.avc-controls>button:not(.play),.avc-controls>p,.avc-controls h3 {font-size:13px;font-weight:400;}
+.avc-controls > p {margin:8px 0;}
+.avc-controls select {font-size:13px;font-weight:400;}
+.avc-controls nav button,.avc-stage header button small {font-size:11px;}
+.avc-stage > nav button {font-size:12px;}
+.avc-stage > nav button:first-child {border-radius:8px 0 0 8px;}
+.avc-stage > nav button:last-child {border-radius:0 8px 8px 0;}
+.avc-stage header p {font-size:14px;}
+.avc-about p,.avc-about ul {font-size:11px;}
+.avc-about {grid-template-columns:1fr 115px 195px;}
+.avc-app .avc-stage {background:radial-gradient(ellipse at 50% 52%,#071420,#0b1420);}
+.avc-app .avc-energy {background:#091521;}
+.avc-app .avc-controls {background:linear-gradient(120deg,#122032,#101e2e);}
+.avc-app .avc-about {background:linear-gradient(110deg,#0b1826,#0a1825);}
+.avc-gallery > button {background:#09131f;}
+.avc-gallery > button.active {background:#0c1c2a;}
+.avc-app > aside {background:linear-gradient(100deg,#0b1725,#091522);}
+.avc-gallery button b {font-family:"Segoe UI",sans-serif;font-weight:400;}
+.avc-app > header h1,.avc-stage header h2,.avc-gallery h2,.avc-controls h2 {color:#eef3fa;}
+@media (min-width:1501px) {
+  .avc-app > main {padding-bottom:22px;grid-template-rows:minmax(590px,1fr) 175px;}
+  .avc-gallery {padding:3px;}
+  .avc-gallery > header {height:51px;}
+  .avc-gallery > button {margin-bottom:10px;}
+  .avc-gallery > button.orbital {height:94px;}
+  .avc-gallery > button.rdf {height:122px;}
+  .avc-gallery > button.reaction {height:114px;}
+  .avc-gallery > button.lattice {height:116px;}
+  .avc-gallery > button.nmr,.avc-gallery > button.dynamics {height:176px;}
+  .avc-stage > nav {left:23%;right:26.7%;bottom:19px;}
+  .avc-about {padding:12px 18px;}
+  .avc-about .formula {padding-top:22px;}
+  .avc-about ul {font-size:10.5px;line-height:2.1;}
+  .avc-controls h2 {line-height:20px;}
+  .avc-controls > label:first-of-type {margin-top:14px;}
+}
+@media (max-width: 1500px) {
+  .avc-compact-actions {display:flex;position:absolute;z-index:4;top:72px;left:0;right:0;height:44px;gap:8px;align-items:center;padding:4px 14px;background:#081929;border-bottom:1px solid var(--line);}
+  .avc-compact-actions button,.avc-compact-actions summary,.avc-compact-actions input {font:12px/1.4 "Segoe UI",sans-serif;color:#c7dfef;border:1px solid #29445e;border-radius:5px;background:#102b40;padding:7px 10px;}
+  .avc-compact-actions button,.avc-compact-actions summary {cursor:pointer;}
+  .avc-compact-actions details {position:relative;}
+  .avc-compact-actions details>div {position:absolute;top:38px;left:0;width:190px;display:grid;gap:5px;padding:8px;background:#0a1a2c;border:1px solid #40647d;border-radius:6px;box-shadow:0 10px 24px #0008;}
+  .avc-compact-actions details>div button {text-align:left;}
+  .avc-compact-actions input {min-width:0;flex:1;max-width:320px;margin-left:auto;}
+  .avc-compact-actions :focus-visible {outline:2px solid #5fe0ff;outline-offset:2px;}
+  .avc-app > header > div {flex:1 1 auto;min-width:0;}
+  .avc-gallery-preview,.avc-gallery>button.nmr .avc-gallery-preview,.avc-gallery>button.dynamics .avc-gallery-preview {width:85px;height:100%;}
+  .avc-gallery button small {font-size:9px;}
+  .avc-app > aside { display:none; }
+  .avc-app > main {top:116px;left:0;grid-template-columns:220px minmax(0,1fr) 170px 224px;grid-template-rows:minmax(0,1fr) 150px;}
+  .avc-app > header {gap:12px;padding-inline:16px;}
+  .avc-app > header>svg {margin-right:0; flex-shrink:0;}
+  .avc-app > header h1 {font-size:22px;}
+  .avc-app > header label {min-width:160px;width:260px;}
+  .avc-scene-slot {right:180px;}
+  .avc-stage>header h2 {font-size:19px;}
+  .avc-stage>header p {font-size:10px;}
+  .avc-stage>header button {width:45px;height:48px;flex-shrink:0;}
+  .avc-stage>nav {left:12%;right:12%;}
+  .avc-gallery {overflow:auto;}
+  .avc-gallery>button {height:auto;min-height:85px;}
+  .avc-gallery>button i {width:85px;flex-shrink:0;}
+  .avc-gallery>button.nmr,.avc-gallery>button.dynamics {width:100%;height:auto;min-height:85px;margin-left:0;}
+  .avc-gallery-preview,.avc-gallery>button.nmr .avc-gallery-preview,.avc-gallery>button.dynamics .avc-gallery-preview {height:70px;}
+  .avc-gallery>button.nmr i,.avc-gallery>button.dynamics i {width:85px;height:auto;}
+  .avc-gallery>button.nmr span,.avc-gallery>button.dynamics span {position:static;margin:0;width:auto;}
+  .avc-controls {min-width:0;overflow:auto;}
+  .avc-energy {height:360px;max-height:calc(100% - 180px);padding:8px;}
+  .avc-energy>svg {height:calc(100% - 45px);}
+  .avc-about {grid-template-columns:1fr 100px;overflow:auto;}
+  .avc-about>ul {display:none;}
+}
+@media (max-width: 1200px) {
+  .avc-app > header > i,
+  .avc-app > header > button {
+    display: none;
+  }
+  .avc-app > main {grid-template-columns:190px minmax(0,1fr) 150px 205px;}
+  .avc-scene-slot {right:152px;}
+  .avc-stage>header p {max-width:235px;}
+}
+@media (max-width: 900px) {
+  .avc-app {
+    overflow: auto;
+  }
+  .avc-app > aside {
+    display: none;
+  }
+  .avc-app > main {
+    position: relative;
+    left: 0;
+    top: 116px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+  .avc-gallery {
+    min-height:0;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .avc-gallery>header {grid-column:1/-1;}
+  .avc-gallery>button {margin:0;}
+  .avc-stage {
+    min-height: 540px;
+  }
+  .avc-scene-slot {right:0;top:112px;}
+  .avc-energy {
+    margin-top:0;
+    max-height:none;
+    min-height:340px;
+    width:100%;
+  }
+  .avc-controls {
+    position: relative !important;
+    inset: auto;
+    width: auto;
+  }
+  .avc-about {
+    display: block;
+  }
+  .avc-about>ul {display:block;}
+  .avc-app > header label {
+    display: none;
+  }
+}
+@media (max-width: 540px) {
+  .avc-app>header h1 {font-size:17px;}
+  .avc-app>header p {font-size:9px;}
+  .avc-app>header>b {display:none;}
+  .avc-gallery {grid-template-columns:1fr;}
+  .avc-stage>header {flex-wrap:wrap;gap:6px;height:auto;}
+  .avc-stage>header>div {width:100%;}
+  .avc-stage>header button {margin:0;height:40px;}
+  .avc-stage>header button small {display:inline;}
+  .avc-stage>header button>svg {display:inline-block;width:16px;height:16px;margin:0 5px 0 0;vertical-align:middle;}
+  .avc-stage>nav {left:8px;right:8px;}
+  .avc-library-overlay {inset:8px;padding:8px;}
+}

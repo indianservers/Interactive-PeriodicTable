@@ -1,0 +1,87 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "topic": "Alkanes",
+      "source": "methane",
+      "pathways": [
+        "chlorination"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Alkenes",
+      "source": "ethene",
+      "pathways": [
+        "hydration",
+        "hydrogenation",
+        "hydrobromination"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Haloalkanes",
+      "source": "bromoethane",
+      "pathways": [
+        "halo-hydrolysis",
+        "halo-elimination",
+        "ammonolysis"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Alcohols",
+      "source": "ethanol",
+      "pathways": [
+        "oxidation",
+        "elimination",
+        "acid",
+        "ester"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Carbonyl compounds",
+      "source": "ethanal",
+      "pathways": [
+        "carbonyl-reduction",
+        "carbonyl-oxidation"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Carboxylic acids",
+      "source": "ethanoic",
+      "pathways": [
+        "acid-esterification"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Esters",
+      "source": "ester",
+      "pathways": [
+        "ester-acid-hydrolysis",
+        "ester-base-hydrolysis"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Amines",
+      "source": "ethanamine",
+      "pathways": [
+        "amine-protonation"
+      ],
+      "passed": true
+    },
+    {
+      "topic": "Aromatic compounds",
+      "source": "benzene",
+      "pathways": [
+        "nitration"
+      ],
+      "passed": true
+    }
+  ],
+  "errors": []
+}

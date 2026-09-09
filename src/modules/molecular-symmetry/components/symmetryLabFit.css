@@ -1,0 +1,547 @@
+.sym-library {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sym-molecule-list {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+.sym-operation-row button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.sym-operation-row .sym-apply {
+  flex: 1;
+}
+
+/* Keep the center workspace inside its grid track. The WebGL canvas and the
+   non-wrapping operation controls otherwise preserve an oversized intrinsic
+   width and can paint over the Symmetry Elements column. */
+.sym-lab-grid {
+  position: relative;
+  width: 100%;
+  grid-template-columns: var(--sym-library-width, 320px) minmax(0, 1fr) var(--sym-right-width, 390px);
+}
+
+.sym-lab-grid > *,
+.sym-center,
+.sym-viewer-card,
+.sym-operation,
+.sym-right {
+  min-width: 0;
+}
+
+.sym-center,
+.sym-viewer-card,
+.sym-operation,
+.sym-elements {
+  overflow: hidden;
+}
+
+.sym-right {
+  position: relative;
+  z-index: 2;
+}
+
+.sym-elements {
+  position: sticky;
+  top: 0;
+}
+
+.sym-viewer,
+.sym-viewer-card canvas {
+  max-width: 100%;
+}
+
+.sym-molecule-select {
+  max-width: calc(100% - 36px);
+}
+
+.sym-viewer-tools,
+.sym-viewer-tools select,
+.sym-operation-row,
+.sym-operation-row button,
+.sym-speed input {
+  min-width: 0;
+}
+
+.sym-viewer-tools select,
+.sym-operation-row select {
+  max-width: 100%;
+}
+
+.sym-elements > div:last-child {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sym-elements > div > button {
+  min-width: 0;
+}
+
+.sym-compare {
+  grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr);
+}
+
+@media (max-width: 1600px) {
+  .sym-lab-grid {
+    grid-template-columns: min(var(--sym-library-width, 260px), 260px) minmax(0, 1fr) min(var(--sym-right-width, 330px), 330px);
+  }
+
+  .sym-operation-row label {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .sym-operation-row .sym-power {
+    flex: 0 1 92px;
+  }
+
+  .sym-operation-row button {
+    min-width: 0;
+    flex-shrink: 1;
+    padding-inline: 6px;
+  }
+
+  .sym-operation-row button svg {
+    flex: none;
+  }
+}
+
+.sym-icon-btn {
+  width: 40px;
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.sym-library {
+  position: relative;
+}
+
+.sym-library-toggle {
+  position: absolute;
+  z-index: 4;
+  top: 9px;
+  right: 9px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid var(--sym-line);
+  border-radius: 8px;
+  color: #8ff7ff;
+  background: #0a1a2a;
+}
+
+.sym-library.collapsed {
+  align-items: center;
+  padding: 9px;
+}
+
+.sym-library.collapsed .sym-library-toggle {
+  position: static;
+}
+
+.sym-library-vertical {
+  margin-top: 52px;
+  color: #8ba6ca;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+.sym-library-organize {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+
+.sym-library-organize select {
+  min-width: 0;
+  height: 31px;
+  padding: 0 7px;
+  border: 1px solid var(--sym-line);
+  border-radius: 8px;
+  background: #081522;
+  color: #9fb6d3;
+  font-size: 10px;
+}
+
+.sym-molecule-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.sym-molecule-group + .sym-molecule-group {
+  margin-top: 10px;
+}
+
+.sym-molecule-group > h3 {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 5px 7px;
+  border-radius: 6px;
+  color: #67e8f9;
+  background: #071321ee;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sym-molecule-group > button {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 88px;
+  padding: 8px 10px;
+  border: 1px solid var(--sym-line);
+  border-radius: 10px;
+  text-align: left;
+  background: #0a1625;
+}
+
+.sym-molecule-group > button.active {
+  border-color: #0ce2ed;
+  box-shadow: inset 0 0 22px #08dceb12, 0 0 12px #08dceb22;
+}
+
+.sym-resize-handle {
+  position: absolute;
+  z-index: 12;
+  top: 45%;
+  display: grid;
+  width: 18px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid #2a405c;
+  border-radius: 999px;
+  color: #6ee7f2;
+  background: #081522;
+  cursor: col-resize;
+  transform: translate(-50%, -50%);
+}
+
+.sym-resize-left {
+  left: calc(var(--sym-library-width, 320px) + 7px);
+}
+
+.sym-resize-right {
+  right: calc(var(--sym-right-width, 390px) - 2px);
+  transform: translate(50%, -50%);
+}
+
+.sym-orientation {
+  position: absolute;
+  z-index: 6;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid #2b415d;
+  border-radius: 10px;
+  color: #72edf4;
+  background: #071321e8;
+}
+
+.sym-orientation button {
+  width: 27px;
+  height: 27px;
+  border-radius: 6px;
+  color: #dbeafe;
+  background: #122239;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.sym-operation-readable {
+  margin-top: 5px;
+  color: #67e8f9;
+  font-size: 10px;
+}
+
+.sym-sliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sym-timeline {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 7px;
+  margin-top: 5px;
+  color: #8da5c4;
+  font-size: 10px;
+}
+
+.sym-timeline input {
+  min-width: 0;
+  accent-color: #8b5cf6;
+}
+
+.sym-timeline b {
+  color: #c4b5fd;
+  text-align: right;
+}
+
+.sym-compare-tabs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.sym-compare-tabs button {
+  padding: 3px 7px;
+  border: 1px solid #263a54;
+  border-radius: 999px;
+  color: #8299b8;
+  font-size: 9px;
+}
+
+.sym-compare-tabs button.active {
+  border-color: #22d3ee;
+  color: #8ff7ff;
+  background: #0a3547;
+}
+
+.sym-compare.mode-overlay {
+  grid-template-columns: 1fr;
+}
+
+.sym-compare.mode-overlay > div {
+  grid-column: 1;
+  grid-row: 1;
+  background: transparent;
+}
+
+.sym-compare.mode-overlay > div:last-child {
+  opacity: .52;
+  transform: translateX(10px);
+}
+
+.sym-compare.mode-difference {
+  grid-template-columns: 1fr;
+}
+
+.sym-difference {
+  width: 100%;
+  height: 70px !important;
+  flex-direction: column;
+  color: #cbd5e1;
+}
+
+.sym-difference strong {
+  color: #fbbf24;
+  font-size: 12px;
+}
+
+.sym-elements > div > button {
+  position: relative;
+}
+
+.sym-elements > div > button.active::before {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #5eeaf4;
+  box-shadow: 0 0 8px #22d3ee;
+  content: '';
+}
+
+.sym-elements > div > button em {
+  display: block;
+  margin-top: 3px;
+  color: #5eeaf4;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sym-element-legend {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 5px 8px !important;
+  margin-top: 8px !important;
+  padding-top: 7px;
+  border-top: 1px solid #1d3048;
+}
+
+.sym-element-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #8399b6;
+  font-size: 8px;
+}
+
+.sym-element-legend i,
+.sym-map-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.sym-element-legend .axis { background: #8b5cf6; }
+.sym-element-legend .plane { background: #22d3ee80; border: 1px solid #22d3ee; }
+.sym-element-legend .ghost { background: #cbd5e155; border: 1px dashed #cbd5e1; }
+.sym-element-legend .mapped { background: #34d399; }
+
+.sym-map-list > div {
+  grid-template-columns: 12px 1fr 28px 1fr 22px;
+}
+
+.sym-map-dot {
+  background: var(--map-color);
+  box-shadow: 0 0 7px var(--map-color);
+}
+
+.sym-tour small {
+  color: #67e8f9;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sym-tour nav {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.sym-tour nav button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sym-tour nav button:disabled {
+  opacity: .35;
+}
+
+.sym-focus-mode .sym-library,
+.sym-focus-mode .sym-right,
+.sym-focus-mode .sym-resize-handle {
+  display: none;
+}
+
+.sym-focus-mode .sym-lab-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sym-focus-mode .sym-viewer-card {
+  box-shadow: 0 0 40px #0ea5e933;
+}
+
+.sym-density-compact .sym-molecule-group > button {
+  min-height: 65px;
+}
+
+.sym-density-compact .sym-summary,
+.sym-density-compact .sym-elements,
+.sym-density-compact .sym-notice,
+.sym-density-compact .sym-mapping {
+  padding: 8px;
+}
+
+@media (max-width: 1350px) {
+  .sym-lab-page.sym-density-auto .sym-operation-row button {
+    font-size: 0;
+  }
+
+  .sym-lab-page.sym-density-auto .sym-operation-row button svg {
+    margin: 0;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 760px) {
+  .sym-guide + .sym-lab-grid {
+    height: calc(100% - 124px);
+  }
+
+  .sym-element-legend {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+    margin-top: 4px !important;
+    padding-top: 4px;
+  }
+
+  .sym-element-legend span {
+    gap: 3px;
+    font-size: 7px;
+  }
+
+  .sym-elements > div > button {
+    min-height: 44px;
+  }
+
+  .sym-elements > div > button em {
+    display: none;
+  }
+
+  .sym-operation-readable {
+    margin-top: 2px;
+  }
+
+  .sym-compare-tabs {
+    margin-top: 1px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .sym-lab-grid,
+  .sym-focus-mode .sym-lab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sym-resize-handle {
+    display: none;
+  }
+
+  .sym-library {
+    overflow: visible;
+  }
+
+  .sym-molecule-list {
+    flex: none;
+    max-height: 360px;
+  }
+
+  .sym-sliders {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sym-lab-page *,
+  .sym-lab-page *::before,
+  .sym-lab-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

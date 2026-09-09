@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/periodic-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#4f46e5" />
+    <meta name="description" content="Chemistry Universe Pro is an offline-ready chemistry learning workspace with periodic table, molecular visualization, solver, quiz, and lab tools." />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Chemistry Universe Pro - Periodic Table, Solver and Lab Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Remove workers left by older local sessions before Vite loads modules.
+      // Without this, a cache-first worker can serve a different React bundle.
+      if (window.navigator.serviceWorker && ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+        const key = 'chemistry-local-sw-cleared-v3';
+        if (!window.sessionStorage.getItem(key)) {
+          window.sessionStorage.setItem(key, '1');
+          window.navigator.serviceWorker.getRegistrations()
+            .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
+            .then(() => window.location.reload());
+        }
+      }
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

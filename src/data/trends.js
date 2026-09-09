@@ -1,0 +1,60 @@
+export const trends = [
+  {
+    id: "atomicMass",
+    label: "Atomic Mass",
+    unit: "u",
+    description: "Atomic mass generally increases with atomic number across all periods and groups.",
+    colorFrom: "#1e3a5f",
+    colorTo: "#3b82f6",
+  },
+  {
+    id: "atomicRadius",
+    label: "Atomic Radius",
+    unit: "pm",
+    description: "Atomic radius decreases across a period (left to right) due to increasing nuclear charge. It increases down a group as electron shells are added.",
+    colorFrom: "#1a3a1a",
+    colorTo: "#22c55e",
+  },
+  {
+    id: "electronegativity",
+    label: "Electronegativity",
+    unit: "Pauling scale",
+    description: "Electronegativity generally increases across a period and decreases down a group. Fluorine is the most electronegative element.",
+    colorFrom: "#3b1a1a",
+    colorTo: "#ef4444",
+  },
+  {
+    id: "ionizationEnergy",
+    label: "Ionization Energy",
+    unit: "kJ/mol",
+    description: "First ionization energy increases across a period (with some exceptions) and decreases down a group. Noble gases have the highest values.",
+    colorFrom: "#2a1a3b",
+    colorTo: "#8b5cf6",
+  },
+  {
+    id: "meltingPoint",
+    label: "Melting Point",
+    unit: "K",
+    description: "Melting points show complex periodic trends. Transition metals generally have high melting points. Noble gases and group 1 metals have low melting points.",
+    colorFrom: "#3b2a1a",
+    colorTo: "#f97316",
+  },
+  {
+    id: "boilingPoint",
+    label: "Boiling Point",
+    unit: "K",
+    description: "Boiling points correlate with intermolecular forces. Metals generally have high boiling points; noble gases have the lowest.",
+    colorFrom: "#1a2a3b",
+    colorTo: "#06b6d4",
+  },
+  {
+    id: "density",
+    label: "Density",
+    unit: "g/cm³",
+    description: "Density varies widely across the periodic table. Osmium and iridium are the densest elements. Alkali metals and noble gases are among the least dense.",
+    colorFrom: "#2a1a2a",
+    colorTo: "#ec4899",
+  },
+];
+
+export default trends;

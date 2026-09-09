@@ -1,0 +1,498 @@
+.rbal {
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 315px minmax(760px, 1fr) 355px;
+  grid-template-rows: 77px 1fr;
+  color: #e8f3ff;
+  background: radial-gradient(circle at 60% 20%, #082c55, #04172f 56%, #020c1b);
+  font-family: Inter, system-ui, sans-serif;
+}
+.rbal * {
+  box-sizing: border-box;
+}
+.rbal button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.rbal > header {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  padding: 0 27px;
+  border-bottom: 1px solid #285176;
+  background: rgba(4, 21, 40, 0.95);
+}
+.rbal > header svg {
+  width: 58px;
+  height: 58px;
+  color: #35caff;
+}
+.rbal > header h1 {
+  margin: 0 15px;
+  font-size: 42px;
+}
+.rbal > header span {
+  color: #b9d5ef;
+  font-size: 21px;
+}
+.rbal > header i {
+  margin-left: auto;
+  color: #8eb8ed;
+  font: italic 13px Georgia;
+  letter-spacing: 0.1em;
+}
+.rb-left,
+.rb-right {
+  padding: 16px 13px;
+  border: 1px solid #2c587e;
+  background: rgba(5, 23, 43, 0.88);
+  overflow: hidden;
+}
+.rb-left {
+  margin: 12px 0 12px 12px;
+  border-radius: 9px;
+}
+.rb-right {
+  margin: 12px 12px 12px 10px;
+  border-radius: 9px;
+}
+.rb-left h2,
+.rb-right h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.rb-left > button:not(.rb-example) {
+  width: 100%;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+.rb-left > button svg {
+  width: 35px;
+  color: #63baff;
+}
+.rb-left > button b,
+.rb-left > button small {
+  display: block;
+}
+.rb-left > button b {
+  font-size: 14px;
+}
+.rb-left > button small {
+  margin-top: 3px;
+  color: #94b5d8;
+  font-size: 10px;
+}
+.rb-left > button.active {
+  border: 2px solid #1ca9ff;
+  border-radius: 8px;
+  background: #0e4682;
+  box-shadow: 0 0 13px #1177cf;
+}
+.rb-left hr,
+.rb-right hr {
+  border: 0;
+  border-top: 1px solid #2b587a;
+  margin: 12px 0;
+}
+.rb-left > p {
+  margin: 8px 0;
+  color: #a6bcd4;
+  font-size: 10px;
+}
+.rb-example {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-size: 10px;
+}
+.rb-example.active {
+  border: 1px solid #1ba8ff;
+  border-radius: 4px;
+  background: #0d3662;
+}
+.rb-left blockquote {
+  position: absolute;
+  bottom: 42px;
+  width: 260px;
+  margin: 0 10px;
+  color: #a8c0db;
+  font: italic 11px/1.55 Georgia;
+}
+.rbal > main {
+  display: grid;
+  grid-template-rows: 285px 196px 1fr;
+  gap: 12px;
+  padding: 12px 0 12px 12px;
+  min-width: 0;
+}
+.rb-equation {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 14px 20px 0;
+  border: 1px solid #2a587f;
+  border-radius: 9px;
+  background: rgba(5, 24, 45, 0.76);
+}
+.rb-species {
+  position: relative;
+  text-align: center;
+}
+.rb-molecule {
+  height: 104px;
+  position: relative;
+}
+.rb-molecule i {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 28%,
+    white,
+    #303944 38%,
+    #0e131b 70%
+  );
+  box-shadow: 0 5px 10px #000;
+}
+.rb-molecule i:first-child {
+  left: 50%;
+  top: 36px;
+}
+.rb-molecule i:nth-child(2) {
+  left: 30%;
+  top: 23px;
+  width: 27px;
+  height: 27px;
+  background: radial-gradient(circle at 35% 28%, white, #dfe8f2);
+}
+.rb-molecule i:nth-child(3) {
+  left: 67%;
+  top: 24px;
+  width: 27px;
+  height: 27px;
+  background: radial-gradient(circle at 35% 28%, white, #dfe8f2);
+}
+.mol-o2 i:first-child,
+.mol-o2 i:nth-child(2),
+.mol-co2 i:nth-child(2),
+.mol-co2 i:nth-child(3),
+.mol-h2o i:first-child {
+  background: radial-gradient(circle at 35% 28%, #ff8b7f, #ee1818 45%, #830000);
+}
+.rb-coef {
+  width: 102px;
+  height: 54px;
+  display: grid;
+  grid-template-columns: 1fr 30px;
+  margin: auto;
+  border: 2px solid #18a8ff;
+  border-radius: 8px;
+  background: #061b33;
+  box-shadow: 0 0 12px #087ed1;
+}
+.rb-coef > b {
+  display: grid;
+  place-items: center;
+  font-size: 29px;
+}
+.rb-coef span {
+  display: grid;
+}
+.rb-coef button {
+  border: 0;
+  border-left: 1px solid #46718f;
+  background: transparent;
+}
+.rb-coef button:first-child {
+  border-bottom: 1px solid #46718f;
+}
+.rb-coef svg {
+  width: 15px;
+}
+.rb-species h2 {
+  margin: 7px 0 0;
+  font-size: 26px;
+}
+.rb-species p {
+  margin: 2px 0;
+  color: #b8d2ec;
+  font-size: 11px;
+}
+.rb-species p small {
+  display: block;
+}
+.rb-species > strong {
+  position: absolute;
+  right: -12px;
+  top: 145px;
+  font-size: 36px;
+}
+.rb-species > strong.arrow {
+  font-size: 56px;
+  top: 132px;
+}
+.rb-count {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  grid-template-rows: 34px 1fr;
+  padding: 8px;
+  border: 1px solid #28577d;
+  border-radius: 9px;
+  background: rgba(5, 22, 42, 0.85);
+}
+.rb-count h2 {
+  grid-column: 1/-1;
+  margin: 0;
+  font-size: 16px;
+}
+.rb-count h2 span {
+  font-weight: 400;
+}
+.rb-table {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid #3c6f99;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.rb-table > * {
+  display: grid;
+  place-items: center;
+  min-height: 29px;
+  border-right: 1px solid #315b7e;
+  border-bottom: 1px solid #315b7e;
+  font-size: 11px;
+}
+.rb-status {
+  margin-left: 15px;
+  border: 1px solid #ff5b63;
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ff6f74;
+  background: rgba(119, 10, 25, 0.2);
+}
+.rb-status.ok {
+  border-color: #47ef7f;
+  color: #58f18b;
+  background: rgba(0, 104, 47, 0.23);
+}
+.rb-status svg {
+  width: 30px;
+}
+.rb-status b {
+  font-size: 24px;
+}
+.rb-status span {
+  text-align: center;
+  color: #d5e2ed;
+  font-size: 9px;
+}
+.rb-visual {
+  padding: 9px 14px;
+  border: 1px solid #295779;
+  border-radius: 9px;
+  background: #06182c;
+}
+.rb-visual h2 {
+  margin: 0 0 7px;
+  font-size: 15px;
+}
+.rb-chamber {
+  height: 185px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #49718e;
+  border-radius: 8px;
+  background: radial-gradient(circle, #0e4163, #061b31);
+}
+.rb-chamber i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #fff, #e92828 45%, #720000);
+}
+.rb-visual.playing .rb-chamber i {
+  animation: collide 1s var(--d) alternate infinite;
+}
+.rb-visual.slow .rb-chamber i {
+  animation-duration: 3s;
+}
+@keyframes collide {
+  to {
+    transform: translate(80px, -35px) scale(0.8);
+  }
+}
+.rb-visual footer {
+  height: 55px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rb-visual footer button {
+  height: 41px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  border: 1px solid #2c6088;
+  border-radius: 8px;
+  background: #0b213a;
+  font-size: 10px;
+}
+.rb-visual footer > button:first-child {
+  background: #0968ca;
+}
+.rb-visual footer > button:last-child {
+  margin-left: auto;
+}
+.rb-visual footer input {
+  flex: 1;
+}
+.rb-visual footer span {
+  font-size: 10px;
+}
+.rb-right dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  margin: 0;
+}
+.rb-right dt,
+.rb-right dd {
+  margin: 0;
+  padding: 5px 0;
+  font-size: 11px;
+}
+.rb-right dt small {
+  display: block;
+  color: #9cb5cf;
+}
+.rb-right dd {
+  font-weight: 800;
+}
+.rb-green {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  color: #5cf18c !important;
+  font-weight: 800;
+}
+.rb-green svg {
+  width: 22px;
+}
+.rb-right h3 {
+  margin: 10px 0;
+  font-size: 12px;
+}
+.rb-right h3 small {
+  font-weight: 400;
+}
+.rb-right > p {
+  color: #a8bfd5;
+  font-size: 10px;
+}
+.rb-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+}
+.rb-toggle i {
+  width: 43px;
+  height: 24px;
+  border-radius: 15px;
+  background: #324b62;
+}
+.rb-hint {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  border: 2px solid #189fff;
+  border-radius: 8px;
+  background: #0b4176;
+  font-weight: 800;
+}
+.rb-hint svg {
+  width: 24px;
+}
+.rb-right > p:not(.rb-green) {
+  opacity: 0.42;
+  margin: 8px 0;
+}
+.rb-right > p.shown {
+  opacity: 1;
+}
+.rb-right > p > b {
+  display: inline-grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  margin-right: 9px;
+  border: 1px solid #416789;
+  border-radius: 50%;
+}
+@media (max-width: 900px) {
+  .rbal {
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+  .rbal > header {
+    height: 75px;
+  }
+  .rbal > header h1 {
+    font-size: 25px;
+  }
+  .rbal > header span,
+  .rbal > header i {
+    display: none;
+  }
+  .rb-left,
+  .rb-right {
+    margin: 10px;
+  }
+  .rb-left blockquote {
+    position: static;
+    width: auto;
+    margin-top: 15px;
+  }
+  .rbal > main {
+    display: block;
+    padding: 10px;
+  }
+  .rbal > main > section {
+    margin-bottom: 10px;
+  }
+  .rb-equation {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .rb-count {
+    grid-template-columns: 1fr;
+  }
+  .rb-status {
+    margin: 10px 0;
+  }
+  .rb-visual {
+    height: 330px;
+  }
+}

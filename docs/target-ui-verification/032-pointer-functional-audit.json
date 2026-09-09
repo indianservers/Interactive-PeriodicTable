@@ -1,0 +1,40 @@
+{
+  "results": [
+    {
+      "kind": "surface",
+      "before": [
+        40,
+        25,
+        -1,
+        0
+      ],
+      "after": [
+        40,
+        25,
+        -0.5,
+        0.4
+      ],
+      "correct": true,
+      "dragDoesNotSelect": true
+    },
+    {
+      "kind": "lattice",
+      "before": [
+        4,
+        1,
+        1,
+        0
+      ],
+      "after": [
+        4,
+        2,
+        1,
+        0
+      ],
+      "correct": true,
+      "dragDoesNotSelect": true
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

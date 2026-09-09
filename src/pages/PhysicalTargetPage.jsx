@@ -1,0 +1,72 @@
+import { useEffect, useState } from 'react';
+import { Atom, Home, FlaskConical, Workflow, FileDown, BookOpen, Settings, CircleHelp, Play, Pause, RotateCcw } from 'lucide-react';
+import './physicalTarget.css';
+const random = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+function Cylinder({ tick, rate, volume }) {
+  const top = 120 + (3.2 - volume) * 16;
+  return <svg className="phys-cylinder" viewBox="0 0 710 475" role="img" aria-label="Glass piston containing moving argon atoms and collision sparks">
+    <defs>
+      <linearGradient id="steel"><stop stopColor="#151a29"/><stop offset=".16" stopColor="#9ca5bc"/><stop offset=".29" stopColor="#363b4d"/><stop offset=".54" stopColor="#717586"/><stop offset=".79" stopColor="#252b3b"/><stop offset=".94" stopColor="#c6cedb"/><stop offset="1" stopColor="#34394c"/></linearGradient>
+      <linearGradient id="glass"><stop stopColor="#a9c7ef" stopOpacity=".25"/><stop offset=".08" stopColor="#94bbff" stopOpacity=".03"/><stop offset=".8" stopColor="#a8cbff" stopOpacity=".04"/><stop offset=".96" stopColor="#bccfff" stopOpacity=".22"/><stop offset="1" stopColor="#dbeafe" stopOpacity=".06"/></linearGradient>
+      <radialGradient id="ball" cx="30%" cy="25%"><stop stopColor="#d2efff"/><stop offset=".25" stopColor="#79b8ff"/><stop offset=".6" stopColor="#3977df"/><stop offset="1" stopColor="#143d91"/></radialGradient>
+      <radialGradient id="spark"><stop stopColor="#fffbe8"/><stop offset=".2" stopColor="#ffc378"/><stop offset="1" stopColor="#f97316" stopOpacity="0"/></radialGradient>
+      <radialGradient id="floor"><stop stopColor="#285088" stopOpacity=".55"/><stop offset="1" stopColor="#07121f" stopOpacity="0"/></radialGradient>
+      <clipPath id="chamber"><path d={`M225 ${top+30} Q430 ${top+90} 635 ${top+30} V414 Q430 492 225 414Z`}/></clipPath>
+    </defs>
+    <ellipse cx="420" cy="445" rx="280" ry="45" fill="url(#floor)"/>
+    {Array.from({length:14},(_,i)=><path key={i} d={`M${140+i*42} 470L430 385M180 ${400+i*6}H700`} stroke="#4980b9" opacity=".08"/>)}
+    <path d="M219 107V416C219 473 640 473 640 416V107" fill="url(#glass)" stroke="#b7cbed" strokeOpacity=".6" strokeWidth="2"/>
+    <ellipse cx="430" cy="107" rx="211" ry="35" fill="#536883" fillOpacity=".14" stroke="#acbcd8" strokeWidth="2"/>
+    <ellipse cx="430" cy="415" rx="211" ry="40" fill="#8da5cf" fillOpacity=".11" stroke="#91a3c6" strokeWidth="3"/>
+    <g clipPath="url(#chamber)">{Array.from({length:235},(_,i)=>{ const x=235+random(i)*391 + Math.sin(tick*.08+i)*5*rate; const y=top+45+random(i+300)*(278-(top-120))+Math.cos(tick*.07+i)*5*rate; const r=4+random(i+800)*5; return <g key={i} opacity={.5+random(i+70)*.5}><path d={`M${x} ${y}l${(random(i+8)-.5)*30} ${(random(i+9)-.5)*30}`} stroke={i%11===0?'#f9c65e':'#62bdf1'} strokeWidth="1" opacity=".65"/><circle cx={x} cy={y} r={r} fill="url(#ball)" stroke="#7ea4ed" strokeWidth=".5"/></g>})}
+    {[ [350,325],[423,225],[540,245],[471,310],[360,375],[282,291] ].map(([x,y],i)=><g key={i} transform={`translate(${x+Math.sin(tick*.1+i)*3} ${y})`}><circle r="22" fill="url(#spark)"/><path d="M-16 0H16M0-16V16M-10-10L10 10M-10 10L10-10" stroke="#ffbc81" strokeWidth="1"/><circle r="3" fill="#fff6db"/></g>)}</g>
+    <path d={`M225 ${top}V${top+32}C225 ${top+75} 635 ${top+75} 635 ${top+32}V${top}`} fill="url(#steel)" stroke="#9faabd" strokeWidth="1.5"/>
+    <ellipse cx="430" cy={top} rx="205" ry="32" fill="url(#steel)" stroke="#b4bfd0" strokeWidth="2"/>
+    <ellipse cx="430" cy={top-4} rx="38" ry="8" fill="#171e2c"/>
+    <path d={`M405 -10H451V${top-7}Q430 ${top+2} 405 ${top-7}Z`} fill="url(#steel)" stroke="#8991a6"/>
+    <path d="M225 112V414M232 116V422M628 113V423M637 110V413" stroke="#dae6ff" opacity=".4" strokeWidth="2"/>
+    <ellipse cx="430" cy="425" rx="211" ry="39" fill="none" stroke="#b2c3e2" strokeWidth="2" opacity=".5"/>
+    <g transform="translate(61 430)" strokeWidth="3"><path d="M0 0V-52" stroke="#3989ff"/><path d="M0 0L33-28" stroke="#37dba1"/><path d="M0 0L52 5" stroke="#ff6957"/><path d="M0-55l-4 10h8Z" fill="#3989ff"/><path d="M36-31l-11 3 6 6Z" fill="#37dba1"/><path d="M56 6l-10-5v8Z" fill="#ff6957"/><circle r="4" fill="#93b5dd"/><g stroke="none" fontSize="16"><text x="-4" y="-63" fill="#d9e4ff">z</text><text x="37" y="-29" fill="#70edbe">y</text><text x="59" y="10" fill="#ff8275">x</text></g></g>
+  </svg>;
+}
+function Chart({kind,temp,theory,tick}) {
+  const w=460,h=218,left=58,right=447,top=14,bottom=177;
+  const curve=Array.from({length:100},(_,i)=>{let x=i/99; let y=kind===0 ? 1.01*(x*x)*Math.exp(-x*x/(.042*temp/300))*53 : kind===1 ? 1.35+x*2.25+Math.sin(i*1.8+tick*.02)*.12+Math.sin(i*.36)*.09 : 1/(x*1.8+.2);return `${left+x*(right-left)},${bottom-y/(kind===0?1.1:5)*(bottom-top)}`;}).join(' ');
+  return <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={['Maxwell–Boltzmann distribution chart','Pressure versus time chart','Pressure versus volume chart'][kind]}>
+    {Array.from({length:6},(_,i)=><g key={i}><path d={`M${left} ${top+i*(bottom-top)/5}H${right}`} stroke="#2b4056" strokeWidth=".7"/><text x="46" y={top+i*(bottom-top)/5+4} textAnchor="end">{kind===0?(0.20-i*.04).toFixed(2):5-i}</text></g>)}
+    {Array.from({length:7},(_,i)=><g key={i}><path d={`M${left+i*(right-left)/6} ${top}V${bottom}`} stroke="#2b4056" strokeWidth=".7"/><text x={left+i*(right-left)/6} y="197" textAnchor="middle">{kind===0?i*200:kind===1?i*200:(i*8/6).toFixed(0)}</text></g>)}
+    <path d={`M${left} ${top}V${bottom}H${right}`} fill="none" stroke="#aec2db"/>
+    {kind===0&&Array.from({length:55},(_,i)=>{let x=i/60;let y=1.01*x*x*Math.exp(-x*x/(.042*temp/300))*53;return <rect key={i} x={left+x*(right-left)} y={bottom-y/1.1*(bottom-top)} width="5" height={y/1.1*(bottom-top)} fill="#287cdf" fillOpacity=".5" stroke="#58a1f0" strokeWidth=".5"/>})}
+    {(kind!==0||theory)&&<polyline points={curve} fill="none" stroke={['#f5ca32','#82d9a0','#b77bef'][kind]} strokeWidth="1.6"/>}
+    {kind===2&&curve.split(' ').filter((_,i)=>i%5===0).map((p,i)=><circle key={i} cx={p.split(',')[0]} cy={p.split(',')[1]} r="2.5" fill="#b77bef"/>)}
+    <text x="252" y="215" textAnchor="middle">{['Speed, v (m s⁻¹)','Time (ps)','Volume, V (10⁻⁴ m³)'][kind]}</text>
+    <text transform="translate(15 103) rotate(-90)" textAnchor="middle">{kind===0?'Relative probability':'Pressure, P (10⁵ Pa)'}</text>
+    {kind===0?<g><path d="M198 24h20" stroke="#358bff" strokeWidth="3"/><text x="224" y="28">Simulation</text><path d="M198 42h20" stroke="#f5ca32" strokeWidth="2"/><text x="224" y="46">Maxwell–Boltzmann (T = {temp} K)</text><text x="305" y="84">〈v〉 = 398 m s⁻¹</text><text x="305" y="107">vᵣₘₛ = 422 m s⁻¹</text><text x="305" y="130">vₘₚ = 355 m s⁻¹</text></g>:kind===1?<g><text x="284" y="31">Isothermal compression</text><text x="284" y="51">(T = {temp} K)</text></g>:<g><text x="298" y="30">●  Simulation</text><text x="298" y="50">┄  Theory (PV = nRT)</text><text x="310" y="77">T = {temp} K</text><text x="310" y="98">n = 1.00 mol</text><text x="247" y="129">P₁V₁ = P₂V₂ = 7.48 × 10¹ J</text></g>}
+  </svg>;
+}
+export default function PhysicalTargetPage({ onNavigate }){
+ const [gas,setGas]=useState('Argon'),[units,setUnits]=useState('SI'),[temp,setTemp]=useState(300),[rate,setRate]=useState(.5),[volume,setVolume]=useState(3.2),[parameter,setParameter]=useState('Temperature'),[model,setModel]=useState('Ideal gas'),[running,setRunning]=useState(false),[tick,setTick]=useState(0),[theory,setTheory]=useState(true),[notice,setNotice]=useState('');
+ useEffect(()=>{if(!running)return;const id=setInterval(()=>{setTick(t=>t+1);setVolume(v=>Math.max(1.2,v-rate*.001));},45);return()=>clearInterval(id)},[running,rate]);
+ useEffect(()=>{if(!notice)return;const id=setTimeout(()=>setNotice(''),3500);return()=>clearTimeout(id)},[notice]);
+ const symbol=gas==='Argon'?'Ar':'Ne'; const pressure=2.46*temp/300*3.2/volume; const work=8.314*temp*Math.log(volume/5.8);
+ const reset=()=>{setGas('Argon');setUnits('SI');setTemp(300);setRate(.5);setVolume(3.2);setParameter('Temperature');setModel('Ideal gas');setRunning(false);setTick(0);setTheory(true);};
+ const nav=[
+  {name:'Home',route:'dashboard'},
+  {name:'Studio',route:'physical-simulators'},
+  {name:'Tools',route:'chemistry-solver'},
+  {name:'Data export',route:'research-toolkit'},
+  {name:'References',route:'library'},
+ ];
+ const navIcons=[Home,FlaskConical,Workflow,FileDown,BookOpen];
+ const openRoute=(item)=>onNavigate?.(item.route);
+ return <div className="physical-lab">
+  <aside className="phys-sidebar"><button type="button" className="phys-logo" aria-label="Chemistry home" onClick={()=>onNavigate?.('dashboard')}><Atom/></button><nav>{nav.map((item,i)=>{const Icon=navIcons[i];return <button key={item.name} className={item.name==='Studio'?'selected':''} aria-label={item.name} aria-current={item.name==='Studio'?'page':undefined} onClick={()=>openRoute(item)}><Icon/>{i!==0&&<span>{item.name}</span>}</button>})}</nav><blockquote>“From particles<br/>to properties.”</blockquote></aside>
+  <header className="phys-header"><div><h1>Physical Chemistry Studio</h1><p>Connect microscopic motion to macroscopic laws</p></div><em>Atoms move. Laws emerge.</em><select aria-label="Gas" value={gas} onChange={e=>setGas(e.target.value)}><option value="Argon">Argon (Ar)</option><option value="Neon">Neon (Ne)</option></select><select aria-label="Units" value={units} onChange={e=>setUnits(e.target.value)}><option value="SI">Units: SI</option><option value="CGS">Units: CGS</option></select><button aria-label="Settings" onClick={()=>setNotice('Adjust temperature, volume, compression rate and model in the control panels.')}><Settings size={20}/></button><button onClick={()=>setNotice('Choose a temperature or volume, then Run. Pause freezes the particles; Reset restores the initial state.')}>Help</button><button onClick={()=>setNotice('Physical Chemistry Studio — connect microscopic motion to macroscopic laws.')}>About</button></header>
+  <main className="phys-main"><div className="phys-top"><section className="phys-scene"><div className="phys-scene-heading"><h2>{gas} molecular dynamics</h2><h3>Compress isothermally</h3><p>Particle collisions</p></div><div className="phys-legend"><span><i className="atom-dot"/>{symbol} atom</span><span><i className="velocity-line"/>Velocity vector</span><span><i className="collision-star">✳</i>Collision</span></div><Cylinder tick={tick} rate={rate} volume={volume}/></section>
+  <section className="phys-panel phys-controls"><h3>Control parameters</h3><div className="phys-segment">{['Temperature','Volume'].map(p=><button key={p} className={parameter===p?'active':''} onClick={()=>setParameter(p)}>{p}</button>)}</div><label className="phys-slider-label">{parameter==='Temperature'?'Temperature, T (K)':'Volume, V (10⁻⁴ m³)'}<div className="phys-slider-row"><input aria-label={parameter} type="range" min={parameter==='Temperature'?50:1.2} max={parameter==='Temperature'?1000:8} step={parameter==='Temperature'?1:.1} value={parameter==='Temperature'?temp:volume} onChange={e=>parameter==='Temperature'?setTemp(+e.target.value):setVolume(+e.target.value)}/><output>{parameter==='Temperature'?temp:volume.toFixed(2)}</output></div><div className="phys-range-ends"><span>{parameter==='Temperature'?'50':'1.2'}</span><span>{parameter==='Temperature'?'1000':'8'}</span></div></label><label className="phys-mode">Compression mode<select aria-label="Compression mode"><option>Compress isothermally</option></select></label><label className="phys-slider-label">Compression rate<div className="phys-slider-row"><input aria-label="Compression rate" type="range" min="0" max="1" step=".01" value={rate} onChange={e=>setRate(+e.target.value)}/><output>{rate.toFixed(2)}</output></div><div className="phys-range-ends"><span>Slow</span><span>Fast</span></div></label><div className="phys-actions"><button className="primary" onClick={()=>setRunning(true)} aria-pressed={running}><Play size={17} fill="currentColor"/>Run</button><button onClick={()=>setRunning(false)}><Pause size={17} fill="currentColor"/>Pause</button><button onClick={reset}><RotateCcw size={17}/>Reset</button></div></section>
+  <div className="phys-state-column"><section className="phys-panel phys-model"><h3>Model assumptions <CircleHelp size={17}/></h3>{['Ideal gas','Real gas'].map(m=><label key={m}><input type="radio" name="gas-model" checked={model===m} onChange={()=>setModel(m)}/>{m} (Lennard-Jones{m==='Ideal gas'?', ε = 0':''})</label>)}</section><section className="phys-panel phys-state"><h3>Live thermodynamic state ({symbol})</h3><dl>{[['Pressure, P',units==='SI'?`${pressure.toFixed(2)} × 10⁵ Pa`:`${(pressure*1e6).toExponential(2)} dyn/cm²`],['Volume, V',units==='SI'?`${volume.toFixed(2)} × 10⁻⁴ m³`:`${(volume*100).toFixed(0)} cm³`],['Temperature, T',`${temp.toFixed(1)} K`],['Amount, n','1.00 mol']].map(([a,b])=><div key={a}><dt>{a}</dt><dd>{b}</dd></div>)}</dl><h3 className="phys-derived">Derived quantities</h3><dl>{[['Work, w (reversible)',`${(work/1000).toFixed(2)} × 10³ J`],['Heat, q (isothermal)',`+${(-work/1000).toFixed(2)} × 10³ J`],['ΔU (ideal gas)','0 J']].map(([a,b])=><div key={a}><dt>{a}</dt><dd>{b}</dd></div>)}</dl></section></div></div>
+  <section className="phys-charts">{['Maxwell–Boltzmann distribution','Pressure vs time','P–V diagram (reversible, isothermal)'].map((title,i)=><article className="phys-panel" key={title}><div className="phys-chart-heading"><h3>{title}</h3>{i===0&&<label><input type="checkbox" checked={theory} onChange={e=>setTheory(e.target.checked)}/>Show theoretical curve</label>}</div><Chart kind={i} temp={temp} theory={theory} tick={tick}/></article>)}</section><footer className="phys-footer"><span>Explore. Simulate. Understand.</span></footer></main>{notice&&<div className="phys-notice" role="status">{notice}<button aria-label="Dismiss" onClick={()=>setNotice('')}>×</button></div>}
+ </div>
+}
+
+

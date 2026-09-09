@@ -1,0 +1,49 @@
+import { LayoutDashboard, Table2, TestTube2, Orbit, BookOpen } from 'lucide-react';
+
+const mobileItems = [
+  { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
+  { id: 'table', label: 'Table', icon: Table2 },
+  { id: 'symmetry', label: 'Symmetry', icon: Orbit },
+  { id: 'chemistry-visuals', label: 'Visuals', icon: TestTube2 },
+  { id: 'quiz', label: 'Quiz', icon: BookOpen },
+];
+
+const isMobileItemActive = (currentPage, id) => (
+  currentPage === id
+  || (id === 'symmetry' && currentPage.startsWith('symmetry-'))
+  || (id === 'chemistry-visuals' && (
+    currentPage === 'lab'
+    || currentPage.includes('-visuals')
+    || currentPage.startsWith('organic-')
+    || currentPage.startsWith('inorganic-')
+    || currentPage.startsWith('bio-')
+    || currentPage.startsWith('pharma-')
+  ))
+);
+
+export const MobileNav = ({ currentPage, onNavigate }) => (
+  <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-gray-950/90 backdrop-blur-md border-t border-white/10">
+    <div className="grid grid-cols-5 h-16">
+      {mobileItems.map(({ id, label, icon: Icon }) => {
+        const active = isMobileItemActive(currentPage, id);
+        return (
+          <button
+            key={id}
+            onClick={() => onNavigate(id)}
+            className={`flex flex-col items-center justify-center gap-0.5 transition-colors relative ${
+              active ? 'text-indigo-400' : 'text-gray-500 hover:text-gray-300'
+            }`}
+            aria-label={label}
+          >
+            <Icon size={20} />
+            <span className="text-[10px] font-medium">{label}</span>
+            {active && (
+              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-400 shadow shadow-indigo-400/60" />
+            )}
+          </button>
+        );
+      })}
+    </div>
+  </nav>
+);
+export default MobileNav;

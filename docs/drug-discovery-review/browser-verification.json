@@ -1,0 +1,22 @@
+{
+  "routes": [
+    "home",
+    "workspace",
+    "targets",
+    "screening",
+    "design",
+    "adme",
+    "team",
+    "safety",
+    "notebooks",
+    "analytics"
+  ],
+  "responsive": [
+    1672,
+    1024,
+    390
+  ],
+  "rdkit": "passed",
+  "analytics": "passed",
+  "consoleErrors": []
+}

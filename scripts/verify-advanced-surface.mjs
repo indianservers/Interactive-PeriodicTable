@@ -1,0 +1,30 @@
+import {writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {surfaceEnergy as energy,surfaceGradient as gradient} from '../src/pages/advancedSurfaceModel.js';
+assert.equal(energy(-1,0),0);assert.equal(energy(1,0),0);assert.equal(energy(0,0),40);
+assert.ok(gradient(0,0).every(v=>v===0));
+const eps=1e-5;assert.ok(Math.abs((energy(.3+eps,.2)-energy(.3-eps,.2))/(2*eps)-gradient(.3,.2)[0])<1e-6);
+const targets=await(await fetch('http://127.0.0.1:9224/json/list')).json();const ws=new WebSocket(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
+await new Promise(r=>ws.addEventListener('open',r,{once:true}));let id=0;const pending=new Map(),errors=[];
+ws.onmessage=({data})=>{const m=JSON.parse(data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result);}else if(m.method==='Runtime.exceptionThrown'&&!m.params.exceptionDetails.url?.startsWith('chrome-extension:'))errors.push(m.params.exceptionDetails.text);};
+function cmd(method,params={}){return new Promise((resolve,reject)=>{const n=++id;pending.set(n,{resolve,reject});ws.send(JSON.stringify({id:n,method,params}));});}
+async function ev(expression){const r=await cmd('Runtime.evaluate',{expression,returnByValue:true});if(r.exceptionDetails)throw Error(r.exceptionDetails.text);return r.result.value;}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));await cmd('Runtime.enable');errors.length=0;
+await ev(`document.querySelector('.avc-gallery button.surface').click()`);await wait(850);
+const initial=await cmd('Page.captureScreenshot',{format:'png'});
+await ev(`(()=>{const e=document.querySelector('input[aria-label="Barrier A (kJ/mol)"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,'70');e.dispatchEvent(new Event('input',{bubbles:true}));})()`);await wait(200);
+const expanded=await cmd('Page.captureScreenshot',{format:'png'});
+const values=await ev(`document.querySelector('.avc-chart-readouts').textContent`);
+await ev(`document.querySelector('.avc-chart-workspace>aside button').click()`);await wait(100);
+const hidden=await cmd('Page.captureScreenshot',{format:'png'});
+await ev(`document.querySelector('.avc-lattice-canvas canvas').focus()`);await cmd('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowLeft',code:'ArrowLeft',windowsVirtualKeyCode:37});await wait(100);
+const rotated=await cmd('Page.captureScreenshot',{format:'png'});
+await ev(`document.querySelector('.avc-chart-workspace>aside button:last-of-type').click()`);await wait(100);
+const saddle=await ev(`document.querySelector('.avc-chart-readouts').textContent`);
+assert.ok(saddle.includes('E = 70.00'));
+await ev(`(()=>{const e=document.querySelector('input[aria-label="Probe coordinate y"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,'1');e.dispatchEvent(new Event('input',{bubbles:true}));})()`);await wait(100);
+assert.ok((await ev(`document.querySelector('.avc-chart-readouts').textContent`)).includes('E = 95.00'));
+await ev(`document.querySelector('.avc-chart-experiment>header button').click()`);await wait(200);
+const reset=await cmd('Page.captureScreenshot',{format:'png'});await writeFile('docs/target-ui-verification/032-surface-experiment.png',Buffer.from(reset.data,'base64'));
+const result={calculationChecks:true,barrierChangesScene:initial.data!==expanded.data,values,wireframeChangesScene:expanded.data!==hidden.data,keyboardRotates:hidden.data!==rotated.data,resetReadout:await ev(`document.querySelector('input[aria-label="Barrier A (kJ/mol)"]').value==='40'`),noUnrelatedDrawer:await ev(`!document.querySelector('.avc-library-overlay')`),errors};
+console.log(JSON.stringify(result));await writeFile('docs/target-ui-verification/032-surface-functional-audit.json',JSON.stringify(result,null,2));ws.close();

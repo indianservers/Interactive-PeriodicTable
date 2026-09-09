@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "layouts": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "scrollWidth": 1920,
+      "scrollHeight": 1080
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "scrollWidth": 1024,
+      "scrollHeight": 1392
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 2313
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
+    "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
+    "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
+    "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
+    "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.",
+    "[]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+  ]
+}

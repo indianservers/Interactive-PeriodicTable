@@ -1,0 +1,12 @@
+@media (min-width: 1024px){
+  .atom-side{overflow-y:auto;padding-right:2px}
+  .nuclear-chart{flex:0 0 208px}
+}
+@media (min-width: 1024px){
+  .nuclear-chart-heading{align-items:flex-start;flex-direction:column;gap:.2rem}
+  .nuclear-legend{flex-wrap:wrap}
+}
+@media (max-width: 1200px){
+  .nuclear-chart-heading{align-items:flex-start;flex-direction:column;gap:.2rem}
+  .nuclear-legend{flex-wrap:wrap}
+}

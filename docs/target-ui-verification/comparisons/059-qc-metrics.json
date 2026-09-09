@@ -1,0 +1,8 @@
+{
+    "Width":  1672,
+    "Height":  941,
+    "MeanAbsoluteChannelError":  28.544391210612755,
+    "BlockLuminanceSSIM":  0.543650643132221,
+    "Method":  "Equal-weight 8x8 tiles, population variance, Rec.709 luma, C1=6.5025, C2=58.5225",
+    "Note":  "Diagnostic metrics, not proof of a percent visual match. Inspect layout, silhouettes and educational correctness separately."
+}

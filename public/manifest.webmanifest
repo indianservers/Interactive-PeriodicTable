@@ -1,0 +1,42 @@
+{
+  "id": "/?source=pwa",
+  "name": "Chemistry Universe Pro",
+  "short_name": "Chemistry Pro",
+  "description": "Installable offline chemistry learning app with periodic table, molecular symmetry, solver, quiz, and lab tools.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#020617",
+  "theme_color": "#4f46e5",
+  "orientation": "any",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/periodic-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Periodic Table",
+      "short_name": "Table",
+      "url": "/#/table",
+      "icons": [{ "src": "/periodic-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Molecular Symmetry",
+      "short_name": "Symmetry",
+      "url": "/#/molecular-symmetry",
+      "icons": [{ "src": "/periodic-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Chemistry Solver",
+      "short_name": "Solver",
+      "url": "/#/chemistry-solver",
+      "icons": [{ "src": "/periodic-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}

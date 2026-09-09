@@ -1,0 +1,7 @@
+reference,route,capture,viewport_width,viewport_height,document_width,document_height,mean_absolute_channel_error,block_luminance_ssim,gate_status
+034__learning__command.jpg,#learning-command,034-learning-command.png,1672,941,1672,941,28.49,0.39,below-0.95
+035__coverage__audit.jpg,#coverage-audit,035-coverage-audit.png,1672,941,1672,941,24.07,0.45,below-0.95
+036__research__toolkit.jpg,#research-toolkit,036-research-toolkit.png,1672,941,1672,941,22.00,0.43,below-0.95
+037__visuals.jpg,#visuals,037-visuals.png,1672,941,1672,941,29.08,0.41,below-0.95
+038__visuals__organic.jpg,#visuals/organic,038-organic.png,1672,941,1672,941,22.53,0.54,below-0.95
+040__visuals__organic__functional__tests.jpg,#visuals/organic/functional-tests,040-functional-tests.png,1672,941,1672,941,39.67,0.37,below-0.95

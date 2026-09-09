@@ -1,0 +1,773 @@
+.scc-app {
+  --line: #203c57;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 62% 30%, #09283a, #061728 48%, #061423);
+  color: #dcecff;
+  font-family: Inter, "Segoe UI", sans-serif;
+}
+.scc-app * {
+  box-sizing: border-box;
+}
+.scc-app > header {
+  position: absolute;
+  z-index: 4;
+  inset: 0 0 auto;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 22px 0 31px;
+  border-bottom: 1px solid var(--line);
+  background: #08192a;
+}
+.scc-app > header > svg {
+  width: 38px;
+  height: 38px;
+  margin-right: 62px;
+  color: #39a9ff;
+}
+.scc-app > header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+.scc-app > header p {
+  margin: 2px 0;
+  color: #8ca7c2;
+  font-size: 12px;
+}
+.scc-app > header label {
+  display: flex;
+  align-items: center;
+  width: 290px;
+  height: 35px;
+  margin-left: auto;
+  padding: 0 12px;
+  border: 1px solid #1c344e;
+  border-radius: 18px;
+  background: #0d2134;
+}
+.scc-app > header label svg {
+  width: 15px;
+}
+.scc-app > header input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding-left: 10px;
+  color: #bdd3e8;
+}
+.scc-app > header button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: none;
+  color: #bad0e8;
+  font-size: 11px;
+}
+.scc-app > header button svg {
+  width: 14px;
+}
+.scc-app > header > b {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2678ed;
+  font-size: 11px;
+}
+.scc-app > header > i {
+  align-self: stretch;
+  padding: 13px 0 0 20px;
+  border-left: 1px solid var(--line);
+  color: #879bb6;
+  font:
+    italic 10px/1.5 Georgia,
+    serif;
+}
+.scc-app > aside {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 68px;
+  bottom: 0;
+  width: 142px;
+  border-right: 1px solid var(--line);
+  background: #091a2d;
+}
+.scc-app > aside > button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  height: 49px;
+  padding: 0 20px;
+  border: 0;
+  border-left: 4px solid transparent;
+  background: none;
+  color: #bdd1e7;
+  font-size: 11px;
+  cursor: pointer;
+}
+.scc-app > aside > button svg {
+  width: 18px;
+}
+.scc-app > aside > button.active,
+.scc-app > aside > button:hover {
+  border-left-color: #2d8cff;
+  background: #102a48;
+  color: #5ab7ff;
+}
+.scc-app > aside > p {
+  position: absolute;
+  bottom: 92px;
+  left: 14px;
+  color: #829bb4;
+  font:
+    italic 10px/1.55 Georgia,
+    serif;
+}
+.scc-app > aside > footer {
+  position: absolute;
+  left: 15px;
+  bottom: 16px;
+  display: flex;
+  gap: 14px;
+  color: #5e86af;
+  font-size: 38px;
+}
+.scc-app > aside > footer span {
+  font-size: 9px;
+  line-height: 2.2;
+}
+.scc-app > main {
+  position: absolute;
+  left: 142px;
+  right: 0;
+  top: 68px;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 302px minmax(610px, 1fr) 355px;
+  grid-template-rows: 179px 430px minmax(0, 1fr);
+  gap: 10px;
+  padding: 0 10px 10px;
+  overflow: hidden;
+}
+.scc-app main section,
+.scc-formula > article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0b1e30;
+}
+.scc-concepts {
+  grid-column: 1/4;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+  position: relative;
+}
+.scc-concepts:before {
+  content: "";
+  position: absolute;
+  left: 65px;
+  right: 65px;
+  top: 68px;
+  border-top: 2px solid #267ef4;
+}
+.scc-concepts button {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 0;
+  background: none;
+  color: #a9bed4;
+  cursor: pointer;
+}
+.scc-concepts strong {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: #0b1d30;
+  box-shadow: 0 0 14px currentColor;
+  font-size: 33px;
+}
+.scc-concepts b {
+  margin-top: 7px;
+  color: #f1f6ff;
+  font-size: 12px;
+}
+.scc-concepts span {
+  width: 140px;
+  margin-top: 5px;
+  font-size: 9px;
+  line-height: 1.35;
+  text-align: center;
+}
+.scc-concepts .blue {
+  color: #2787ff;
+}
+.scc-concepts .teal {
+  color: #26d3ce;
+}
+.scc-concepts .gold {
+  color: #f2a927;
+}
+.scc-concepts .violet {
+  color: #9f58e8;
+}
+.scc-concepts .cyan {
+  color: #43d8ff;
+}
+.scc-concepts .pink {
+  color: #ec53bd;
+}
+.scc-concepts .green {
+  color: #45d77b;
+}
+.scc-concepts button.active strong {
+  transform: scale(1.06);
+  box-shadow: 0 0 25px currentColor;
+}
+.scc-left {
+  grid-row: 2/4;
+  display: grid;
+  grid-template-rows: 430px 1fr;
+  gap: 10px;
+  border: 0 !important;
+  background: none !important;
+}
+.scc-progress,
+.scc-upcoming {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0b1e30;
+}
+.scc-progress header,
+.scc-upcoming header,
+.scc-formula header,
+.scc-graph header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.scc-app h2,
+.scc-app h3 {
+  margin: 0;
+  font-size: 13px;
+}
+.scc-progress header small,
+.scc-upcoming a,
+.scc-formula a {
+  color: #4da9ff;
+  font-size: 8px;
+}
+.scc-progress > div {
+  display: grid;
+  grid-template-columns: 150px 73px 34px;
+  align-items: center;
+  height: 29px;
+  padding: 0 4px;
+  font-size: 10px;
+}
+.scc-progress > div.active {
+  margin: 0 -12px;
+  padding: 0 16px;
+  border-left: 4px solid #208cff;
+  background: #102a4c;
+  color: #fff;
+  font-weight: 800;
+}
+.scc-progress > div i {
+  height: 7px;
+  border-radius: 5px;
+  background: #263d57;
+  overflow: hidden;
+}
+.scc-progress > div i b {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+  background: #43d990;
+}
+.scc-progress > div em {
+  text-align: right;
+  font-style: normal;
+}
+.scc-progress > p {
+  height: 28px;
+  margin: 0;
+  padding: 7px 0 0 22px;
+  color: #afc8de;
+  font-size: 10px;
+}
+.scc-progress > p svg {
+  float: right;
+  width: 16px;
+  height: 16px;
+  color: #42db8f;
+}
+.scc-upcoming {
+  padding: 13px;
+}
+.scc-upcoming > div {
+  display: flex;
+  gap: 15px;
+  margin: 12px 0;
+}
+.scc-upcoming > div svg {
+  width: 34px;
+  height: 45px;
+  color: #5caaff;
+}
+.scc-upcoming > div p {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-size: 10px;
+}
+.scc-upcoming > div span {
+  margin: 4px 0;
+  color: #9bb4cb;
+}
+.scc-upcoming > div small {
+  line-height: 1.4;
+  color: #7792aa;
+}
+.scc-upcoming > button {
+  width: 100%;
+  height: 40px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #2379e9, #3268f0);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+.scc-cell {
+  grid-column: 2;
+  grid-row: 2;
+  overflow: hidden;
+}
+.scc-cell > header {
+  display: flex;
+  align-items: center;
+  height: 75px;
+  padding: 11px 16px;
+}
+.scc-cell > header div {
+  margin-right: auto;
+}
+.scc-cell > header small {
+  color: #36d4d6;
+}
+.scc-cell > header h2 {
+  font-size: 24px;
+}
+.scc-cell > header p {
+  margin: 2px 0;
+  color: #9cb4c9;
+  font-size: 11px;
+}
+.scc-cell > header button {
+  height: 35px;
+  margin-left: 10px;
+  padding: 0 17px;
+  border: 1px solid #24415d;
+  border-radius: 7px;
+  background: #0b2137;
+  color: #b7cde2;
+  cursor: pointer;
+}
+.scc-cell > header button.on {
+  background: #236bdf;
+  color: #fff;
+}
+.scc-cell > header button span {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #65dfd6;
+}
+.cell-scene {
+  position: relative;
+  height: 355px;
+  background:
+    linear-gradient(#071929aa, #0a2135),
+    repeating-linear-gradient(0deg, transparent 0 38px, #1b3b5533 39px),
+    repeating-linear-gradient(90deg, transparent 0 55px, #1b3b5533 56px);
+  overflow: hidden;
+}
+.wire {
+  position: absolute;
+  left: 185px;
+  right: 185px;
+  top: 40px;
+  height: 74px;
+  border: 4px solid #bfc6c9;
+  border-bottom: 0;
+  border-radius: 30px 30px 0 0;
+}
+.wire i {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 21px;
+  border-radius: 50%;
+  background: #ffd321;
+  box-shadow: 0 0 10px #ffdc1c;
+}
+.wire.tracing i {
+  animation: electron 1.4s linear infinite;
+}
+.wire i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.wire i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.wire i:nth-child(4) {
+  animation-delay: 0.6s;
+}
+.wire i:nth-child(5) {
+  animation-delay: 0.8s;
+}
+.wire i:nth-child(6) {
+  animation-delay: 1s;
+}
+@keyframes electron {
+  50% {
+    filter: brightness(2);
+    transform: scale(1.5);
+  }
+}
+.bulb {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  font-size: 34px;
+}
+.electron {
+  position: absolute;
+  left: 245px;
+  top: 28px;
+  font-size: 12px;
+}
+.bridge {
+  position: absolute;
+  left: 275px;
+  top: 102px;
+  width: 230px;
+  height: 63px;
+  border: 17px solid #7bb4ef;
+  border-bottom: 0;
+  border-radius: 50px 50px 0 0;
+  text-align: center;
+  font-size: 11px;
+}
+.bridge span {
+  display: block;
+  margin-top: 26px;
+  color: #c4d7eb;
+}
+.beaker {
+  position: absolute;
+  bottom: 25px;
+  width: 180px;
+  height: 190px;
+  border: 3px solid #9cb7c9;
+  border-top: 0;
+  border-radius: 0 0 30px 30px;
+  background: linear-gradient(transparent 20%, #5a789744 21%);
+  box-shadow: inset 0 -35px 30px #6a91ae35;
+}
+.beaker:after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 8px;
+  height: 7px;
+  background: radial-gradient(circle, #9ebee0 0 3px, transparent 4px) 0 0/24px
+    10px;
+}
+.beaker.zinc {
+  left: 145px;
+}
+.beaker.copper {
+  right: 145px;
+  background: linear-gradient(transparent 20%, #00bff077 21%);
+  box-shadow: inset 0 -35px 30px #00bdf055;
+}
+.beaker > i {
+  position: absolute;
+  left: 65px;
+  top: -54px;
+  width: 36px;
+  height: 164px;
+  background: linear-gradient(90deg, #657486, #b5c2cf, #647584);
+}
+.beaker.copper > i {
+  background: linear-gradient(90deg, #8a451c, #ef995b, #86421d);
+}
+.beaker > label {
+  position: absolute;
+  left: 12px;
+  top: -61px;
+  font-size: 23px;
+}
+.beaker.copper > label {
+  left: auto;
+  right: 10px;
+}
+.beaker > strong {
+  position: absolute;
+  top: 65px;
+  left: 70px;
+  color: #071422;
+  font-size: 21px;
+}
+.beaker > span {
+  position: absolute;
+  bottom: 13px;
+  left: 56px;
+  font-size: 13px;
+}
+.beaker > small {
+  position: absolute;
+  top: 48px;
+  left: -125px;
+  width: 90px;
+  text-align: right;
+  font-size: 10px;
+}
+.beaker.copper > small {
+  left: auto;
+  right: -120px;
+  text-align: left;
+}
+.zn-eq,
+.cu-eq {
+  position: absolute;
+  bottom: 129px;
+  font-size: 9px;
+}
+.zn-eq {
+  left: 12px;
+}
+.cu-eq {
+  right: 8px;
+}
+.cell-scene > output {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 9px 18px;
+  border-radius: 6px;
+  background: #071426dd;
+  font-size: 18px;
+}
+.scc-formula {
+  grid-column: 3;
+  grid-row: 2/4;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scc-formula > article {
+  padding: 12px;
+}
+.scc-formula > article:first-child {
+  height: 307px;
+}
+.scc-formula > article:nth-child(2) {
+  height: 104px;
+}
+.scc-formula > article:last-child {
+  flex: 1;
+}
+.scc-formula article > div {
+  padding: 8px 0;
+  border-bottom: 1px solid #1c3751;
+  font-size: 10px;
+}
+.scc-formula article > div p {
+  margin: 6px 0 0;
+  text-align: center;
+  font:
+    italic 15px Georgia,
+    serif;
+}
+.scc-formula article:nth-child(2) p {
+  margin: 7px 0;
+  font-size: 10px;
+}
+.scc-evidence p {
+  margin: 10px 0;
+  color: #b8ccdf;
+  font-size: 9px;
+}
+.scc-evidence p::first-letter {
+  color: #49e09b;
+}
+.scc-evidence small {
+  display: block;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #1d3953;
+  font-size: 8px;
+}
+.scc-graph {
+  grid-column: 2;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 1.6fr 0.85fr;
+  overflow: hidden;
+}
+.scc-graph > article {
+  position: relative;
+  padding: 12px;
+}
+.scc-graph > article header span {
+  text-align: right;
+  font-size: 9px;
+}
+.scc-graph svg {
+  width: 100%;
+  height: 150px;
+}
+.scc-graph svg .grid path {
+  fill: none;
+  stroke: #24425c;
+  stroke-width: 1;
+}
+.scc-graph svg .curve {
+  fill: none;
+  stroke: #48c7f5;
+  stroke-width: 3;
+}
+.scc-graph svg circle {
+  fill: #62cbff;
+}
+.scc-graph svg text {
+  fill: #9cb3c8;
+  font-size: 8px;
+}
+.scc-graph > article > p {
+  margin: -5px 0 0;
+  text-align: center;
+  font-size: 9px;
+}
+.scc-graph > aside {
+  padding: 12px;
+  border-left: 1px solid var(--line);
+}
+.scc-graph > aside label {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 9px;
+}
+.scc-graph > aside output {
+  padding: 7px;
+  border: 1px solid #263f58;
+  border-radius: 4px;
+}
+.scc-graph input {
+  grid-column: 1/3;
+  width: 100%;
+  accent-color: #3eb9f1;
+}
+.scc-graph > aside button {
+  margin-top: 9px;
+  border: 0;
+  background: none;
+  color: #a8bfd4;
+  font-size: 9px;
+}
+.scc-graph > aside button.on {
+  color: #4fc7ff;
+}
+@media (max-width: 1200px) {
+  .scc-app > header > i,
+  .scc-app > header > button {
+    display: none;
+  }
+  .scc-app > main {
+    grid-template-columns: 260px minmax(570px, 1fr) 310px;
+  }
+  .scc-concepts strong {
+    width: 62px;
+    height: 62px;
+  }
+  .beaker.zinc {
+    left: 105px;
+  }
+  .beaker.copper {
+    right: 105px;
+  }
+}
+@media (max-width: 900px) {
+  .scc-app {
+    overflow: auto;
+  }
+  .scc-app > aside {
+    display: none;
+  }
+  .scc-app > main {
+    position: relative;
+    left: 0;
+    top: 68px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+  .scc-concepts {
+    display: flex;
+    overflow-x: auto;
+    min-height: 160px;
+  }
+  .scc-concepts button {
+    min-width: 140px;
+  }
+  .scc-left,
+  .scc-formula {
+    display: flex;
+    flex-direction: column;
+  }
+  .scc-cell {
+    min-height: 430px;
+  }
+  .scc-graph {
+    min-height: 300px;
+  }
+  .scc-app > header label {
+    display: none;
+  }
+}
+.scc-notice {
+  position: fixed;
+  right: 22px;
+  bottom: 18px;
+  z-index: 20;
+  padding: 10px 16px;
+  border: 1px solid rgba(54, 197, 255, .55);
+  border-radius: 999px;
+  color: #d9f5ff;
+  background: rgba(7, 25, 49, .94);
+  font-size: 12px;
+}
+.scc-app a { cursor: pointer; }

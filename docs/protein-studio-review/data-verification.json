@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "sha256": "e4635115be5a605e58f449f82824e15182a7000c3677876c33fc44118defef78",
+  "source": "https://files.rcsb.org/download/1MBN.pdb",
+  "residues": 153,
+  "helices": 8,
+  "atoms": 1260,
+  "hemeAtoms": 43,
+  "contacts": {
+    "h": 24,
+    "ionic": 6,
+    "disulfide": 0,
+    "hydrophobic": 38
+  },
+  "caveat": "GLN A 8 HAS WRONG CHIRALITY AT ATOM CA"
+}
