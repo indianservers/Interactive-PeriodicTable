@@ -65,6 +65,9 @@ import {
 import ExtendedAnalyticalLab, {
   EXTENDED_ANALYTICAL_EXPERIMENTS,
 } from "../modules/analytical-labs/ExtendedAnalyticalLab.jsx";
+import AssessedPracticalLab, {
+  ASSESSED_PRACTICAL_EXPERIMENTS,
+} from "../modules/assessed-practicals/AssessedPracticalLab.jsx";
 
 const lazyLabTools = {
   titration: lazy(() => import("../labTools/TitrationTool.jsx")),
@@ -5405,6 +5408,7 @@ const LAB_EXPERIMENTS = [
     realWorld: "Useful for organic and materials chemistry.",
   },
   ...EXTENDED_ANALYTICAL_EXPERIMENTS,
+  ...ASSESSED_PRACTICAL_EXPERIMENTS,
 ];
 
 const labTabs = [
@@ -7936,6 +7940,18 @@ export const ChemistryLabPage = ({
   const activeRoadmap = appliedChemistryRoadmaps[activeFocusTopic];
   const showFullLab = !guidedMode || showAdvancedLab;
   const renderGuidedWorkbench = () => {
+    if (
+      ASSESSED_PRACTICAL_EXPERIMENTS.some(
+        (experiment) => experiment.id === activeExperiment.id,
+      )
+    ) {
+      return (
+        <AssessedPracticalLab
+          key={activeExperiment.id}
+          experimentId={activeExperiment.id}
+        />
+      );
+    }
     if (
       EXTENDED_ANALYTICAL_EXPERIMENTS.some(
         (experiment) => experiment.id === activeExperiment.id,

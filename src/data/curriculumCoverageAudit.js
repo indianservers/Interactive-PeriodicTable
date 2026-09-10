@@ -3,7 +3,7 @@ export const boardCoverageStats = {
   gradeBands: 6,
   strands: 13,
   mappedUnits: 62,
-  priorityGaps: 8,
+  priorityGaps: 4,
 };
 
 export const boardFilters = [
@@ -55,7 +55,7 @@ export const curriculumStrands = [
     title: 'Bonding, Structure and Shapes',
     gradeBand: 'grade9-10',
     boards: ['ap-state', 'cbse', 'igcse', 'ib'],
-    coverage: 91,
+    coverage: 96,
     twoD: 'Ready',
     threeD: 'Ready',
     route: 'molecule',
@@ -124,9 +124,9 @@ export const curriculumStrands = [
     twoD: 'Ready',
     threeD: 'In progress',
     route: 'inorganic-deep-module',
-    interactive: ['Coordination builder', 'CFT splitting', 'Salt analysis flow', 'Metallurgy maps', 'Group separation workflow'],
-    missing: ['Freehand d-orbital shape manipulation', 'More real unknown-salt cases'],
-    nextBuild: 'Add additional unknown salt cases, precipitate photos, and d-orbital manipulation practice.',
+    interactive: ['Coordination builder', 'CFT splitting', 'Complete assessed cation/anion case bank', 'Metallurgy maps', 'Group separation workflow'],
+    missing: ['Freehand d-orbital shape manipulation'],
+    nextBuild: 'Add d-orbital manipulation practice and more image-backed unknown mixtures.',
   },
   {
     id: 'biochemistry',
@@ -172,13 +172,13 @@ export const curriculumStrands = [
     title: 'Assessment, Practical Skills and Exam Readiness',
     gradeBand: 'all',
     boards: ['ap-state', 'cbse', 'igcse', 'ib'],
-    coverage: 89,
+    coverage: 95,
     twoD: 'Ready',
     threeD: 'Not needed',
     route: 'practice-tutor',
-    interactive: ['Mock tests', 'Mistake notebook', 'Flashcards', 'Tutor prompts', 'Lab report templates'],
-    missing: ['More board-specific marking schemes', 'IB IA rubric scoring assistant', 'AP practical record generator'],
-    nextBuild: 'Add marking-scheme overlays, rubric scoring and teacher export packs.',
+    interactive: ['Mock tests', 'Mistake notebook', 'Flashcards', 'Assessed practical workflows', 'Project, lab-record and viva scoring', 'Downloadable practical records'],
+    missing: ['More board-specific marking schemes', 'IB IA rubric scoring assistant'],
+    nextBuild: 'Add marking-scheme overlays and teacher cohort export packs.',
   },
   {
     id: 'local-language-context',
@@ -266,14 +266,6 @@ export const priorityGapBacklog = [
     impact: 'High',
     route: 'spectroscopy-interpreter',
     tasks: ['More 13C/2D NMR sets', 'Peak-to-atom highlighting', 'Fragmentation animations', 'Timed interpretation drills'],
-  },
-  {
-    id: 'gap-salt-analysis',
-    title: 'Salt analysis case library',
-    board: 'CBSE / AP State',
-    impact: 'High',
-    route: 'inorganic-deep-module',
-    tasks: ['More unknown salts', 'Precipitate/photo-like cues', 'Interfering ions', 'Observation notebook'],
   },
 ];
 
