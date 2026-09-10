@@ -272,9 +272,9 @@ export const DashboardPage = ({ onNavigate }) => {
   useEffect(() => { const shortcut = e => { if ((e.ctrlKey || e.metaKey) && e.key === "k") { e.preventDefault(); searchRef.current?.focus(); } }; window.addEventListener("keydown", shortcut); return () => window.removeEventListener("keydown", shortcut); }, []);
   const chooseAtom = useCallback((atom) => setSelectedAtom(atom), []);
   const recent = [
-    ["Esterification", "Virtual lab", "lab", "⚗"],
-    ["Aspirin synthesis", "Organic chemistry", "organic-mechanisms", "⌬"],
-    ["SN2 mechanism", "Reaction explorer", "organic-mechanisms", "↝"],
+    ["Esterification", "Virtual lab", "lab", "synthesis"],
+    ["Aspirin synthesis", "Organic chemistry", "organic-mechanisms", "drug"],
+    ["SN2 mechanism", "Reaction explorer", "organic-mechanisms", "mechanism"],
   ];
   return (
     <div className={`dashboard-target ${navOpen ? "nav-open" : ""} ${query ? "hub-searching" : ""}`}>
@@ -293,7 +293,7 @@ export const DashboardPage = ({ onNavigate }) => {
             <button
               key={id}
               className={id === "dashboard" ? "active" : ""}
-              onClick={() => id === "library" ? browse() : id === "simulators" ? browse("simulators") : onNavigate(id)}
+              onClick={() => id === "library" ? browse() : id === "simulators" || id === "lab" ? onNavigate("virtual-labs") : onNavigate(id)}
             >
               <Icon size={16} />
               {label}
@@ -352,7 +352,7 @@ export const DashboardPage = ({ onNavigate }) => {
             </div>
           </section>
           <HomeStatistics/>
-          <div className="hub-quick-browse"><button onClick={() => browse("simulators")}><FlaskConical size={16}/>Simulators & labs <ChevronRight size={14}/></button><button onClick={() => browse("organic")}>Organic chemistry</button><button onClick={() => browse("inorganic")}>Inorganic chemistry</button><button onClick={() => browse("biochemistry")}>Biochemistry</button><button onClick={() => browse()}>Browse all categories <ChevronRight size={14}/></button></div>
+          <div className="hub-quick-browse"><button onClick={() => onNavigate("virtual-labs")}><ConceptIcon icon="simulation"/>Virtual Labs <ChevronRight size={14}/></button><button onClick={() => onNavigate("physical-chemistry")}><ConceptIcon icon="gas"/>Physical chemistry</button><button onClick={() => onNavigate("organic-chemistry")}><ConceptIcon icon="organic"/>Organic chemistry</button><button onClick={() => onNavigate("inorganic-chemistry")}><ConceptIcon icon="crystal"/>Inorganic chemistry</button><button onClick={() => onNavigate("analytical-chemistry")}><ConceptIcon icon="research"/>Analytical chemistry</button><button onClick={() => browse()}>Browse all categories <ChevronRight size={14}/></button></div>
           <div className="dash-workspace">
             <section className="dash-panel dash-molecule-card">
               <div className="dash-molecule-info">
@@ -506,7 +506,7 @@ export const DashboardPage = ({ onNavigate }) => {
                 <h3>Recent experiments</h3>
                 {recent.map(([name, meta, id, glyph]) => (
                   <button key={name} onClick={() => id === "library" ? browse() : id === "simulators" ? browse("simulators") : onNavigate(id)}>
-                    <em>{glyph}</em>
+                    <em><ConceptIcon icon={glyph}/></em>
                     <span>
                       {name}
                       <small>{meta}</small>
@@ -542,5 +542,3 @@ export const DashboardPage = ({ onNavigate }) => {
   );
 };
 export default DashboardPage;
-
-

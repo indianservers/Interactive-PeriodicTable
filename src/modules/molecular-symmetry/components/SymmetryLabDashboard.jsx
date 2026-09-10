@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight, CheckCircle2, ChevronLeft, ChevronRight, Compass, Eye, EyeOff,
-  GripVertical, Hand, HelpCircle, Lightbulb, ListFilter, Maximize2, Minimize2,
+  FileUp, GripVertical, Hand, HelpCircle, Lightbulb, ListFilter, Maximize2, Minimize2,
   Pause, Play, Rotate3D, RotateCcw, Search, SkipForward, ZoomIn,
 } from 'lucide-react';
 import { moleculeLibrary } from '../data/moleculeData.js';
 import MoleculeViewer3D from './MoleculeViewer3D.jsx';
+import MolstarViewer from '../../../components/molecular-viewer/MolstarViewer.jsx';
+import ViewerErrorBoundary from '../../../components/molecular-viewer/ViewerErrorBoundary.jsx';
 import './symmetryLabDashboard.css';
 import './symmetryLabFit.css';
 
@@ -28,6 +30,13 @@ function elementSymbol(element) {
 }
 
 const mappingColors = ['#22d3ee', '#a78bfa', '#34d399', '#fbbf24', '#fb7185'];
+
+function moleculeMol(molecule) {
+  const atomIndex = new Map(molecule.atoms.map((item,index)=>[item.id,index+1]));
+  const atoms = molecule.atoms.map(item => `${item.position[0].toFixed(4).padStart(10)}${item.position[1].toFixed(4).padStart(10)}${item.position[2].toFixed(4).padStart(10)} ${item.element.padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join('\n');
+  const bonds = molecule.bonds.map(item => `${String(atomIndex.get(item.from)).padStart(3)}${String(atomIndex.get(item.to)).padStart(3)}${String(item.order || 1).padStart(3)}  0  0  0  0`).join('\n');
+  return {data:`${molecule.name} (${molecule.formula})\n  Molecular Symmetry Lab\n\n${String(molecule.atoms.length).padStart(3)}${String(molecule.bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${atoms}\n${bonds}\nM  END\n`,format:'mol',label:`${molecule.name} · curated symmetry model`};
+}
 
 function operationDescription(element, power = 1) {
   if (!element) return 'Choose a symmetry operation';
@@ -97,7 +106,13 @@ export default function SymmetryLabDashboard({
   const [libraryWidth, setLibraryWidth] = useState(320);
   const [rightWidth, setRightWidth] = useState(390);
   const [labStats, setLabStats] = useState(loadLabStats);
+  const [viewerMode,setViewerMode] = useState('symmetry');
+  const [molReady,setMolReady] = useState(false);
+  const [molAtom,setMolAtom] = useState(null);
+  const [importedSource,setImportedSource] = useState(null);
   const dragRef = useRef(null);
+  const molRef = useRef(null);
+  const molSource = useMemo(()=>importedSource || moleculeMol(molecule),[importedSource,molecule]);
   const filtered = moleculeLibrary.filter(item => {
     const matchesSearch = `${item.name} ${item.formula} ${item.geometry}`.toLowerCase().includes(search.toLowerCase());
     return matchesSearch && (filter === 'All' || item.difficulty === filter);
@@ -136,6 +151,19 @@ export default function SymmetryLabDashboard({
       localStorage.setItem('cu-symmetry-lab-stats', JSON.stringify(next));
     }
   }, [molecule.id, selectedElement?.id, selectedElement?.type, operationResult?.valid]);
+
+  useEffect(()=>{setImportedSource(null);setMolReady(false);setMolAtom(null);},[molecule.id]);
+
+  const importCoordinates = event => {
+    const file=event.target.files?.[0];
+    if(!file)return;
+    const ext=file.name.split('.').pop()?.toLowerCase();
+    const format=ext==='cif'||ext==='mmcif'?'mmcif':ext;
+    if(!['pdb','mmcif','mol','sdf'].includes(format))return;
+    const reader=new FileReader();
+    reader.onload=()=>{setImportedSource({data:String(reader.result),format,label:file.name});setViewerMode('molstar');setMolReady(false);setMolAtom(null);};
+    reader.readAsText(file);
+  };
 
   useEffect(() => {
     const move = event => {
@@ -196,13 +224,15 @@ export default function SymmetryLabDashboard({
       <main className="sym-center">
         <section className="sym-card sym-viewer-card">
           <select className="sym-molecule-select" value={moleculeId} onChange={event => onMoleculeChange(event.target.value)}>{moleculeLibrary.map(item => <option key={item.id} value={item.id}>{item.name} ({item.formula})</option>)}</select>
-          <MoleculeViewer3D ref={viewerRef} molecule={molecule} selectedElement={hoveredElement || selectedElement} operationResult={operationResult} progress={progress} showLabels={showLabels} showElements={showElements} showGhost={showGhost} bondStyle={bondStyle} height="100%" className="sym-viewer" onElementSelect={elementId => onElementChange(molecule.symmetryElements.find(item => item.id === elementId))} />
-          <div className="sym-orientation" aria-label="Camera orientation"><Compass size={15}/>{[['X','right'],['Y','top'],['Z','front']].map(([axis, view]) => <button key={axis} onClick={() => viewerRef.current?.setView(view)} title={`${view} view`}>{axis}</button>)}<button onClick={() => viewerRef.current?.resetCamera()} title="Reset isometric view">3D</button></div>
+          <div className="sym-viewer-mode" aria-label="Viewer mode"><button className={viewerMode==='symmetry'?'active':''} onClick={()=>setViewerMode('symmetry')}>Symmetry overlay</button><button className={viewerMode==='molstar'?'active':''} onClick={()=>setViewerMode('molstar')}>Mol* geometry</button></div>
+          {viewerMode==='symmetry'?<MoleculeViewer3D ref={viewerRef} molecule={molecule} selectedElement={hoveredElement || selectedElement} operationResult={operationResult} progress={progress} showLabels={showLabels} showElements={showElements} showGhost={showGhost} bondStyle={bondStyle} height="100%" className="sym-viewer" onElementSelect={elementId => onElementChange(molecule.symmetryElements.find(item => item.id === elementId))} />:<div className="sym-molstar-stage"><ViewerErrorBoundary label="Molecular symmetry structure viewer"><MolstarViewer ref={molRef} source={molSource} sourceType={molSource.format} label={molSource.label} representation={{BallAndStick:bondStyle==='ball-stick',Spacefill:bondStyle==='space-fill',Sticks:bondStyle==='wireframe',Ligand:false,Branched:false,Ion:false}} colorScheme="element" onReady={()=>{setMolReady(true);requestAnimationFrame(()=>molRef.current?.zoom(1.3));}} onLoadError={()=>setMolReady(false)} onSelectionChange={setMolAtom}/></ViewerErrorBoundary><div className="sym-molstar-status"><b>{molReady?'Mol* coordinate view ready':'Loading coordinates…'}</b><span>{importedSource?`Imported · ${importedSource.label}`:`Curated geometry model · ${molecule.name}`}</span><span>{molAtom?`${molAtom.element} atom ${molAtom.sourceIndex+1} · [${molAtom.coordinates.map(value=>value.toFixed(2)).join(', ')}] Å`:'Click an atom for coordinates'}</span></div></div>}
+          {viewerMode==='symmetry'&&<div className="sym-orientation" aria-label="Camera orientation"><Compass size={15}/>{[['X','right'],['Y','top'],['Z','front']].map(([axis, view]) => <button key={axis} onClick={() => viewerRef.current?.setView(view)} title={`${view} view`}>{axis}</button>)}<button onClick={() => viewerRef.current?.resetCamera()} title="Reset isometric view">3D</button></div>}
           <div className="sym-viewer-tools">
-            {[[Rotate3D,'Rotate'],[Hand,'Pan'],[ZoomIn,'Zoom']].map(([Icon,label]) => <button key={label} className={tool===label?'active':''} onClick={() => setTool(label)}><Icon size={17}/>{label}</button>)}
-            <button className={showLabels?'active':''} onClick={onToggleLabels}>{showLabels?<Eye size={17}/>:<EyeOff size={17}/>}Labels</button>
-            <button className={showGhost?'active':''} onClick={onToggleGhost}><Eye size={17}/>Ghost</button>
+            {viewerMode==='symmetry'&&[[Rotate3D,'Rotate'],[Hand,'Pan'],[ZoomIn,'Zoom']].map(([Icon,label]) => <button key={label} className={tool===label?'active':''} onClick={() => setTool(label)}><Icon size={17}/>{label}</button>)}
+            {viewerMode==='symmetry'&&<button className={showLabels?'active':''} onClick={onToggleLabels}>{showLabels?<Eye size={17}/>:<EyeOff size={17}/>}Labels</button>}
+            {viewerMode==='symmetry'&&<button className={showGhost?'active':''} onClick={onToggleGhost}><Eye size={17}/>Ghost</button>}
             <select value={bondStyle} onChange={event => onBondStyleChange(event.target.value)}><option value="ball-stick">Ball and stick</option><option value="space-fill">Space fill</option><option value="wireframe">Wireframe</option></select>
+            {viewerMode==='molstar'&&<><label className="sym-import"><FileUp size={16}/>Import<input type="file" accept=".pdb,.cif,.mmcif,.mol,.sdf" onChange={importCoordinates}/></label><button onClick={()=>molRef.current?.resetCamera()}><RotateCcw size={16}/>Camera</button><button onClick={()=>molRef.current?.fullscreen()}><Maximize2 size={16}/>Fullscreen</button></>}
           </div>
         </section>
 

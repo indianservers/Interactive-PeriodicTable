@@ -1,19 +1,27 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   BarChart3,
   Beaker,
   Check,
   Database,
+  Download,
   FlaskConical,
   Folder,
   Leaf,
   Network,
   Play,
+  Move,
+  Maximize2,
+  Rotate3d,
   RotateCcw,
   Save,
   Settings,
+  ZoomIn,
+  ZoomOut,
   Wrench,
+  Upload,
 } from "lucide-react";
+import { MolstarViewer, ViewerErrorBoundary } from "../../components/molecular-viewer/index.js";
 import "./ChemistryInventorTargetPage.css";
 
 const groups = [
@@ -30,6 +38,7 @@ const groups = [
   "—CH₂—　Methylene",
 ];
 export default function ChemistryInventorTargetPage() {
+  const referenceSource = { url: "/assets/chemistry-inventor/ethyl-lactate.sdf", format: "sdf", label: "Ethyl lactate · PubChem CID 7344" };
   const [solubility, setSolubility] = useState("Medium"),
     [bio, setBio] = useState("High"),
     [melting, setMelting] = useState("50 – 80"),
@@ -45,7 +54,16 @@ export default function ChemistryInventorTargetPage() {
     [headerTool, setHeaderTool] = useState("Projects"),
     [sideSection, setSideSection] = useState("Molecule Design"),
     [propertyTab, setPropertyTab] = useState("Predicted Properties"),
-    [cameraAction, setCameraAction] = useState("Rotate");
+    [cameraAction, setCameraAction] = useState("Rotate"),
+    [camera, setCamera] = useState({ x: 0, y: 0, scale: 1, rotation: 0 }),
+    [draggingCamera, setDraggingCamera] = useState(false),
+    [inspectionSource, setInspectionSource] = useState(referenceSource),
+    [inspectionStyle, setInspectionStyle] = useState("Ball & stick"),
+    [inspectionReady, setInspectionReady] = useState(false),
+    [inspectionAtom, setInspectionAtom] = useState(null);
+  const cameraDrag = useRef(null);
+  const inspectionRef = useRef(null);
+  const importRef = useRef(null);
   const properties = useMemo(
     () => ({
       logS: selected.includes("—OH　Hydroxyl") ? -1.1 : -2.4,
@@ -59,6 +77,50 @@ export default function ChemistryInventorTargetPage() {
     setSelected((items) =>
       items.includes(g) ? items.filter((x) => x !== g) : [...items, g],
     );
+  const adjustZoom = (delta) => setCamera((value) => ({ ...value, scale: Math.min(1.8, Math.max(0.65, Number((value.scale + delta).toFixed(2)))) }));
+  const resetCamera = () => {
+    setCamera({ x: 0, y: 0, scale: 1, rotation: 0 });
+    setCameraAction("Rotate");
+    setView("3D");
+  };
+  const handleMoleculePointerDown = (event) => {
+    if (cameraAction === "Zoom" || cameraAction === "Reset") return;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    cameraDrag.current = { x: event.clientX, y: event.clientY, camera };
+    setDraggingCamera(true);
+  };
+  const handleMoleculePointerMove = (event) => {
+    if (!cameraDrag.current) return;
+    const start = cameraDrag.current;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    setCamera(cameraAction === "Rotate"
+      ? { ...start.camera, rotation: start.camera.rotation + dx * 0.45 }
+      : { ...start.camera, x: start.camera.x + dx, y: start.camera.y + dy });
+  };
+  const stopMoleculeDrag = () => {
+    cameraDrag.current = null;
+    setDraggingCamera(false);
+  };
+  const importStructure = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const format = file.name.split(".").pop()?.toLowerCase();
+    if (!["pdb", "cif", "mmcif", "mol", "sdf"].includes(format)) return;
+    setInspectionReady(false);
+    setInspectionAtom(null);
+    setInspectionSource({ url: URL.createObjectURL(file), format, label: file.name });
+    setView("Inspect");
+    event.target.value = "";
+  };
+  const exportPreview = async () => {
+    const image = await inspectionRef.current?.png();
+    if (!image) return;
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "ethyl-lactate-inspection.png";
+    link.click();
+  };
   return (
     <div className="ci-app">
       <header>
@@ -173,13 +235,15 @@ export default function ChemistryInventorTargetPage() {
             <article className="ci-groups">
               <h3>Functional Group Blocks</h3>
               {groups.map((g) => (
-                <button
-                  key={g}
-                  className={selected.includes(g) ? "active" : ""}
-                  onClick={() => toggleGroup(g)}
-                >
-                  {g}
-                </button>
+                  <button
+                    key={g}
+                    className={selected.includes(g) ? "active" : ""}
+                    onClick={() => toggleGroup(g)}
+                    aria-pressed={selected.includes(g)}
+                  >
+                  <span>{g}</span>
+                  <small>{selected.includes(g) ? "Added" : "Add"}</small>
+                  </button>
               ))}
             </article>
           </div>
@@ -192,7 +256,7 @@ export default function ChemistryInventorTargetPage() {
                 The structure is chemically valid and satisfies all constraints.
               </p>
               <nav>
-                {["2D", "3D", "Surface"].map((v) => (
+                {["2D", "3D", "Surface", "Inspect"].map((v) => (
                   <button
                     key={v}
                     onClick={() => setView(v)}
@@ -203,27 +267,72 @@ export default function ChemistryInventorTargetPage() {
                 ))}
               </nav>
             </header>
-            <Molecule model={view} />
+            {view !== "Inspect" ? <Molecule
+              model={view}
+              camera={camera}
+              dragging={draggingCamera}
+              onPointerDown={handleMoleculePointerDown}
+              onPointerMove={handleMoleculePointerMove}
+              onPointerUp={stopMoleculeDrag}
+              onWheel={(event) => {
+                event.preventDefault();
+                adjustZoom(event.deltaY > 0 ? -0.05 : 0.05);
+              }}
+            /> : <div className="ci-inspection" data-ready={inspectionReady}>
+              <ViewerErrorBoundary label="Chemistry Inventor structure inspection">
+                <MolstarViewer
+                  ref={inspectionRef}
+                  source={inspectionSource}
+                  sourceType={inspectionSource.format}
+                  label={inspectionSource.label}
+                  representation={{ BallAndStick: inspectionStyle === "Ball & stick", Spacefill: inspectionStyle === "Space filling", Sticks: inspectionStyle === "Sticks", Ligand: false, Branched: false, Ion: false }}
+                  colorScheme="element"
+                  showLabels={false}
+                  onReady={() => { setInspectionReady(true); requestAnimationFrame(() => inspectionRef.current?.zoom(1.35)); }}
+                  onLoadError={() => setInspectionReady(false)}
+                  onSelectionChange={setInspectionAtom}
+                />
+              </ViewerErrorBoundary>
+              <div className="ci-inspection-note">
+                <b>{inspectionReady ? "Mol* inspection ready" : "Loading coordinates…"}</b>
+                <span>{inspectionSource.label}</span>
+                <span>{inspectionAtom ? `${inspectionAtom.element} atom ${inspectionAtom.sourceIndex + 1} · [${inspectionAtom.coordinates.map((value) => value.toFixed(2)).join(", ")}] Å` : "Read-only conformer inspection · click an atom for coordinates"}</span>
+                <small>Return to 2D, 3D, or Surface to continue editing functional-group blocks.</small>
+              </div>
+            </div>}
             <h4>Lactic acid ethyl ester (Ethyl lactate)　✎</h4>
             <p>C₅H₁₀O₃　　MW: 118.13 g/mol</p>
             <footer>
               ● C　Carbon　　<span>● O　Oxygen</span>　　<i>● H　Hydrogen</i>
             </footer>
-            <aside>
-              <button className={cameraAction === "Rotate" ? "active" : ""} onClick={() => setCameraAction("Rotate")}>
-                ◉<small>Rotate</small>
+            {view !== "Inspect" ? <aside>
+              <button className={cameraAction === "Rotate" ? "active" : ""} onClick={() => setCameraAction("Rotate")} title="Drag to rotate">
+                <Rotate3d /><small>Rotate</small>
               </button>
-              <button className={cameraAction === "Zoom" ? "active" : ""} onClick={() => setCameraAction("Zoom")}>
-                ⌕<small>Zoom</small>
+              <button className={cameraAction === "Zoom" ? "active" : ""} onClick={() => setCameraAction("Zoom")} title="Use wheel or +/-">
+                <ZoomIn /><small>Zoom</small>
               </button>
-              <button className={cameraAction === "Pan" ? "active" : ""} onClick={() => setCameraAction("Pan")}>
-                ♧<small>Pan</small>
+              <button className={cameraAction === "Pan" ? "active" : ""} onClick={() => setCameraAction("Pan")} title="Drag to pan">
+                <Move /><small>Pan</small>
               </button>
-              <button className={cameraAction === "Reset" ? "active" : ""} onClick={() => { setCameraAction("Reset"); setView("3D"); }}>
+              <button onClick={() => adjustZoom(-0.1)} title="Zoom out">
+                <ZoomOut /><small>Out</small>
+              </button>
+              <button onClick={() => adjustZoom(0.1)} title="Zoom in">
+                <ZoomIn /><small>In</small>
+              </button>
+              <button className={cameraAction === "Reset" ? "active" : ""} onClick={resetCamera} title="Reset camera">
                 <RotateCcw />
                 <small>Reset</small>
               </button>
-            </aside>
+            </aside> : <aside className="ci-inspection-tools">
+              {["Ball & stick", "Space filling", "Sticks"].map((style) => <button key={style} className={inspectionStyle === style ? "active" : ""} onClick={() => setInspectionStyle(style)} title={style}><small>{style}</small></button>)}
+              <button onClick={() => importRef.current?.click()} title="Import structure"><Upload /><small>Import</small></button>
+              <button onClick={() => inspectionRef.current?.reset()} title="Reset conformer"><RotateCcw /><small>Reset</small></button>
+              <button onClick={exportPreview} title="Export preview"><Download /><small>Export</small></button>
+              <button onClick={() => inspectionRef.current?.fullscreen()} title="Full screen"><Maximize2 /><small>Full</small></button>
+            </aside>}
+            <input ref={importRef} type="file" accept=".pdb,.cif,.mmcif,.mol,.sdf" hidden onChange={importStructure} />
           </article>
           <div className="ci-properties">
             <header>
@@ -380,7 +489,7 @@ export default function ChemistryInventorTargetPage() {
     </div>
   );
 }
-function Molecule({ model }) {
+function Molecule({ model, camera, dragging, onPointerDown, onPointerMove, onPointerUp, onWheel }) {
   const atoms = [
     ["C", 45, 43],
     ["C", 38, 62],
@@ -392,12 +501,15 @@ function Molecule({ model }) {
     ["O", 46, 88],
   ];
   return (
-    <div className={`ci-molecule ${model.toLowerCase()}`}>
-      {atoms.map(([a, x, y], i) => (
-        <i key={i} className={a} style={{ left: `${x}%`, top: `${y}%` }}>
-          {a}
-        </i>
-      ))}
+    <div className={`ci-molecule ${model.toLowerCase()} ${dragging ? "dragging" : ""}`} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={onWheel}>
+      <div className="ci-molecule-stage" style={{ transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.scale}) rotate(${camera.rotation}deg)` }}>
+        <span className="ci-molecule-bond" aria-hidden="true" />
+        {atoms.map(([a, x, y], i) => (
+          <i key={i} className={a} style={{ left: `${x}%`, top: `${y}%` }}>
+            {a}
+          </i>
+        ))}
+      </div>
     </div>
   );
 }

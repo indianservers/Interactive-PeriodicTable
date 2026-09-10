@@ -6,3 +6,4 @@
 /* Keep the control stack within the reference's 460px top row. */
 .physical-lab{line-height:1.35}.phys-controls{min-height:0}.phys-segment{flex-shrink:0}.phys-actions{padding-top:18px}.phys-model{min-height:108px}.phys-model label{margin-top:10px}.phys-controls .phys-mode{margin-top:27px}.phys-controls .phys-slider-label{margin-top:20px}
 @media(max-width:700px){.phys-controls{min-height:430px}}
+.phys-logo{width:100%;border:0;background:transparent}

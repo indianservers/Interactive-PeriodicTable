@@ -117,7 +117,7 @@ function CarbonChainScene() {
     </svg>
   );
 }
-export default function IupacTargetPage() {
+export default function IupacTargetPage({ onNavigate }) {
   const [parent, setParent] = useState("hexane");
   const [locantA, setLocantA] = useState("3");
   const [substituentA, setSubstituentA] = useState("ethyl");
@@ -173,7 +173,7 @@ export default function IupacTargetPage() {
           ].map((x, i) => (
             <button
               key={x}
-              onClick={() => announce(`${x} selected`)}
+              onClick={() => (x === "Home" ? onNavigate?.("dashboard") : announce(`${x} selected`))}
               className={`mb-1 w-full rounded px-3 py-3 text-left text-sm ${i === 1 ? "border-l-2 border-cyan-300 bg-blue-500/15 text-cyan-200" : "text-slate-300"}`}
             >
               {x}

@@ -158,7 +158,7 @@ export const PracticeExamTutorPage = ({ onNavigate }) => {
           ].map(([Icon, label], i) => (
             <button
               key={label}
-              onClick={() => say(label + " selected")}
+              onClick={() => (i === 0 ? onNavigate?.("dashboard") : say(label + " selected"))}
               className={
                 "mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm " +
                 (i === 0 ? "bg-blue-500/25 text-sky-300" : "text-slate-300")

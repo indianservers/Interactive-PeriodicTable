@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Beaker,
   ChevronDown,
@@ -7,6 +7,7 @@ import {
   FlaskConical,
   Home,
   Info,
+  Maximize2,
   Play,
   RotateCcw,
   Settings,
@@ -14,6 +15,9 @@ import {
   Sparkles,
   StopCircle,
 } from "lucide-react";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import "./isomerismTarget.css";
 
 const molecules = [
   {
@@ -27,6 +31,7 @@ const molecules = [
     solubility: "Miscible",
     rotation: "+3.8°",
     groups: ["–COOH", "–OH", "–CH₃", "–H"],
+    leftLabel:"(R)-lactic acid",rightLabel:"(S)-lactic acid",leftSource:"r-lactic.sdf",rightSource:"s-lactic.sdf",centers:[3],provenance:"PubChem CIDs 61503 / 107689",
   },
   {
     name: "2-butanol",
@@ -39,19 +44,24 @@ const molecules = [
     solubility: "Slightly soluble",
     rotation: "+2.4°",
     groups: ["–OH", "–CH₂CH₃", "–CH₃", "–H"],
+    leftLabel:"(R)-2-butanol",rightLabel:"(S)-2-butanol",leftSource:"r-2-butanol.sdf",rightSource:"s-2-butanol.sdf",centers:[1],provenance:"PubChem stereospecific 3D conformers",
   },
   {
-    name: "Dichlorobutene",
-    formula: "C₄H₆Cl₂",
+    name: "2-butene",
+    formula: "C₄H₈",
     tag: "E / Z isomerism",
     kind: "geometric",
-    molarMass: "153.01 g mol⁻¹",
-    meltingPoint: "Varies by E/Z isomer",
-    density: "Approx. 1.25 g mL⁻¹",
-    solubility: "Insoluble",
+    molarMass: "56.11 g mol⁻¹",
+    meltingPoint: "Isomer dependent",
+    density: "Isomer dependent",
+    solubility: "Low",
     rotation: null,
     groups: ["–Cl", "–CH₃", "–CH₂CH₃", "–H"],
+    leftLabel:"(E)-2-butene",rightLabel:"(Z)-2-butene",leftSource:"e-2-butene.sdf",rightSource:"z-2-butene.sdf",centers:[],provenance:"PubChem trans/cis 2-butene 3D conformers",
   },
+  {name:"Butane / isobutane",formula:"C₄H₁₀",tag:"Structural isomerism",kind:"structural",molarMass:"58.12 g mol⁻¹",meltingPoint:"Different",density:"Different",solubility:"Low",rotation:null,groups:["Connectivity","Chain skeleton","Same formula","Different name"],leftLabel:"n-Butane",rightLabel:"Isobutane",leftSource:"butane.sdf",rightSource:"isobutane.sdf",centers:[],provenance:"PubChem CIDs 7843 / 6360"},
+  {name:"Tartaric acid",formula:"C₄H₆O₆",tag:"Diastereomerism",kind:"diastereomer",molarMass:"150.09 g mol⁻¹",meltingPoint:"Stereoisomer dependent",density:"Stereoisomer dependent",solubility:"Soluble",rotation:null,groups:["–OH","–COOH","C2 centre","C3 centre"],leftLabel:"(2R,3R)-tartaric acid",rightLabel:"meso-(2R,3S)-tartaric acid",leftSource:"rr-tartaric.sdf",rightSource:"meso-tartaric.sdf",centers:[6,7],provenance:"PubChem CIDs 444305 / 439655"},
+  {name:"Butane conformers",formula:"C₄H₁₀",tag:"Conformational isomerism",kind:"conformer",molarMass:"58.12 g mol⁻¹",meltingPoint:"Same compound",density:"Same compound",solubility:"Low",rotation:null,groups:["C1","C2","C3","C4"],leftLabel:"Anti butane",rightLabel:"Gauche butane",leftSource:"butane.sdf",rightSource:"gauche-butane.sdf",centers:[],provenance:"PubChem CID 7843; gauche model derived by a 120° central-bond rotation"},
 ];
 
 function Molecule({
@@ -226,6 +236,7 @@ function Molecule({
 }
 
 export default function IsomerismTargetPage() {
+  const leftViewerRef=useRef(null),rightViewerRef=useRef(null);
   const [moleculeIndex, setMoleculeIndex] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [superimpose, setSuperimpose] = useState(false);
@@ -233,15 +244,20 @@ export default function IsomerismTargetPage() {
   const [projection, setProjection] = useState("Newman projection");
   const [priority, setPriority] = useState(1);
   const [notice, setNotice] = useState("");
+  const [representation,setRepresentation]=useState("Ball & stick");
+  const [selectedAtom,setSelectedAtom]=useState(null);
+  const [mirrorMode,setMirrorMode]=useState(false);
   const molecule = molecules[moleculeIndex];
   const rotation = molecule.rotation;
   const optical = molecule.kind === "optical";
-  const leftConfiguration = optical ? "R" : "E";
-  const rightConfiguration = optical ? "S" : "Z";
+  const configurations={optical:["R","S"],geometric:["E","Z"],structural:["n","iso"],diastereomer:["2R,3R","2R,3S"],conformer:["anti","gauche"]};
+  const [leftConfiguration,rightConfiguration]=configurations[molecule.kind]||["A","B"];
+  const relationshipLabels={optical:["R configuration","S configuration"],geometric:["E configuration","Z configuration"],structural:["straight chain","branched chain"],diastereomer:["(2R,3R)","meso (2R,3S)"],conformer:["anti conformer","gauche conformer"]};
+  const [leftRelation,rightRelation]=relationshipLabels[molecule.kind];
   const announce = (message) => setNotice(message);
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
+      className="iso-app min-h-screen overflow-hidden bg-[#071522] text-slate-100"
       style={{ fontFamily: "Inter, ui-sans-serif, system-ui" }}
     >
       <header className="flex h-[70px] items-center gap-4 border-b border-cyan-100/10 bg-[#0a1a29] px-5">
@@ -275,7 +291,7 @@ export default function IsomerismTargetPage() {
           </button>
         </nav>
       </header>
-      <div className="grid h-[calc(100vh-70px)] grid-cols-[228px_1fr_385px] grid-rows-[1fr_355px] gap-2 p-2">
+      <div className="iso-layout grid h-[calc(100vh-70px)] grid-cols-[228px_1fr_385px] grid-rows-[1fr_355px] gap-2 p-2">
         <aside className="row-span-2 flex flex-col border-r border-white/10 bg-[#0a1c2c] p-3">
           <div className="mb-3 flex items-center gap-2 rounded-lg bg-cyan-400/15 px-3 py-3 text-sm font-bold text-cyan-200">
             <Home size={17} /> Isomerism Studio
@@ -283,16 +299,11 @@ export default function IsomerismTargetPage() {
           <p className="mb-2 mt-3 px-2 text-[10px] uppercase tracking-[.2em] text-slate-500">
             Isomerism
           </p>
-          {[
-            "Structural Isomerism",
-            "Geometrical Isomerism (E / Z)",
-            "Optical Isomerism (R / S)",
-            "Conformational Isomerism",
-          ].map((x, i) => (
+          {[["Structural Isomerism",3],["Geometrical Isomerism (E / Z)",2],["Optical Isomerism (R / S)",0],["Diastereomers",4],["Conformational Isomerism",5]].map(([x,target]) => (
             <button
               key={x}
-              onClick={() => announce(x + " selected")}
-              className={`mb-1 rounded-lg px-3 py-3 text-left text-xs ${i === 2 ? "border border-cyan-300/70 bg-cyan-400/20 text-cyan-100" : "text-slate-300 hover:bg-white/5"}`}
+              onClick={() => {setMoleculeIndex(target);setSelectedAtom(null);announce(x + " selected");}}
+              className={`mb-1 rounded-lg px-3 py-3 text-left text-xs ${moleculeIndex === target ? "border border-cyan-300/70 bg-cyan-400/20 text-cyan-100" : "text-slate-300 hover:bg-white/5"}`}
             >
               {x}
             </button>
@@ -314,19 +325,14 @@ export default function IsomerismTargetPage() {
             “Stereochemistry connects structure to the real world.”
           </div>
         </aside>
-        <section className="relative overflow-hidden rounded-lg border border-cyan-100/15 bg-gradient-to-br from-[#0b1e30] to-[#081522] p-3">
+        <section className="iso-main-stage relative overflow-hidden rounded-lg border border-cyan-100/15 bg-gradient-to-br from-[#0b1e30] to-[#081522] p-3">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-xl font-bold">
-                ({leftConfiguration})- and ({rightConfiguration})-
-                {molecule.name}
-              </h2>
+              <h2 className="text-xl font-bold">{molecule.leftLabel} / {molecule.rightLabel}</h2>
               <p className="text-sm text-slate-400">{molecule.formula}</p>
             </div>
             <p className="text-sm font-semibold italic text-cyan-300">
-              {optical
-                ? "Mirror images · not superimposable"
-                : "Geometric isomers · different substituent arrangement"}
+              {{optical:"Mirror images · not superimposable",geometric:"Geometric isomers · different alkene arrangement",structural:"Same formula · different connectivity",diastereomer:"Stereoisomers · not mirror images",conformer:"Same connectivity · rotation about a σ bond"}[molecule.kind]}
             </p>
           </div>
           <div className="absolute right-3 top-3 mt-9 rounded-lg border border-white/15 bg-[#0e2538] p-2 text-[11px]">
@@ -336,41 +342,16 @@ export default function IsomerismTargetPage() {
             <br />
             <span className="text-slate-200">●</span>&nbsp; H&nbsp; Hydrogen
           </div>
-          <div className="flex h-[355px] items-center justify-center gap-9">
-            <div className="text-center">
-              <Molecule
-                configuration={leftConfiguration}
-                spinning={spinning}
-                superimposed={superimpose}
-              />
-              <p className="font-bold">
-                ({leftConfiguration})-{molecule.name}
-              </p>
-            </div>
-            <div className="h-64 w-px bg-cyan-200/50 shadow-[0_0_16px_#49dfff]" />
-            <div className="text-center">
-              <Molecule
-                configuration={rightConfiguration}
-                mirror={optical}
-                spinning={spinning}
-                superimposed={superimpose}
-              />
-              <p className="font-bold">
-                ({rightConfiguration})-{molecule.name}
-              </p>
-            </div>
+          <div className={`iso-dual-viewers ${superimpose?"is-superimposed":""} ${mirrorMode?"is-mirror-mode":""}`}>
+            {[{side:"left",ref:leftViewerRef,source:molecule.leftSource,label:molecule.leftLabel},{side:"right",ref:rightViewerRef,source:molecule.rightSource,label:molecule.rightLabel}].map(item=><div className={`iso-viewer ${item.side}`} key={item.side}><ViewerErrorBoundary label={`${item.label} viewer`}><MolstarViewer ref={item.ref} source={{url:`/assets/isomerism/${item.source}`,format:"sdf",label:item.label}} sourceType="sdf" label={item.label} representation={{BallAndStick:representation==="Ball & stick",Spacefill:representation==="Space filling",Sticks:representation==="Sticks",Ligand:false,Branched:false,Ion:false}} colorScheme="element" selectedAtomIndex={selectedAtom?.sourceIndex} selectedAtomIndices={molecule.centers} onReady={()=>requestAnimationFrame(()=>item.ref.current?.zoom(1.25))} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary><b>{item.label}</b></div>)}
+            <div className="iso-pair-note">{superimpose?"Qualitative overlay — compare atom correspondence; no fitted RMSD is claimed":mirrorMode?"Mirror comparison mode — stereospecific coordinates retained":"Synchronized selection · click an atom in either viewer"}</div>
           </div>
-          <div className="absolute bottom-3 left-3 right-3 flex gap-2">
+          <div className="iso-controls absolute bottom-3 left-3 right-3 flex gap-2">
             <button
-              onClick={() => setSpinning((v) => !v)}
+              onClick={() => {leftViewerRef.current?.rotate("y",25);rightViewerRef.current?.rotate("y",25);setSpinning(true);setTimeout(()=>setSpinning(false),300);}}
               className="rounded-lg border border-cyan-300/70 bg-cyan-300/10 px-4 py-2 text-xs text-cyan-200"
             >
-              {spinning ? (
-                <StopCircle size={14} className="mr-1 inline" />
-              ) : (
-                <RotateCcw size={14} className="mr-1 inline" />
-              )}
-              {spinning ? "Stop" : "Rotate"}
+              <RotateCcw size={14} className="mr-1 inline" /> Rotate both
             </button>
             <button
               onClick={() => setSuperimpose((v) => !v)}
@@ -378,6 +359,7 @@ export default function IsomerismTargetPage() {
             >
               ♧ Superimpose
             </button>
+            <button onClick={()=>setMirrorMode(value=>!value)} className={`rounded-lg border px-4 py-2 text-xs ${mirrorMode?"border-cyan-300 bg-cyan-300/15":"border-white/20"}`}>Mirror mode</button>
             <button
               onClick={() => {
                 setTested(true);
@@ -388,21 +370,24 @@ export default function IsomerismTargetPage() {
               <Info size={14} className="mr-1 inline" /> Test superposition
             </button>
             <select
-              value={projection}
+              value={representation}
               onChange={(e) => {
-                setProjection(e.target.value);
+                setRepresentation(e.target.value);
                 announce(e.target.value + " selected");
               }}
               className="ml-auto rounded-lg border border-white/20 bg-[#0d2033] px-3 py-2 text-xs"
             >
-              <option>Newman projection</option>
-              <option>Fischer projection</option>
-              <option>Wedge-dash</option>
+              <option>Ball &amp; stick</option>
+              <option>Space filling</option>
+              <option>Sticks</option>
             </select>
             <button
               onClick={() => {
                 setSpinning(false);
                 setSuperimpose(false);
+                setMirrorMode(false);
+                setSelectedAtom(null);
+                leftViewerRef.current?.reset();rightViewerRef.current?.reset();
                 setTested(false);
                 announce("View reset");
               }}
@@ -413,15 +398,13 @@ export default function IsomerismTargetPage() {
           </div>
           {tested && (
             <div className="absolute bottom-14 left-1/2 -translate-x-1/2 rounded-full bg-emerald-400 px-4 py-1 text-xs font-bold text-slate-950">
-              {optical ? "Not superimposable ✓" : "Distinct E/Z arrangement ✓"}
+              {{optical:"Not superimposable ✓",geometric:"Distinct E/Z arrangement ✓",structural:"Connectivity differs ✓",diastereomer:"Not mirror-related ✓",conformer:"Interconverted by bond rotation ✓"}[molecule.kind]}
             </div>
           )}
         </section>
-        <aside className="row-span-2 overflow-y-auto rounded-lg border border-cyan-100/15 bg-[#0a1c2c] p-3">
+        <aside className="iso-guide row-span-2 overflow-y-auto rounded-lg border border-cyan-100/15 bg-[#0a1c2c] p-3">
           <h2 className="text-base font-bold">
-            {optical
-              ? `Assign CIP priorities — (R)-${molecule.name}`
-              : `Assign substituent priorities — E/Z ${molecule.name}`}
+            {molecule.kind==="optical"?`Assign CIP priorities — ${molecule.leftLabel}`:molecule.kind==="geometric"?`Assign alkene priorities — ${molecule.name}`:`Compare ${molecule.tag.toLowerCase()}`}
           </h2>
           <div className="mt-3 space-y-3">
             {[
@@ -475,28 +458,26 @@ export default function IsomerismTargetPage() {
             ))}
           </div>
           <div className="mt-4 rounded-lg border border-emerald-400/70 bg-emerald-400/10 p-3 text-sm font-semibold text-emerald-200">
-            ✓ Result: ({leftConfiguration})-{molecule.name}
+            ✓ Result: {molecule.leftLabel} / {molecule.rightLabel}
           </div>
           <div className="mt-4 rounded-lg border border-amber-300/60 bg-amber-300/10 p-3 text-xs text-amber-100">
-            <Info size={14} className="mr-1 inline" /> Enantiomers have
-            identical physical properties in an achiral environment except the
-            direction of plane-polarized light.
+            <Info size={14} className="mr-1 inline" /> {optical?"Enantiomers have identical physical properties in an achiral environment except the direction of plane-polarized light.":molecule.kind==="conformer"?"Conformers interconvert by rotation about a single bond without changing connectivity.":"Use connectivity and stereochemical descriptors—not visual resemblance alone—to classify the pair."}
           </div>
         </aside>
         <section className="rounded-lg border border-cyan-100/15 bg-[#0a1c2c] p-3">
           <h3 className="font-bold">
             {optical
               ? "Optical Activity – Plane-Polarized Light"
-              : "Geometric Configuration – E / Z"}
+              : molecule.kind==="geometric"?"Geometric Configuration – E / Z":"Coordinate-backed relationship summary"}
           </h3>
           <div className="mt-2 grid grid-cols-[130px_1fr_80px] items-center gap-3 text-xs">
             <div>
               <b>
-                ({leftConfiguration})-{molecule.name}
+                {molecule.leftLabel}
               </b>
               <br />
               <span className="text-cyan-300">
-                {optical ? "dextrorotatory" : "E configuration"}
+                {optical ? "dextrorotatory" : leftRelation}
               </span>
             </div>
             <div className="relative h-16 rounded bg-gradient-to-r from-yellow-500/10 via-yellow-300/30 to-yellow-500/10">
@@ -513,11 +494,11 @@ export default function IsomerismTargetPage() {
           <div className="mt-2 grid grid-cols-[130px_1fr_80px] items-center gap-3 text-xs">
             <div>
               <b>
-                ({rightConfiguration})-{molecule.name}
+                {molecule.rightLabel}
               </b>
               <br />
               <span className="text-fuchsia-300">
-                {optical ? "levorotatory" : "Z configuration"}
+                {optical ? "levorotatory" : rightRelation}
               </span>
             </div>
             <div className="relative h-16 rounded bg-gradient-to-r from-fuchsia-500/10 via-fuchsia-300/20 to-fuchsia-500/10">
@@ -534,9 +515,7 @@ export default function IsomerismTargetPage() {
             </div>
           </div>
           <p className="mt-2 text-xs italic text-slate-400">
-            {optical
-              ? "Equal magnitude, opposite direction — a hallmark of enantiomers."
-              : "E/Z isomers differ in substituent arrangement around the double bond."}
+            {optical?"Equal magnitude, opposite direction — a hallmark of enantiomers.":molecule.kind==="geometric"?"E/Z isomers differ in substituent arrangement around the double bond.":`${molecule.tag}: ${molecule.provenance}.`}
           </p>
         </section>
         <section className="rounded-lg border border-cyan-100/15 bg-[#0a1c2c] p-3">
@@ -545,8 +524,8 @@ export default function IsomerismTargetPage() {
             <thead>
               <tr className="bg-white/5 text-left">
                 <th className="p-2">Property</th>
-                <th className="p-2">(R)-{molecule.name}</th>
-                <th className="p-2">(S)-{molecule.name}</th>
+                <th className="p-2">{molecule.leftLabel}</th>
+                <th className="p-2">{molecule.rightLabel}</th>
               </tr>
             </thead>
             <tbody>
@@ -562,7 +541,7 @@ export default function IsomerismTargetPage() {
                         "−" + rotation.replace("+", ""),
                       ],
                     ]
-                  : [["Geometry", "E arrangement", "Z arrangement"]]),
+                  : [["Relationship", leftRelation, rightRelation]]),
                 ["Density (20 °C)", molecule.density, molecule.density],
                 [
                   "Solubility in water",

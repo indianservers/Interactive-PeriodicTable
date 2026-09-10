@@ -1,0 +1,464 @@
+.plab-adme {
+  max-width: 1664px;
+  margin: auto;
+  padding: 5px 11px 18px;
+  color: #edfaff;
+}
+.plab-adme h2,
+.plab-adme h3 {
+  margin: 0;
+}
+.plab-adme > header {
+  min-height: 69px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 14px;
+  background: #071b2a;
+  border: 1px solid var(--plab-line);
+  border-radius: 6px;
+}
+.plab-adme > header h1 {
+  margin: 0;
+  font-size: 21px;
+}
+.plab-adme > header p {
+  margin: 2px 0;
+  font-size: 9px;
+}
+.plab-adme > header small {
+  color: #4fddf4;
+  font-size: 7px;
+}
+.plab-adme > header aside {
+  color: #87a4b5;
+  font-size: 7px;
+}
+.plab-adme-grid {
+  display: grid;
+  grid-template-columns: 390px minmax(480px, 0.88fr) minmax(570px, 1.12fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+.plab-pk-left article,
+.plab-organ-insets article,
+.plab-adme-right article,
+.plab-adme-bottom article {
+  background: #071b2a;
+  border: 1px solid var(--plab-line);
+  border-radius: 6px;
+}
+.plab-pk-left article {
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.plab-pk-left h2,
+.plab-organ-insets h3,
+.plab-adme-right h2,
+.plab-adme-bottom h2 {
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--plab-line);
+  font-size: 10px;
+}
+.plab-pk-left article:first-child > span {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr 0.8fr;
+  align-items: center;
+  padding: 5px 9px;
+  border-bottom: 1px solid rgba(125, 190, 214, 0.13);
+  font-size: 7px;
+}
+.plab-pk-left span em {
+  color: #8da9b7;
+  font-style: normal;
+}
+.plab-pk-left span strong {
+  color: #55daf3;
+}
+.plab-pk-left article:last-child > div {
+  height: 80px;
+  display: grid;
+  grid-template-columns: 48px 28px 1fr;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 10px;
+  border-bottom: 1px solid #1d4154;
+}
+.plab-pk-left article:last-child i {
+  font-size: 31px;
+  font-style: normal;
+}
+.plab-pk-left article:last-child > div > b {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--plab-cyan);
+  border-radius: 50%;
+  color: #77e9fa;
+  font-size: 9px;
+  box-shadow: 0 0 10px #0cb6d766;
+}
+.plab-pk-left article:last-child strong,
+.plab-pk-left article:last-child small {
+  display: block;
+}
+.plab-pk-left article:last-child strong {
+  font-size: 9px;
+}
+.plab-pk-left article:last-child small {
+  margin-top: 4px;
+  color: #86a8b7;
+  font-size: 7px;
+  line-height: 1.45;
+}
+.plab-body-map {
+  min-height: 570px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 188px;
+  gap: 5px;
+  background: radial-gradient(ellipse at 35% 35%, #124b68, #061624 62%);
+  border: 1px solid var(--plab-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.plab-human {
+  position: relative;
+  min-height: 570px;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(41, 126, 161, 0.2),
+    transparent 60%
+  );
+}
+.plab-human .head {
+  position: absolute;
+  left: 36%;
+  top: 12px;
+  width: 98px;
+  height: 110px;
+  border: 3px solid #3e87a5;
+  border-radius: 48% 48% 43% 43%;
+  background: linear-gradient(#153e54aa, #0c2838aa);
+}
+.plab-human .torso {
+  position: absolute;
+  left: 21%;
+  top: 103px;
+  width: 212px;
+  height: 405px;
+  border: 3px solid #397c9a;
+  border-radius: 42% 42% 20% 20%;
+  background: linear-gradient(90deg, #0b2f45aa, #184e66aa, #09273baa);
+  box-shadow: inset 0 0 40px #46bde633;
+}
+.plab-human b {
+  position: absolute;
+  z-index: 2;
+  padding: 5px;
+  border-radius: 50%;
+  font-size: 8px;
+}
+.plab-human .stomach {
+  left: 49%;
+  top: 210px;
+  color: #ffb283;
+}
+.plab-human .liver {
+  left: 25%;
+  top: 200px;
+  color: #cc6666;
+}
+.plab-human .gut {
+  left: 34%;
+  top: 300px;
+  color: #f1ad91;
+}
+.plab-human .kidney {
+  left: 29%;
+  top: 385px;
+  color: #d65c63;
+}
+.plab-human .dose {
+  position: absolute;
+  left: 7%;
+  top: 76px;
+  color: #c7edf8;
+  font-size: 9px;
+}
+.plab-human svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.plab-human svg path {
+  fill: none;
+  stroke: #35ddff;
+  stroke-width: 4;
+  stroke-dasharray: 8 6;
+  filter: drop-shadow(0 0 5px #22c9ec);
+}
+.plab-human svg circle {
+  fill: #7cf4ff;
+}
+.plab-human.active svg path {
+  animation: plab-flow 1.1s linear infinite;
+}
+.plab-organ-insets {
+  padding: 5px 5px 5px 0;
+}
+.plab-organ-insets article {
+  height: 270px;
+  margin-bottom: 5px;
+  text-align: center;
+  overflow: hidden;
+}
+.plab-organ-insets h3 {
+  text-align: left;
+  font-size: 8px;
+}
+.lobule,
+.nephron {
+  height: 195px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, #a75c64, #401a27 55%, #071724);
+  color: #59d9ce;
+  font-size: 29px;
+}
+.nephron {
+  background: radial-gradient(circle, #ac6426, #351e15 55%, #071724);
+  color: #f1a44d;
+}
+.plab-organ-insets span {
+  font-size: 6px;
+  color: #8fb0be;
+}
+.plab-adme-right {
+  min-width: 0;
+}
+.plab-sankey {
+  height: 268px;
+  overflow: hidden;
+}
+.plab-sankey > div {
+  height: 224px;
+  position: relative;
+  padding: 24px 13px;
+  background: radial-gradient(
+    circle at 45% 50%,
+    rgba(29, 193, 222, 0.17),
+    transparent 55%
+  );
+}
+.plab-sankey > div > b {
+  position: absolute;
+  left: 18px;
+  top: 76px;
+  font-size: 10px;
+}
+.plab-sankey span {
+  position: absolute;
+  left: 34%;
+  right: 7%;
+  height: 30px;
+  padding: 7px 13px;
+  border-radius: 0 22px 22px 0;
+  font-size: 8px;
+  font-weight: 800;
+}
+.plab-sankey .s1 {
+  top: 27px;
+  background: linear-gradient(90deg, #08a7c9, #26d9ec);
+}
+.plab-sankey .s2 {
+  top: 73px;
+  background: linear-gradient(90deg, #24bca3, #50e398);
+}
+.plab-sankey .s3 {
+  top: 119px;
+  background: linear-gradient(90deg, #64748b, #9fb3c2);
+}
+.plab-sankey .s4 {
+  top: 165px;
+  background: linear-gradient(90deg, #b97924, #f8b63f);
+}
+.plab-adme-right-lower {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+.plab-pk-controls {
+  height: 296px;
+  padding-bottom: 6px;
+}
+.plab-pk-controls > label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 6px;
+  margin: 5px 8px;
+  color: #8aa6b5;
+  font-size: 6px;
+}
+.plab-pk-controls input[type="range"] {
+  grid-column: 1/-1;
+  width: 100%;
+  height: 3px;
+  accent-color: var(--plab-cyan);
+}
+.plab-pk-controls output {
+  color: #d8f5fc;
+}
+.plab-pk-controls select {
+  margin: 3px 8px;
+  width: calc(100% - 16px);
+  padding: 5px;
+  background: #092235;
+  color: #bde7f2;
+  border: 1px solid #2a5368;
+  font-size: 6px;
+}
+.plab-pk-controls > button {
+  width: calc(50% - 11px);
+  height: 30px;
+  margin: 4px 2px 0 8px;
+  color: #03202b;
+  background: var(--plab-cyan);
+  border: 0;
+  border-radius: 4px;
+  font-size: 7px;
+}
+.plab-pk-controls > button svg {
+  width: 11px;
+  vertical-align: middle;
+}
+.plab-pk-controls > p {
+  margin: 6px 8px;
+  color: #4fdff6;
+  font-size: 6px;
+}
+.plab-primary-profile {
+  height: 296px;
+  min-width: 0;
+  padding-bottom: 6px;
+}
+.plab-primary-profile .plab-scientific-chart {
+  width: 100%;
+  height: 205px;
+}
+.plab-primary-profile > b {
+  display: block;
+  padding: 0 8px;
+  color: #72dff1;
+  font-size: 7px;
+}
+.plab-adme-bottom {
+  display: grid;
+  grid-template-columns: 1.15fr 1.3fr 0.65fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+.plab-adme-bottom article {
+  height: 180px;
+  min-width: 0;
+}
+.plab-adme-bottom article:first-child .plab-scientific-chart {
+  width: 100%;
+  height: 130px;
+}
+.plab-adme-bottom article:first-child > b {
+  padding: 0 9px;
+  color: #65d9ed;
+  font-size: 6px;
+}
+.plab-mass-bars {
+  padding: 15px;
+}
+.plab-mass-bars span {
+  display: block;
+  position: relative;
+  height: 24px;
+  margin-bottom: 3px;
+  background: #0c2b3e;
+  overflow: hidden;
+}
+.plab-mass-bars i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #216daa, #46d7f0);
+}
+.plab-mass-bars span:nth-child(2) i {
+  background: #4ad6a0;
+}
+.plab-mass-bars span:nth-child(3) i {
+  background: #99aab4;
+}
+.plab-mass-bars span:nth-child(4) i {
+  background: #f2ac45;
+}
+.plab-mass-bars span:nth-child(5) i {
+  background: #8f68d9;
+}
+.plab-mass-bars b {
+  position: absolute;
+  left: 6px;
+  top: 7px;
+  font-size: 6px;
+}
+.plab-adme-bottom ul {
+  margin: 8px 10px;
+  padding-left: 12px;
+  color: #9abbc8;
+  font-size: 7px;
+  line-height: 1.5;
+}
+.plab-adme-bottom li::marker {
+  color: #3cdbf6;
+}
+.plab-adme > footer {
+  padding: 8px;
+  color: #577a8d;
+  font-size: 6px;
+}
+@keyframes plab-flow {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+@media (max-width: 1150px) {
+  .plab-adme-grid {
+    grid-template-columns: 320px 1fr;
+  }
+  .plab-adme-right {
+    grid-column: 1/-1;
+  }
+  .plab-adme-bottom {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .plab-adme > header {
+    display: block;
+    padding: 9px;
+  }
+  .plab-adme-grid,
+  .plab-body-map,
+  .plab-adme-right-lower,
+  .plab-adme-bottom {
+    grid-template-columns: 1fr;
+  }
+  .plab-organ-insets {
+    display: none;
+  }
+  .plab-body-map {
+    min-height: 520px;
+  }
+  .plab-adme-bottom article {
+    height: auto;
+    min-height: 180px;
+  }
+}

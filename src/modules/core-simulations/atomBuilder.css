@@ -1,0 +1,391 @@
+.atom-builder-v2 {
+  --atom-border: rgba(64, 158, 220, .38);
+  --atom-panel: rgba(5, 24, 45, .92);
+  --atom-muted: #9db8d8;
+  height: 100dvh;
+  min-height: 100dvh;
+  padding: 12px 18px 54px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 52% 35%, rgba(12, 119, 187, .2), transparent 31%),
+    linear-gradient(145deg, #020a16, #03162a 58%, #020916);
+}
+
+.atom-builder-v2 button:focus-visible,
+.atom-builder-v2 [role="button"]:focus-visible,
+.atom-builder-v2 textarea:focus-visible {
+  outline: 2px solid #5de1ff;
+  outline-offset: 2px;
+}
+
+.atom-builder-header {
+  width: min(100%, 1600px);
+  min-height: 48px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.atom-heading { display: flex; align-items: center; gap: 10px; }
+.atom-heading > svg { color: #50ddff; filter: drop-shadow(0 0 10px rgba(80, 221, 255, .35)); }
+.atom-heading h1 { margin: 0; font-size: clamp(1.55rem, 2vw, 2.2rem); line-height: 1; letter-spacing: -.035em; }
+.atom-heading p { margin: 4px 0 0; color: var(--atom-muted); font-size: .78rem; }
+.atom-header-actions { display: flex; gap: 8px; }
+.atom-header-actions button,
+.history-controls button,
+.compare-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  border: 1px solid var(--atom-border);
+  border-radius: 10px;
+  background: #071d35;
+  color: #ccecff;
+  font-weight: 750;
+  font-size: .76rem;
+  transition: border-color .18s, background .18s, transform .18s;
+}
+.atom-header-actions button { padding: 0 13px; }
+.atom-header-actions button:hover,
+.history-controls button:hover:not(:disabled),
+.compare-toggle:hover { border-color: #58d7ff; background: #0a2a49; transform: translateY(-1px); }
+.atom-header-actions button[aria-pressed="true"] { color: #061321; background: #63dcff; border-color: #81e7ff; }
+
+.atom-workspace {
+  width: min(100%, 1600px);
+  flex: 1;
+  min-height: 0;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 268px minmax(560px, 1fr) 300px;
+  gap: 10px;
+}
+
+.atom-build-rail,
+.atom-insight-rail {
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #27618e transparent transparent;
+  border: 1px solid var(--atom-border);
+  border-radius: 14px;
+  background: linear-gradient(150deg, rgba(8, 32, 58, .96), rgba(3, 16, 31, .97));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 14px 35px rgba(0,0,0,.3);
+}
+.atom-build-rail { padding: 12px; }
+.atom-insight-rail { padding: 10px; }
+.rail-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.rail-heading h2 { margin: 0; font-size: 1rem; }
+.rail-heading p { margin: 2px 0 0; color: var(--atom-muted); font-size: .7rem; }
+.mobile-sheet-close, .mobile-sheet-handle { display: none; }
+
+.particle-tray-v2 { display: grid; gap: 7px; }
+.tray-card-v2 {
+  position: relative;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 16px 46px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(54, 139, 197, .44);
+  border-radius: 12px;
+  background: rgba(9, 41, 70, .88);
+  cursor: grab;
+  user-select: none;
+  transition: transform .18s, border-color .18s, background .18s, box-shadow .18s;
+}
+.tray-card-v2:hover { transform: translateY(-2px); border-color: #50d9ff; background: #0b3558; box-shadow: 0 9px 22px rgba(0,0,0,.28); }
+.tray-card-v2:active, .tray-card-v2.dragging { cursor: grabbing; transform: scale(.98); opacity: .72; }
+.drag-grip { color: #6488a9; }
+.tray-card-v2 > span:not(.atom-particle) strong,
+.tray-card-v2 > span:not(.atom-particle) small { display: block; }
+.tray-card-v2 > span:not(.atom-particle) strong { font-size: .82rem; }
+.tray-card-v2 > span:not(.atom-particle) small { margin-top: 2px; color: #a7bfd9; font-size: .66rem; }
+.tray-card-v2 em { align-self: end; color: #77dfff; font-size: .58rem; font-style: normal; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+
+.atom-builder-v2 .atom-particle {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 900;
+  background: radial-gradient(circle at 32% 25%, rgba(255,255,255,.75), var(--particle) 27%, color-mix(in srgb, var(--particle), #001 38%) 76%);
+  box-shadow: inset -4px -6px 9px rgba(0,0,10,.38), inset 3px 3px 6px rgba(255,255,255,.25), 0 0 8px color-mix(in srgb, var(--particle), transparent 58%);
+}
+.atom-builder-v2 .atom-particle.neutron { font-size: .55rem; color: #dceeff; }
+.atom-builder-v2 .atom-particle.electron { color: #172033; }
+.atom-builder-v2 .atom-particle.striped::after { content: ''; position: absolute; inset: 6px; border-radius: inherit; border-left: 2px solid rgba(255,255,255,.38); transform: rotate(35deg); }
+.atom-builder-v2 .atom-particle.dotted::after { content: ''; position: absolute; width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.75); box-shadow: 7px 5px 0 rgba(255,255,255,.3), -6px 7px 0 rgba(255,255,255,.35); }
+.atom-builder-v2 .atom-particle.ringed::after { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(90,65,0,.5); border-radius: 50%; }
+.tray-card-v2 > .atom-particle,
+.particle-stepper > .atom-particle { left: auto !important; top: auto !important; }
+
+.particle-controls-v2 { margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(73, 133, 178, .25); }
+.particle-controls-v2 h3 { margin: 0 0 4px; color: #b9d2eb; font-size: .72rem; text-transform: uppercase; letter-spacing: .075em; }
+.particle-stepper {
+  display: grid;
+  grid-template-columns: 34px 1fr 30px 30px 30px;
+  align-items: center;
+  gap: 5px;
+  min-height: 46px;
+  border-bottom: 1px solid rgba(67, 127, 169, .2);
+}
+.particle-stepper > span:not(.atom-particle) strong,
+.particle-stepper > span:not(.atom-particle) small { display: block; }
+.particle-stepper > span:not(.atom-particle) strong { font-size: .76rem; }
+.particle-stepper > span:not(.atom-particle) small { color: var(--atom-muted); font-size: .6rem; }
+.particle-stepper button {
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border: 1px solid #2776aa; border-radius: 8px; background: #082a47; color: #86e3ff;
+}
+.particle-stepper button:hover:not(:disabled) { background: #0b3c63; border-color: #58ddff; }
+.particle-stepper button:disabled, .history-controls button:disabled { opacity: .3; cursor: not-allowed; }
+.particle-stepper output { text-align: center; color: #f2f8ff; font-weight: 850; }
+.history-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 9px; }
+.history-controls button { min-width: 0; padding: 0 4px; font-size: .66rem; }
+
+.atom-center-column { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.atom-stage-toolbar { min-height: 42px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.atom-view-tabs { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--atom-border); border-radius: 11px; background: #06182c; }
+.atom-view-tabs button { min-width: 78px; min-height: 32px; padding: 0 12px; border-radius: 8px; color: #abc1dc; font-size: .74rem; font-weight: 750; }
+.atom-view-tabs button.active { color: #03101d; background: linear-gradient(135deg, #45d9ff, #33a5ef); box-shadow: 0 0 16px rgba(58, 205, 255, .24); }
+.challenge-pill { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border: 1px solid rgba(139, 111, 246, .38); border-radius: 11px; color: #c7bfff; background: rgba(76, 47, 144, .16); }
+.challenge-pill span, .challenge-pill small, .challenge-pill strong { display: block; }
+.challenge-pill small { color: #9e9fbe; font-size: .55rem; text-transform: uppercase; letter-spacing: .07em; }
+.challenge-pill strong { font-size: .72rem; }
+.challenge-pill.complete { color: #7af0b8; border-color: rgba(77, 222, 151, .55); background: rgba(25, 124, 77, .16); }
+
+.atom-stage-v2 {
+  position: relative;
+  flex: 1;
+  min-height: 390px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 51%, rgba(10, 102, 164, .26), transparent 31%),
+    radial-gradient(circle at 22% 18%, rgba(90, 214, 255, .58) 0 1px, transparent 1.5px),
+    linear-gradient(160deg, #03162b, #010812);
+  background-size: auto, 58px 58px, auto;
+}
+.atom-stage-v2::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, transparent, rgba(79, 198, 255, .025), transparent); }
+.atom-stage-title { position: absolute; z-index: 8; inset: 15px 16px auto; text-align: center; pointer-events: none; }
+.atom-stage-title strong { display: block; color: #f1f8ff; font-size: 1.32rem; letter-spacing: -.025em; }
+.atom-stage-title span { display: block; margin-top: 2px; color: #83d8ff; font-size: .68rem; }
+.atom-view-frame { position: absolute; inset: 0; animation: atom-view-in .24s ease both; }
+.shell-zone-v2 { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: background .18s, box-shadow .18s; }
+.shell-zone-v2.is-dragging { background: rgba(10, 61, 94, .12); }
+.shell-zone-v2.valid-drop { box-shadow: inset 0 0 0 2px rgba(70, 226, 255, .22); }
+.shell-zone-v2.invalid-drop { box-shadow: inset 0 0 0 2px rgba(251, 113, 133, .13); }
+.shell-zone-v2.drop-hover.valid-drop { background: rgba(30, 172, 211, .09); box-shadow: inset 0 0 0 3px rgba(76, 225, 255, .55); }
+.electron-shell-v2 {
+  position: absolute;
+  width: var(--shell-size); height: var(--shell-size);
+  border: 1.5px solid rgba(105, 211, 255, .72); border-radius: 50%;
+  box-shadow: 0 0 8px rgba(41, 182, 255, .32), inset 0 0 9px rgba(41, 182, 255, .08);
+}
+.electron-shell-v2 .atom-particle { position: absolute; }
+.shell-cap-v2 { position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); white-space: nowrap; padding: 3px 8px; border: 1px solid #29658e; border-radius: 999px; color: #a9cbe3; background: #061425; font-size: .6rem; }
+.shell-cap-v2 strong { color: #67dcff; }
+.nucleus-v2 { position: absolute; left: 50%; top: 50%; width: 190px; height: 190px; transform: translate(-50%, -50%); border: 1px dashed transparent; border-radius: 50%; transition: border-color .18s, background .18s, transform .25s; }
+.nucleus-v2 .atom-particle { position: absolute; }
+.nucleus-v2.valid-drop { border-color: rgba(98, 231, 164, .55); background: rgba(38, 183, 126, .08); }
+.nucleus-v2.invalid-drop { border-color: rgba(251, 113, 133, .48); background: rgba(176, 45, 66, .08); }
+.nucleus-v2.drop-hover.valid-drop { border-width: 2px; background: rgba(43, 206, 142, .14); box-shadow: 0 0 28px rgba(52, 211, 153, .18); }
+.nucleus-only .nucleus-v2 { width: 300px; height: 300px; }
+.particle-enter { animation: particle-arrive .34s cubic-bezier(.2,.8,.3,1.25) var(--enter-delay, 0ms) both; }
+.particle-ghost { z-index: 10; left: calc(50% - 20px) !important; top: calc(50% - 20px) !important; opacity: .42; border: 2px dashed #fff !important; filter: saturate(.55); animation: ghost-pulse .8s ease-in-out infinite alternate; pointer-events: none; }
+.electron-ghost { position: absolute !important; left: calc(50% + 122px) !important; top: calc(50% - 17px) !important; }
+.drop-label, .shell-drop-label { position: absolute; z-index: 12; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 9px; border-radius: 7px; background: rgba(2, 10, 22, .88); color: #c8f4ff; font-size: .66rem; font-weight: 750; pointer-events: none; }
+.drop-label { bottom: 0; }
+.shell-drop-label { bottom: 54px; }
+.nucleus-only .shell-drop-label, .nucleus-only .electron-ghost { display: none; }
+
+.nuclide-symbol-v2 { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.nuclide-symbol-v2 > div { position: relative; width: 210px; height: 190px; display: grid; place-items: center; }
+.nuclide-symbol-v2 strong { font-size: 9.8rem; line-height: 1; text-shadow: 0 0 28px rgba(78, 207, 255, .2); }
+.nuclide-symbol-v2 sup, .nuclide-symbol-v2 sub, .nuclide-symbol-v2 em { position: absolute; font-size: 1.8rem; font-style: normal; }
+.nuclide-symbol-v2 sup { left: 3px; top: 20px; }
+.nuclide-symbol-v2 sub { left: 4px; bottom: 24px; }
+.nuclide-symbol-v2 em { right: -3px; top: 20px; color: #ffd75f; }
+.nuclide-symbol-v2 p { margin: 9px 0 2px; color: #78ddff; font-size: 1.2rem; font-weight: 800; }
+.nuclide-symbol-v2 > span { color: #9fb8d3; font-size: .78rem; }
+
+.atom-feedback { position: absolute; z-index: 14; left: 12px; right: 12px; bottom: 10px; min-height: 34px; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 6px 10px; border: 1px solid rgba(52, 173, 223, .28); border-radius: 9px; color: #bcecff; background: rgba(3, 18, 34, .82); backdrop-filter: blur(8px); font-size: .7rem; text-align: center; }
+.atom-feedback svg { flex: 0 0 auto; color: #ffd666; }
+.challenge-bar { min-height: 49px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 11px; border: 1px solid rgba(104, 82, 194, .35); border-radius: 12px; background: linear-gradient(90deg, rgba(58, 40, 122, .27), rgba(9, 35, 59, .9)); }
+.challenge-bar > div:first-child { display: flex; align-items: center; gap: 8px; color: #c0b8ff; }
+.challenge-bar span, .challenge-bar strong, .challenge-bar small { display: block; }
+.challenge-bar strong { color: #eeeaff; font-size: .74rem; }
+.challenge-bar small { margin-top: 1px; color: #a8b9d0; font-size: .63rem; }
+.challenge-options { display: flex; gap: 5px; }
+.challenge-options button { width: 27px; height: 27px; display: grid; place-items: center; border: 1px solid #4c5680; border-radius: 50%; color: #aab7d2; background: #101c34; font-size: .68rem; font-weight: 850; }
+.challenge-options button.active { border-color: #9381ff; color: #fff; background: #634dd0; box-shadow: 0 0 12px rgba(139, 116, 255, .3); }
+
+.atom-insight-rail { display: flex; flex-direction: column; gap: 8px; }
+.atom-info-v2 { padding: 0; overflow: hidden; flex: 0 0 auto; box-shadow: none; }
+.atom-info-tabs-v2 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid rgba(55, 137, 190, .35); }
+.atom-info-tabs-v2 button { min-width: 0; min-height: 41px; padding: 4px 3px; border-bottom: 2px solid transparent; color: #9db5d1; font-size: .59rem; font-weight: 800; line-height: 1.2; }
+.atom-info-tabs-v2 button:hover { color: #e9f7ff; background: rgba(14, 63, 99, .55); }
+.atom-info-tabs-v2 button.active { border-bottom-color: #41d4ff; color: #e5f9ff; background: rgba(22, 112, 164, .25); }
+.atom-info-body-v2 { padding: 10px; }
+.atom-info-body-v2 > h2 { margin: 0 0 4px; font-size: .92rem; }
+.identity-block { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+.identity-block > span { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid #30addd; border-radius: 11px; color: #8ce9ff; background: #082b49; font-size: 1.35rem; font-weight: 900; }
+.identity-block h2 { margin: 0; font-size: 1rem; }
+.identity-block p { margin: 2px 0 0; color: #a9c1da; font-size: .68rem; }
+.info-row { min-height: 29px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid rgba(52, 112, 155, .24); color: #aac1d9; font-size: .72rem; }
+.info-row strong { color: #edf8ff; text-align: right; }
+.info-row strong.stable { color: #6ce9ad; }
+.info-row strong.unstable { color: #ff8298; }
+.stability-explanation { display: flex; align-items: flex-start; gap: 7px; margin-top: 8px; padding: 8px; border: 1px solid rgba(83, 215, 155, .28); border-radius: 9px; color: #8debc0; background: rgba(25, 117, 76, .12); }
+.stability-explanation.unstable { border-color: rgba(251, 113, 133, .32); color: #ff9aaa; background: rgba(137, 33, 52, .14); }
+.stability-explanation svg { flex: 0 0 auto; }
+.stability-explanation p { margin: 0; color: #c5d8e7; font-size: .66rem; line-height: 1.38; }
+.info-copy { margin: 3px 0 9px; color: #a5bad1; font-size: .66rem; line-height: 1.4; }
+.decay-timeline { display: grid; grid-template-columns: 58px 1fr 58px; align-items: center; gap: 5px; margin: 10px 0; }
+.timeline-node { min-height: 77px; display: grid; place-items: center; padding: 5px; border: 1px solid #436391; border-radius: 10px; background: #0a203a; text-align: center; }
+.timeline-node > span { font-size: 1.4rem; font-weight: 900; color: #8ee9ff; }
+.timeline-node small { color: #a5bbd3; font-size: .56rem; line-height: 1.3; }
+.timeline-node.daughter { border-color: #705cb5; }
+.timeline-path { min-width: 0; display: grid; place-items: center; text-align: center; }
+.timeline-path svg { color: #b59eff; }
+.timeline-path strong { color: #efeaff; font-size: .6rem; }
+.timeline-path small { color: #899eb6; font-size: .5rem; }
+.half-life-card { display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid rgba(99, 116, 153, .3); border-radius: 8px; color: #a5bbd3; background: #071b30; font-size: .65rem; }
+.half-life-card strong { color: #f2f7ff; }
+.atom-notes-v2 { width: 100%; min-height: 118px; resize: vertical; padding: 9px; border: 1px solid #2c6086; border-radius: 9px; color: #eaf6ff; background: #06182c; font-size: .72rem; }
+
+.preset-panel, .compare-panel { border: 1px solid rgba(55, 133, 185, .34); border-radius: 11px; background: rgba(5, 24, 43, .76); }
+.preset-panel { padding: 9px; }
+.panel-label { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; color: #c8deee; font-size: .7rem; font-weight: 800; }
+.panel-label svg { color: #55ddff; }
+.preset-chips { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.preset-chips button { min-width: 0; min-height: 47px; display: grid; place-items: center; padding: 3px 1px; border: 1px solid #315777; border-radius: 8px; color: #b9caDC; background: #081c30; }
+.preset-chips button:hover { border-color: #54d8ff; background: #0c3150; }
+.preset-chips button.active { border-color: #54d8ff; color: #03131e; background: #59dafc; }
+.preset-chips strong { font-size: .76rem; }
+.preset-chips span { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; font-size: .48rem; }
+.compare-toggle { width: 100%; justify-content: flex-start; padding: 0 9px; border: 0; background: transparent; }
+.compare-toggle span { flex: 1; text-align: left; }
+.compare-toggle > svg:last-child { transition: transform .2s; }
+.compare-toggle > svg.open { transform: rotate(90deg); }
+.compare-body { padding: 0 8px 8px; }
+.compare-targets { display: flex; gap: 4px; margin-bottom: 7px; }
+.compare-targets button { flex: 1; min-width: 0; min-height: 27px; border: 1px solid #344e6d; border-radius: 7px; color: #a8bfd7; background: #07182b; font-size: .62rem; font-weight: 800; }
+.compare-targets button.active { color: #061521; border-color: #59d9ff; background: #5bdbff; }
+.compare-cards { display: grid; grid-template-columns: 1fr 20px 1fr; align-items: center; gap: 4px; }
+.compare-cards > div { min-width: 0; padding: 7px; border: 1px solid rgba(69, 118, 156, .3); border-radius: 8px; background: #071b30; }
+.compare-cards small, .compare-cards strong, .compare-cards span { display: block; }
+.compare-cards small { color: #829cb8; font-size: .52rem; text-transform: uppercase; }
+.compare-cards strong { margin: 2px 0; color: #e8f6ff; font-size: .85rem; }
+.compare-cards span { overflow: hidden; color: #9fb7d0; font-size: .55rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.atom-summary-grid { width: min(100%, 1600px); min-height: 55px; flex: 0 0 55px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px auto 0; }
+.atom-summary-card { position: relative; display: grid; grid-template-columns: 34px 1fr; grid-template-rows: 1fr 1fr; align-items: center; padding: 7px 11px; border: 1px solid color-mix(in srgb, var(--summary-tone), transparent 66%); border-radius: 11px; background: linear-gradient(115deg, color-mix(in srgb, var(--summary-tone), transparent 91%), #06172a); overflow: hidden; }
+.atom-summary-card::after { content: ''; position: absolute; right: -20px; top: -25px; width: 70px; height: 70px; border-radius: 50%; background: color-mix(in srgb, var(--summary-tone), transparent 88%); filter: blur(8px); }
+.atom-summary-card > svg { grid-row: 1 / 3; color: var(--summary-tone); }
+.atom-summary-card span { align-self: end; color: #96aec8; font-size: .61rem; text-transform: uppercase; letter-spacing: .06em; }
+.atom-summary-card strong { align-self: start; color: var(--summary-tone); font-size: 1rem; line-height: 1.15; }
+
+.atom-modal-backdrop { position: fixed; z-index: 180; inset: 0; display: grid; place-items: center; padding: 22px; background: rgba(0, 6, 14, .78); backdrop-filter: blur(8px); }
+.atom-chart-modal { width: min(870px, 94vw); max-height: 90dvh; padding: 14px; border: 1px solid rgba(73, 190, 239, .5); border-radius: 17px; background: linear-gradient(145deg, #071e37, #020d1c); box-shadow: 0 28px 80px rgba(0,0,0,.55); }
+.modal-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.modal-heading span { color: #62ddff; font-size: .62rem; font-weight: 850; text-transform: uppercase; letter-spacing: .1em; }
+.modal-heading h2 { margin: 2px 0 0; font-size: 1.35rem; }
+.modal-heading button { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid #315a7f; border-radius: 9px; color: #cbeaff; background: #09243f; }
+.nuclear-chart-expanded { padding: 8px 16px 22px; border: 0; background: transparent; box-shadow: none; }
+.nuclear-chart-expanded .nuclear-chart-heading p { margin: 2px 0 0; color: #94abc6; font-size: .68rem; }
+.nuclear-chart-expanded .nuclear-plot { height: min(55vh, 450px); margin: 12px 28px 0 38px; }
+.nuclear-chart-expanded .nuclear-point { width: 10px; height: 10px; border-radius: 2px; }
+.nuclear-chart-expanded .nuclear-point.selected { width: 16px; height: 16px; }
+
+.atom-mobile-dock, .mobile-sheet-backdrop { display: none; }
+.atom-focus-mode .atom-build-rail,
+.atom-focus-mode .atom-insight-rail,
+.atom-focus-mode .challenge-bar,
+.atom-focus-mode .atom-summary-grid { display: none; }
+.atom-focus-mode .atom-workspace { grid-template-columns: 1fr; }
+.atom-focus-mode .atom-stage-v2 { min-height: 420px; }
+.atom-focus-mode .atom-center-column { width: min(1180px, 100%); height: 100%; margin: 0 auto; }
+
+@keyframes particle-arrive { from { opacity: 0; transform: scale(.15) translateY(-24px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes ghost-pulse { to { opacity: .72; transform: scale(1.12); } }
+@keyframes atom-view-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+
+@media (max-width: 1250px) {
+  .atom-workspace { grid-template-columns: 244px minmax(480px, 1fr) 276px; }
+  .tray-card-v2 { grid-template-columns: 14px 42px 1fr; }
+  .tray-card-v2 em { display: none; }
+  .preset-chips { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 980px) {
+  .atom-builder-v2 { height: 100dvh; min-height: 100dvh; padding: 10px 10px 72px; }
+  .atom-heading p { display: none; }
+  .atom-header-actions button:first-child { display: none; }
+  .atom-header-actions button { min-width: 38px; padding: 0 9px; font-size: 0; }
+  .atom-header-actions button svg { width: 18px; height: 18px; }
+  .atom-workspace { display: block; }
+  .atom-center-column { height: 100%; }
+  .atom-stage-toolbar { min-height: 40px; }
+  .atom-stage-v2 { flex: 1; min-height: 0; }
+  .challenge-bar { flex: 0 0 auto; }
+  .atom-summary-grid { display: none; }
+  .atom-build-rail, .atom-insight-rail {
+    position: fixed; z-index: 170; left: 8px; right: 8px; bottom: 63px;
+    max-height: min(72dvh, 620px); transform: translateY(calc(100% + 84px));
+    transition: transform .28s ease; border-color: rgba(83, 201, 244, .6); border-radius: 18px;
+  }
+  .atom-build-rail.mobile-open, .atom-insight-rail.mobile-open { transform: translateY(0); }
+  .mobile-sheet-handle { display: block; width: 42px; height: 4px; margin: 2px auto 9px; border-radius: 99px; background: #47718f; }
+  .mobile-sheet-close { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid #315a7b; border-radius: 8px; color: #c7eaff; background: #0a2843; }
+  .particle-tray-v2 { grid-template-columns: repeat(3, 1fr); }
+  .tray-card-v2 { grid-template-columns: 14px 40px 1fr; }
+  .atom-mobile-dock { position: fixed; z-index: 175; left: 50%; bottom: 9px; transform: translateX(-50%); display: grid; grid-template-columns: repeat(3, 1fr); width: min(330px, calc(100vw - 118px)); padding: 4px; border: 1px solid rgba(82, 184, 229, .52); border-radius: 14px; background: rgba(4, 20, 37, .95); box-shadow: 0 12px 35px rgba(0,0,0,.42); backdrop-filter: blur(10px); }
+  .atom-mobile-dock button { min-height: 41px; display: flex; align-items: center; justify-content: center; gap: 5px; border-radius: 10px; color: #a9c4dd; font-size: .68rem; font-weight: 800; }
+  .atom-mobile-dock button[aria-pressed="true"] { color: #04121d; background: #58d8fa; }
+  .mobile-sheet-backdrop { position: fixed; z-index: 160; inset: 0; display: block; border: 0; background: rgba(0,7,16,.66); }
+  .atom-focus-mode .challenge-bar { display: flex; }
+}
+
+@media (max-width: 640px) {
+  .atom-builder-v2 { padding: 8px 7px 69px; }
+  .atom-builder-header { min-height: 38px; margin-bottom: 4px; }
+  .atom-heading { gap: 6px; }
+  .atom-heading > svg { width: 26px; height: 26px; }
+  .atom-heading h1 { font-size: 1.25rem; }
+  .atom-view-tabs button { min-width: 64px; min-height: 30px; padding: 0 8px; }
+  .challenge-pill { max-width: 132px; padding: 4px 7px; }
+  .challenge-pill svg { display: none; }
+  .challenge-pill strong { max-width: 102px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .atom-stage-v2 { min-height: 0; border-radius: 11px; }
+  .atom-stage-title { top: 10px; }
+  .atom-stage-title strong { font-size: 1rem; }
+  .electron-shell-v2 { transform: scale(.68); }
+  .nucleus-v2 { transform: translate(-50%, -50%) scale(.72); }
+  .nucleus-only .nucleus-v2 { transform: translate(-50%, -50%) scale(.78); }
+  .atom-feedback { left: 7px; right: 7px; bottom: 7px; font-size: .62rem; }
+  .challenge-bar { min-height: 46px; padding: 5px 8px; }
+  .challenge-bar small { max-width: 205px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .particle-tray-v2 { grid-template-columns: 1fr; }
+  .atom-build-rail, .atom-insight-rail { bottom: 60px; max-height: 76dvh; }
+  .atom-mobile-dock { width: min(300px, calc(100vw - 104px)); }
+  .nuclide-symbol-v2 strong { font-size: 7.8rem; }
+  .nuclear-chart-expanded .nuclear-plot { height: 54vh; margin-left: 24px; margin-right: 8px; }
+  .nuclear-chart-expanded .nuclear-point { width: 7px; height: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atom-builder-v2 *, .atom-builder-v2 *::before, .atom-builder-v2 *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}

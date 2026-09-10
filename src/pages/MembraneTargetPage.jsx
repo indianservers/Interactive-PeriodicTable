@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Activity,
   Droplets,
@@ -6,8 +6,31 @@ import {
   Play,
   RotateCcw,
   Settings2,
+  Maximize2,
+  Database,
   Waves,
 } from "lucide-react";
+import "./biochemistryPages.css";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+
+const PUMP_SOURCE={url:"/assets/membranes/structures/4HQJ.cif",format:"mmcif",label:"4HQJ Na+,K+-ATPase"};
+
+function MolecularMembraneScene({viewerRef,style,setStyle,showPlane,setShowPlane,ready,setReady,selectedAtom,setSelectedAtom,focusChain,focusLigand}) {
+  return <div className="relative h-[520px] overflow-hidden rounded bg-[#06131f]" data-membrane-view="molecular">
+    <ViewerErrorBoundary label="Membrane protein viewer"><MolstarViewer ref={viewerRef} source={PUMP_SOURCE} sourceType="mmcif" pdbId="4HQJ" label="Na+,K+-ATPase in the Na+-bound state" representation={{Cartoon:style==="Cartoon",Surface:style==="Surface",BallAndStick:style==="Atoms",Ligand:true,Ion:true}} colorScheme="chain" showLabels={false} onReady={()=>{setReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(1.8));}} onLoadError={()=>setReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary>
+    <div className="pointer-events-none absolute left-3 top-3 z-10 rounded border border-white/10 bg-[#06131fdd] px-2 py-1 text-[10px] text-slate-300"><b className="text-cyan-200">PDB 4HQJ</b> · Na⁺-bound Na⁺/K⁺-ATPase · X-ray diffraction · 4.30 Å · <i>Sus scrofa</i></div>
+    {showPlane&&<div className="pointer-events-none absolute inset-x-0 top-1/2 z-[5] h-36 -translate-y-1/2 border-y border-cyan-300/65 bg-cyan-400/[.055]" data-membrane-plane="approximate"><span className="absolute left-3 top-2 rounded bg-[#06131fd9] px-2 py-1 text-[10px] text-cyan-100">Hydrophilic headgroup region</span><span className="absolute bottom-2 left-3 rounded bg-[#06131fd9] px-2 py-1 text-[10px] text-amber-100">Hydrophobic membrane core · schematic orientation guide</span></div>}
+    <div className="absolute right-3 top-3 z-10 flex flex-wrap justify-end gap-1 rounded border border-white/10 bg-[#06131fdd] p-2 text-[10px]">
+      <span className={`mr-1 self-center ${ready?"text-emerald-300":"text-slate-400"}`}>{ready?"Mol* ready":"Loading 4HQJ…"}</span>
+      {["Cartoon","Surface","Atoms"].map(item=><button key={item} aria-pressed={style===item} onClick={()=>setStyle(item)} className={`rounded border px-2 py-1 ${style===item?"border-cyan-300 bg-cyan-300/15":"border-white/15"}`}>{item}</button>)}
+      <button aria-pressed={showPlane} onClick={()=>setShowPlane(value=>!value)} className="rounded border border-white/15 px-2 py-1">Membrane plane</button>
+      <button onClick={()=>viewerRef.current?.reset()} className="rounded border border-white/15 px-2 py-1">Reset</button><button aria-label="Full screen molecular structure" onClick={()=>viewerRef.current?.fullscreen()} className="rounded border border-white/15 px-2 py-1"><Maximize2 size={13}/></button>
+    </div>
+    <div className="absolute bottom-12 left-3 z-10 flex flex-wrap gap-1 rounded border border-white/10 bg-[#06131fdd] p-2 text-[10px]"><span className="self-center text-slate-400">Chains</span>{[["A","α transporter"],["B","β subunit"],["G","FXYD"]].map(([chain,label])=><button key={chain} onClick={()=>focusChain(chain)} className="rounded border border-white/15 px-2 py-1">{chain} · {label}</button>)}<span className="ml-1 self-center text-slate-400">Ligands</span>{[["NA","Na⁺"],["ADP","ADP"],["CLR","cholesterol"]].map(([id,label])=><button key={id} onClick={()=>focusLigand(id)} className="rounded border border-white/15 px-2 py-1">{label}</button>)}</div>
+    <div className="absolute bottom-2 right-3 z-10 max-w-[70%] rounded bg-[#06131fd9] px-2 py-1 text-right text-[10px] text-slate-300">{selectedAtom?`${selectedAtom.element} · ${selectedAtom.residueName} ${selectedAtom.atom} · chain ${selectedAtom.chain} · [${selectedAtom.coordinates.map(value=>value.toFixed(2)).join(", ")}] Å`:"Click an atom to inspect chain, ligand, and Cartesian coordinates"}</div>
+  </div>;
+}
 
 function MembraneScene({
   composition,
@@ -192,6 +215,12 @@ export default function MembraneTargetPage() {
     pumps: 2,
   });
   const [notice, setNotice] = useState("");
+  const [displayMode,setDisplayMode]=useState("schematic");
+  const [structureStyle,setStructureStyle]=useState("Cartoon");
+  const [showPlane,setShowPlane]=useState(true);
+  const [structureReady,setStructureReady]=useState(false);
+  const [selectedAtom,setSelectedAtom]=useState(null);
+  const viewerRef=useRef(null);
   const announce = (x) => setNotice(x);
   useEffect(() => {
     if (!running) return undefined;
@@ -201,6 +230,7 @@ export default function MembraneTargetPage() {
     );
     return () => window.clearInterval(timer);
   }, [running, speed]);
+  useEffect(()=>{if(displayMode!=="molecular"||!structureReady)return;const ligand={2:"ADP",3:"NA",4:"CLR",5:"ADP"}[pumpStep];if(ligand)viewerRef.current?.focusLigandId(ligand,"A");else viewerRef.current?.reset();},[pumpStep,displayMode,structureReady]);
   const flux = Math.round(
     (water / 100) * Math.max(0, 100 - Math.abs(temp - 37) * 1.8),
   );
@@ -226,11 +256,11 @@ export default function MembraneTargetPage() {
     announce("Membrane lab reset");
   };
   return (
-    <div
+    <div data-bio-page="membrane"
       className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
-      <header className="flex h-[70px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5">
+      <header className="membrane-header flex h-[70px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5">
         <Waves size={36} className="text-cyan-300" />
         <div>
           <h1 className="text-2xl font-black">Membrane Dynamics Lab</h1>
@@ -239,6 +269,7 @@ export default function MembraneTargetPage() {
           </p>
         </div>
         <div className="ml-auto flex items-center gap-4 text-xs">
+          <div className="membrane-mode-toggle flex rounded border border-white/15 p-1" aria-label="Membrane display mode"><button aria-pressed={displayMode==="schematic"} onClick={()=>setDisplayMode("schematic")} className={`rounded px-2 py-1 ${displayMode==="schematic"?"bg-cyan-300/15 text-cyan-200":""}`}>Teaching schematic</button><button aria-pressed={displayMode==="molecular"} onClick={()=>setDisplayMode("molecular")} className={`rounded px-2 py-1 ${displayMode==="molecular"?"bg-cyan-300/15 text-cyan-200":""}`}><Database size={13} className="mr-1 inline"/>Molecular structure</button></div>
           <label>
             Simulation Speed{" "}
             <input
@@ -267,7 +298,7 @@ export default function MembraneTargetPage() {
           <Settings2 size={18} />
         </div>
       </header>
-      <div className="grid h-[calc(100vh-70px)] grid-cols-[255px_1fr_350px] gap-2 p-2">
+      <div className="membrane-layout grid h-[calc(100vh-70px)] grid-cols-[255px_1fr_350px] gap-2 p-2">
         <aside className="overflow-y-auto rounded-lg border border-white/10 bg-[#0a1e31] p-3">
           <h2 className="font-bold">Membrane Composition</h2>
           {[
@@ -362,8 +393,18 @@ export default function MembraneTargetPage() {
           </label>
         </aside>
         <main className="rounded-lg border border-white/10 bg-gradient-to-b from-[#1c4a65] via-[#092538] to-[#0b1826] p-3">
+          {displayMode==="molecular"?<MolecularMembraneScene viewerRef={viewerRef} style={structureStyle} setStyle={setStructureStyle} showPlane={showPlane} setShowPlane={setShowPlane} ready={structureReady} setReady={setStructureReady} selectedAtom={selectedAtom} setSelectedAtom={setSelectedAtom} focusChain={chain=>viewerRef.current?.focusChain(chain)} focusLigand={id=>viewerRef.current?.focusLigandId(id,"A")}/>:<>
           <div className="relative h-[520px] overflow-hidden rounded bg-blue-900/20">
-            <div className="absolute inset-y-48 left-0 right-0 h-24 bg-gradient-to-b from-blue-400/80 via-slate-300/80 to-blue-400/80 shadow-[0_0_30px_#38bdf8]" />
+            <div className="pointer-events-none absolute inset-0 z-10">
+              <MembraneScene
+                composition={composition}
+                showWater={showWater}
+                showLabels={showLabels}
+                running={running}
+                speed={speed}
+                water={water}
+              />
+            </div>
             {showWater && (
               <div
                 className="pointer-events-none absolute inset-x-10 top-24 grid grid-cols-8 gap-3 text-center text-sm text-cyan-100/80"
@@ -379,15 +420,6 @@ export default function MembraneTargetPage() {
                 ))}
               </div>
             )}
-            <div className="absolute left-1/2 top-40 -translate-x-1/2 text-center text-7xl text-rose-400">
-              ✤
-            </div>
-            <div className="absolute left-1/2 top-40 ml-28 text-center text-7xl text-violet-400">
-              ✤
-            </div>
-            <div className="absolute left-1/2 top-40 ml-[-180px] text-center text-7xl text-emerald-400">
-              ✤
-            </div>
             <div className="absolute left-5 top-5 text-lg font-bold">
               Extracellular Fluid
               <br />
@@ -419,20 +451,8 @@ export default function MembraneTargetPage() {
             >
               Na⁺/K⁺ pump · ATP
             </div>
-            <div
-              className="pointer-events-none z-10"
-              style={{ position: "absolute", inset: 0 }}
-            >
-              <MembraneScene
-                composition={composition}
-                showWater={showWater}
-                showLabels={showLabels}
-                running={running}
-                speed={speed}
-                water={water}
-              />
-            </div>
           </div>
+          </>}
           <div className="mt-3 flex items-center gap-2">
             {[
               "Simple Diffusion",

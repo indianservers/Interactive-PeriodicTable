@@ -1,290 +1,44 @@
-import { useState } from "react";
-import { Box, CircleDot, Eye, Home, Settings2, Sparkles } from "lucide-react";
-const structures = [
-  ["NaCl", "Rock salt", "Face-centered cubic (FCC)"],
-  ["CsCl", "Cesium chloride", "Primitive cubic"],
-  ["ZnS", "Zinc blende", "FCC"],
-  ["CaF₂", "Fluorite", "FCC"],
-];
-export default function CrystalTargetPage() {
-  const [s, setS] = useState(0);
-  const [cell, setCell] = useState(true);
-  const [poly, setPoly] = useState(false);
-  const [defect, setDefect] = useState(false);
-  const [query, setQuery] = useState("");
-  const [notice, setNotice] = useState("");
-  const announce = (x) => setNotice(x);
-  const [name, type, unit] = structures[s];
-  const visibleStructures = structures
-    .map((item, index) => ({ item, index }))
-    .filter(({ item }) =>
-      item.join(" ").toLowerCase().includes(query.trim().toLowerCase()),
-    );
-  const structureProps =
-    {
-      NaCl: [
-        "Fm-3m (No. 225)",
-        "6:6",
-        "4",
-        "5.64 Å",
-        "0.67 (67%)",
-        "2.17 g cm⁻³",
-      ],
-      CsCl: [
-        "Pm-3m (No. 221)",
-        "8:8",
-        "1",
-        "4.12 Å",
-        "0.68 (68%)",
-        "3.99 g cm⁻³",
-      ],
-      ZnS: [
-        "F-43m (No. 216)",
-        "4:4",
-        "4",
-        "5.41 Å",
-        "0.34 (34%)",
-        "4.09 g cm⁻³",
-      ],
-      "CaF₂": [
-        "Fm-3m (No. 225)",
-        "8:4",
-        "4",
-        "5.46 Å",
-        "0.67 (67%)",
-        "3.18 g cm⁻³",
-      ],
-    }[name] || [];
-  const structureMeta = {
-    NaCl: {
-      formula: "NaCl",
-      cation: "Na⁺ (sodium)",
-      anion: "Cl⁻ (chloride)",
-      molar: "58.44 g mol⁻¹",
-      d111: "3.26 Å",
-    },
-    CsCl: {
-      formula: "CsCl",
-      cation: "Cs⁺ (cesium)",
-      anion: "Cl⁻ (chloride)",
-      molar: "168.36 g mol⁻¹",
-      d111: "2.38 Å",
-    },
-    ZnS: {
-      formula: "ZnS",
-      cation: "Zn²⁺ (zinc)",
-      anion: "S²⁻ (sulfide)",
-      molar: "97.46 g mol⁻¹",
-      d111: "3.12 Å",
-    },
-    "CaF₂": {
-      formula: "CaF₂",
-      cation: "Ca²⁺ (calcium)",
-      anion: "F⁻ (fluoride)",
-      molar: "78.07 g mol⁻¹",
-      d111: "3.15 Å",
-    },
-  }[name];
-  return (
-    <div
-      className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
-      style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
-    >
-      <header className="flex h-[58px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5">
-        <Box className="text-cyan-300" size={32} />
-        <h1 className="text-2xl font-black">Crystal Lattice Explorer</h1>
-        <p className="text-xs text-slate-400">
-          Visualize · Analyze · Understand · Build Materials
-        </p>
-        <nav className="ml-auto flex gap-4 text-xs">
-          <button className="rounded border border-cyan-300/50 px-3 py-2 text-cyan-200">
-            ▣ 3D View
-          </button>
-          <button onClick={() => announce("2D view selected")}>2D View</button>
-          <button onClick={() => announce("Properties selected")}>
-            Properties
-          </button>
-          <button onClick={() => announce("Diffraction selected")}>
-            Diffraction
-          </button>
-          <Settings2 size={17} />
-        </nav>
-      </header>
-      <div className="grid h-[calc(100vh-58px)] grid-cols-[240px_1fr_315px] grid-rows-[1fr_250px] gap-2 p-2">
-        <aside className="row-span-2 overflow-y-auto rounded-lg border border-white/10 bg-[#0a1e31] p-3">
-          <h2 className="font-bold">Structure Library</h2>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search structures..."
-            className="mt-3 w-full rounded border border-white/20 bg-slate-950 p-2 text-xs"
-          />
-          {visibleStructures.map(({ item: [a, b, c], index: i }) => (
-            <button
-              key={a}
-              onClick={() => {
-                setS(i);
-                announce(a + " loaded");
-              }}
-              className={`mt-2 w-full rounded border p-3 text-left ${s === i ? "border-cyan-300 bg-cyan-300/10" : "border-white/10"}`}
-            >
-              <div className="grid grid-cols-[45px_1fr] items-center gap-2">
-                <span className="grid h-10 place-items-center rounded bg-emerald-400/40">
-                  ✣
-                </span>
-                <span>
-                  <b>{a}</b>
-                  <br />
-                  <span className="text-xs text-slate-400">
-                    {b}
-                    <br />
-                    {c}
-                  </span>
-                </span>
-              </div>
-            </button>
-          ))}
-          <div className="mt-5 space-y-2 text-xs">
-            {[
-              "Home",
-              "Structures",
-              "Visualize",
-              "Simulate",
-              "Properties",
-              "Diffraction",
-              "Defects",
-              "Tools",
-              "Learn",
-            ].map((x) => (
-              <button
-                key={x}
-                onClick={() => announce(x + " opened")}
-                className="block w-full py-2 text-left text-slate-300"
-              >
-                <Home size={14} className="mr-2 inline" />
-                {x}
-              </button>
-            ))}
-          </div>
-        </aside>
-        <main className="rounded-lg border border-white/10 bg-gradient-to-br from-[#123b54] to-[#081522] p-3">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-black">
-                {name} · {type}
-              </h2>
-              <p className="text-sm text-slate-400">
-                {structureMeta.formula} | {unit}
-              </p>
-            </div>
-            <div className="text-xs text-slate-300">
-              🟣 {structureMeta.cation}
-              <br />
-              🟢 {structureMeta.anion}
-            </div>
-          </div>
-          <div className="mt-4 grid h-[365px] place-items-center">
-            <div className="relative grid h-64 w-64 place-items-center rounded border border-white/70 bg-white/5 text-3xl">
-              {name}
-              <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 p-3">
-                {Array.from({ length: 16 }, (_, i) => (
-                  <span
-                    key={i}
-                    className={`grid place-items-center text-base ${i % 2 ? "text-lime-300" : "text-purple-300"}`}
-                  >
-                    ●
-                  </span>
-                ))}
-              </div>
-              {cell && (
-                <div className="absolute inset-[-20px] border border-white/70" />
-              )}
-            </div>
-          </div>
-          <div className="flex gap-2">
-            {[
-              ["Show unit cell", cell, setCell],
-              ["Show coordination polyhedra", poly, setPoly],
-              ["Add vacancy defect", defect, setDefect],
-              ["Label ions", false, () => announce("Ion labels toggled")],
-            ].map(([x, v, set]) => (
-              <button
-                key={x}
-                onClick={() => {
-                  set(!v);
-                  announce(x + " toggled");
-                }}
-                className={`rounded border px-4 py-2 text-xs ${v ? "border-cyan-300 bg-cyan-300/15" : "border-white/20"}`}
-              >
-                {x}
-              </button>
-            ))}
-          </div>
-        </main>
-        <aside className="row-span-2 rounded-lg border border-white/10 bg-[#0a1e31] p-4">
-          <h2 className="font-bold">Structure Information</h2>
-          {[
-            ["Crystal system", "Cubic"],
-            ["Space group", structureProps[0]],
-            ["Unit cell type", unit],
-            ["Coordination", structureProps[1]],
-            ["Formula units (Z)", structureProps[2]],
-            ["Lattice parameter a", structureProps[3]],
-            ["Chemical formula", name],
-          ].map(([a, b]) => (
-            <div
-              key={a}
-              className="flex justify-between border-b border-white/10 py-3 text-xs"
-            >
-              <span className="text-slate-400">{a}</span>
-              <b>{b}</b>
-            </div>
-          ))}
-          <h2 className="mt-5 font-bold">Derived Properties</h2>
-          {[
-            ["Packing fraction", structureProps[4]],
-            ["Theoretical density", structureProps[5]],
-            ["Molar mass", structureMeta.molar],
-            ["Volume per formula unit", "95.1 Å³"],
-          ].map(([a, b]) => (
-            <div key={a} className="flex justify-between py-2 text-xs">
-              <span>{a}</span>
-              <b>{b}</b>
-            </div>
-          ))}
-        </aside>
-        <section className="rounded-lg border border-white/10 bg-[#0a1e31] p-3">
-          <h3 className="font-bold">Miller Plane (111)</h3>
-          <div className="mt-3 grid place-items-center text-6xl text-emerald-300">
-            ▧
-          </div>
-          <p className="text-center text-xs text-slate-400">
-            Interplanar spacing d₁₁₁ {structureMeta.d111}
-          </p>
-        </section>
-        <section className="rounded-lg border border-white/10 bg-[#0a1e31] p-3">
-          <h3 className="font-bold">X-ray Diffraction (Simulated)</h3>
-          <div className="mt-5 flex h-28 items-end justify-around border-b border-l border-cyan-300/40">
-            {["(111)", "(200)", "(220)", "(311)", "(222)"].map((x, i) => (
-              <div key={x} className="text-center text-[10px] text-cyan-200">
-                <div
-                  className="mx-auto w-1 bg-white"
-                  style={{ height: [90, 55, 38, 50, 28][i] }}
-                />
-                {x}
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-      {notice && (
-        <div
-          role="status"
-          className="fixed bottom-4 right-5 rounded-full border border-cyan-300/40 bg-slate-950 px-4 py-2 text-xs"
-        >
-          {notice}
-        </div>
-      )}
-    </div>
-  );
+import {useEffect,useMemo,useRef,useState} from 'react';
+import {Box,Home,Eye,Network,ChartNoAxesColumn,ScanLine,Wrench,BookOpen,Settings,Tag,RotateCcw,Download,Upload,Maximize2,Menu,X} from 'lucide-react';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+import CrystalScene,{makeThumbnails} from '../components/crystal/CrystalScene.jsx';
+import {crystalStructures,derived,planeData} from '../components/crystal/crystalStructures.js';
+import DiffractionChart from '../components/crystal/DiffractionChart.jsx';
+import MolstarViewer from '../components/molecular-viewer/MolstarViewer.jsx';
+import ViewerErrorBoundary from '../components/molecular-viewer/ViewerErrorBoundary.jsx';
+import './crystalExplorer.css';
+
+function Check({label,value,onChange}){return <label className="crystal-check"><input type="checkbox" checked={value} onChange={e=>onChange(e.target.checked)}/>{label}</label>;}
+const COD_NACL_SOURCE={url:'/assets/crystals/cod/9008678-nacl.cif',format:'cifCore',label:'COD 9008678 sodium chloride',structureParams:{name:'symmetry',params:{ijkMin:[0,0,0],ijkMax:[0,0,0]}}};
+export default function CrystalTargetPage({onNavigate}){
+ const [id,setId]=useState('nacl'),[query,setQuery]=useState(''),[thumbs,setThumbs]=useState({}),[thumbError,setThumbError]=useState('');
+ const [repeat,setRepeat]=useState(4),[cell,setCell]=useState(true),[poly,setPoly]=useState(true),[vacancy,setVacancy]=useState(false),[defect,setDefect]=useState(0),[interstitial,setInterstitial]=useState(false),[labels,setLabels]=useState(false);
+ const [cutaway,setCutaway]=useState(true);
+ const [mode,setMode]=useState('Solid'),[view,setView]=useState('3D'),[rotate,setRotate]=useState(()=>!matchMedia('(prefers-reduced-motion: reduce)').matches),[clip,setClip]=useState(false),[hkl,setHkl]=useState([1,1,1]),[showPlane,setShowPlane]=useState(true),[atomsInPlane,setAtomsInPlane]=useState(true),[shade,setShade]=useState(false);
+ const [dialog,setDialog]=useState(''),[navOpen,setNavOpen]=useState(false),[cifSource,setCifSource]=useState(COD_NACL_SOURCE),[cifName,setCifName]=useState('COD 9008678 · sodium chloride'),[cifStyle,setCifStyle]=useState('Spacefill'),[cifCell,setCifCell]=useState(true),[cifReady,setCifReady]=useState(false),[cifPick,setCifPick]=useState(null),[cifError,setCifError]=useState('');const modal=useRef(null),sceneApi=useRef(null),molstarApi=useRef(null),search=useRef(null),cifInput=useRef(null);
+ const s=crystalStructures.find(s=>s.id===id),properties=derived(s),plane=planeData(s,hkl);
+ const options={cutaway,repeat,cell,poly,vacancy,defect,interstitial,labels,mode,view,rotate,clip,hkl,showPlane:clip&&showPlane,atomsInPlane:false,shade};
+ useEffect(()=>{const timer=setTimeout(()=>{try{setThumbs(makeThumbnails(crystalStructures));}catch(e){setThumbError('Thumbnail renderer unavailable. Structure selection still works.');}},100);return()=>clearTimeout(timer);},[]);
+ useEffect(()=>{if(dialog)modal.current?.showModal();else modal.current?.close();},[dialog]);
+ const select=next=>{setId(next);setVacancy(false);setInterstitial(false);setDefect(0);};
+ const focus=id=>{document.getElementById(id)?.scrollIntoView({block:'nearest',behavior:'smooth'});document.getElementById(id)?.focus({preventScroll:true});};
+ const navigate=name=>{setNavOpen(false);if(name==='Home')onNavigate?.('dashboard');else if(name==='Structures')search.current?.focus();else if(name==='Visualize')sceneApi.current?.reset();else if(name==='Properties')focus('crystal-information');else if(name==='Diffraction')focus('crystal-xrd');else if(name==='Simulate'||name==='Defects')focus('crystal-controls');else setDialog(name);};
+ const equation=useMemo(()=>katex.renderToString('\\rho=\\frac{ZM}{N_A V_{\\mathrm{cell}}}='+properties.density.toFixed(2)+'\\;\\mathrm{g\\,cm^{-3}}',{throwOnError:false}),[properties.density]);
+ const exportPNG=()=>{const data=sceneApi.current?.png();if(!data)return;const a=document.createElement('a');a.href=data;a.download=s.id+'-lattice.png';a.click();};
+ const inspectCif=()=>{setId('nacl');setView('CIF');setCifSource(COD_NACL_SOURCE);setCifName('COD 9008678 · sodium chloride');setCifError('');setCifPick(null);};
+ const importCif=async event=>{const file=event.target.files?.[0];event.target.value='';if(!file)return;if(!/\.cif$/i.test(file.name)){setCifError('Choose a .cif crystallographic coordinate file.');return;}if(file.size>12_000_000){setCifError('CIF files must be 12 MB or smaller.');return;}try{const data=await file.text();if(!/^\s*(?:#[^\n]*\n\s*)*data_/im.test(data)||!/_atom_site_/i.test(data))throw new Error('The file does not contain a CIF data block with atom-site coordinates.');setCifSource({data,format:'cifCore',label:file.name,structureParams:{name:'symmetry',params:{ijkMin:[0,0,0],ijkMax:[0,0,0]}}});setCifName(file.name);setCifError('');setCifPick(null);setView('CIF');}catch(error){setCifError(error.message);}};
+ const visible=crystalStructures.filter(s=>(s.formula+' '+s.name+' '+s.title).toLowerCase().includes(query.trim().toLowerCase()));
+ return <div className="crystal-explorer">
+  <header className="crystal-header"><button className="crystal-menu" aria-label="Toggle crystal navigation" onClick={()=>setNavOpen(v=>!v)}><Menu/></button><Box size={32}/><h1>Crystal Lattice Explorer</h1><p>Visualize · Analyze · Understand · Build Materials</p><nav>{['3D','2D'].map(v=><button key={v} aria-pressed={view===v} onClick={()=>setView(v)}>{v} View</button>)}<button aria-pressed={view==='CIF'} onClick={inspectCif}>CIF Inspect</button><button onClick={()=>focus('crystal-information')}>Properties</button><button onClick={()=>focus('crystal-xrd')}>Diffraction</button><button aria-label="Crystal settings" onClick={()=>setDialog('Settings')}><Settings size={18}/></button></nav></header>
+  <div className="crystal-layout">
+   <aside className={'crystal-rail '+(navOpen?'open':'')} aria-label="Crystal navigation">{[[Home,'Home'],[Box,'Structures'],[Eye,'Visualize'],[Network,'Simulate'],[ChartNoAxesColumn,'Properties'],[ScanLine,'Diffraction'],[Network,'Defects'],[Wrench,'Tools'],[BookOpen,'Learn']].map(([Icon,name])=><button key={name} onClick={()=>navigate(name)} className={name==='Structures'?'active':''}><Icon size={24}/><span>{name}</span></button>)}<p>ATOMS<br/>BUILD<br/>A BRIGHTER<br/>TOMORROW</p></aside>
+   <aside className="crystal-library"><h2>Structure Library</h2><input ref={search} aria-label="Search structures" placeholder="Search structures…" value={query} onChange={e=>setQuery(e.target.value)}/><div className="crystal-library-list">{visible.map(item=><button key={item.id} aria-label={item.name} aria-pressed={id===item.id} onClick={()=>select(item.id)}>{thumbs[item.id]?<img src={thumbs[item.id]} alt={item.name+' unit cell'}/>:<span className="crystal-thumb-loading">Rendering…</span>}<span><strong>{item.formula}</strong><small>{item.name}</small></span></button>)}</div>{!visible.length&&<p>No matching structures. Try “carbon” or “salt”.</p>}{thumbError&&<p role="status">{thumbError}</p>}</aside>
+   <main className={'crystal-stage '+(view==='CIF'?'is-cif':'')}><div className="crystal-title"><div><h2>{view==='CIF'?'Coordinate-backed crystal inspection':s.title+' · '+s.name}</h2><p>{view==='CIF'?cifName+' │ experimental/imported CIF':s.formula+' │ '+s.unit}</p></div>{view!=='CIF'&&<div className="crystal-legend">{s.species.map(sp=><span key={sp.label}><i style={{background:sp.color}}/>{sp.label}</span>)}</div>} {view==='CIF'&&<span className={'crystal-cif-status '+(cifReady?'ready':'')}>{cifReady?'Mol* ready':'Loading coordinates…'}</span>}</div>{view==='CIF'?<ViewerErrorBoundary label="Crystal CIF viewer"><MolstarViewer ref={molstarApi} source={cifSource} sourceType="cifCore" label={cifName} representation={{Spacefill:cifStyle==='Spacefill',BallAndStick:cifStyle==='BallAndStick',Ion:false,Ligand:false,Branched:false}} colorScheme="element" showUnitCell={cifCell} showLabels={false} onReady={()=>{setCifReady(true);setCifError('');}} onLoadError={error=>{setCifReady(false);setCifError(error.message);}} onSelectionChange={setCifPick}/></ViewerErrorBoundary>:<CrystalScene structure={s} options={options} apiRef={sceneApi}/>}<input ref={cifInput} type="file" accept=".cif,chemical/x-cif" hidden onChange={importCif}/>{view==='CIF'?<div className="crystal-scene-tools crystal-cif-tools"><button aria-pressed={cifCell} onClick={()=>setCifCell(v=>!v)}><Box size={18}/>Unit cell</button>{['Spacefill','BallAndStick'].map(style=><button key={style} aria-pressed={cifStyle===style} onClick={()=>setCifStyle(style)}>{style==='Spacefill'?'Space filling':'Ball & stick'}</button>)}<button onClick={()=>cifInput.current?.click()}><Upload size={18}/>Import CIF</button><button onClick={()=>molstarApi.current?.reset()}><RotateCcw size={18}/>Reset</button><button onClick={()=>molstarApi.current?.fullscreen()}><Maximize2 size={18}/>Full screen</button></div>:<div className="crystal-scene-tools">{[['Show unit cell',cell,setCell,Box],['Show coordination polyhedra',poly,setPoly,Network],['Add vacancy defect',vacancy,setVacancy,ScanLine],['Label ions',labels,setLabels,Tag]].map(([name,value,set,Icon])=><button key={name} aria-pressed={value} onClick={()=>set(!value)}><Icon size={18}/>{name}</button>)}</div>}<span className="crystal-gesture">{view==='CIF'?(cifPick?`${cifPick.element||cifPick.atom} · ${cifPick.atom} · [${cifPick.coordinates?.map(v=>v.toFixed(2)).join(', ')}] Å`:'Click an atom to inspect element and Cartesian coordinates'):(view==='2D'?'(001) projection':'Drag to orbit · right-drag to pan · scroll to zoom')+(cutaway?' · foreground cutaway':'')+(vacancy?' · vacancy marked in amber':'')}</span>{cifError&&view==='CIF'&&<p className="crystal-cif-error" role="alert">{cifError}</p>}</main>
+   <aside className="crystal-info-stack"><section id="crystal-information" tabIndex={-1} className="crystal-card"><h3>Structure Information</h3><dl>{[['Crystal system',s.system],['Space group',s.group],['Unit cell type',s.unit],['Coordination',s.coordination],['Formula units (Z)',s.z],['Lattice parameter a',s.a.toFixed(3)+' Å'],...(s.c?[['Lattice parameter c',s.c+' Å']]:[]),['Chemical formula',s.formula]].map(([k,v])=><div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl></section><section className="crystal-card crystal-derived"><h3>Derived Properties</h3><p className="crystal-radius-note">{s.radiusNote}</p><div className="crystal-radii">{s.species.map(sp=><span key={sp.label}>{sp.label.split(' ')[0]} <b>{sp.radius.toFixed(2)} Å</b></span>)}</div><dl>{[['Hard-sphere packing fraction',properties.packing.toFixed(2)+' ('+(properties.packing*100).toFixed(1)+'%)'],['Theoretical density',properties.density.toFixed(2)+' g cm⁻³'],['Molar mass',s.molar.toFixed(2)+' g mol⁻¹'],['Volume per formula unit',properties.perFormula.toFixed(2)+' Å³']].map(([k,v])=><div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl><div className="crystal-density-equation" dangerouslySetInnerHTML={{__html:equation}}/><small>Calculated from the listed cell and radii. Packing is a radius-model estimate.</small></section></aside>
+   <div className="crystal-bottom"><section className="crystal-card crystal-miller"><h3>Miller Plane ({hkl.join(' ')})</h3><div className="crystal-miller-content"><CrystalScene structure={s} mini options={{repeat:1,cell:true,mode:'Ball & stick',hkl,showPlane,atomsInPlane,shade,rotate:false}}/><div><label className="crystal-hkl">Miller indices (h k l)<span>{hkl.map((value,i)=><input key={i} type="number" step="1" min="-5" max="5" aria-label={['Miller h','Miller k','Miller l'][i]} value={value} onChange={e=>setHkl(old=>old.map((v,j)=>j===i?Math.max(-5,Math.min(5,Math.trunc(Number(e.target.value)))):v))}/>)}</span></label><p className="crystal-spacing">{plane?<>Interplanar spacing <b>{plane.d.toFixed(2)} Å</b></>:<span role="alert">(000) does not define a plane.</span>}</p><Check label="Show plane" value={showPlane} onChange={setShowPlane}/><Check label="Show atoms in plane" value={atomsInPlane} onChange={setAtomsInPlane}/><Check label="Shade one side" value={shade} onChange={setShade}/></div></div></section><DiffractionChart structure={s}/></div>
+   <section className="crystal-card crystal-controls" id="crystal-controls" tabIndex={-1}><h3>Controls</h3><label className="crystal-slider">Repeat cells<input aria-label="Repeat cells" type="range" min="1" max="6" value={repeat} onChange={e=>setRepeat(+e.target.value)}/><output>{repeat}</output></label><label className="crystal-slider">Defect concentration<input aria-label="Defect concentration" type="range" min="0" max="10" step=".5" value={defect} onChange={e=>{setDefect(+e.target.value);if(+e.target.value>0)setVacancy(true);}}/><output>{defect.toFixed(1)}%</output></label><div className="crystal-control-checks"><Check label="Vacancy defects" value={vacancy} onChange={setVacancy}/><Check label="Add interstitial" value={interstitial} onChange={setInterstitial}/></div><div className="crystal-mode"><span>View mode</span>{['Solid','Ball & stick','Space-filling'].map(m=><button key={m} aria-pressed={mode===m} onClick={()=>setMode(m)}>{m}</button>)}</div><div className="crystal-control-checks"><Check label="Context cutaway" value={cutaway} onChange={setCutaway}/><Check label="Clip with plane" value={clip} onChange={setClip}/><Check label="Auto-rotate" value={rotate} onChange={setRotate}/><button className="crystal-reset" onClick={()=>sceneApi.current?.reset()}><RotateCcw size={13}/>Reset camera</button></div><small>Defects are a deterministic geometric illustration; charge compensation and relaxation are not modeled.</small></section>
+  </div>
+  <dialog ref={modal} className="crystal-dialog" onCancel={()=>setDialog('')} onClose={()=>setDialog('')}><h2>{dialog}<button aria-label="Close crystal dialog" onClick={()=>setDialog('')}><X/></button></h2>{dialog==='Tools'?<><button onClick={exportPNG}><Download size={16}/> Export lattice PNG</button><button onClick={()=>{sceneApi.current?.reset();setDialog('');}}>Reset camera</button></>:dialog==='Settings'?<><Check label="Enable automatic rotation" value={rotate} onChange={setRotate}/><p>Coordinates and distances use Ångström. The scene respects reduced-motion preferences.</p></>:<><p>These are idealized conventional-cell structures with periodic, deterministic atomic positions. NaCl is an FCC lattice with a two-ion basis; CsCl has a primitive cubic Bravais lattice, not a BCC Bravais lattice.</p><p>For cubic crystals, d = a / √(h²+k²+l²). Graphite uses the reciprocal hexagonal cell. Powder peak positions follow 2d sin θ = λ. Intensities use approximate electron-count scattering factors, multiplicity and a Lorentz-polarization factor; thermal motion and instrumental effects are omitted.</p><p>The supplied reference’s 95.1 Å³ per NaCl formula unit is inconsistent with a = 5.64 Å and Z = 4. This explorer calculates 44.85 Å³. Packing depends on the radii convention and is calculated rather than copied.</p><a href="https://aflow.org/prototype-encyclopedia/" target="_blank" rel="noreferrer">AFLOW crystallographic prototype library ↗</a></>}</dialog>
+ </div>;
 }

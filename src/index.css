@@ -467,6 +467,13 @@
     transition: none !important;
   }
 
+  .motion-paused *,
+  .motion-paused *::before,
+  .motion-paused *::after {
+    animation-play-state: paused !important;
+    transition-duration: 0s !important;
+  }
+
   /* Surface elevation levels */
   .surface-1 { background: rgba(255,255,255,0.03); }
   .surface-2 { background: rgba(255,255,255,0.06); }

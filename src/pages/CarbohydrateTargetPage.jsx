@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { CircleHelp, Dna, Link2, Play, Settings2 } from "lucide-react";
+import "./biochemistryPages.css";
 
 const groups = {
   Monosaccharides: [
@@ -210,7 +211,7 @@ function RingProjection({ alpha }) {
 }
 function ChairProjection({ running, view }) {
   return (
-    <div
+    <div data-bio-page="carbohydrate"
       className={`relative mx-auto h-[230px] w-full max-w-[270px] transition-transform duration-700 ${running ? "scale-[1.03]" : ""}`}
     >
       <svg

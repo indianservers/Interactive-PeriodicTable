@@ -92,7 +92,7 @@ function ChemistryCore() {
     </svg>
   );
 }
-export default function ModulesHubTargetPage() {
+export default function ModulesHubTargetPage({ onNavigate }) {
   const [selected, setSelected] = useState("Spectroscopy");
   const [query, setQuery] = useState("");
   const [notice, setNotice] = useState("");
@@ -161,7 +161,7 @@ export default function ModulesHubTargetPage() {
           ].map((x, i) => (
             <button
               key={x}
-              onClick={() => announce(`${x} selected`)}
+              onClick={() => (x === "Home" ? onNavigate?.("dashboard") : announce(`${x} selected`))}
               className={`mb-1 w-full rounded px-3 py-3 text-left text-sm ${i === 1 ? "border-l-2 border-cyan-300 bg-blue-500/15 text-cyan-200" : "text-slate-300"}`}
             >
               {x}

@@ -73,7 +73,7 @@ const reactions = [
       "Addition creates an alcohol; a new stereocentre can form at a prochiral carbonyl carbon.",
   },
 ];
-export default function NamedReactionsTargetPage() {
+export default function NamedReactionsTargetPage({ onNavigate }) {
   const [index, setIndex] = useState(0);
   const [tab, setTab] = useState("Overview");
   const [playing, setPlaying] = useState(false);
@@ -147,7 +147,7 @@ export default function NamedReactionsTargetPage() {
             ].map((x, i) => (
               <button
                 key={x}
-                onClick={() => say(x + " selected")}
+                onClick={() => (x === "Home" ? onNavigate?.("dashboard") : say(x + " selected"))}
                 className={
                   "flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm " +
                   (i === 1 ? "bg-blue-500/20 text-sky-300" : "text-slate-300")

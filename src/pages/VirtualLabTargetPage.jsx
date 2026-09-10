@@ -1,288 +1,35 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  Beaker,
-  BookOpen,
-  Check,
-  ClipboardList,
-  Droplets,
-  FileText,
-  FlaskConical,
-  Home,
-  Play,
-  RotateCcw,
-  Settings,
-  ShieldCheck,
-  TestTube2,
-  Thermometer,
-  TriangleAlert,
-} from "lucide-react";
-import "./virtualLabTarget.css";
+import { useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, Beaker, BookOpen, Check, ChevronLeft, Download, FlaskConical, Gauge, HelpCircle, Pause, Play, RotateCcw, Save, ShieldCheck, Sparkles, TimerReset, Trash2 } from 'lucide-react';
+import './virtualLabTarget.css';
 
-const nav = [
-  ["dashboard", "Home", Home],
-  ["lab", "Lab Bench", FlaskConical],
-  ["lab", "Experiments", Beaker],
-  ["lab", "Chemicals", TestTube2],
-  ["research-toolkit", "Data & Reports", FileText],
-  ["syllabus", "Learn", BookOpen],
-  ["settings", "Settings", Settings],
-];
-const reagents = [
-  ["HCl (aq)", "0.100 M", "#e84b3c"],
-  ["NaOH (aq)", "~0.100 M (unknown)", "#178de8"],
-  ["Phenolphthalein", "Indicator (0.5% w/v)", "#dd3da9"],
-  ["Distilled Water", "H₂O", "#e7eef5"],
-];
+const workflow = ['Objective', 'Theory', 'Apparatus', 'Procedure', 'Observation', 'Calculation', 'Result', 'Assessment'];
+const apparatus = ['Burette', 'Pipette', 'Conical flask', 'Phenolphthalein', 'HCl 0.100 M', 'NaOH unknown'];
+const experiment = { title: 'Acid–Base Titration: HCl + NaOH', subtitle: 'Determine the concentration of NaOH using standardized HCl', objective: 'Use a standard acid to locate the equivalence point and calculate an unknown base concentration.', theory: 'At equivalence, n(HCl) = n(NaOH). For this 1:1 reaction, C₁V₁ = C₂V₂.', safety: ['Wear eye protection', 'HCl and NaOH are corrosive', 'Rinse spills with plenty of water', 'Dispose of chemical waste properly'] };
+const makeRows = volume => [{ trial: 1, reading: volume.toFixed(2), endpoint: volume >= 23.4 ? 'Pale pink' : 'Colourless', accepted: Math.abs(volume - 23.4) <= 0.15 }, { trial: 2, reading: '', endpoint: '', accepted: false }, { trial: 3, reading: '', endpoint: '', accepted: false }];
+
 export default function VirtualLabTargetPage({ onNavigate }) {
-  const [volume, setVolume] = useState(23.4),
-    [flow, setFlow] = useState(false),
-    [swirl, setSwirl] = useState(false),
-    [goggles, setGoggles] = useState(true);
-  useEffect(() => {
-    if (!flow) return;
-    const timer = setInterval(
-      () => setVolume((v) => Math.min(40, +(v + 0.1).toFixed(1))),
-      80,
-    );
-    return () => clearInterval(timer);
-  }, [flow]);
-  const ph = useMemo(() => {
-    const v = volume;
-    if (v < 22) return +(1 + v * 0.12).toFixed(1);
-    if (v <= 23.4) return +(3.6 + (v - 22) * 3.286).toFixed(1);
-    if (v < 25) return +(8.2 + (v - 23.4) * 1.35).toFixed(1);
-    return +(10.36 + Math.min(2.3, (v - 25) * 0.16)).toFixed(1);
-  }, [volume]);
-  const points = Array.from({ length: 41 }, (_, i) => {
-    const y =
-      i < 22
-        ? 1 + i * 0.12
-        : i < 25
-          ? 3.6 + (i - 22) * 2.25
-          : 10.35 + Math.min(2.3, (i - 25) * 0.16);
-    return `${28 + i * 12.5},${145 - y * 9.2}`;
-  }).join(" ");
-  return (
-    <div className="vlab">
-      <header className="vl-top">
-        <div className="vl-brand">
-          <FlaskConical />
-          <div>
-            <b>Virtual Chemistry Lab</b>
-            <span>EXPLORE　·　EXPERIMENT　·　UNDERSTAND</span>
-          </div>
-        </div>
-        <div>
-          <h1>Acid–Base Titration: HCl + NaOH</h1>
-          <p>Determine the concentration of NaOH using standardized HCl</p>
-        </div>
-      </header>
-      <aside className="vl-nav">
-        {nav.map(([id, label, Icon], i) => (
-          <button
-            className={label === "Lab Bench" ? "active" : ""}
-            onClick={() => onNavigate(id)}
-            key={`${label}-${i}`}
-          >
-            <Icon />
-            {label}
-          </button>
-        ))}
-      </aside>
-      <aside className="vl-reagents">
-        <h2>Reagents & Equipment</h2>
-        <div className="vl-tabs">
-          <button className="active">Solutions</button>
-          <button>Glassware</button>
-          <button>Tools</button>
-        </div>
-        {reagents.map(([name, sub, color]) => (
-          <button className="vl-reagent" key={name}>
-            <i>⠿</i>
-            <span className="vl-bottle" style={{ "--cap": color }} />
-            <span>
-              <b>{name}</b>
-              <small>{sub}</small>
-            </span>
-            <em>⠿</em>
-          </button>
-        ))}
-      </aside>
-      <main className={`vl-stage ${swirl ? "swirl" : ""}`}>
-        <div className="vl-reading">
-          <b>Burette (HCl)</b>
-          <strong>{volume.toFixed(2)} mL</strong>
-          <span>
-            Initial: 0.00 mL
-            <br />
-            Delivered: {volume.toFixed(2)} mL
-          </span>
-        </div>
-        <div className="vl-drop" />
-      </main>
-      <aside className="vl-right">
-        <section>
-          <h3>
-            <ClipboardList />
-            Experiment Goals
-          </h3>
-          {[
-            "Perform a titration",
-            "Identify the equivalence point",
-            "Calculate unknown concentration",
-          ].map((x) => (
-            <p key={x}>
-              <Check />
-              {x}
-            </p>
-          ))}
-        </section>
-        <section>
-          <h3>Live Measurements</h3>
-          <div className="vl-metric">
-            <TestTube2 />
-            <span>
-              Burette Reading<strong>{volume.toFixed(2)} mL</strong>
-            </span>
-          </div>
-          <div className="vl-metric">
-            <FlaskConical />
-            <span>
-              pH (solution)<strong>{ph}</strong>
-            </span>
-          </div>
-          <div className="vl-metric">
-            <Thermometer />
-            <span>
-              Temperature
-              <strong>{(24.4 + volume * 0.017).toFixed(1)} °C</strong>
-            </span>
-          </div>
-        </section>
-        <section className="vl-safety">
-          <h3>
-            <TriangleAlert />
-            Safety & Hazards
-          </h3>
-          {[
-            "Wear eye protection",
-            "HCl is corrosive",
-            "NaOH is corrosive",
-            "Rinse spills with plenty of water",
-            "Dispose of waste properly",
-          ].map((x) => (
-            <p key={x}>●　{x}</p>
-          ))}
-          <button
-            className={goggles ? "on" : ""}
-            onClick={() => setGoggles((v) => !v)}
-          >
-            <ShieldCheck />
-            {goggles ? "Eye protection on" : "Wear eye protection"}
-            <i />
-          </button>
-        </section>
-      </aside>
-      <section className="vl-bottom">
-        <div className="vl-controls">
-          <h3>Controls</h3>
-          <div>
-            <button
-              onClick={() =>
-                setVolume((v) => Math.min(40, +(v + 0.05).toFixed(2)))
-              }
-            >
-              <Droplets />
-              Add one drop
-            </button>
-            <button
-              className={flow ? "on" : ""}
-              onClick={() => setFlow((v) => !v)}
-            >
-              <Play />
-              {flow ? "Stop flow" : "Continuous flow"}
-            </button>
-            <button
-              className={swirl ? "on" : ""}
-              onClick={() => setSwirl((v) => !v)}
-            >
-              <RotateCcw />
-              Swirl flask
-            </button>
-            <button
-              onClick={() => {
-                setFlow(false);
-                setSwirl(false);
-                setVolume(0);
-              }}
-            >
-              <RotateCcw />
-              Reset experiment
-            </button>
-          </div>
-        </div>
-        <div className="vl-chart">
-          <h3>Titration Curve (Live)</h3>
-          <svg
-            viewBox="0 0 600 175"
-            role="img"
-            aria-label="Live titration curve"
-          >
-            <g className="grid">
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <line
-                  key={`h${i}`}
-                  x1="28"
-                  x2="548"
-                  y1={25 + i * 25}
-                  y2={25 + i * 25}
-                />
-              ))}
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <line
-                  key={`v${i}`}
-                  x1={28 + i * 65}
-                  x2={28 + i * 65}
-                  y1="20"
-                  y2="150"
-                />
-              ))}
-            </g>
-            <polyline points={points} />
-            <line className="equiv" x1="328" x2="328" y1="20" y2="150" />
-            <circle cx={28 + volume * 12.5} cy={145 - ph * 9.2} r="5" />
-            <text x="341" y="90">
-              Equivalence point
-            </text>
-            <text x="341" y="105">
-              (23.40 mL, pH 7.0)
-            </text>
-            <text x="230" y="170">
-              Volume of HCl added (mL)
-            </text>
-          </svg>
-        </div>
-        <div className="vl-notes">
-          <h3>Calculation Notebook</h3>
-          <div>
-            <p>
-              1. Reaction
-              <br />
-              　HCl(aq) + NaOH(aq) → NaCl(aq) + H₂O(l)
-            </p>
-            <p>
-              2. At equivalence point (1:1 stoichiometry)
-              <br />
-              　n(HCl) = n(NaOH)
-            </p>
-            <p>3. Calculate concentration of NaOH</p>
-            <strong>
-              C<sub>NaOH</sub> = 0.100 M × 23.40/25.00
-              <br />= 0.0936 M
-            </strong>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+  const [step, setStep] = useState(0), [volume, setVolume] = useState(23.4), [flow, setFlow] = useState(false), [swirl, setSwirl] = useState(false), [goggles, setGoggles] = useState(true), [mode, setMode] = useState('Student'), [errorMode, setErrorMode] = useState(false), [temperature, setTemperature] = useState(24.8), [timer, setTimer] = useState(0), [saved, setSaved] = useState(false), [notice, setNotice] = useState(''), [rows, setRows] = useState(() => makeRows(23.4)), [prediction, setPrediction] = useState(''), [answer, setAnswer] = useState('');
+  const ph = volume < 23.4 ? +(1 + volume * 0.12).toFixed(1) : volume === 23.4 ? 7 : +(8.2 + Math.min(2.3, (volume - 23.4) * 1.35)).toFixed(1);
+  const concentration = +(0.1 * volume / 25).toFixed(4);
+  const points = Array.from({ length: 42 }, (_, i) => { const v = i; const y = v < 22 ? 1 + v * 0.12 : v < 25 ? 3.6 + (v - 22) * 2.25 : 10.35 + Math.min(2.3, (v - 25) * 0.16); return `${28 + i * 12.4},${146 - y * 9}`; }).join(' ');
+  const finished = rows.some(row => row.reading && row.accepted) && Boolean(answer);
+  useEffect(() => { if (!flow) return; const id = setInterval(() => setVolume(value => Math.min(40, +(value + 0.1).toFixed(1))), 90); return () => clearInterval(id); }, [flow]);
+  useEffect(() => { const id = setInterval(() => setTimer(value => value + 1), 1000); return () => clearInterval(id); }, []);
+  useEffect(() => { if (!notice) return; const id = setTimeout(() => setNotice(''), 3500); return () => clearTimeout(id); }, [notice]);
+  const reset = () => { setStep(0); setVolume(0); setFlow(false); setSwirl(false); setTemperature(24.8); setTimer(0); setRows(makeRows(0)); setPrediction(''); setAnswer(''); setNotice('Experiment reset.'); };
+  const addTrial = () => { setRows(current => current.map((row, i) => i === current.findIndex(item => !item.reading) ? { ...row, reading: volume.toFixed(2), endpoint: ph >= 7 ? 'Pale pink' : 'Colourless', accepted: Math.abs(volume - 23.4) <= (errorMode ? 0.4 : 0.15) } : row)); setNotice('Observation recorded in the notebook.'); };
+  const exportCsv = () => { const csv = ['Trial,Volume (mL),Endpoint,Accepted', ...rows.map(row => `${row.trial},${row.reading},${row.endpoint},${row.accepted}`)].join('\n'); const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.download = 'acid-base-titration-observations.csv'; link.click(); URL.revokeObjectURL(link.href); setNotice('CSV observation file exported.'); };
+  const exportReport = () => { const report = `CHEMISTRY UNIVERSE VIRTUAL LAB REPORT\n\n${experiment.title}\n\nObjective: ${experiment.objective}\n\nObservations:\n${rows.map(row => `Trial ${row.trial}: ${row.reading || 'not recorded'} mL, ${row.endpoint || 'not recorded'}`).join('\n')}\n\nCalculated concentration: ${concentration.toFixed(4)} M\nTemperature: ${temperature.toFixed(1)} °C\nUncertainty: ±${(concentration * .01).toFixed(4)} M\n\nSafety checklist: ${goggles ? 'complete' : 'incomplete'}`; const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([report], { type: 'text/plain' })); link.download = 'acid-base-titration-lab-report.txt'; link.click(); URL.revokeObjectURL(link.href); setNotice('Lab report exported.'); };
+  const saveSession = () => { localStorage.setItem('chemistry-vl-session', JSON.stringify({ volume, rows, temperature, step })); setSaved(true); setNotice('Session saved on this device.'); };
+  const stepContent = useMemo(() => ({ Objective: <p>{experiment.objective}</p>, Theory: <p>{experiment.theory} <b>Reaction:</b> HCl(aq) + NaOH(aq) → NaCl(aq) + H₂O(l)</p>, Apparatus: <p>Drag the apparatus into the bench order, then check PPE before continuing. The blue-highlighted items are required.</p>, Procedure: <ol><li>Rinse and fill the burette with standardized HCl.</li><li>Pipette 25.00 mL NaOH into the flask.</li><li>Add indicator and deliver acid until the endpoint persists.</li></ol>, Observation: <p>Record the first permanent pale-pink endpoint in the table below. Instrument resolution: ±0.01 mL.</p>, Calculation: <p>C<sub>NaOH</sub> = C<sub>HCl</sub> × V<sub>HCl</sub> / V<sub>NaOH</sub> = 0.100 × {volume.toFixed(2)} / 25.00 = <b>{concentration.toFixed(4)} M</b></p>, Result: <p>The estimated NaOH concentration is <b>{concentration.toFixed(4)} M</b>. Compare repeated trials and discuss uncertainty before submitting.</p>, Assessment: <p>Use the prediction and quiz panels below to complete the post-lab check.</p> })[workflow[step]], [concentration, step, volume]);
+  return <div className="vlx"><header className="vlx-top"><button className="vlx-brand" onClick={() => onNavigate('virtual-labs')}><FlaskConical/><span><b>Virtual Laboratories</b><small>CHEMISTRY UNIVERSE · EXPERIMENT RUNNER</small></span></button><div className="vlx-title"><h1>{experiment.title}</h1><p>{experiment.subtitle}</p></div><div className="vlx-top-actions"><label>Mode<select value={mode} onChange={e => setMode(e.target.value)}><option>Student</option><option>Instructor</option></select></label><span className="vlx-timer"><TimerReset size={15}/> {String(Math.floor(timer / 60)).padStart(2, '0')}:{String(timer % 60).padStart(2, '0')}</span><button aria-label="Save session" onClick={saveSession}><Save size={17}/>{saved ? 'Saved' : 'Save'}</button></div></header>
+    <aside className="vlx-sidebar"><button onClick={() => onNavigate('virtual-labs')}><ChevronLeft/> Lab home</button><p className="vlx-side-label">EXPERIMENT FLOW</p>{workflow.map((item, i) => <button key={item} className={step === i ? 'active' : step > i ? 'done' : ''} onClick={() => setStep(i)}><span>{step > i ? <Check size={14}/> : i + 1}</span>{item}</button>)}<div className="vlx-side-card"><ShieldCheck size={18}/><b>Safety first</b><small>Complete PPE checks before handling acids and bases.</small><button onClick={() => setGoggles(value => !value)}>{goggles ? 'Eye protection on' : 'Enable eye protection'}</button></div></aside>
+    <main className="vlx-main"><div className="vlx-breadcrumb">Virtual Labs / Analytical Chemistry / Titration <span>·</span> {mode} mode</div><section className="vlx-progress"><div><b>Guided experiment</b><small>Step {step + 1} of {workflow.length} · {workflow[step]}</small></div><div className="vlx-progress-bar"><i style={{ width: `${((step + 1) / workflow.length) * 100}%` }}/></div><div className="vlx-step-actions"><button onClick={() => setStep(value => Math.max(0, value - 1))}>Back</button><button className="primary" onClick={() => setStep(value => Math.min(workflow.length - 1, value + 1))}>{step === workflow.length - 1 ? 'Finish' : 'Next step'} <Play size={13}/></button></div></section>
+      <div className="vlx-grid"><section className="vlx-card vlx-brief"><div className="vlx-card-heading"><div><span className="vlx-eyebrow">{workflow[step]}</span><h2>{workflow[step]}</h2></div><HelpCircle size={18} onClick={() => setNotice('Use Theory for concepts, Instructor mode for guidance, and the notebook for evidence.')}/></div>{stepContent}<div className="vlx-prediction"><b>Pre-lab prediction</b><span>What happens to pH near the equivalence point?</span><div>{['Drops sharply', 'Rises sharply', 'Stays constant'].map(option => <button key={option} className={prediction === option ? 'selected' : ''} onClick={() => setPrediction(option)}>{option}</button>)}</div>{prediction && <small className={prediction === 'Rises sharply' ? 'correct' : 'wrong'}>{prediction === 'Rises sharply' ? 'Correct: the solution changes from acidic to basic.' : 'Try again: adding base moves the pH upward.'}</small>}</div></section>
+        <section className={`vlx-card vlx-bench ${swirl ? 'swirl' : ''}`}><div className="vlx-card-heading"><div><span className="vlx-eyebrow">LIVE BENCH</span><h2>Set up and run</h2></div><span className="vlx-live"><i/> {flow ? 'Running' : 'Paused'}</span></div><div className="vlx-apparatus"><div className="vlx-burette"><span>HCl burette</span><div className="vlx-glass"><i style={{ height: `${Math.min(92, volume * 2.3)}%` }}/><b>{volume.toFixed(2)} mL</b></div></div><div className="vlx-flask"><i style={{ height: `${Math.min(68, 22 + volume * .9)}%` }}/><span>NaOH + indicator</span></div><div className="vlx-drop">{flow && <><i/><i/><i/></>}</div></div><div className="vlx-bench-readings"><span><Gauge/>pH <b>{ph}</b></span><span><Beaker/>Temperature <b>{temperature.toFixed(1)} °C</b></span><span><Sparkles/>Endpoint <b>{volume >= 23.4 ? 'Pale pink' : 'Before endpoint'}</b></span></div><div className="vlx-controls"><label>Acid flow<input aria-label="Acid flow" type="range" min="0" max="40" step=".1" value={volume} onChange={e => setVolume(+e.target.value)}/><output>{volume.toFixed(2)} mL</output></label><label>Temperature<input aria-label="Temperature" type="range" min="15" max="40" step=".1" value={temperature} onChange={e => setTemperature(+e.target.value)}/><output>{temperature.toFixed(1)} °C</output></label><div><button className={flow ? 'active' : ''} onClick={() => setFlow(value => !value)}>{flow ? <Pause/> : <Play/>}{flow ? 'Pause flow' : 'Run flow'}</button><button onClick={() => setSwirl(value => !value)}>Swirl flask</button><button onClick={reset}><RotateCcw/>Reset</button></div></div></section></div>
+      <div className="vlx-grid vlx-lower"><section className="vlx-card"><div className="vlx-card-heading"><div><span className="vlx-eyebrow">APPARATUS & REAGENTS</span><h2>Build the bench</h2></div><span className="vlx-hint">Drag to reorder</span></div><div className="vlx-parts">{apparatus.map(item => <button key={item} draggable onDragEnd={() => setNotice(`${item} checked on the bench.`)} className={item === 'Phenolphthalein' ? 'required' : ''}><Beaker size={15}/>{item}</button>)}</div><div className="vlx-error"><label><input type="checkbox" checked={errorMode} onChange={e => setErrorMode(e.target.checked)}/> Enable realistic measurement error</label><small>{errorMode ? 'Endpoint tolerance widened; discuss the source of error.' : 'Try the ideal experiment first.'}</small></div></section><section className="vlx-card"><div className="vlx-card-heading"><div><span className="vlx-eyebrow">TITRATION CURVE</span><h2>Live evidence</h2></div><button onClick={() => setNotice('Chart is linked to your burette reading and pH model.')}><HelpCircle size={16}/></button></div><svg className="vlx-chart" viewBox="0 0 560 180" role="img" aria-label="Live pH titration curve"><path d="M28 146H542M28 20V146"/>{[25,50,75,100,125].map(y => <path key={y} d={`M28 ${y}H542`} className="gridline"/>)}<polyline points={points}/><line x1={28 + volume * 12.4} x2={28 + volume * 12.4} y1="20" y2="146" className="marker"/><text x="40" y="26">pH</text><text x="430" y="172">HCl added (mL)</text></svg><div className="vlx-legend"><span><i className="cyan"/>Model</span><span><i className="pink"/>Current volume</span><b>Equivalence 23.40 mL</b></div></section></div>
+      <div className="vlx-grid vlx-lower"><section className="vlx-card"><div className="vlx-card-heading"><div><span className="vlx-eyebrow">OBSERVATION NOTEBOOK</span><h2>Record evidence</h2></div><div><button onClick={addTrial}><Save size={14}/> Record endpoint</button><button onClick={exportCsv}><Download size={14}/> CSV</button></div></div><table><thead><tr><th>Trial</th><th>Reading (mL)</th><th>Endpoint</th><th>Quality</th></tr></thead><tbody>{rows.map(row => <tr key={row.trial}><td>{row.trial}</td><td>{row.reading || '—'}</td><td>{row.endpoint || 'Awaiting measurement'}</td><td className={row.accepted ? 'good' : ''}>{row.accepted ? 'Accepted' : 'Repeat'}</td></tr>)}</tbody></table><p className="vlx-uncertainty">Instrument uncertainty: ±0.01 mL · Estimated concentration uncertainty: ±{(concentration * .01).toFixed(4)} M</p></section><section className="vlx-card vlx-safety"><div className="vlx-card-heading"><div><span className="vlx-eyebrow">SAFETY & QUALITY</span><h2>Before submission</h2></div><AlertTriangle size={18}/></div>{experiment.safety.map(item => <p key={item}><Check size={14}/>{item}</p>)}<label className="vlx-toggle"><input type="checkbox" checked={goggles} onChange={e => setGoggles(e.target.checked)}/><span/> PPE checklist complete</label><button className="vlx-discard" onClick={() => setNotice('Waste stream marked for safe disposal.')}><Trash2 size={14}/> Mark waste disposed</button></section></div>
+      <section className="vlx-card vlx-report"><div className="vlx-card-heading"><div><span className="vlx-eyebrow">POST-LAB ASSESSMENT</span><h2>Explain your result</h2></div><span className="vlx-score">{finished ? 'Ready to submit' : 'In progress'}</span></div><p>Which reading should be used for the final concentration?</p><div className="vlx-quiz">{['The first permanent pale-pink endpoint', 'The largest volume reading', 'The lowest pH reading'].map(option => <button key={option} className={answer === option ? 'selected' : ''} onClick={() => setAnswer(option)}>{answer === option ? <Check/> : <span/>}{option}</button>)}</div><div className="vlx-report-actions"><button onClick={exportReport}>Generate lab report</button><button className="primary" disabled={!finished} onClick={() => setNotice('Assessment submitted. Great work.')}>Submit assessment</button></div></section>
+      {notice && <div className="vlx-notice" role="status">{notice}</div>}
+    </main></div>;
 }

@@ -6,7 +6,6 @@ import { PeriodicTablePage } from "./pages/PeriodicTablePage.jsx";
 import { TrendsPage } from "./pages/TrendsPage.jsx";
 import { ComparePage } from "./pages/ComparePage.jsx";
 import { AtomVisualizerPage } from "./pages/AtomVisualizerPage.jsx";
-import { QuizPage } from "./pages/QuizPage.jsx";
 import { ChallengeLabTargetPage } from "./pages/ChallengeLabTargetPage.jsx";
 import { FavoritesPage } from "./pages/FavoritesPage.jsx";
 import { SavedChemistryTargetPage } from "./pages/SavedChemistryTargetPage.jsx";
@@ -15,58 +14,61 @@ import LibraryPage from "./pages/LibraryPage.jsx";
 import { ChemistryLabPage } from "./pages/ChemistryLabPage.jsx";
 import { SyllabusPage } from "./pages/SyllabusPage.jsx";
 import { LearningPathTargetPage } from "./pages/LearningPathTargetPage.jsx";
-import { ReactionBalancerPage } from "./pages/ReactionBalancerPage.jsx";
 import { ReactionBalancerTargetPage } from "./pages/ReactionBalancerTargetPage.jsx";
-import { StudyToolsPage } from "./pages/StudyToolsPage.jsx";
 import { StudyToolkitTargetPage } from "./pages/StudyToolkitTargetPage.jsx";
 import { SubjectModulePage } from "./pages/SubjectModulePage.jsx";
 import { SchoolChemistryMasteryTargetPage } from "./pages/SchoolChemistryMasteryTargetPage.jsx";
 import { SeniorChemistryCorePage } from "./pages/SeniorChemistryCorePage.jsx";
 import { AdvancedVisualChemistryPage } from "./pages/AdvancedVisualChemistryPage.jsx";
 import { PracticeExamTutorPage } from "./pages/PracticeExamTutorPage.jsx";
-import { LearningCommandCenterPage } from "./pages/LearningCommandCenterPage.jsx";
 import { LearningCommandCenterDashboardPage } from "./pages/LearningCommandCenterDashboardPage.jsx";
-import { CurriculumCoverageAuditPage } from "./pages/CurriculumCoverageAuditPage.jsx";
 import { CurriculumCoverageDashboardPage } from "./pages/CurriculumCoverageDashboardPage.jsx";
-import { ResearchChemistryToolkitPage } from "./pages/ResearchChemistryToolkitPage.jsx";
-import { ResearchToolkitDashboardPage } from "./pages/ResearchToolkitDashboardPage.jsx";
 import OrganicVisualsTargetPage from "./pages/OrganicVisualsTargetPage.jsx";
 import OrganicMechanismTargetPage from "./pages/OrganicMechanismTargetPage.jsx";
 import FunctionalTestsTargetPage from "./pages/FunctionalTestsTargetPage.jsx";
 import NamedReactionsTargetPage from "./pages/NamedReactionsTargetPage.jsx";
 import IsomerismTargetPage from "./pages/IsomerismTargetPage.jsx";
 import PolymerTargetPage from "./pages/PolymerTargetPage.jsx";
-import InorganicTargetPage from "./pages/InorganicTargetPage.jsx";
 import CoordinationTargetPage from "./pages/CoordinationTargetPage.jsx";
 import CrystalTargetPage from "./pages/CrystalTargetPage.jsx";
 import SaltAnalysisTargetPage from "./pages/SaltAnalysisTargetPage.jsx";
 import MetallurgyTargetPage from "./pages/MetallurgyTargetPage.jsx";
 import PBlockTargetPage from "./pages/PBlockTargetPage.jsx";
 import BioVisualsTargetPage from "./pages/BioVisualsTargetPage.jsx";
-import ProteinTargetPage from "./pages/ProteinTargetPage.jsx";
-import MembraneTargetPage from "./pages/MembraneTargetPage.jsx";
-import CarbohydrateTargetPage from "./pages/CarbohydrateTargetPage.jsx";
-import NucleicAcidTargetPage from "./pages/NucleicAcidTargetPage.jsx";
 import MetabolismTargetPage from "./pages/MetabolismTargetPage.jsx";
 import PharmaVisualsTargetPage from "./pages/PharmaVisualsTargetPage.jsx";
-import AdmeTargetPage from "./pages/AdmeTargetPage.jsx";
+import MedicinalChemistryPage from "./modules/pharma-lab/MedicinalChemistryPage.jsx";
+import ApiSynthesisPage from "./modules/pharma-lab/ApiSynthesisPage.jsx";
+import PreformulationPage from "./modules/pharma-lab/PreformulationPage.jsx";
+import TabletFormulationPage from "./modules/pharma-lab/TabletFormulationPage.jsx";
+import DissolutionPage from "./modules/pharma-lab/DissolutionPage.jsx";
+import HplcPage from "./modules/pharma-lab/HplcPage.jsx";
+import StabilityPage from "./modules/pharma-lab/StabilityPage.jsx";
+import AdmeLabPage from "./modules/pharma-lab/AdmeLabPage.jsx";
+import ToxicologyLabPage from "./modules/pharma-lab/ToxicologyLabPage.jsx";
 import DosageTargetPage from "./pages/DosageTargetPage.jsx";
 import QCTargetPage from "./pages/QCTargetPage.jsx";
 import BufferTargetPage from "./pages/BufferTargetPage.jsx";
-import ToxicologyTargetPage from "./pages/ToxicologyTargetPage.jsx";
 import OrganicReactionTargetPage from "./pages/OrganicReactionTargetPage.jsx";
 import SpectroscopyTargetPage from "./pages/SpectroscopyTargetPage.jsx";
-import DeepModuleTargetPage from "./pages/DeepModuleTargetPage.jsx";
 import ModulesHubTargetPage from "./pages/ModulesHubTargetPage.jsx";
 import IupacTargetPage from "./pages/IupacTargetPage.jsx";
 import PhysicalTargetPage from "./pages/PhysicalTargetPage.jsx";
 import InorganicDeepTargetPage from "./pages/InorganicDeepTargetPage.jsx";
+import ChemistrySubjectHomePage from "./pages/ChemistrySubjectHomePage.jsx";
+import VirtualLabsHomePage from "./pages/VirtualLabsHomePage.jsx";
 import RetrosynthesisTargetPage from "./pages/RetrosynthesisTargetPage.jsx";
-import BiochemistryTargetPage from "./pages/BiochemistryTargetPage.jsx";
 import { useTheme } from "./hooks/useTheme.js";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
 
 const MoleculeScenePage = lazy(() => import("./pages/MoleculeScenePage.jsx"));
+const ProteinTargetPage = lazy(() => import("./pages/ProteinTargetPage.jsx"));
+const NucleicAcidExplorer = lazy(
+  () => import("./modules/nucleic-acid-explorer/NucleicAcidExplorer.jsx"),
+);
+const CarbohydrateStudio = lazy(
+  () => import("./modules/carbohydrate-studio/CarbohydrateStudio.jsx"),
+);
 const VirtualLabTargetPage = lazy(
   () => import("./pages/VirtualLabTargetPage.jsx"),
 );
@@ -80,7 +82,16 @@ const ChemistryInventorStudio = lazy(
   () => import("./modules/chemistry-inventor/ChemistryInventorTargetPage.jsx"),
 );
 const DrugDiscoveryModule = lazy(
-  () => import("./modules/drug-discovery/DrugDiscoveryTargetPage.jsx"),
+  () => import("./modules/drug-discovery/DrugDiscoveryStudio.jsx"),
+);
+const ResearchToolkitDashboardPage = lazy(
+  () => import("./pages/ResearchToolkitDashboardPage.jsx"),
+);
+const BiochemistryTargetPage = lazy(
+  () => import("./pages/BiochemistryTargetPage.jsx"),
+);
+const MembraneTargetPage = lazy(
+  () => import("./pages/MembraneTargetPage.jsx"),
 );
 const ARVRMRModule = lazy(
   () => import("./modules/ar-vr-mr/ImmersiveChemistryTargetPage.jsx"),
@@ -122,6 +133,9 @@ const pageHashMap = {
   "symmetry-practice": "molecular-symmetry/practice",
   "symmetry-teaching": "molecular-symmetry/teaching",
   "chemistry-solver": "chemistry-solver",
+  "chemistry-solver-questions": "chemistry-solver/questions",
+  "chemistry-solver-bookmarks": "chemistry-solver/bookmarks",
+  "chemistry-solver-practice": "chemistry-solver/practice",
   "chemistry-inventor": "chemistry-inventor",
   "drug-discovery": "drug-discovery",
   "ar-vr-mr": "ar-vr-mr",
@@ -152,6 +166,11 @@ const pageHashMap = {
   "bio-nucleic-acids": "visuals/bio/nucleic-acids",
   "bio-metabolism": "visuals/bio/metabolism",
   "pharma-visuals": "visuals/pharma",
+  "pharma-preformulation": "visuals/pharma/preformulation",
+  "pharma-tablet-formulation": "visuals/pharma/tablet-formulation",
+  "pharma-dissolution": "visuals/pharma/dissolution",
+  "pharma-hplc": "visuals/pharma/hplc",
+  "pharma-stability": "visuals/pharma/stability",
   "pharma-adme": "visuals/pharma/adme",
   "pharma-dosage": "visuals/pharma/dosage",
   "pharma-qc": "visuals/pharma/qc",
@@ -165,6 +184,15 @@ const pageHashMap = {
   "iupac-nomenclature": "modules/iupac",
   "retrosynthesis-planner": "modules/retrosynthesis",
   "subject-modules": "modules",
+  "physical-chemistry": "physical-chemistry",
+  "organic-chemistry": "organic-chemistry",
+  "inorganic-chemistry": "inorganic-chemistry",
+  "analytical-chemistry": "analytical-chemistry",
+  "virtual-labs": "virtual-labs",
+  "physical-chemistry-vl": "virtual-labs",
+  "organic-chemistry-vl": "virtual-labs",
+  "inorganic-chemistry-vl": "virtual-labs",
+  "advanced-analytical-chemistry-vl": "virtual-labs",
 };
 const hashPageMap = {
   library: "library",
@@ -181,6 +209,9 @@ const hashPageMap = {
   "molecular-symmetry/practice": "symmetry-practice",
   "molecular-symmetry/teaching": "symmetry-teaching",
   "chemistry-solver": "chemistry-solver",
+  "chemistry-solver/questions": "chemistry-solver-questions",
+  "chemistry-solver/bookmarks": "chemistry-solver-bookmarks",
+  "chemistry-solver/practice": "chemistry-solver-practice",
   "chemistry-inventor": "chemistry-inventor",
   "drug-discovery": "drug-discovery",
   "ar-vr-mr": "ar-vr-mr",
@@ -211,6 +242,13 @@ const hashPageMap = {
   "visuals/bio/nucleic-acids": "bio-nucleic-acids",
   "visuals/bio/metabolism": "bio-metabolism",
   "visuals/pharma": "pharma-visuals",
+  "visuals/pharma/medicinal-chemistry": "pharma-medicinal",
+  "visuals/pharma/api-synthesis": "pharma-api-synthesis",
+  "visuals/pharma/preformulation": "pharma-preformulation",
+  "visuals/pharma/tablet-formulation": "pharma-tablet-formulation",
+  "visuals/pharma/dissolution": "pharma-dissolution",
+  "visuals/pharma/hplc": "pharma-hplc",
+  "visuals/pharma/stability": "pharma-stability",
   "visuals/pharma/adme": "pharma-adme",
   "visuals/pharma/dosage": "pharma-dosage",
   "visuals/pharma/qc": "pharma-qc",
@@ -224,6 +262,11 @@ const hashPageMap = {
   "modules/iupac": "iupac-nomenclature",
   "modules/retrosynthesis": "retrosynthesis-planner",
   modules: "subject-modules",
+  "physical-chemistry": "physical-chemistry",
+  "organic-chemistry": "organic-chemistry",
+  "inorganic-chemistry": "inorganic-chemistry",
+  "analytical-chemistry": "analytical-chemistry",
+  "virtual-labs": "virtual-labs",
 };
 
 const symmetrySections = {
@@ -309,6 +352,9 @@ const pageStatusLabels = {
   balancer: "Equation Balancer",
   "study-tools": "Study Tools",
   "chemistry-solver": "Chemistry Solver",
+  "chemistry-solver-questions": "Chemistry Solver Questions",
+  "chemistry-solver-bookmarks": "Chemistry Solver Bookmarks",
+  "chemistry-solver-practice": "Chemistry Solver Practice",
   "chemistry-inventor": "Chemistry Inventor Studio",
   "drug-discovery": "Drug Discovery",
   "ar-vr-mr": "AR/VR/MR Chemistry",
@@ -348,7 +394,7 @@ const pageStatusLabels = {
   "spectroscopy-interpreter": "Spectroscopy Interpreter",
   "biochemistry-module": "Biochemistry Module",
   "inorganic-deep-module": "Inorganic Chemistry Deep Module",
-  "physical-simulators": "Physical Chemistry Simulators",
+  "physical-simulators": "Physical Chemistry Studio",
   "iupac-nomenclature": "IUPAC Nomenclature Practice",
   "retrosynthesis-planner": "Retrosynthesis and Synthesis Planner",
   "subject-modules": "Subject Modules",
@@ -455,6 +501,11 @@ function App() {
     const rawHash = window.location.hash.replace(/^#\/?/, "");
     const nestedHash = rawHash.split("#").filter(Boolean);
     const path = window.location.pathname.replace(/^\//, "");
+    if (path.startsWith("nucleic-acid-explorer")) return "bio-nucleic-acids";
+    if (path.startsWith("carbohydrate-structure-studio"))
+      return "bio-carbohydrates";
+    if (path.startsWith("drug-discovery")) return "drug-discovery";
+    if (rawHash.startsWith("drug-discovery")) return "drug-discovery";
     if (nestedHash.length > 1 && nestedHash.at(-1) === "molecule")
       return "molecule";
     if (
@@ -462,6 +513,7 @@ function App() {
       rawHash === "molecule"
     )
       return "molecule";
+    if (rawHash.startsWith("modules/physical/")) return "physical-simulators";
     return (
       hashPageMap[rawHash] ||
       hashPageMap[nestedHash[0]] ||
@@ -540,7 +592,18 @@ function App() {
         detail: "Reading route and preparing page state...",
         ready: false,
       });
-      setCurrentPage(nextPage);
+      setCurrentPage((previousPage) => {
+        if (previousPage === nextPage) {
+          setRouteProgress(100);
+          setRouteStatus({
+            visible: false,
+            title: `Ready: ${formatPageStatusLabel(nextPage)}`,
+            detail: "All visible controls loaded.",
+            ready: true,
+          });
+        }
+        return nextPage;
+      });
     };
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
@@ -714,6 +777,15 @@ function App() {
             favoritePages={favoritePages}
           />
         );
+      case "physical-chemistry":
+      case "organic-chemistry":
+      case "inorganic-chemistry":
+      case "analytical-chemistry":
+        return (
+          <ChemistrySubjectHomePage page={currentPage} onNavigate={navigate} />
+        );
+      case "virtual-labs":
+        return <VirtualLabsHomePage onNavigate={navigate} />;
       case "table":
         return <PeriodicTablePage {...commonProps} />;
       case "trends":
@@ -829,7 +901,7 @@ function App() {
               />
             }
           >
-            <StatesMatterPage />
+            <StatesMatterPage reducedMotion={reducedMotion} onNavigate={navigate} />
           </Suspense>
         );
       case "molecule":
@@ -873,6 +945,9 @@ function App() {
           </Suspense>
         );
       case "chemistry-solver":
+      case "chemistry-solver-questions":
+      case "chemistry-solver-bookmarks":
+      case "chemistry-solver-practice":
         return (
           <Suspense
             fallback={
@@ -884,7 +959,13 @@ function App() {
               />
             }
           >
-            <ChemistrySolverModule />
+            <ChemistrySolverModule
+              key={currentPage}
+              initialPage={{
+                "chemistry-solver-bookmarks": "Saved Solutions",
+                "chemistry-solver-practice": "Simulations",
+              }[currentPage] || "New Problem"}
+            />
           </Suspense>
         );
       case "chemistry-inventor":
@@ -945,21 +1026,43 @@ function App() {
       case "coverage-audit":
         return <CurriculumCoverageDashboardPage onNavigate={navigate} />;
       case "research-toolkit":
-        return <ResearchToolkitDashboardPage onNavigate={navigate} />;
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading research structure workspace"
+                detail="Preparing Mol*, local coordinate samples, spectra, and notebook tools..."
+              />
+            }
+          >
+            <ResearchToolkitDashboardPage onNavigate={navigate} />
+          </Suspense>
+        );
       case "organic-reaction-visualizer":
-        return <OrganicReactionTargetPage />;
+        return <OrganicReactionTargetPage onNavigate={navigate} />;
       case "spectroscopy-interpreter":
-        return <SpectroscopyTargetPage />;
+        return <SpectroscopyTargetPage onNavigate={navigate} />;
       case "biochemistry-module":
-        return <BiochemistryTargetPage />;
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading biochemistry virtual lab"
+                detail="Preparing the experiment, Mol* structure reference, and notebook..."
+              />
+            }
+          >
+            <BiochemistryTargetPage onNavigate={navigate} />
+          </Suspense>
+        );
       case "inorganic-deep-module":
-        return <InorganicDeepTargetPage />;
+        return <InorganicDeepTargetPage onNavigate={navigate} />;
       case "physical-simulators":
-        return <PhysicalTargetPage />;
+        return <PhysicalTargetPage onNavigate={navigate} />;
       case "iupac-nomenclature":
-        return <IupacTargetPage />;
+        return <IupacTargetPage onNavigate={navigate} />;
       case "retrosynthesis-planner":
-        return <RetrosynthesisTargetPage />;
+        return <RetrosynthesisTargetPage onNavigate={navigate} />;
       case "subject-modules":
         return <ModulesHubTargetPage />;
       case "subject-modules-legacy":
@@ -991,17 +1094,17 @@ function App() {
       case "organic-functional-tests":
         return <FunctionalTestsTargetPage />;
       case "organic-named-reactions":
-        return <NamedReactionsTargetPage />;
+        return <NamedReactionsTargetPage onNavigate={navigate} />;
       case "organic-isomerism":
         return <IsomerismTargetPage />;
       case "organic-polymers":
         return <PolymerTargetPage />;
       case "inorganic-visuals":
-        return <InorganicTargetPage />;
+        return <InorganicDeepTargetPage onNavigate={navigate} />;
       case "inorganic-coordination":
         return <CoordinationTargetPage />;
       case "inorganic-crystals":
-        return <CrystalTargetPage />;
+        return <CrystalTargetPage onNavigate={navigate} />;
       case "inorganic-salt-analysis":
         return <SaltAnalysisTargetPage />;
       case "inorganic-metallurgy":
@@ -1009,21 +1112,78 @@ function App() {
       case "inorganic-pblock":
         return <PBlockTargetPage />;
       case "bio-visuals":
-        return <BioVisualsTargetPage />;
+        return <BioVisualsTargetPage onNavigate={navigate} />;
       case "bio-proteins":
-        return <ProteinTargetPage />;
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading Protein Structure Studio"
+                detail="Preparing Mol* and the local 1MBN coordinate sample..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <ProteinTargetPage onNavigate={navigate} />
+          </Suspense>
+        );
       case "bio-membranes":
-        return <MembraneTargetPage />;
+        return (
+          <Suspense fallback={<LoadingProgress title="Loading Membrane Structure Studio" detail="Preparing the 4HQJ membrane-pump structure and transport schematic..." height={620} reducedMotion={reducedMotion} />}>
+            <MembraneTargetPage />
+          </Suspense>
+        );
       case "bio-carbohydrates":
-        return <CarbohydrateTargetPage />;
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading Carbohydrate Structure Studio"
+                detail="Preparing validated structures and interactive laboratory controls..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <CarbohydrateStudio />
+          </Suspense>
+        );
       case "bio-nucleic-acids":
-        return <NucleicAcidTargetPage />;
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading DNA & RNA Studio"
+                detail="Preparing Mol* and the local nucleic-acid coordinate samples..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <NucleicAcidExplorer />
+          </Suspense>
+        );
       case "bio-metabolism":
         return <MetabolismTargetPage />;
       case "pharma-visuals":
         return <PharmaVisualsTargetPage onNavigate={navigate} />;
+      case "pharma-medicinal":
+        return <MedicinalChemistryPage />;
+      case "pharma-api-synthesis":
+        return <ApiSynthesisPage />;
+      case "pharma-preformulation":
+        return <PreformulationPage />;
+      case "pharma-tablet-formulation":
+        return <TabletFormulationPage />;
+      case "pharma-dissolution":
+        return <DissolutionPage />;
+      case "pharma-hplc":
+        return <HplcPage />;
+      case "pharma-stability":
+        return <StabilityPage />;
       case "pharma-adme":
-        return <AdmeTargetPage />;
+        return <AdmeLabPage />;
       case "pharma-dosage":
         return <DosageTargetPage />;
       case "pharma-qc":
@@ -1031,7 +1191,7 @@ function App() {
       case "pharma-buffers":
         return <BufferTargetPage />;
       case "pharma-toxicology": {
-        return <ToxicologyTargetPage />;
+        return <ToxicologyLabPage />;
       }
       case "pharma-toxicology-legacy": {
         const route =
@@ -1097,9 +1257,43 @@ function App() {
     }
   };
 
+  if (currentPage === "bio-nucleic-acids") {
+    return (
+      <Suspense
+        fallback={
+          <LoadingProgress
+            title="Loading DNA & RNA Studio"
+            detail="Preparing Mol* and the local nucleic-acid coordinate samples..."
+            height={620}
+            reducedMotion={reducedMotion}
+          />
+        }
+      >
+        <NucleicAcidExplorer />
+      </Suspense>
+    );
+  }
+
+  if (currentPage === "bio-carbohydrates") {
+    return (
+      <Suspense
+        fallback={
+          <LoadingProgress
+            title="Loading Carbohydrate Structure Studio"
+            detail="Preparing validated structures and interactive laboratory controls..."
+            height={620}
+            reducedMotion={reducedMotion}
+          />
+        }
+      >
+        <CarbohydrateStudio />
+      </Suspense>
+    );
+  }
+
   return (
     <div
-      className={`${reducedMotion ? "no-motion" : ""} ${highContrast ? "high-contrast" : ""} ${compact ? "app-compact" : ""} ${studyMode ? "study-mode" : ""} theme-${colorTheme}`}
+      className={`${reducedMotion ? "no-motion motion-paused" : ""} ${highContrast ? "high-contrast" : ""} ${compact ? "app-compact" : ""} ${studyMode ? "study-mode" : ""} theme-${colorTheme}`}
     >
       <AppShell
         currentPage={currentPage}
@@ -1116,6 +1310,8 @@ function App() {
         canInstall={Boolean(installPrompt)}
         onInstallApp={handleInstallApp}
         isOnline={isOnline}
+        motionEnabled={!reducedMotion}
+        onMotionToggle={() => setReducedMotion((value) => !value)}
       >
         {renderPage()}
       </AppShell>

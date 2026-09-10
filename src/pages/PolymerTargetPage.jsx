@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   BarChart3,
   Beaker,
@@ -10,7 +10,13 @@ import {
   Moon,
   Settings2,
   Sun,
+  Maximize2,
+  RotateCcw,
+  Upload,
 } from "lucide-react";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import "./polymerTarget.css";
 
 const monomers = [
   [
@@ -54,6 +60,23 @@ const monomers = [
     "Water released",
   ],
 ];
+
+function oligomerSdf(index, repeatCount) {
+  const atoms=[],bonds=[];
+  const add=(symbol,x,y,z)=>(atoms.push({symbol,x,y,z}),atoms.length), bond=(a,b,order=1)=>bonds.push([a,b,order]);
+  const backbone=[];
+  for(let i=0;i<repeatCount*2;i++){const id=add("C",i*1.48,(i%2?-.34:.34),((i%3)-1)*.16);backbone.push(id);if(i)bond(backbone[i-1],id);}
+  for(let repeat=0;repeat<repeatCount;repeat++){
+    const anchor=backbone[repeat*2+1],a=atoms[anchor-1],side=repeat%2?1:-1;
+    if(index===1){const methyl=add("C",a.x,a.y+side*1.45,a.z+.2);bond(anchor,methyl);}
+    if(index===2){let previous=anchor;for(let k=0;k<6;k++){const angle=2*Math.PI*k/6,x=a.x+Math.cos(angle)*1.35,y=a.y+side*(1.55+Math.sin(angle)*1.35),id=add("C",x,y,a.z+.3);if(k===0)bond(anchor,id);if(k)bond(previous,id,k%2?2:1);previous=id;}bond(previous,atoms.length-5,1);}
+    if(index===3){const chlorine=add("Cl",a.x,a.y+side*1.62,a.z);bond(anchor,chlorine);}
+    if(index===4){const carbonyl=add("C",a.x+.7,a.y+side*1.38,a.z),oxygen=add("O",a.x+.35,a.y+side*2.45,a.z),ether=add("O",a.x+1.45,a.y+side*1.55,a.z+.2),methyl=add("C",a.x-.55,a.y-side*1.25,a.z);bond(anchor,carbonyl);bond(carbonyl,oxygen,2);bond(carbonyl,ether);bond(anchor,methyl);}
+  }
+  const atomLines=atoms.map(a=>`${a.x.toFixed(4).padStart(10)}${a.y.toFixed(4).padStart(10)}${a.z.toFixed(4).padStart(10)} ${a.symbol.padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join("\n");
+  const bondLines=bonds.map(([a,b,o])=>`${String(a).padStart(3)}${String(b).padStart(3)}${String(o).padStart(3)}  0  0  0  0`).join("\n");
+  return `Finite oligomer preview\nChemistry Universe\n${monomers[index][0]} · ${repeatCount} repeat units\n${String(atoms.length).padStart(3)}${String(bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${atomLines}\n${bondLines}\nM  END\n$$$$\n`;
+}
 export default function PolymerTargetPage() {
   const [selected, setSelected] = useState(0);
   const [n, setN] = useState(120);
@@ -63,6 +86,12 @@ export default function PolymerTargetPage() {
   const [query, setQuery] = useState("");
   const [viewMode, setViewMode] = useState("Molecular");
   const [notice, setNotice] = useState("");
+  const [renderStyle, setRenderStyle] = useState("Ball & stick");
+  const [structureReady, setStructureReady] = useState(false);
+  const [selectedAtom, setSelectedAtom] = useState(null);
+  const [biopolymer, setBiopolymer] = useState("Cellulose");
+  const [importedSource, setImportedSource] = useState(null);
+  const viewerRef=useRef(null),fileRef=useRef(null);
   const announce = (x) => setNotice(x);
   const name =
     selected === 0 ? "Polyethylene" : `${monomers[selected][0]} polymer`;
@@ -90,9 +119,14 @@ export default function PolymerTargetPage() {
   const flexibility = Math.max(5, Math.round(100 - branch * 0.8 - cross * 2));
   const glassTransition =
     selected === 2 ? 100 : selected === 3 ? 80 : selected === 4 ? 75 : -125;
+  const sampleUnits=Math.min(10,Math.max(2,Math.round(n/12)));
+  const biopolymerSources={Cellulose:"cellulose.sdf",Chitin:"chitin.sdf",Starch:"starch.sdf",Glycogen:"glycogen.sdf"};
+  const generatedSource=useMemo(()=>({data:oligomerSdf(selected,viewMode==="Polymer"?1:sampleUnits),format:"sdf",label:viewMode==="Polymer"?`${monomers[selected][0]} repeat-unit teaching model`:`${monomers[selected][0]} finite ${sampleUnits}-unit oligomer preview`}),[selected,viewMode,sampleUnits]);
+  const activeSource=importedSource||(viewMode==="Material"?{url:`/assets/carbohydrate-studio/structures/${biopolymerSources[biopolymer]}`,format:"sdf",label:`${biopolymer} coordinate-backed chain sample`}:generatedSource);
+  const importStructure=event=>{const file=event.target.files?.[0];if(!file)return;const format=file.name.split(".").pop()?.toLowerCase();if(!["pdb","cif","mmcif","mol","sdf"].includes(format))return;setImportedSource({url:URL.createObjectURL(file),format,label:file.name});setStructureReady(false);event.target.value="";};
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
+      className="poly-app min-h-screen overflow-hidden bg-[#071522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-4 border-b border-white/10 bg-[#091a2b] px-5">
@@ -132,7 +166,7 @@ export default function PolymerTargetPage() {
           </span>
         </nav>
       </header>
-      <div className="grid h-[calc(100vh-64px)] grid-cols-[72px_245px_1fr_345px] grid-rows-[1fr_205px] gap-2 p-2">
+      <div className="poly-workspace grid h-[calc(100vh-64px)] grid-cols-[72px_245px_1fr_345px] grid-rows-[1fr_205px] gap-2 p-2">
         <aside className="row-span-2 flex flex-col items-center gap-5 border-r border-white/10 bg-[#081c2e] py-5 text-[10px]">
           {[
             [Boxes, "Builder"],
@@ -199,7 +233,7 @@ export default function PolymerTargetPage() {
               {["Molecular", "Polymer", "Material"].map((mode) => (
                 <button
                   key={mode}
-                  onClick={() => setViewMode(mode)}
+                  onClick={() => {setViewMode(mode);setImportedSource(null);setStructureReady(false);setSelectedAtom(null);}}
                   className={`px-4 py-2 ${viewMode === mode ? "bg-cyan-300/15 text-cyan-200" : ""}`}
                 >
                   {mode === "Molecular" ? "⚙" : mode === "Polymer" ? "♧" : "◈"}{" "}
@@ -208,7 +242,7 @@ export default function PolymerTargetPage() {
               ))}
             </div>
           </div>
-          <div className="mt-2 grid h-56 grid-cols-3 rounded-lg bg-black/25 p-4">
+          <div className="poly-mechanism mt-2 grid h-56 grid-cols-3 rounded-lg bg-black/25 p-4">
             <div>
               <h3 className="font-bold text-amber-300">
                 1.{" "}
@@ -253,19 +287,10 @@ export default function PolymerTargetPage() {
               </div>
             </div>
           </div>
-          <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
-            <div className="rounded border border-white/10 p-3">
-              Molecular chain (n = 10)
-              <div className="mt-5 text-center text-2xl">●—●—●—●—●</div>
-            </div>
-            <div className="rounded border border-white/10 p-3">
-              Tangled polymer (n = {n})
-              <div className="mt-5 text-center text-2xl">╲●╱●╲●╱●╲</div>
-            </div>
-            <div className="rounded border border-white/10 p-3">
-              Material (semi-crystalline)
-              <div className="mt-5 h-12 rounded bg-slate-500/30" />
-            </div>
+          <div className="poly-structure mt-2 text-xs" data-ready={structureReady}>
+            <ViewerErrorBoundary label="Polymer structure viewer"><MolstarViewer ref={viewerRef} source={activeSource} sourceType={activeSource.format} label={activeSource.label} representation={{BallAndStick:renderStyle==="Ball & stick",Spacefill:renderStyle==="Space filling",Sticks:renderStyle==="Sticks",Ligand:false,Branched:false,Ion:false}} colorScheme="element" showLabels={false} onReady={()=>{setStructureReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(viewMode==="Material"?1.18:1.32));}} onLoadError={()=>setStructureReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary>
+            <div className="poly-structure-meta"><b>{structureReady?"Mol* structure ready":"Loading coordinates…"}</b><span>{activeSource.label}</span><span>{selectedAtom?`${selectedAtom.element} atom ${selectedAtom.sourceIndex+1} · [${selectedAtom.coordinates.map(v=>v.toFixed(2)).join(", ")}] Å`:viewMode==="Molecular"?`Finite ${sampleUnits}-unit sample · requested bulk n = ${n}`:viewMode==="Polymer"?"Repeat unit only · hydrogen-suppressed teaching geometry":"Coordinate-backed biopolymer sample; not a bulk-material morphology model"}</span></div>
+            <div className="poly-structure-tools">{["Ball & stick","Space filling","Sticks"].map(style=><button key={style} aria-pressed={renderStyle===style} onClick={()=>setRenderStyle(style)}>{style}</button>)}{viewMode==="Material"&&<select aria-label="Biopolymer sample" value={biopolymer} onChange={e=>{setBiopolymer(e.target.value);setImportedSource(null);setStructureReady(false);}}>{Object.keys(biopolymerSources).map(item=><option key={item}>{item}</option>)}</select>}<button onClick={()=>fileRef.current?.click()} title="Import polymer structure"><Upload size={14}/></button><button onClick={()=>viewerRef.current?.reset()} title="Reset polymer view"><RotateCcw size={14}/></button><button onClick={()=>viewerRef.current?.fullscreen()} title="Full screen polymer view"><Maximize2 size={14}/></button><input ref={fileRef} type="file" hidden accept=".pdb,.cif,.mmcif,.mol,.sdf" onChange={importStructure}/></div>
           </div>
         </section>
         <aside className="row-span-2 overflow-y-auto rounded-lg border border-white/10 bg-[#0a1e31] p-3">
@@ -314,6 +339,7 @@ export default function PolymerTargetPage() {
           />
           <label className="mt-5 block text-xs">Tacticity</label>
           <select
+            aria-label="Tacticity"
             value={tacticity}
             onChange={(e) => setTacticity(e.target.value)}
             className="mt-2 w-full rounded border border-white/20 bg-slate-950 p-2 text-xs"
@@ -346,7 +372,7 @@ export default function PolymerTargetPage() {
             </span>
           </div>
         </aside>
-        <section className="col-span-2 rounded-lg border border-white/10 bg-[#0a1e31] p-3">
+        <section className="poly-comparison rounded-lg border border-white/10 bg-[#0a1e31] p-3">
           <h3 className="font-bold">
             Addition vs Condensation Polymerization{" "}
             <CircleHelp size={14} className="inline text-slate-400" />

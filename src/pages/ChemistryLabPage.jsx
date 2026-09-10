@@ -62,6 +62,9 @@ import {
   syllabusTrackMap,
   syllabusTracks,
 } from "../data/syllabus.js";
+import ExtendedAnalyticalLab, {
+  EXTENDED_ANALYTICAL_EXPERIMENTS,
+} from "../modules/analytical-labs/ExtendedAnalyticalLab.jsx";
 
 const lazyLabTools = {
   titration: lazy(() => import("../labTools/TitrationTool.jsx")),
@@ -5401,6 +5404,7 @@ const LAB_EXPERIMENTS = [
     result: "Elements participate in many molecule families.",
     realWorld: "Useful for organic and materials chemistry.",
   },
+  ...EXTENDED_ANALYTICAL_EXPERIMENTS,
 ];
 
 const labTabs = [
@@ -7932,6 +7936,18 @@ export const ChemistryLabPage = ({
   const activeRoadmap = appliedChemistryRoadmaps[activeFocusTopic];
   const showFullLab = !guidedMode || showAdvancedLab;
   const renderGuidedWorkbench = () => {
+    if (
+      EXTENDED_ANALYTICAL_EXPERIMENTS.some(
+        (experiment) => experiment.id === activeExperiment.id,
+      )
+    ) {
+      return (
+        <ExtendedAnalyticalLab
+          key={activeExperiment.id}
+          experimentId={activeExperiment.id}
+        />
+      );
+    }
     const LazyTool = lazyLabTools[activeExperiment.id];
     if (LazyTool) {
       const lazyToolProps = {

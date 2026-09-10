@@ -1,0 +1,23 @@
+.spectro-app .molstar-viewer,.spectro-app .molstar-viewer-host{height:100%;min-height:0;border:0;border-radius:0}
+@media(max-width:1150px){
+ .spectro-shell{grid-template-columns:1fr!important;height:auto!important}
+ .spectro-shell>aside{display:none}
+ .spectro-app{overflow:auto!important}
+ .spectro-workspace{grid-template-columns:1fr 1fr!important}
+ .spectro-workspace>section:first-child{grid-column:1/-1}
+ .spectro-reasoning{grid-template-columns:1fr!important}
+ .spectro-candidates{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:700px){
+ .spectro-app>header{height:auto!important;min-height:64px;flex-wrap:wrap;padding:10px 12px!important}
+ .spectro-app>header label{order:3;width:100%!important}
+ .spectro-app>header>button,.spectro-app>header>span{display:none}
+ .spectro-shell{padding:8px!important}
+ .spectro-shell main>div:first-child{display:block!important}
+ .spectro-shell main>div:first-child>button{margin-top:10px;width:100%}
+ .spectro-shell main>div:nth-child(2){overflow-x:auto}
+ .spectro-shell main>div:nth-child(2)>button{white-space:nowrap;padding-left:13px!important;padding-right:13px!important}
+ .spectro-workspace{display:block!important}
+ .spectro-workspace>section,.spectro-workspace>aside{margin-bottom:8px}
+ .spectro-candidates{grid-template-columns:1fr 1fr!important}
+}

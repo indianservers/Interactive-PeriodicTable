@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Beaker,
   CheckCircle2,
+  FileUp,
   FlaskConical,
   Home,
+  Maximize2,
   Play,
   Search,
 } from "lucide-react";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import "./retrosynthesisTarget.css";
 const transforms = [
   "Ester Hydrolysis",
   "Fischer Esterification",
@@ -17,6 +22,7 @@ const transforms = [
   "Nucleophilic Aromatic Substitution",
   "Functional Group Interconversion",
 ];
+const structureOptions={target:{label:"Benzocaine",file:"benzocaine.sdf",cid:"PubChem CID 2337"},paba:{label:"4-aminobenzoic acid",file:"paba.sdf",cid:"PubChem CID 978"},ethanol:{label:"Ethanol",file:"ethanol.sdf",cid:"PubChem CID 702"}};
 function BenzocaineSvg({ compact = false }) {
   return (
     <svg
@@ -76,7 +82,8 @@ function BenzocaineSvg({ compact = false }) {
     </svg>
   );
 }
-export default function RetrosynthesisTargetPage() {
+export default function RetrosynthesisTargetPage({ onNavigate }) {
+  const viewerRef=useRef(null);
   const [route, setRoute] = useState("A"),
     [selectedTransform, setSelectedTransform] = useState(transforms[0]),
     [extraRoute, setExtraRoute] = useState(false),
@@ -86,6 +93,10 @@ export default function RetrosynthesisTargetPage() {
     [running, setRunning] = useState(false),
     [query, setQuery] = useState(""),
     [notice, setNotice] = useState("");
+  const [structureKey,setStructureKey]=useState("target"),[structureStyle,setStructureStyle]=useState("Ball & stick"),[viewerReady,setViewerReady]=useState(false),[selectedAtom,setSelectedAtom]=useState(null),[importedSource,setImportedSource]=useState(null);
+  const structure=structureOptions[structureKey];
+  const viewerSource=useMemo(()=>importedSource||{url:`/assets/retrosynthesis/${structure.file}`,format:"sdf",label:`${structure.label} · ${structure.cid}`},[importedSource,structure]);
+  const importCoordinates=event=>{const file=event.target.files?.[0];if(!file)return;const ext=file.name.split('.').pop()?.toLowerCase(),format=ext==='cif'||ext==='mmcif'?'mmcif':ext;if(!['pdb','mmcif','mol','sdf'].includes(format)){msg('Use PDB, CIF, MOL, or SDF coordinates');return;}const reader=new FileReader();reader.onload=()=>{setImportedSource({data:String(reader.result),format,label:file.name});setTab('3D');setViewerReady(false);};reader.readAsText(file);};
   const routeOptions = extraRoute ? ["A", "B", "C"] : ["A", "B"];
   const visibleTransforms = transforms.filter((item) =>
     item.toLowerCase().includes(query.toLowerCase()),
@@ -101,7 +112,7 @@ export default function RetrosynthesisTargetPage() {
   const msg = (x) => setNotice(x);
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#071827] text-slate-100"
+      className="retro-app min-h-screen overflow-hidden bg-[#071827] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[62px] items-center gap-4 border-b border-white/10 bg-[#0a1c2c] px-5">
@@ -123,7 +134,7 @@ export default function RetrosynthesisTargetPage() {
         <span className="text-xs">▣ Projects</span>
         <span className="rounded-full bg-blue-500 px-3 py-2 text-xs">DL</span>
       </header>
-      <div className="grid h-[calc(100vh-62px)] grid-cols-[175px_1fr_355px] gap-3 p-3">
+      <div className="retro-shell grid h-[calc(100vh-62px)] grid-cols-[175px_1fr_355px] gap-3 p-3">
         <aside className="rounded border border-white/10 bg-[#0b2033] p-3">
           {[
             "Home",
@@ -137,7 +148,7 @@ export default function RetrosynthesisTargetPage() {
           ].map((x, i) => (
             <button
               key={x}
-              onClick={() => msg(`${x} selected`)}
+              onClick={() => (x === "Home" ? onNavigate?.("dashboard") : msg(`${x} selected`))}
               className={`mb-1 flex w-full gap-2 rounded px-3 py-3 text-left text-xs ${i === 1 ? "border-l-2 border-blue-400 bg-blue-500/15 text-blue-200" : "text-slate-300"}`}
             >
               <Home size={15} />
@@ -172,7 +183,7 @@ export default function RetrosynthesisTargetPage() {
                   </span>
                 </div>
               </div>
-              <div>
+              <div className="retro-preview">
                 <button
                   onClick={() => setTab("2D")}
                   className={`px-4 py-2 text-xs ${tab === "2D" ? "bg-blue-500" : "border"}`}
@@ -185,11 +196,10 @@ export default function RetrosynthesisTargetPage() {
                 >
                   3D
                 </button>
-                <div
-                  className={`mt-4 flex h-24 w-64 items-center justify-center text-3xl text-cyan-200 ${tab === "3D" ? "rounded-full bg-cyan-300/10 shadow-[0_0_35px_rgba(34,211,238,.3)]" : ""}`}
-                >
-                  <BenzocaineSvg compact />
-                </div>
+                <div className="retro-structure-tabs">{Object.entries(structureOptions).map(([key,item])=><button key={key} className={structureKey===key&&!importedSource?"active":""} onClick={()=>{setStructureKey(key);setImportedSource(null);setTab("3D");setViewerReady(false);setSelectedAtom(null);}}>{key==="target"?"Target":item.label}</button>)}</div>
+                <div className="retro-target-view">{tab==="2D"?<BenzocaineSvg compact/>:<><ViewerErrorBoundary label="Retrosynthesis structure preview"><MolstarViewer ref={viewerRef} source={viewerSource} sourceType={viewerSource.format} label={viewerSource.label} representation={{BallAndStick:structureStyle==="Ball & stick",Spacefill:structureStyle==="Space filling",Sticks:structureStyle==="Sticks",Ligand:false,Branched:false,Ion:false}} colorScheme="element" onReady={()=>{setViewerReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(1.25));}} onLoadError={()=>setViewerReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary><span>{viewerReady?"Mol* ready":"Loading…"} · {importedSource?importedSource.label:structure.cid}</span></>}</div>
+                <div className="retro-view-tools"><select value={structureStyle} onChange={event=>setStructureStyle(event.target.value)}><option>Ball &amp; stick</option><option>Space filling</option><option>Sticks</option></select><label><FileUp size={13}/>Import<input type="file" accept=".pdb,.cif,.mmcif,.mol,.sdf" onChange={importCoordinates}/></label><button aria-label="Full screen retrosynthesis structure" onClick={()=>viewerRef.current?.fullscreen()}><Maximize2 size={13}/></button></div>
+                <p className="retro-atom">{selectedAtom?`${selectedAtom.element} atom ${selectedAtom.sourceIndex+1} · [${selectedAtom.coordinates.map(value=>value.toFixed(2)).join(", ")}] Å`:"Click an atom to inspect coordinates"}</p>
               </div>
             </div>
           </section>
@@ -253,17 +263,17 @@ export default function RetrosynthesisTargetPage() {
               <div className="mt-5 rounded border border-white/10 p-3">
                 <h4 className="font-bold">Retrosynthetic step 1</h4>
                 <div className="mt-4 flex justify-around text-center text-xs">
-                  <span>
+                  <button onClick={()=>{setStructureKey("paba");setImportedSource(null);setTab("3D");setViewerReady(false);}}>
                     p-Aminobenzoic acid
                     <br />
                     <small>C₇H₇NO₂</small>
-                  </span>
+                  </button>
                   <b className="text-2xl">+</b>
-                  <span>
+                  <button onClick={()=>{setStructureKey("ethanol");setImportedSource(null);setTab("3D");setViewerReady(false);}}>
                     Ethanol
                     <br />
                     <small>C₂H₆O</small>
-                  </span>
+                  </button>
                 </div>
               </div>
             </section>

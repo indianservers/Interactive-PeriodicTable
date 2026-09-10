@@ -6,12 +6,16 @@ import {
   BookOpen,
   FlaskConical,
   Home,
+  Maximize2,
   RotateCcw,
   Settings,
   SlidersHorizontal,
   TableProperties,
+  Zap,
 } from "lucide-react";
 import "./MoleculePolarityPage.css";
+import MolstarViewer from "../../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../../components/molecular-viewer/ViewerErrorBoundary.jsx";
 
 const EN = { H: 2.2, C: 2.55, N: 3.04, O: 3.44, F: 3.98, B: 2.04, Cl: 3.16 };
 const colors = {
@@ -119,6 +123,12 @@ const molecules = {
   },
 };
 
+function moleculeMol(molecule) {
+  const atomLines=molecule.atoms.map(([element,x,y,z])=>`${x.toFixed(4).padStart(10)}${y.toFixed(4).padStart(10)}${z.toFixed(4).padStart(10)} ${element.padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join("\n");
+  const bondLines=molecule.bonds.map(([from,to])=>`${String(from+1).padStart(3)}${String(to+1).padStart(3)}  1  0  0  0  0`).join("\n");
+  return {data:`${molecule.name} (${molecule.formula})\n  Molecule Polarity Lab\n\n${String(molecule.atoms.length).padStart(3)}${String(molecule.bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${atomLines}\n${bondLines}\nM  END\n`,format:"mol",label:`${molecule.name} · curated geometry`};
+}
+
 function bondCylinder(a, b, material) {
   const start = new THREE.Vector3(a[1], a[2], a[3]),
     end = new THREE.Vector3(b[1], b[2], b[3]),
@@ -145,6 +155,8 @@ function MoleculeCanvas({
   view,
   resetKey,
   renderMode,
+  showField,
+  fieldAngle,
 }) {
   const ref = useRef();
   useEffect(() => {
@@ -253,6 +265,10 @@ function MoleculeCanvas({
           0.32,
         ),
       );
+    if(showField){
+      const angle=THREE.MathUtils.degToRad(fieldAngle);
+      group.add(new THREE.ArrowHelper(new THREE.Vector3(Math.sin(angle),Math.cos(angle),0),new THREE.Vector3(-Math.sin(angle)*2.8,-Math.cos(angle)*2.8,0),5.6,0x35d5ff,.45,.25));
+    }
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.enablePan = false;
@@ -293,7 +309,7 @@ function MoleculeCanvas({
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [molecule, showDipoles, showCharges, showResult, showLonePairs, density, view, resetKey, renderMode]);
+  }, [molecule, showDipoles, showCharges, showResult, showLonePairs, density, view, resetKey, renderMode, showField, fieldAngle]);
   return (
     <div
       ref={ref}
@@ -325,6 +341,7 @@ function Toggle({ label, on, set }) {
   );
 }
 export default function MoleculePolarityPage() {
+  const molRef=useRef(null);
   const [id, setId] = useState("CH2Cl2"),
     [dipoles, setDipoles] = useState(true),
     [charges, setCharges] = useState(true),
@@ -334,8 +351,15 @@ export default function MoleculePolarityPage() {
     [view, setView] = useState("Front"),
     [activeTab, setActiveTab] = useState("Model"),
     [renderMode, setRenderMode] = useState("realistic"),
-    [resetKey, setResetKey] = useState(0);
+    [resetKey, setResetKey] = useState(0),
+    [structureMode,setStructureMode]=useState("vectors"),
+    [molReady,setMolReady]=useState(false),
+    [molAtom,setMolAtom]=useState(null),
+    [showField,setShowField]=useState(false),
+    [fieldAngle,setFieldAngle]=useState(0);
   const m = molecules[id];
+  const molSource=useMemo(()=>moleculeMol(m),[m]);
+  useEffect(()=>{setMolReady(false);setMolAtom(null);},[id]);
   const bondTypes = useMemo(() => {
     const map = new Map();
     m.bonds.forEach(([a, b]) => {
@@ -407,7 +431,8 @@ export default function MoleculePolarityPage() {
           ))}
         </section>
         <section className="mp-stage">
-          <MoleculeCanvas
+          <div className="mp-structure-mode"><button className={structureMode==="vectors"?"active":""} onClick={()=>setStructureMode("vectors")}>Dipole vectors</button><button className={structureMode==="molstar"?"active":""} onClick={()=>setStructureMode("molstar")}>Mol* geometry</button></div>
+          {structureMode==="vectors"?<MoleculeCanvas
             molecule={m}
             showDipoles={dipoles}
             showCharges={charges}
@@ -417,11 +442,13 @@ export default function MoleculePolarityPage() {
             view={view}
             resetKey={resetKey}
             renderMode={renderMode}
-          />
+            showField={showField}
+            fieldAngle={fieldAngle}
+          />:<div className="mp-molstar"><ViewerErrorBoundary label="Molecule polarity structure viewer"><MolstarViewer ref={molRef} source={molSource} sourceType={molSource.format} label={molSource.label} representation={{BallAndStick:renderMode==="ball-stick",Spacefill:renderMode==="realistic",Ligand:false,Branched:false,Ion:false}} colorScheme="element" onReady={()=>{setMolReady(true);requestAnimationFrame(()=>molRef.current?.zoom(1.3));}} onLoadError={()=>setMolReady(false)} onSelectionChange={setMolAtom}/></ViewerErrorBoundary><div className="mp-mol-meta"><b>{molReady?"Mol* coordinate view ready":"Loading coordinates…"}</b><span>Curated gas-phase teaching geometry · not an experimental structure</span><span>{molAtom?`${molAtom.element} atom ${molAtom.sourceIndex+1} · [${molAtom.coordinates.map(value=>value.toFixed(2)).join(", ")}] Å`:"Click an atom for coordinates"}</span></div><button className="mp-mol-full" aria-label="Full screen molecular geometry" onClick={()=>molRef.current?.fullscreen()}><Maximize2/> Fullscreen</button></div>}
           <div className="mp-net">
             Net molecular dipole<b>{m.dipole.toFixed(2)} D</b>
           </div>
-          {charges && (
+          {charges && structureMode === "vectors" && (
             <>
               <span className="mp-charge c1">δ−</span>
               <span className="mp-charge c2">δ−</span>
@@ -491,6 +518,8 @@ export default function MoleculePolarityPage() {
             <Toggle label="Bond dipoles" on={dipoles} set={setDipoles} />
             <Toggle label="Vector addition" on={sum} set={setSum} />
             <Toggle label="Lone pairs" on={lone} set={setLone} />
+            <Toggle label="Electric field" on={showField} set={setShowField} />
+            {showField&&<label className="mp-field"><span><Zap/>Field orientation</span><output>{fieldAngle}°</output><input aria-label="Electric field orientation" type="range" min="0" max="360" value={fieldAngle} onChange={event=>setFieldAngle(Number(event.target.value))}/></label>}
           </article>
         </section>
         <section className="mp-vectors">

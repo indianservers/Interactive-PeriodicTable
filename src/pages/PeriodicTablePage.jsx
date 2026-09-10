@@ -91,6 +91,56 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
     <div className="flex flex-col h-full periodic-page">
       <div className="flex flex-col lg:flex-row gap-0 flex-1 min-h-0">
         <div className="flex-1 p-4 space-y-4 overflow-auto scrollbar-thin min-w-0">
+          <div className="flex flex-wrap items-start gap-3 justify-between glass rounded-2xl p-3">
+            <FilterBar
+              filters={filters}
+              onSearch={setSearch}
+              onCategory={setCategory}
+              onPhase={setPhase}
+              onBlock={setBlock}
+              onReset={reset}
+              hasActive={hasActiveFilters}
+            />
+            <TableControls
+              compact={compact}
+              onToggleCompact={setCompact}
+              trendMode={trendMode}
+              onToggleTrend={() => setTrendMode(m => !m)}
+              jumpValue={jumpValue}
+              onJumpValueChange={setJumpValue}
+              onJump={jumpToElement}
+              activeSyllabusTrack={activeSyllabusTrack}
+              onSyllabusTrackChange={setActiveSyllabusTrack}
+            />
+          </div>
+
+          {trendMode && (
+            <div className="space-y-2">
+              <TrendHeatmap activeTrend={activeTrend} onTrendChange={setActiveTrend} />
+              <TrendExplanationCard activeTrend={activeTrend} />
+            </div>
+          )}
+
+          <CategoryLegend onFilterCategory={setCategory} activeCategory={filters.category} />
+
+          <PeriodicTable
+            filteredElements={filtered}
+            selectedElement={selectedElement}
+            selectedElements={selectedElements}
+            onSelectElement={handleSelectElement}
+            compact={compact}
+            trendMode={trendMode}
+            activeTrend={activeTrend}
+            hoveredElement={hoveredElement}
+            onHoverElement={setHoveredElement}
+            dailyElementNumber={dailyElement?.atomicNumber}
+            activeSyllabusTrack={activeSyllabusTrack}
+          />
+
+          <p className="text-[10px] text-gray-600 text-center">
+            Showing {filtered.length} of 118 elements - Click any tile to view details
+          </p>
+
           <div className="periodic-hero rounded-2xl border border-white/10 p-4 overflow-hidden">
             <div className="flex flex-col xl:flex-row xl:items-center gap-4">
               <div className="min-w-0 flex-1">
@@ -161,56 +211,6 @@ export const PeriodicTablePage = ({ favorites, onFavoriteToggle, onViewAtom, onC
               </div>
             </div>
           </div>
-
-          <div className="flex flex-wrap items-start gap-3 justify-between glass rounded-2xl p-3">
-            <FilterBar
-              filters={filters}
-              onSearch={setSearch}
-              onCategory={setCategory}
-              onPhase={setPhase}
-              onBlock={setBlock}
-              onReset={reset}
-              hasActive={hasActiveFilters}
-            />
-            <TableControls
-              compact={compact}
-              onToggleCompact={setCompact}
-              trendMode={trendMode}
-              onToggleTrend={() => setTrendMode(m => !m)}
-              jumpValue={jumpValue}
-              onJumpValueChange={setJumpValue}
-              onJump={jumpToElement}
-              activeSyllabusTrack={activeSyllabusTrack}
-              onSyllabusTrackChange={setActiveSyllabusTrack}
-            />
-          </div>
-
-          {trendMode && (
-            <div className="space-y-2">
-              <TrendHeatmap activeTrend={activeTrend} onTrendChange={setActiveTrend} />
-              <TrendExplanationCard activeTrend={activeTrend} />
-            </div>
-          )}
-
-          <CategoryLegend onFilterCategory={setCategory} activeCategory={filters.category} />
-
-          <PeriodicTable
-            filteredElements={filtered}
-            selectedElement={selectedElement}
-            selectedElements={selectedElements}
-            onSelectElement={handleSelectElement}
-            compact={compact}
-            trendMode={trendMode}
-            activeTrend={activeTrend}
-            hoveredElement={hoveredElement}
-            onHoverElement={setHoveredElement}
-            dailyElementNumber={dailyElement?.atomicNumber}
-            activeSyllabusTrack={activeSyllabusTrack}
-          />
-
-          <p className="text-[10px] text-gray-600 text-center">
-            Showing {filtered.length} of 118 elements - Click any tile to view details
-          </p>
         </div>
 
         {drawerOpen && selectedElement && (

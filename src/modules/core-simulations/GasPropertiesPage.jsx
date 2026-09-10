@@ -3,8 +3,10 @@ import {
   Atom,
   BarChart3,
   BookOpen,
+  Download,
   FlaskConical,
   Gauge,
+  History,
   Minus,
   NotebookPen,
   Plus,
@@ -12,6 +14,9 @@ import {
   Snowflake,
   Sun,
   ThermometerSun,
+  Pause,
+  Play,
+  RotateCcw,
 } from "lucide-react";
 import "./GasPropertiesPage.css";
 
@@ -28,14 +33,18 @@ const initial = {
   gas: "Helium",
   ideal: true,
   holdPressure: false,
+  running: true,
+  simRate: 1,
 };
 const molesOf = (count) => count / 306;
+const R_L_ATM = 0.082057;
+const R_SI = 8.314462618;
 const pressureOf = (s) => {
   const n = molesOf(s.count), gas = gases[s.gas];
-  const ideal = (n * 0.0821 * s.temp) / s.volume;
+  const ideal = (n * R_L_ATM * s.temp) / s.volume;
   if (s.ideal) return ideal;
   const availableVolume = Math.max(0.15, s.volume - n * gas.b);
-  return Math.max(0.01, (n * 0.0821 * s.temp) / availableVolume - gas.a * (n / s.volume) ** 2);
+  return Math.max(0.01, (n * R_L_ATM * s.temp) / availableVolume - gas.a * (n / s.volume) ** 2);
 };
 
 function useParticles(canvasRef, state) {
@@ -79,7 +88,7 @@ function useParticles(canvasRef, state) {
       particles.current.length = Math.min(particles.current.length, s.count);
       ctx.clearRect(0, 0, w, h);
       for (const p of particles.current) {
-        const factor = Math.sqrt(s.temp / 320);
+        const factor = s.running ? Math.sqrt(s.temp / 320) * s.simRate : 0;
         p.x += p.vx * factor * dt;
         p.y += p.vy * factor * dt;
         if (p.x < p.r || p.x > w - p.r) p.vx *= -1;
@@ -191,20 +200,34 @@ export default function GasPropertiesPage() {
   const [s, setS] = useState(initial);
   const [section, setSection] = useState("Lab");
   const [advanced, setAdvanced] = useState(false);
+  const [history, setHistory] = useState([]);
   const canvasRef = useRef();
   useParticles(canvasRef, s);
   const pressure = pressureOf(s);
   const moles = molesOf(s.count);
-  const speed = Math.round(
-    952 * Math.sqrt(s.temp / 320) * Math.sqrt(4 / gases[s.gas].mass),
-  );
+  const rmsSpeed = Math.sqrt((3 * R_SI * s.temp) / (gases[s.gas].mass / 1000));
+  const speed = Math.round(rmsSpeed);
+  const kineticEnergy = 1.5 * moles * R_SI * s.temp;
+  const density = (moles * gases[s.gas].mass) / s.volume;
+  const compressibility = (pressure * s.volume) / (moles * R_L_ATM * s.temp);
+  const recordPoint = () => {
+    setHistory((items) => [...items, { time: items.length + 1, temp: s.temp, volume: s.volume, pressure, gas: s.gas }].slice(-12));
+  };
+  const exportHistory = () => {
+    const csv = ["Point,Gas,Temperature (K),Volume (L),Pressure (atm)", ...history.map((item) => `${item.time},${item.gas},${item.temp},${item.volume.toFixed(2)},${item.pressure.toFixed(4)}`)].join("\n");
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    link.download = "gas-properties-history.csv";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
   const change = (key, value) =>
     setS((old) => {
       const next = { ...old, [key]: value };
       if (old.holdPressure && (key === "temp" || key === "count"))
-        next.volume = Math.max(
-          1,
-          Math.min(6, (molesOf(next.count) * 0.0821 * next.temp) / pressure),
+          next.volume = Math.max(
+            1,
+            Math.min(6, (molesOf(next.count) * R_L_ATM * next.temp) / pressure),
         );
       return next;
     });
@@ -349,7 +372,7 @@ export default function GasPropertiesPage() {
           </article>
           <article>
             <h3>Pump particles</h3>
-            <div className="gp-step">
+            <div className="gp-step gp-volume-seek">
               <button onClick={() => change("count", Math.max(1, s.count - 5))}>
                 <Minus />
               </button>
@@ -420,7 +443,9 @@ export default function GasPropertiesPage() {
                 max="6"
                 step=".05"
                 value={s.volume}
+                onInput={(e) => change("volume", +e.target.value)}
                 onChange={(e) => change("volume", +e.target.value)}
+                aria-valuetext={`${s.volume.toFixed(2)} litres`}
               />
               <button
                 onClick={() => change("volume", Math.min(6, s.volume + 0.25))}
@@ -433,6 +458,14 @@ export default function GasPropertiesPage() {
               <span>1.0 L</span>
               <span>6.0 L</span>
             </div>
+          </article>
+          <article>
+            <h3>Simulation playback</h3>
+            <div className="gp-two">
+              <button className="primary" onClick={() => change("running", !s.running)}>{s.running ? <Pause /> : <Play />}{s.running ? "Pause" : "Play"}</button>
+              <button onClick={() => { setS(initial); setHistory([]); }}> <RotateCcw /> Reset all</button>
+            </div>
+            <label className="gp-slider-label">Particle speed<input aria-label="Simulation speed" type="range" min="0.25" max="3" step=".25" value={s.simRate} onInput={(e) => change("simRate", +e.target.value)} onChange={(e) => change("simRate", +e.target.value)} /><div className="gp-scale"><span>0.25×</span><b>{s.simRate.toFixed(2)}×</b><span>3×</span></div></label>
           </article>
           <article>
             <h3>Simulation options</h3>
@@ -450,7 +483,7 @@ export default function GasPropertiesPage() {
               <Settings />
               {advanced ? "Close advanced settings" : "Advanced settings"}
             </button>
-            {advanced && <div className="gp-advanced-panel">Collision model: {s.ideal ? "Ideal gas" : "van der Waals"}. Increase particle count or temperature to observe collision-rate changes.</div>}
+            {advanced && <div className="gp-advanced-panel">Collision model: {s.ideal ? "Ideal gas" : "van der Waals"}. Constants: R = {R_L_ATM} L·atm·mol⁻¹·K⁻¹ · a = {gases[s.gas].a} · b = {gases[s.gas].b} L·mol⁻¹.</div>}
           </article>
         </section>
         <section className="gp-stats">
@@ -466,6 +499,10 @@ export default function GasPropertiesPage() {
             <small>Average speed</small>
             <b>{speed} m/s</b>
           </div>
+          <div>
+            <small>Compressibility factor Z</small>
+            <b>{compressibility.toFixed(3)}</b>
+          </div>
           <div className="gp-spectrum">
             <span />
           </div>
@@ -477,6 +514,11 @@ export default function GasPropertiesPage() {
             <Gauge />
             Real gases deviate at high pressure and low temperature
           </p>
+        </section>
+        <section className="gp-history-panel">
+          <div className="gp-history-head"><div><h2><History /> Measurement history</h2><p>Capture states to compare Boyle’s, Charles’s and ideal-gas behaviour.</p></div><div><button onClick={recordPoint}><Plus /> Record point</button><button onClick={exportHistory} disabled={!history.length}><Download /> Export CSV</button></div></div>
+          <div className="gp-history-metrics"><span>Density <b>{density.toFixed(3)} g/L</b></span><span>Mean kinetic energy <b>{kineticEnergy.toFixed(2)} J</b></span><span>Model <b>{s.ideal ? "Ideal gas" : "van der Waals"}</b></span></div>
+          {history.length ? <div className="gp-history-table"><span>Point</span><span>Gas</span><span>T</span><span>V</span><span>P</span>{history.map((item) => <><b key={`${item.time}-n`}>{item.time}</b><span key={`${item.time}-g`}>{item.gas}</span><span key={`${item.time}-t`}>{item.temp} K</span><span key={`${item.time}-v`}>{item.volume.toFixed(2)} L</span><span key={`${item.time}-p`}>{item.pressure.toFixed(3)} atm</span></>)}</div> : <p className="gp-history-empty">No saved states yet. Adjust the seek bar or temperature, then record a point.</p>}
         </section>
       </main>
     </div>

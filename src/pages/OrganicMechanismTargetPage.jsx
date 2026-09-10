@@ -1,23 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
   FlaskConical,
+  Maximize2,
   Play,
   Settings,
   SlidersHorizontal,
 } from "lucide-react";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import "./organicMechanismTarget.css";
 
 const mechanisms = [
   {
     id: "sn2",
     title: "SN₂ · Backside attack",
     subtitle: "Concerted substitution with inversion of configuration",
-    equation: "OH⁻ + CH₃Br → CH₃OH + Br⁻",
+    equation: "(R)-CH₃CH(Br)CH₂CH₃ + OH⁻ → (S)-CH₃CH(OH)CH₂CH₃ + Br⁻",
     species: [
       ["Hydroxide (nucleophile)", "OH⁻ · strong nucleophile"],
-      ["Methyl bromide (electrophile)", "CH₃Br · good leaving group"],
-      ["Methanol (product)", "CH₃OH · inverted configuration"],
+      ["(R)-2-bromobutane (electrophile)", "Secondary stereogenic substrate"],
+      ["(S)-2-butanol (product)", "Product of Walden inversion"],
       ["Bromide (leaving group)", "Br⁻ · stable anion"],
     ],
     features: [
@@ -215,18 +219,36 @@ function MechanismSvg({ stage, arrows = true }) {
   );
 }
 
+function mechanismMol(id,stage){
+  const travel=[3.2,2.15,1.75,1.52][stage],depart=[1.55,2.05,2.65,3.5][stage];
+  let atoms,bonds;
+  if(id==='e2'){
+    atoms=[['C',-.75,0,0],['C',.75,0,0],['H',-1.25,1.1,0],['Br',1.5,-1.2,0],['O',-2.1,1.65,0],['H',-2.8,1.85,0]];
+    bonds=[[0,1],[0,2],[1,3],[4,5],...(stage>1?[[0,1]]:[])];
+  }else{
+    atoms=[['C',0,0,0],['Br',depart,0,0],['O',-travel,0,0],['C',0,1.45,.75],['C',0,-1.35,.8],['H',0,0,-1.4],['H',-travel-.7,.35,0]];
+    bonds=[[0,3],[0,4],[0,5],[2,6],...(stage<3?[[0,1]]:[]),...(stage>0?[[0,2]]:[])];
+  }
+  const atomLines=atoms.map(([e,x,y,z])=>`${x.toFixed(4).padStart(10)}${y.toFixed(4).padStart(10)}${z.toFixed(4).padStart(10)} ${e.padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join('\n');
+  const bondLines=bonds.map(([a,b],index)=>`${String(a+1).padStart(3)}${String(b+1).padStart(3)}${String(id==='e2'&&stage>1&&index===bonds.length-1?2:1).padStart(3)}  0  0  0  0`).join('\n');
+  return{data:`${id.toUpperCase()} · stage ${stage+1}\n  Organic Mechanism Player\n  Idealized coordinate teaching model\n${String(atoms.length).padStart(3)}${String(bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${atomLines}\n${bondLines}\nM  END\n`,format:'mol',label:`${id.toUpperCase()} · ${stage+1}`};
+}
+
 export default function OrganicMechanismTargetPage({ onNavigate }) {
+  const viewerRef=useRef(null);
   const initialToggles = {
     arrows: true,
     charges: true,
     energy: true,
     stereo: true,
     slow: false,
+    view3d: true,
   };
   const [mechanismId, setMechanismId] = useState("sn2");
   const [stage, setStage] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [toggles, setToggles] = useState(initialToggles);
+  const [representation,setRepresentation]=useState('Ball & stick'),[selectedAtom,setSelectedAtom]=useState(null),[viewerReady,setViewerReady]=useState(false);
   const mechanism =
     mechanisms.find((item) => item.id === mechanismId) || mechanisms[0];
   const transitionPeak =
@@ -244,9 +266,11 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
     );
     return () => window.clearInterval(timer);
   }, [playing, mechanism.stages.length, toggles.slow]);
+  const molecularState=useMemo(()=>mechanismMol(mechanism.id,stage),[mechanism.id,stage]);
+  useEffect(()=>{setViewerReady(false);setSelectedAtom(null);},[mechanism.id,stage]);
   return (
     <div
-      className="min-h-screen bg-[#061426] text-slate-100"
+      className="mech-app min-h-screen bg-[#061426] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-5 border-b border-white/10 bg-[#07172a] px-6">
@@ -259,7 +283,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
         </div>
         <div className="ml-auto flex gap-5 text-xs">
           <button onClick={() => toggle("menu")}>👜 Mechanisms⌄</button>
-          <button onClick={() => toggle("view")}>◈ 3D View</button>
+          <button onClick={() => toggle("view3d")}>◈ {toggles.view3d?"Hide":"Show"} 3D View</button>
           <button onClick={() => toggle("settings")}>
             <Settings size={15} className="mr-1 inline" />
             Settings
@@ -267,7 +291,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
           <button onClick={() => toggle("dark")}>☼ ◐</button>
         </div>
       </header>
-      <div className="grid min-h-[calc(100vh-64px)] grid-cols-[110px_245px_1fr] gap-2 p-2">
+      <div className="mech-shell grid min-h-[calc(100vh-64px)] grid-cols-[110px_245px_1fr] gap-2 p-2">
         <aside className="rounded-xl border border-white/10 bg-[#0a1c31] p-2">
           {mechanisms.map((item) => (
             <button
@@ -313,7 +337,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
           </div>
         </aside>
         <main className="min-w-0 space-y-2">
-          <section className="rounded-xl border border-white/10 bg-[#0a1c31] p-4">
+          <section className="mech-overview rounded-xl border border-white/10 bg-[#0a1c31] p-4">
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-3xl font-black">{mechanism.title}</h2>
@@ -323,7 +347,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
                 {mechanism.equation}
               </p>
             </div>
-            <div className="mt-3 grid grid-cols-4 gap-2">
+            <div className="mech-stage-grid mt-3 grid grid-cols-4 gap-2">
               {mechanism.stages.map((x, i) => (
                 <button
                   key={x}
@@ -358,6 +382,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
                 </button>
               ))}
             </div>
+            {toggles.view3d&&<div className="mech-molstar-panel"><div className="mech-molstar-head"><div><b>Optional 3D state inspection</b><span>{mechanism.stages[stage]} · stage {stage+1}/4</span></div><select value={representation} onChange={event=>setRepresentation(event.target.value)}><option>Ball &amp; stick</option><option>Space filling</option><option>Sticks</option></select><button aria-label="Full screen mechanism structure" onClick={()=>viewerRef.current?.fullscreen()}><Maximize2 size={14}/></button></div><div className="mech-molstar-view"><ViewerErrorBoundary label="Mechanism state viewer"><MolstarViewer ref={viewerRef} source={molecularState} sourceType="mol" label={molecularState.label} representation={{BallAndStick:representation==='Ball & stick',Spacefill:representation==='Space filling',Sticks:representation==='Sticks',Ligand:false,Branched:false,Ion:false}} colorScheme="element" selectedAtomIndex={selectedAtom?.sourceIndex} onReady={()=>{setViewerReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(1.2));}} onLoadError={()=>setViewerReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary><span>{viewerReady?'Mol* ready':'Loading…'} · idealized transition-related coordinates</span></div><p>{selectedAtom?`${selectedAtom.element} atom ${selectedAtom.sourceIndex+1} · [${selectedAtom.coordinates.map(value=>value.toFixed(2)).join(', ')}] Å`:'Click an atom for stereochemical coordinates'} · Coordinate states are teaching models, not optimized transition structures.</p></div>}
           </section>
           <section className="rounded-xl border border-white/10 bg-[#0a1c31] p-3">
             <div className="flex items-center gap-4">

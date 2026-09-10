@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Dna, Play, RotateCcw, Settings2 } from "lucide-react";
+import "./biochemistryPages.css";
 
 const nav = [
   "Home",
@@ -177,7 +178,7 @@ function Nucleotide({ acid, base }) {
   );
 }
 
-export default function NucleicAcidTargetPage() {
+export default function NucleicAcidTargetPage({ onNavigate }) {
   const [acid, setAcid] = useState("DNA");
   const [pair, setPair] = useState("G≡C");
   const [playing, setPlaying] = useState(false);
@@ -243,7 +244,7 @@ export default function NucleicAcidTargetPage() {
     announce("View reset");
   };
   return (
-    <div
+    <div data-bio-page="nucleic-acid"
       className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
@@ -286,7 +287,7 @@ export default function NucleicAcidTargetPage() {
           {nav.map((item, i) => (
             <button
               key={item}
-              onClick={() => announce(`${item} selected`)}
+              onClick={() => (item === "Home" ? onNavigate?.("dashboard") : announce(`${item} selected`))}
               className={`flex w-full items-center gap-3 rounded px-3 py-3 text-left text-xs ${i === 0 ? "bg-blue-500/25 text-blue-200" : "text-slate-300 hover:bg-white/10"}`}
             >
               <span className="w-4 text-center text-blue-300">

@@ -1,525 +1,58 @@
-import { useState } from "react";
-import {
-  Beaker,
-  BookOpen,
-  FlaskConical,
-  Home,
-  RotateCcw,
-  Thermometer,
-  Waves,
-} from "lucide-react";
+import {useEffect,useMemo,useRef,useState} from 'react';
+import {FlaskConical,Home,Network,Boxes,BookOpen,NotebookPen,Settings,Play,Pause,RotateCcw,Menu,X,Calculator,Maximize2} from 'lucide-react';
+import CobaltLabScene from '../components/inorganic/CobaltLabScene.jsx';
+import {CrystalField,CobaltSpectrum} from '../components/inorganic/CobaltSciencePanels.jsx';
+import {equilibrium} from '../components/inorganic/cobaltModel.js';
+import './inorganicCobaltLab.css';
+import MolstarViewer from '../components/molecular-viewer/MolstarViewer.jsx';
+import ViewerErrorBoundary from '../components/molecular-viewer/ViewerErrorBoundary.jsx';
 
-const nav = [
-  "Home",
-  "Coordination Chemistry",
-  "Solid State Chemistry",
-  "p-Block Chemistry",
-  "Transition Metals",
-  "Qualitative Analysis",
-  "Resources",
-  "Simulations",
-  "Literature",
-  "Settings",
-];
-const tabDescriptions = {
-  Investigation: "Adjust chloride, temperature, dilution and heat to observe Le Châtelier’s principle.",
-  Theory: "Compare coordination geometry, ligand-field strength and colour with the equilibrium model.",
-  Data: "Read the live composition fractions and wavelength-dependent UV–Vis response.",
-  Playground: "Try extreme conditions and reset the experiment when you are ready to compare states.",
-};
-function CoordinationMolecule({ chloride = false }) {
-  const ligand = chloride ? "#22c55e" : "#f87171";
-  return (
-    <svg
-      viewBox="0 0 220 180"
-      className="h-44 w-56"
-      aria-label={
-        chloride
-          ? "Tetrahedral cobalt chloride complex"
-          : "Octahedral hydrated cobalt complex"
-      }
-    >
-      <defs>
-        <filter id={chloride ? "glowGreen" : "glowPink"}>
-          <feGaussianBlur stdDeviation="5" />
-        </filter>
-      </defs>
-      <circle
-        cx="110"
-        cy="90"
-        r="28"
-        fill="#a855f7"
-        filter={`url(#${chloride ? "glowGreen" : "glowPink"})`}
-        opacity=".55"
-      />
-      <circle
-        cx="110"
-        cy="90"
-        r="21"
-        fill="#a855f7"
-        stroke="#e9d5ff"
-        strokeWidth="2"
-      />
-      {(chloride
-        ? [
-            [110, 24],
-            [49, 125],
-            [171, 125],
-            [110, 156],
-          ]
-        : [
-            [110, 18],
-            [110, 162],
-            [38, 90],
-            [182, 90],
-            [58, 42],
-            [162, 138],
-          ]
-      ).map(([x, y], i) => (
-        <g key={i}>
-          <line
-            x1="110"
-            y1="90"
-            x2={x}
-            y2={y}
-            stroke={ligand}
-            strokeWidth="7"
-            opacity=".85"
-          />
-          <circle
-            cx={x}
-            cy={y}
-            r="13"
-            fill={ligand}
-            stroke="#f8fafc"
-            strokeWidth="2"
-          />
-          <circle cx={x - 4} cy={y - 4} r="3" fill="#fff" opacity=".7" />
-        </g>
-      ))}
-      <text x="102" y="95" fill="#fff" fontSize="10" textAnchor="middle">
-        Co
-      </text>
-    </svg>
-  );
-}
-function BeakerScene({ chloride = false, fraction = 50 }) {
-  return (
-    <div className="relative grid h-[305px] place-items-center overflow-hidden rounded bg-[radial-gradient(circle_at_50%_30%,rgba(96,165,250,.2),transparent_48%),linear-gradient(180deg,#102840,#071827)]">
-      <CoordinationMolecule chloride={chloride} />
-      <div
-        className={`absolute bottom-7 h-36 w-48 rounded-b-[28%] border-2 ${chloride ? "border-blue-300/70 bg-blue-600/55" : "border-pink-300/70 bg-pink-500/45"}`}
-      >
-        <div className="absolute inset-x-2 top-6 h-1 border-t border-white/60" />
-        {Array.from({ length: 12 }, (_, i) => (
-          <span
-            key={i}
-            className={`absolute h-1.5 w-1.5 rounded-full ${chloride ? "bg-blue-200" : "bg-pink-200"}`}
-            style={{
-              left: `${12 + ((i * 29) % 75)}%`,
-              top: `${25 + ((i * 37) % 60)}%`,
-              opacity: 0.35 + (i % 3) * 0.2,
-            }}
-          />
-        ))}
-        <div className="absolute right-3 top-3 flex h-24 flex-col justify-between text-[9px] text-white/80">
-          <span>50</span>
-          <span>40</span>
-          <span>30</span>
-          <span>20</span>
-          <span>10</span>
-        </div>
-      </div>
-      <span className="absolute bottom-2 text-[10px] text-slate-300">
-        {chloride ? "[CoCl₄]²⁻ · aqueous blue" : "[Co(H₂O)₆]²⁺ · aqueous pink"}
-      </span>
-      <span className="absolute right-3 top-3 rounded bg-slate-950/70 px-2 py-1 text-[10px] text-slate-300">
-        {fraction.toFixed(0)}%
-      </span>
-    </div>
-  );
-}
-export default function InorganicDeepTargetPage() {
-  const [chloride, setChloride] = useState(2),
-    [temp, setTemp] = useState(25),
-    [heat, setHeat] = useState(false),
-    [hcl, setHcl] = useState(true),
-    [water, setWater] = useState(false),
-    [tab, setTab] = useState("Investigation"),
-    [noteTab, setNoteTab] = useState("Observations"),
-    [newObservation, setNewObservation] = useState(false),
-    [notice, setNotice] = useState("");
-  const blue = Math.min(
-    100,
-    Math.max(
-      10,
-      chloride * 35 +
-        (temp - 25) * 0.35 +
-        (hcl ? 18 : 0) +
-        (heat ? 15 : 0) -
-        (water ? 20 : 0),
-    ),
-  );
-  const pink = 100 - blue;
-  const msg = (x) => setNotice(x);
-  return (
-    <div
-      className="min-h-screen overflow-hidden bg-[#071827] text-slate-100"
-      style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
-    >
-      <header className="flex h-[70px] items-center gap-4 border-b border-white/10 bg-[#0b1e31] px-6">
-        <FlaskConical className="text-blue-300" size={30} />
-        <div>
-          <h1 className="text-xl font-black">Inorganic Chemistry Deep Lab</h1>
-          <p className="text-xs text-slate-400">
-            Explore structure. Understand reactivity. See the invisible.
-          </p>
-        </div>
-        <div className="ml-auto flex gap-7 text-xs text-slate-300">
-          <span className="text-emerald-300">● Lab Mode</span>
-          <span>▣ Calculators</span>
-          <span>▦ Periodic Table</span>
-          <span>▤ Notes</span>
-          <span className="rounded-full bg-blue-500/70 px-3 py-2">JS</span>
-        </div>
-      </header>
-      <div className="grid h-[calc(100vh-70px)] grid-cols-[205px_1fr_365px]">
-        <aside className="border-r border-white/10 bg-[#0b2034] p-3">
-          {nav.map((x, i) => (
-            <button
-              key={x}
-              onClick={() => msg(`${x} selected`)}
-              className={`mb-1 flex w-full items-center gap-3 rounded px-3 py-3 text-left text-sm ${i === 1 ? "border-l-2 border-blue-400 bg-blue-500/15 text-blue-200" : "text-slate-300"}`}
-            >
-              <span>
-                {i === 0 ? (
-                  <Home size={17} />
-                ) : i === 1 ? (
-                  <Waves size={17} />
-                ) : i === 6 ? (
-                  <BookOpen size={17} />
-                ) : (
-                  <Beaker size={17} />
-                )}
-              </span>
-              {x}
-            </button>
-          ))}
-          <div className="mt-8 border-t border-white/10 pt-7 text-xs italic text-slate-500">
-            “Inorganic chemistry connects the elemental to the essential.”
-            <br />
-            <br />— G. Wilkinson
-          </div>
-        </aside>
-        <main className="min-w-0 overflow-auto p-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-3xl font-black">Cobalt equilibrium</h2>
-              <p className="text-lg text-blue-200">[Co(H₂O)₆]²⁺ ⇄ [CoCl₄]²⁻</p>
-              <p className="text-sm text-slate-400">
-                Ligand substitution, colour change and Le Châtelier’s principle
-                in action.
-              </p>
-            </div>
-            <div className="flex rounded border border-white/10">
-              {["Investigation", "Theory", "Data", "Playground"].map((x) => (
-                <button
-                  key={x}
-                  onClick={() => {
-                    setTab(x);
-                    msg(`${x} tab selected`);
-                  }}
-                  className={`px-4 py-3 text-xs ${tab === x ? "border-b-2 border-blue-400 text-blue-300" : "text-slate-400"}`}
-                >
-                  {x}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="mt-3 rounded border border-blue-300/20 bg-blue-500/10 px-3 py-2 text-xs text-blue-100">
-            <b>{tab}:</b> {tabDescriptions[tab]}
-          </div>
-          <section className="mt-3 grid grid-cols-[1fr_310px_1fr] gap-3">
-            <div className="rounded border border-pink-300/20 bg-gradient-to-b from-pink-500/10 to-slate-950 p-3">
-              <BeakerScene fraction={pink} />
-              <h3 className="text-center text-lg font-bold">[Co(H₂O)₆]²⁺</h3>
-              <p className="text-center text-xs text-pink-200">
-                (aq, pink) · Octahedral Co(II)
-              </p>
-            </div>
-            <div className="rounded border border-white/10 bg-[#0b2134] p-4">
-              <h3 className="font-bold text-blue-200">Shift equilibrium</h3>
-              <label className="mt-5 block text-xs">
-                [Cl⁻] concentration (M)
-                <output className="float-right rounded border border-white/15 px-2">
-                  {chloride.toFixed(2)}
-                </output>
-                <input
-                  type="range"
-                  min="0.001"
-                  max="2"
-                  step=".001"
-                  value={chloride}
-                  onChange={(e) => setChloride(+e.target.value)}
-                  className="mt-2 w-full accent-blue-400"
-                />
-              </label>
-              <label className="mt-6 block text-xs">
-                Temperature (°C)
-                <output className="float-right rounded border border-white/15 px-2">
-                  {temp}
-                </output>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={temp}
-                  onChange={(e) => setTemp(+e.target.value)}
-                  className="mt-2 w-full accent-amber-300"
-                />
-              </label>
-              {[
-                ["Add HCl (Cl⁻)", hcl, setHcl],
-                ["Add H₂O (dilute)", water, setWater],
-                ["Heat solution", heat, setHeat],
-              ].map(([x, v, s]) => (
-                <button
-                  key={x}
-                  onClick={() => s(!v)}
-                  className="mt-4 flex w-full items-center gap-3 text-left text-xs"
-                >
-                  <span
-                    className={`h-5 w-9 rounded-full p-1 ${v ? "bg-blue-500" : "bg-slate-700"}`}
-                  >
-                    <span
-                      className={`block h-3 w-3 rounded-full bg-white transition ${v ? "translate-x-4" : ""}`}
-                    />
-                  </span>
-                  {x}
-                </button>
-              ))}
-              <button
-                onClick={() => {
-                  setChloride(2);
-                  setTemp(25);
-                  setHcl(true);
-                  setWater(false);
-                  setHeat(false);
-                  msg("Equilibrium reset");
-                }}
-                className="mt-6 w-full rounded border border-white/15 px-3 py-2 text-xs"
-              >
-                <RotateCcw size={14} className="mr-1 inline" />
-                Reset
-              </button>
-            </div>
-            <div className="rounded border border-blue-300/20 bg-gradient-to-b from-blue-500/10 to-slate-950 p-3">
-              <BeakerScene chloride fraction={blue} />
-              <h3 className="text-center text-lg font-bold">[CoCl₄]²⁻</h3>
-              <p className="text-center text-xs text-blue-200">
-                (aq, blue) · Tetrahedral Co(II)
-              </p>
-            </div>
-          </section>
-          <section className="mt-3 grid grid-cols-3 gap-3">
-            <div className="rounded border border-white/10 bg-[#0b2134] p-3">
-              <h3 className="font-bold">Crystal-field splitting</h3>
-              <div className="mt-5 h-28 border-b border-dashed border-slate-500">
-                <div className="mt-10 flex justify-around text-pink-300">
-                  ↑↓ ↑ ↑↓ ↑
-                </div>
-              </div>
-              <p className="mt-2 text-xs text-pink-200">
-                Smaller Δ₀ (weaker field)
-                <br />
-                Longer wavelength absorbed
-              </p>
-            </div>
-            <div className="rounded border border-white/10 bg-[#0b2134] p-3">
-              <h3 className="font-bold">UV-Vis spectra</h3>
-              <svg
-                viewBox="0 0 300 130"
-                className="mt-4 h-32 w-full rounded bg-slate-950/70"
-                aria-label="UV-Vis absorbance spectra"
-              >
-                {[25, 55, 85, 115].map((y) => (
-                  <line
-                    key={y}
-                    x1="32"
-                    x2="286"
-                    y1={y}
-                    y2={y}
-                    stroke="#334155"
-                    strokeWidth="1"
-                  />
-                ))}
-                {[32, 95, 158, 222, 286].map((x) => (
-                  <line
-                    key={x}
-                    x1={x}
-                    x2={x}
-                    y1="12"
-                    y2="115"
-                    stroke="#334155"
-                    strokeWidth="1"
-                  />
-                ))}
-                <path
-                  d="M32 110 C52 100 68 40 92 34 S121 83 146 101 S207 108 286 110"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="3"
-                  opacity={Math.max(0.25, blue / 100)}
-                />
-                <path
-                  d="M32 110 C85 110 108 108 135 92 S166 38 190 52 S213 99 286 110"
-                  fill="none"
-                  stroke="#ec4899"
-                  strokeWidth="3"
-                  opacity={Math.max(0.25, pink / 100)}
-                />
-                <text x="38" y="125" fill="#94a3b8" fontSize="9">
-                  400
-                </text>
-                <text x="145" y="125" fill="#94a3b8" fontSize="9">
-                  600
-                </text>
-                <text x="260" y="125" fill="#94a3b8" fontSize="9">
-                  800 nm
-                </text>
-                <text x="40" y="18" fill="#60a5fa" fontSize="9">
-                  [CoCl₄]²⁻
-                </text>
-                <text x="194" y="18" fill="#f472b6" fontSize="9">
-                  [Co(H₂O)₆]²⁺
-                </text>
-              </svg>
-              <div className="mt-2 h-2 rounded bg-gradient-to-r from-blue-700 via-green-400 to-pink-500" />
-              <p className="mt-2 text-xs text-slate-400">
-                Higher energy (blue) → lower energy (red)
-              </p>
-            </div>
-            <div className="rounded border border-white/10 bg-[#0b2134] p-3">
-              <h3 className="font-bold">Live molecular view</h3>
-              <div className="mt-3 grid h-32 place-items-center rounded bg-slate-950">
-                <span className="h-16 w-16 rounded-full bg-purple-500 shadow-[0_0_28px_#c084fc]" />
-              </div>
-              <div className="mt-3 h-2 rounded bg-slate-700">
-                <div
-                  className="h-2 rounded bg-blue-400"
-                  style={{ width: `${blue}%` }}
-                />
-              </div>
-              <p className="mt-1 text-xs text-slate-400">
-                Ligand substitution in progress · {blue.toFixed(0)}%
-              </p>
-            </div>
-          </section>
-        </main>
-        <aside className="overflow-auto border-l border-white/10 bg-[#0b2034] p-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold">Evidence Notebook</h2>
-            <button
-              onClick={() => {
-                setNewObservation((value) => !value);
-                setNoteTab("Observations");
-                msg(
-                  newObservation
-                    ? "Observation editor closed"
-                    : "New observation started",
-                );
-              }}
-              className="rounded bg-blue-500 px-3 py-2 text-xs"
-            >
-              + New
-            </button>
-          </div>
-          {newObservation && (
-            <textarea
-              aria-label="New observation"
-              placeholder="Record what changed and why…"
-              className="mt-3 h-20 w-full rounded border border-blue-300/30 bg-slate-950 p-2 text-xs"
-            />
-          )}
-          <div className="mt-4 flex border-b border-white/10">
-            {["Observations", "Calculations", "Conclusions"].map((x) => (
-              <button
-                key={x}
-                onClick={() => {
-                  setNoteTab(x);
-                  msg(`${x} opened`);
-                }}
-                className={`flex-1 border-b-2 px-2 py-3 text-xs ${noteTab === x ? "border-blue-400 text-blue-200" : "border-transparent text-slate-400"}`}
-              >
-                {x}
-              </button>
-            ))}
-          </div>
-          {noteTab === "Observations" &&
-            [
-              [
-                "14:22",
-                "Added concentrated HCl (↑ [Cl⁻]).",
-                "Solution turned deep blue.",
-              ],
-              [
-                "14:18",
-                "Heated to 60 °C.",
-                "Equilibrium shifted to the right (bluer).",
-              ],
-              ["14:15", "Diluted with water.", "Solution turned pink."],
-              [
-                "14:10",
-                "Initial solution in water.",
-                "Pale pink [Co(H₂O)₆]²⁺ dominant.",
-              ],
-            ].map((x) => (
-              <div key={x[0]} className="border-b border-white/10 py-4 text-xs">
-                <span className="text-slate-500">{x[0]}</span>
-                <p className="mt-1 text-slate-300">{x[1]}</p>
-                <p className="text-slate-400">{x[2]}</p>
-              </div>
-            ))}
-          {noteTab === "Calculations" && (
-            <div className="mt-4 rounded border border-white/10 bg-slate-950/40 p-4 text-xs text-slate-300">
-              <p>Q = [Cl⁻]⁴ / equilibrium response</p>
-              <p className="mt-2 text-blue-200">
-                Blue fraction: {blue.toFixed(1)}% · Pink fraction:{" "}
-                {pink.toFixed(1)}%
-              </p>
-              <p className="mt-2 text-slate-400">
-                Temperature and ligand concentration shift the observed
-                distribution.
-              </p>
-            </div>
-          )}
-          {noteTab === "Conclusions" && (
-            <div className="mt-4 rounded border border-emerald-300/30 bg-emerald-300/10 p-4 text-xs text-emerald-100">
-              {blue > 60
-                ? "Conditions favour the tetrahedral chloride complex."
-                : "Conditions favour the hydrated octahedral complex."}
-            </div>
-          )}
-          <section className="mt-4 rounded border border-blue-400/50 bg-blue-500/10 p-4">
-            <h3 className="font-bold text-blue-200">
-              Le Châtelier’s explanation
-            </h3>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              Increasing [Cl⁻] or temperature favours formation of [CoCl₄]²⁻
-              (blue). Decreasing [Cl⁻] or lowering temperature favours
-              [Co(H₂O)₆]²⁺ (pink).
-            </p>
-          </section>
-        </aside>
-      </div>
-      {notice && (
-        <div
-          role="status"
-          className="fixed bottom-4 right-5 rounded-full border border-blue-300/30 bg-slate-950 px-4 py-2 text-xs"
-        >
-          {notice}
-        </div>
-      )}
-    </div>
-  );
+function cobaltMol(kind){const tetra=kind==='chloride',ligands=tetra?[[1.25,1.25,1.25],[-1.25,-1.25,1.25],[-1.25,1.25,-1.25],[1.25,-1.25,-1.25]]:[[1.9,0,0],[-1.9,0,0],[0,1.9,0],[0,-1.9,0],[0,0,1.9],[0,0,-1.9]],atoms=[['Co',0,0,0],...ligands.map(v=>[tetra?'Cl':'O',...v])],bonds=ligands.map((_,i)=>[0,i+1]);const al=atoms.map(([e,x,y,z])=>`${x.toFixed(4).padStart(10)}${y.toFixed(4).padStart(10)}${z.toFixed(4).padStart(10)} ${e.padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join('\n'),bl=bonds.map(([a,b])=>`${String(a+1).padStart(3)}${String(b+1).padStart(3)}  1  0  0  0  0`).join('\n');const label=tetra?'[CoCl4]2- tetrahedral':'[Co(H2O)6]2+ octahedral';return{data:`${label}\n  Inorganic Deep Lab\n\n${String(atoms.length).padStart(3)}${String(bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${al}\n${bl}\nM  END\n`,format:'mol',label};}
+
+const presetStates=[{name:'Pink',chloride:.05,temp:25},{name:'Violet',chloride:1.136,temp:25},{name:'Blue',chloride:2,temp:60}];
+const stamp=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+export default function InorganicDeepTargetPage({onNavigate}){
+ const molViewerRef=useRef(null);
+ const [chloride,setChloride]=useState(.5),[temp,setTemp]=useState(25),[tab,setTab]=useState('Investigation'),[noteTab,setNoteTab]=useState('Observations');
+ const [motion,setMotion]=useState(()=>!matchMedia('(prefers-reduced-motion: reduce)').matches),[playing,setPlaying]=useState(false),[progress,setProgress]=useState(0);
+ const [navOpen,setNavOpen]=useState(false),[notebookOpen,setNotebookOpen]=useState(false),[editor,setEditor]=useState(false),[draft,setDraft]=useState(''),[dialog,setDialog]=useState('');
+ const [notes,setNotes]=useState(()=>{try{return JSON.parse(localStorage.getItem('cobalt-notebook-v1'))||[];}catch{return [];}});
+ const [shown,setShown]=useState(equilibrium(.5,25).blue);
+ const [molecularView,setMolecularView]=useState(false),[complexKind,setComplexKind]=useState('aqua'),[molStyle,setMolStyle]=useState('Ball & stick'),[molReady,setMolReady]=useState(false),[molAtom,setMolAtom]=useState(null),[importedSource,setImportedSource]=useState(null);
+ const target=equilibrium(chloride,temp),first=useRef(true),dialogRef=useRef(null),notesRef=useRef(null);
+ const molSource=useMemo(()=>importedSource||cobaltMol(complexKind),[complexKind,importedSource]);
+ const importStructure=e=>{const file=e.target.files?.[0];if(!file)return;const ext=file.name.split('.').pop()?.toLowerCase(),format=ext==='cif'||ext==='mmcif'?'mmcif':ext;if(!['pdb','mmcif','mol','sdf'].includes(format)){setDialog('Use PDB, CIF, MOL, or SDF coordinates');return;}const reader=new FileReader();reader.onload=()=>{setImportedSource({data:String(reader.result),format,label:file.name});setMolecularView(true);setMolReady(false);};reader.readAsText(file);};
+ const record=(text,type='Observations')=>setNotes(v=>[{id:Date.now()+Math.random(),time:stamp(),text,type,chloride,temp},...v].slice(0,100));
+ useEffect(()=>{try{localStorage.setItem('cobalt-notebook-v1',JSON.stringify(notes));}catch{}},[notes]);
+ useEffect(()=>{if(first.current){first.current=false;return;}const timer=setTimeout(()=>record(`[Cl⁻] ${chloride.toFixed(3)} M · ${temp} °C. Model blue fraction ${(target.blue*100).toFixed(1)}%.`),650);return()=>clearTimeout(timer);},[chloride,temp]);
+ useEffect(()=>{let id,last=performance.now();const animate=now=>{const dt=Math.min(.06,(now-last)/1000);last=now;if(!document.hidden){setShown(v=>Math.abs(v-target.blue)<.0001?target.blue:v+(target.blue-v)*(1-Math.exp(-dt*4)));if(playing&&motion)setProgress(v=>Math.min(1,v+dt/8));}id=requestAnimationFrame(animate);};id=requestAnimationFrame(animate);return()=>cancelAnimationFrame(id);},[target.blue,playing,motion]);
+ useEffect(()=>{if(progress>=1)setPlaying(false);},[progress]);
+ useEffect(()=>{setPlaying(false);setProgress(equilibrium(chloride,temp).blue);},[chloride,temp]);
+ useEffect(()=>{if(dialog)dialogRef.current?.showModal();else dialogRef.current?.close();},[dialog]);
+ const reset=()=>{setChloride(.5);setTemp(25);setProgress(0);setPlaying(false);};
+ const restore=p=>{setChloride(p.chloride);setTemp(p.temp);setProgress(equilibrium(p.chloride,p.temp).blue);};
+ const notebook=()=>{setNotebookOpen(true);setTimeout(()=>notesRef.current?.scrollIntoView({block:'nearest',behavior:'smooth'}),0);};
+ const nav=[['Home',Home,'dashboard'],['Coordination Chemistry',Network,null],['Solid State Chemistry',Boxes,'inorganic-crystals'],['p-Block Chemistry',Boxes,'inorganic-pblock'],['Transition Metals',Network,'theory'],['Qualitative Analysis',FlaskConical,'inorganic-salt-analysis'],['Resources',BookOpen,'resources'],['Simulations',FlaskConical,'physical-simulators'],['Literature',BookOpen,'resources'],['Settings',Settings,'settings']];
+ return <div className="cobalt-lab">
+  <header className="cobalt-header"><button className="cobalt-mobile-menu" aria-label="Toggle navigation" onClick={()=>setNavOpen(v=>!v)}><Menu/></button><FlaskConical className="cobalt-logo"/><div><h1>Inorganic Chemistry Deep Lab</h1><p>Explore structure. Understand reactivity. See the invisible.</p></div><nav><span className="cobalt-lab-mode">● Lab Mode</span><button onClick={()=>{setNoteTab('Calculations');notebook();}}><Calculator size={15}/> Calculators</button><button onClick={()=>onNavigate?.('table')}>Periodic Table</button><button onClick={notebook}><NotebookPen size={15}/> Notes</button></nav><button className="cobalt-avatar" aria-label="About this lab" onClick={()=>setDialog('About this lab')}>JS</button></header>
+  <div className="cobalt-layout">
+   <aside className={'cobalt-nav '+(navOpen?'is-open':'')} aria-label="Inorganic navigation">{nav.map(([name,Icon,route])=><button key={name} className={name==='Coordination Chemistry'?'active':''} onClick={()=>{setNavOpen(false);if(route==='theory')setTab('Theory');else if(route==='resources'||route==='settings')setDialog(route==='settings'?'Settings':'Resources');else if(route)onNavigate?.(route);else setTab('Investigation');}}><Icon size={22}/><span>{name}</span></button>)}<p className="cobalt-nav-caption">Explore the geometry.<br/>Follow the evidence.<br/>Explain the colour.</p></aside>
+   <main className="cobalt-main">
+    <div className="cobalt-intro"><div><h2>Cobalt equilibrium</h2><p className="cobalt-equation">[Co(H₂O)₆]²⁺ ⇌ [CoCl₄]²⁻</p><p>Ligand substitution, colour change and Le Châtelier’s principle in action.</p></div><div className="cobalt-tabs" role="tablist" aria-label="Experiment sections">{['Investigation','Theory','Data','Playground'].map(t=><button role="tab" aria-selected={tab===t} key={t} onClick={()=>setTab(t)}>{t}</button>)}</div></div>
+    {tab!=='Investigation'&&<section className="cobalt-context" role="tabpanel">{tab==='Theory'?<><strong>Ligand exchange changes geometry and colour.</strong> [Co(H₂O)₆]²⁺ + 4Cl⁻ ⇌ [CoCl₄]²⁻ + 6H₂O. Both complexes are high-spin d⁷ with three unpaired electrons. Heating favours the blue side. This is a simplified two-species teaching model.</>:tab==='Data'?<>Conditional K(T) = {target.k.toFixed(3)} · chloride activity approximated by [Cl⁻]/1 M · blue/pink = K(T)[Cl⁻]⁴ = {(target.k*chloride**4).toFixed(3)}. Model fractions are illustrative, not calibrated laboratory measurements.</>:<><strong>Try a condition:</strong>{presetStates.map(p=><button key={p.name} onClick={()=>restore(p)}>{p.name} state</button>)}</>}</section>}
+    <section className="cobalt-hero">
+     <div className="cobalt-vessel"><CobaltLabScene fraction={shown} motion={motion}/><div className="cobalt-geometry">Octahedral<br/><span>Co(II) · 6 × H₂O<br/>d⁷ (high spin)</span></div><div className="cobalt-vessel-label"><strong>[Co(H₂O)₆]²⁺ ⇌ [CoCl₄]²⁻</strong><span>Experimental sample · {(100-shown*100).toFixed(1)}% aqua / {(shown*100).toFixed(1)}% chloride</span></div></div>
+     <div className="cobalt-control-wrap"><p className="cobalt-center-equation">[Co(H₂O)₆]²⁺ ⇌ [CoCl₄]²⁻</p><div className="cobalt-controls"><h3>Shift equilibrium</h3><label htmlFor="cobalt-chloride">[Cl⁻] concentration (M)<output>{chloride.toFixed(3)}</output></label><input id="cobalt-chloride" type="range" min=".001" max="2" step=".001" value={chloride} onChange={e=>setChloride(+e.target.value)}/><div className="cobalt-scale"><span>0.001</span><span>0.5</span><span>1</span><span>1.5</span><span>2 M</span></div><label htmlFor="cobalt-temperature">Temperature (°C)<output>{temp}</output></label><input id="cobalt-temperature" type="range" min="0" max="100" value={temp} onChange={e=>setTemp(+e.target.value)}/><div className="cobalt-scale"><span>0</span><span>25</span><span>50</span><span>75</span><span>100 °C</span></div><div className="cobalt-actions"><button aria-label="Add HCl (Cl⁻)" onClick={()=>setChloride(v=>Math.min(2,v+.25))} disabled={chloride>=2}><span>＋</span>Add HCl (Cl⁻)</button><button aria-label="Add H₂O (dilute)" onClick={()=>setChloride(v=>Math.max(.001,v/2))} disabled={chloride<=.001}><span>＋</span>Add H₂O (dilute)</button><button aria-label="Heat solution" onClick={()=>setTemp(v=>Math.min(100,v+10))} disabled={temp>=100}><span>↑</span>Heat solution</button></div><div className="cobalt-control-footer"><button onClick={()=>{setMotion(v=>!v);if(motion)setPlaying(false);}} aria-pressed={!motion}>{motion?<Pause size={13}/>:<Play size={13}/>} {motion?'Pause motion':'Resume motion'}</button><button onClick={reset}><RotateCcw size={13}/> Reset</button></div></div></div>
+     <div className="cobalt-vessel"><CobaltLabScene kind="blue" fraction={1} motion={motion}/><div className="cobalt-geometry">Tetrahedral<br/><span>Co(II) · 4 × Cl⁻<br/>d⁷ (high spin)</span></div><div className="cobalt-vessel-label"><strong>[CoCl₄]²⁻</strong><span>(aq, blue) · chloride-rich reference</span></div></div>
+    </section>
+    <section className="cobalt-lower"><CrystalField/><CobaltSpectrum fraction={shown}/><section className="cobalt-panel cobalt-live"><div className="cobalt-live-heading"><div><h3>Live molecular view</h3><p>{molecularView?'Coordinate inspection':'Ligand substitution · schematic pathway'}</p></div><div><button aria-pressed={!molecularView} onClick={()=>setMolecularView(false)}>Teaching pathway</button><button aria-pressed={molecularView} onClick={()=>setMolecularView(true)}>Mol* complexes</button></div></div>{molecularView?<div className="cobalt-molstar"><ViewerErrorBoundary label="Cobalt complex viewer"><MolstarViewer ref={molViewerRef} source={molSource} sourceType={molSource.format} label={molSource.label} representation={{BallAndStick:molStyle==='Ball & stick',Spacefill:molStyle==='Space filling',Sticks:molStyle==='Sticks',Ligand:false,Branched:false,Ion:false}} colorScheme="element" showLabels={false} onReady={()=>{setMolReady(true);requestAnimationFrame(()=>molViewerRef.current?.zoom(1.35));}} onLoadError={()=>setMolReady(false)} onSelectionChange={setMolAtom}/></ViewerErrorBoundary><div className="cobalt-mol-tools"><span>{molReady?'Mol* ready':'Loading…'}</span><button aria-pressed={!importedSource&&complexKind==='aqua'} onClick={()=>{setImportedSource(null);setComplexKind('aqua');setMolReady(false);}}>Octahedral aqua</button><button aria-pressed={!importedSource&&complexKind==='chloride'} onClick={()=>{setImportedSource(null);setComplexKind('chloride');setMolReady(false);}}>Tetrahedral chloride</button>{['Ball & stick','Space filling','Sticks'].map(item=><button key={item} aria-pressed={molStyle===item} onClick={()=>setMolStyle(item)}>{item}</button>)}<label>Import<input type="file" accept=".pdb,.cif,.mmcif,.mol,.sdf" onChange={importStructure}/></label><button aria-label="Full screen cobalt structure" onClick={()=>molViewerRef.current?.fullscreen()}><Maximize2 size={13}/></button></div><div className="cobalt-mol-note">{importedSource?`Imported · ${importedSource.label}`:'Idealized teaching coordinates · connectivity/geometry reference, not an experimental structure'}<br/>{molAtom?`${molAtom.element} · atom ${molAtom.sourceIndex+1} · [${molAtom.coordinates.map(v=>v.toFixed(2)).join(', ')}] Å`:'Click an atom for coordinates'}</div></div>:<><CobaltLabScene kind="live" progress={progress} motion={motion}/><small>{progress<.3?'Chloride approaches the aqua complex':progress<.6?'Co–O coordination weakens; water leaves':progress<.95?'Chloride coordinates; tetrahedral geometry forms':'Tetrahedral chloride complex · water released'}</small><div className="cobalt-live-controls"><button aria-label={playing?'Pause substitution':'Play substitution'} onClick={()=>{if(progress>=1)setProgress(0);setMotion(true);setPlaying(v=>!v);}}>{playing?<Pause size={15}/>:<Play size={15}/>}</button><input aria-label="Substitution progress" type="range" min="0" max="1" step=".01" value={progress} onChange={e=>{setPlaying(false);setProgress(+e.target.value);}}/><span>{(progress*8).toFixed(1)} / 8 s</span><button aria-label="Reset substitution" onClick={()=>{setPlaying(false);setProgress(0);}}><RotateCcw size={14}/></button></div><small>Illustrative animation time, not a measured reaction rate.</small></>}</section></section>
+   </main>
+   <aside ref={notesRef} className={'cobalt-notebook '+(notebookOpen?'is-open':'')}><h2><NotebookPen size={21}/> Evidence Notebook <button onClick={()=>{setEditor(v=>!v);setNotebookOpen(true);}}>＋ New</button><button className="cobalt-notebook-close" aria-label="Close notebook" onClick={()=>setNotebookOpen(false)}><X size={17}/></button></h2><div className="cobalt-tabs" role="tablist" aria-label="Notebook sections">{['Observations','Calculations','Conclusions'].map(t=><button role="tab" aria-selected={noteTab===t} key={t} onClick={()=>setNoteTab(t)}>{t}</button>)}</div>
+   {editor&&<form className="cobalt-note-editor" onSubmit={e=>{e.preventDefault();if(draft.trim()){record(draft.trim(),noteTab==='Conclusions'?'Conclusions':'Observations');setDraft('');setEditor(false);}}}><textarea aria-label="Notebook note" value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Record your observation or conclusion…" required/><button type="submit">Save note</button></form>}
+   <div className="cobalt-notebook-body">{noteTab==='Calculations'?<div className="cobalt-calculations"><h3>Conditional equilibrium model</h3><p>r = K(T) × ([Cl⁻] / 1 M)⁴</p><p>Blue fraction = r / (1 + r)</p><dl><dt>Temperature</dt><dd>{temp} °C</dd><dt>Chloride</dt><dd>{chloride.toFixed(3)} M</dd><dt>Model K(T)</dt><dd>{target.k.toFixed(3)}</dd><dt>Blue complex</dt><dd>{(shown*100).toFixed(1)}%</dd><dt>Aqua complex</dt><dd>{(100-shown*100).toFixed(1)}%</dd></dl><small>Illustrative K₂₉₈ = 0.6 and ΔH = +32 kJ/mol. Ignores intermediate complexes and nonideal activities. Do not use these fractions as quantitative experimental predictions.</small></div>:<div className="cobalt-observations">{notes.filter(n=>n.type===noteTab).slice(0,5).map(n=><article key={n.id}><time>{n.time}</time><p>{n.text}</p><button aria-label="Restore observation conditions" title="Restore conditions" onClick={()=>restore(n)}>↶</button></article>)}{!notes.some(n=>n.type===noteTab)&&<article><time>{stamp()}</time><p>{noteTab==='Conclusions'?'Add your conclusion using + New. Compare how heating and dilution affect the sample.':'Initial sample in water. Move a control to record a timestamped observation automatically.'}</p></article>}</div>}
+   <div className="cobalt-evidence">{presetStates.map(p=><button aria-label={p.name} key={p.name} onClick={()=>restore(p)}><img src={'/assets/inorganic/cobalt-'+p.name.toLowerCase()+'.png'} alt={p.name+' solution — rendered reference'}/><span>{p.name}</span></button>)}<p>Rendered experiment references · click to restore conditions</p></div>
+   <section className="cobalt-explanation"><h3>⚖ Le Châtelier’s explanation</h3><p>Increasing [Cl⁻] or temperature favours blue [CoCl₄]²⁻. Dilution or cooling favours pink [Co(H₂O)₆]²⁺. The system shifts to oppose the change.</p><p className="cobalt-live-result">Now: {(shown*100).toFixed(1)}% blue · {shown>.5?'chloride complex favoured':'aqua complex favoured'}</p></section><div className="cobalt-safety"><strong>Virtual experiment only</strong><p>Cobalt salts are toxic and concentrated HCl is corrosive. This simulation is not a home experiment guide.</p><button onClick={()=>setDialog('Resources')}>Sources & model limitations ↗</button></div></div></aside>
+  </div>
+  <dialog ref={dialogRef} className="cobalt-dialog" onCancel={()=>setDialog('')} onClose={()=>setDialog('')}><h2>{dialog}<button aria-label="Close dialog" onClick={()=>setDialog('')}><X/></button></h2>{dialog==='Settings'?<><p>Motion is {motion?'enabled':'paused'}. Reduced-motion preference is respected on startup.</p><button onClick={()=>setMotion(v=>!v)}>Toggle animation</button></>:<><p>A Three.js teaching laboratory with idealized octahedral and tetrahedral cobalt geometry. The right beaker is a fixed blue reference; the left sample responds to your controls.</p><p>The reference image's absorption-band ordering has been corrected: the pink aqua complex absorbs near 510 nm, while the blue chloride complex absorbs in the red region near 685 nm. Curves and equilibrium constants here are illustrative.</p><a target="_blank" rel="noreferrer" href="https://www.chem.indiana.edu/faculty-research/faculty-resources/chemistry-demos/demo/le-chateliers-principle-using-a-cobalt-complex/">Indiana University: cobalt equilibrium</a><a target="_blank" rel="noreferrer" href="https://paperspast.natlib.govt.nz/periodicals/TPRSNZ1948-77.2.6.1">Measured cobalt chloride absorption bands</a><a target="_blank" rel="noreferrer" href="https://chem.washington.edu/lecture-demos/cobalt-equilibrium">University of Washington: cobalt equilibrium and safety</a></>}</dialog>
+ </div>;
 }

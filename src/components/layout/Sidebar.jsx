@@ -153,9 +153,9 @@ export const navGroups = [
         label: 'Chemistry Solver',
         icon: Calculator,
         subItems: [
-          { id: 'chemistry-solver', label: 'Solved Questions', icon: FileQuestion },
-          { id: 'chemistry-solver', label: 'Bookmarks', icon: Heart },
-          { id: 'chemistry-solver', label: 'Practice Extensions', icon: Puzzle },
+          { id: 'chemistry-solver-questions', label: 'Solved Questions', icon: FileQuestion },
+          { id: 'chemistry-solver-bookmarks', label: 'Bookmarks', icon: Heart },
+          { id: 'chemistry-solver-practice', label: 'Practice Extensions', icon: Puzzle },
         ],
       },
       { id: 'chemistry-inventor', label: 'Chemistry Inventor Studio', icon: Sparkles },

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
@@ -15,6 +15,7 @@ import {
   Home,
   Library,
   MoreHorizontal,
+  Maximize2,
   Move3D,
   Pause,
   PenLine,
@@ -30,6 +31,14 @@ import {
   Zap,
 } from "lucide-react";
 import "./moleculeStudioTarget.css";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+
+function modelToMol(model, label = "Molecule Studio snapshot") {
+  const atomLines = model.atoms.map(([symbol,x=0,y=0,z=0]) => `${Number(x).toFixed(4).padStart(10)}${Number(y).toFixed(4).padStart(10)}${Number(z).toFixed(4).padStart(10)} ${String(symbol).padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join("\n");
+  const bondLines = model.bonds.map(([a,b]) => `${String(a+1).padStart(3)}${String(b+1).padStart(3)}  1  0  0  0  0`).join("\n");
+  return `${label}\n  Molecule Studio 3D\n\n${String(model.atoms.length).padStart(3)}${String(model.bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${atomLines}\n${bondLines}\nM  END\n`;
+}
 
 const atoms = [
   ["C", -1.15, 0, 0],
@@ -551,6 +560,7 @@ const presets = [
   ["Sulfuric acid", "H₂SO₄"],
 ];
 export const MoleculeScenePage = ({ onNavigate }) => {
+  const inspectViewerRef = useRef(null);
   const [selected, setSelected] = useState({ index: 0, symbol: "C" }),
     [tab, setTab] = useState("Atoms"),
     [autoRotate, setAutoRotate] = useState(true),
@@ -564,6 +574,11 @@ export const MoleculeScenePage = ({ onNavigate }) => {
     [bondSource, setBondSource] = useState(null),
     [inspectorTab, setInspectorTab] = useState("Inspector"),
     [notice, setNotice] = useState("");
+  const [workspaceMode, setWorkspaceMode] = useState("edit");
+  const [inspectStyle, setInspectStyle] = useState("Ball & stick");
+  const [inspectSource, setInspectSource] = useState(null);
+  const [inspectReady, setInspectReady] = useState(false);
+  const [inspectAtom, setInspectAtom] = useState(null);
   const [customModel, setCustomModel] = useState({
     atoms: [["C", 0, 0, 0]],
     bonds: [],
@@ -609,6 +624,14 @@ export const MoleculeScenePage = ({ onNavigate }) => {
     activePreset === "Custom molecule"
       ? customModel
       : PRESET_MODELS[activePreset];
+  const snapshotSource = useMemo(() => ({ data:modelToMol(currentModel, activePreset), format:"mol", label:`${activePreset} editor snapshot` }), [activePreset, currentModel]);
+  const activeInspectSource = inspectSource || snapshotSource;
+  const enterInspectMode = () => { setInspectSource(null); setInspectReady(false); setInspectAtom(null); setWorkspaceMode("inspect"); announce("Read-only Mol* inspection mode"); };
+  const importCoordinates = event => {
+    const file=event.target.files?.[0];if(!file)return;const extension=file.name.split(".").pop()?.toLowerCase();const format=extension==="cif"||extension==="mmcif"?"mmcif":extension;
+    if(!["pdb","mol","sdf","mmcif"].includes(format)){announce("Use PDB, CIF, MOL, or SDF coordinates");event.target.value="";return;}
+    const reader=new FileReader();reader.onload=()=>{setInspectSource({data:String(reader.result),format,label:file.name});setInspectReady(false);setInspectAtom(null);setWorkspaceMode("inspect");announce(`${file.name} opened in read-only inspection mode`);};reader.readAsText(file);
+  };
   const customCounts = customModel.atoms.reduce(
     (out, [symbol]) => ({ ...out, [symbol]: (out[symbol] || 0) + 1 }),
     {},
@@ -707,7 +730,7 @@ export const MoleculeScenePage = ({ onNavigate }) => {
     }
   };
   return (
-    <div className="mstudio">
+    <div className={`mstudio ${workspaceMode === "inspect" ? "inspect-mode" : "edit-mode"}`}>
       <header className="ms-top">
         <div className="ms-logo">
           <Waypoints />
@@ -872,6 +895,8 @@ export const MoleculeScenePage = ({ onNavigate }) => {
             <p>{info[0]}</p>
           </div>
           <div>
+            <div className="ms-mode-switch" aria-label="Molecule workspace mode"><button className={workspaceMode==="edit"?"active":""} aria-pressed={workspaceMode==="edit"} onClick={()=>{setWorkspaceMode("edit");setInspectSource(null);announce("Edit mode restored");}}>Edit</button><button className={workspaceMode==="inspect"?"active":""} aria-pressed={workspaceMode==="inspect"} onClick={enterInspectMode}>Inspect</button></div>
+            <label className="ms-import-coordinates"><FolderOpen/> Import<input type="file" accept=".pdb,.cif,.mmcif,.mol,.sdf" onChange={importCoordinates}/></label>
             <button onClick={saveProject}>
               <Save />
               Save
@@ -891,7 +916,7 @@ export const MoleculeScenePage = ({ onNavigate }) => {
             </button>
           </div>
         </div>
-        <Ethanol3D
+        {workspaceMode === "edit" ? <Ethanol3D
           preset={activePreset}
           modelOverride={currentModel}
           autoRotate={autoRotate}
@@ -902,8 +927,8 @@ export const MoleculeScenePage = ({ onNavigate }) => {
           selectedIndex={selected.index}
           resetSignal={resetSignal}
           dragMode={dragMode}
-        />
-        <div className="ms-measure">
+        /> : <div className="ms-inspect-view"><ViewerErrorBoundary label="Molecule inspection preview"><MolstarViewer ref={inspectViewerRef} source={activeInspectSource} sourceType={activeInspectSource.format} label={activeInspectSource.label} representation={{BallAndStick:inspectStyle==="Ball & stick",Spacefill:inspectStyle==="Space filling",Sticks:inspectStyle==="Sticks",Ligand:false,Branched:false,Ion:false}} colorScheme="element" showLabels={false} onReady={()=>{setInspectReady(true);requestAnimationFrame(()=>inspectViewerRef.current?.zoom(1.35));}} onLoadError={()=>setInspectReady(false)} onSelectionChange={setInspectAtom}/></ViewerErrorBoundary><div className="ms-inspect-tools"><b>{inspectReady?"Mol* ready":"Loading coordinates…"}</b>{["Ball & stick","Space filling","Sticks"].map(item=><button key={item} className={inspectStyle===item?"active":""} aria-pressed={inspectStyle===item} onClick={()=>setInspectStyle(item)}>{item}</button>)}<button onClick={()=>inspectViewerRef.current?.reset()}>Reset</button><button aria-label="Full screen inspection" onClick={()=>inspectViewerRef.current?.fullscreen()}><Maximize2/></button></div><div className="ms-inspect-readout">{inspectSource?`Imported · ${inspectSource.label}`:`Editor snapshot · ${activePreset}`}<br/>{inspectAtom?`${inspectAtom.element} · ${inspectAtom.atom} · [${inspectAtom.coordinates.map(value=>value.toFixed(2)).join(", ")}] Å`:"Read-only scientific inspection · click an atom for coordinates"}</div></div>}
+        {workspaceMode === "edit" && <><div className="ms-measure">
           1.54 Å<br />
           <span>109.5°</span>
         </div>
@@ -911,7 +936,7 @@ export const MoleculeScenePage = ({ onNavigate }) => {
           <b>Y</b>
           <i />X<br />
           <span>Z</span>
-        </div>
+        </div></>}
       </main>
       <aside className="ms-inspector">
         <div className="ms-inspector-tabs">

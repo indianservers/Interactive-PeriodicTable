@@ -1,5 +1,53 @@
-import { useEffect, useState } from "react";
-import { Activity, Dna, Play, RotateCcw, Settings2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Activity, Database, Maximize2, Play, RotateCcw, Settings2 } from "lucide-react";
+import "./biochemistryPages.css";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+
+const ACONITASE_SOURCE = {
+  url: "/assets/biochemistry/structures/1C96.cif",
+  format: "mmcif",
+  label: "1C96 aconitase citrate complex",
+};
+
+function AconitaseStructure({ viewerRef, style, setStyle, ready, setReady, selectedAtom, setSelectedAtom }) {
+  return (
+    <div className="relative h-full overflow-hidden rounded bg-[#06131f]" data-metabolism-view="molecular">
+      <ViewerErrorBoundary label="Aconitase structure viewer">
+        <MolstarViewer
+          ref={viewerRef}
+          source={ACONITASE_SOURCE}
+          sourceType="mmcif"
+          pdbId="1C96"
+          label="Aconitase S642A citrate complex"
+          representation={{ Cartoon: style === "Cartoon", Surface: style === "Surface", BallAndStick: style === "Atoms", Ligand: true, Ion: true }}
+          colorScheme="chain"
+          showLabels={false}
+          onReady={() => { setReady(true); requestAnimationFrame(() => viewerRef.current?.focusLigandId("FLC", "A")); }}
+          onLoadError={() => setReady(false)}
+          onSelectionChange={setSelectedAtom}
+        />
+      </ViewerErrorBoundary>
+      <div className="pointer-events-none absolute left-3 top-3 z-10 rounded border border-white/10 bg-[#06131fe6] px-2 py-1 text-[10px] text-slate-300">
+        <b className="text-cyan-200">PDB 1C96</b> · aconitase–citrate complex · X-ray diffraction · 1.81 Å · <i>Sus scrofa</i>
+      </div>
+      <div className="absolute right-3 top-3 z-10 flex flex-wrap justify-end gap-1 rounded border border-white/10 bg-[#06131fe6] p-2 text-[10px]">
+        <span className={ready ? "mr-1 self-center text-emerald-300" : "mr-1 self-center text-slate-400"}>{ready ? "Mol* ready" : "Loading 1C96…"}</span>
+        {["Cartoon", "Surface", "Atoms"].map((item) => <button key={item} aria-pressed={style === item} onClick={() => setStyle(item)} className={`rounded border px-2 py-1 ${style === item ? "border-cyan-300 bg-cyan-300/15" : "border-white/15"}`}>{item}</button>)}
+        <button onClick={() => viewerRef.current?.reset()} className="rounded border border-white/15 px-2 py-1">Reset</button>
+        <button aria-label="Full screen aconitase structure" onClick={() => viewerRef.current?.fullscreen()} className="rounded border border-white/15 px-2 py-1"><Maximize2 size={13} /></button>
+      </div>
+      <div className="absolute bottom-3 left-3 z-10 flex gap-1 rounded border border-white/10 bg-[#06131fe6] p-2 text-[10px]">
+        <span className="self-center text-slate-400">Active site</span>
+        <button onClick={() => viewerRef.current?.focusLigandId("FLC", "A")} className="rounded border border-white/15 px-2 py-1">Citrate</button>
+        <button onClick={() => viewerRef.current?.focusLigandId("SF4", "A")} className="rounded border border-white/15 px-2 py-1">[4Fe–4S]</button>
+      </div>
+      <div className="pointer-events-none absolute bottom-3 right-3 z-10 max-w-[54%] rounded bg-[#06131fe6] px-2 py-1 text-right text-[10px] text-slate-300">
+        {selectedAtom ? `${selectedAtom.element} · ${selectedAtom.residueName} ${selectedAtom.atom} · chain ${selectedAtom.chain} · [${selectedAtom.coordinates.map((value) => value.toFixed(2)).join(", ")}] Å` : "Click an atom to inspect the active site and Cartesian coordinates"}
+      </div>
+    </div>
+  );
+}
 
 function PathwayMap({ aerobic, glucose, running }) {
   const node = (x, y, label, detail, color, width = 180) => (
@@ -186,6 +234,7 @@ function MoleculeStep({ step }) {
   );
 }
 export default function MetabolismTargetPage() {
+  const viewerRef = useRef(null);
   const [mode, setMode] = useState("Aerobic respiration");
   const [step, setStep] = useState(2);
   const [oxygen, setOxygen] = useState(100);
@@ -193,6 +242,10 @@ export default function MetabolismTargetPage() {
   const [running, setRunning] = useState(false);
   const [carbon, setCarbon] = useState("Trace carbon 1");
   const [notice, setNotice] = useState("");
+  const [structureMode, setStructureMode] = useState("diagram");
+  const [structureStyle, setStructureStyle] = useState("Cartoon");
+  const [structureReady, setStructureReady] = useState(false);
+  const [selectedAtom, setSelectedAtom] = useState(null);
   const announce = (x) => setNotice(x);
   useEffect(() => {
     if (!running) return undefined;
@@ -202,6 +255,12 @@ export default function MetabolismTargetPage() {
     );
     return () => window.clearInterval(timer);
   }, [running]);
+  useEffect(() => {
+    if (structureMode !== "molecular" || !structureReady) return;
+    if (step === 2) viewerRef.current?.focusLigandId("FLC", "A");
+    else if (step === 3) viewerRef.current?.focusLigandId("SF4", "A");
+    else viewerRef.current?.reset();
+  }, [step, structureMode, structureReady]);
   const aerobicMode = mode.startsWith("Aerobic");
   // Without molecular oxygen the electron-transport chain cannot operate,
   // even when the aerobic mode is selected; only glycolysis contributes ATP.
@@ -225,11 +284,11 @@ export default function MetabolismTargetPage() {
     announce("Simulation reset");
   };
   return (
-    <div
+    <div data-bio-page="metabolism"
       className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
-      <header className="flex h-[68px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-6">
+      <header className="metabolism-header flex h-[68px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-6">
         <Activity size={36} className="text-cyan-300" />
         <div>
           <h1 className="text-2xl font-black">Metabolism Pathway Simulator</h1>
@@ -237,7 +296,7 @@ export default function MetabolismTargetPage() {
             Track every carbon and electron
           </p>
         </div>
-        <div className="ml-auto flex rounded border border-white/20 text-xs">
+        <div className="metabolism-mode-toggle ml-auto flex rounded border border-white/20 text-xs">
           <button
             onClick={() => {
               setMode("Aerobic respiration");
@@ -344,7 +403,7 @@ export default function MetabolismTargetPage() {
           </div>
         </main>
         <section className="rounded-lg border border-white/10 bg-[#0a1e31] p-3">
-          <div className="flex items-center justify-between">
+          <div className="metabolism-step-header flex items-center justify-between gap-2">
             <div>
               <h2 className="text-xl font-bold">
                 Citric Acid Cycle – Aconitase Step
@@ -353,7 +412,11 @@ export default function MetabolismTargetPage() {
                 Citrate → Isocitrate (isomerization)
               </p>
             </div>
-            <div className="flex gap-1">
+            <div className="metabolism-step-controls flex gap-1">
+              <div className="mr-2 flex rounded border border-white/15 p-0.5 text-[10px]">
+                <button aria-pressed={structureMode === "diagram"} onClick={() => setStructureMode("diagram")} className={`rounded px-2 py-1 ${structureMode === "diagram" ? "bg-cyan-300/20 text-cyan-100" : "text-slate-400"}`}>Reaction diagram</button>
+                <button aria-pressed={structureMode === "molecular"} onClick={() => setStructureMode("molecular")} className={`flex items-center gap-1 rounded px-2 py-1 ${structureMode === "molecular" ? "bg-cyan-300/20 text-cyan-100" : "text-slate-400"}`}><Database size={11} /> Experimental structure</button>
+              </div>
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <button
                   key={i}
@@ -366,7 +429,9 @@ export default function MetabolismTargetPage() {
             </div>
           </div>
           <div className="mt-4 h-64 rounded border border-cyan-300/30 bg-gradient-to-br from-indigo-900/60 to-purple-800/40">
-            <MoleculeStep step={step} />
+            {structureMode === "molecular" ? (
+              <AconitaseStructure viewerRef={viewerRef} style={structureStyle} setStyle={setStructureStyle} ready={structureReady} setReady={setStructureReady} selectedAtom={selectedAtom} setSelectedAtom={setSelectedAtom} />
+            ) : <MoleculeStep step={step} />}
           </div>
           <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
             <div className="rounded border border-white/10 p-3">

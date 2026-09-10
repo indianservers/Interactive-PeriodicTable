@@ -362,6 +362,7 @@
   width: 100% !important;
   height: 100% !important;
 }
+.ms-mode-switch{display:flex!important;gap:0!important;border:1px solid #294a68;border-radius:9px;overflow:hidden}.ms-mode-switch button{border:0!important;border-radius:0!important}.ms-mode-switch button.active,.ms-inspect-tools button.active{background:#0c5470!important;color:#8deaff!important}.ms-import-coordinates{height:41px;display:flex;align-items:center;gap:7px;padding:0 12px;border:1px solid #294a68;border-radius:9px;background:#07192d;font-size:12px;cursor:pointer}.ms-import-coordinates svg{width:17px}.ms-import-coordinates input{display:none}.ms-inspect-view{position:absolute;inset:0;z-index:1}.ms-inspect-tools{position:absolute;z-index:7;top:86px;right:24px;display:flex;align-items:center;gap:6px;padding:7px;border:1px solid #294a68;border-radius:8px;background:#061522df;font-size:11px}.ms-inspect-tools button{height:30px;padding:0 9px;border:1px solid #294a68;border-radius:5px;background:#07192d}.ms-inspect-tools button svg{width:14px}.ms-inspect-readout{position:absolute;z-index:7;right:24px;bottom:28px;max-width:65%;padding:7px 10px;border:1px solid #294a68;border-radius:6px;background:#061522df;color:#a9c8df;text-align:right;font:11px/1.45 ui-monospace,monospace}.mstudio.inspect-mode .ms-build,.mstudio.inspect-mode .ms-inspector,.mstudio.inspect-mode .ms-tools{pointer-events:none;opacity:.42}.mstudio.inspect-mode .ms-stage:after{display:none}
 .ms-measure {
   position: absolute;
   z-index: 3;

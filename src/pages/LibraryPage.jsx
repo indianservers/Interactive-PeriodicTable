@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Atom, BookOpen, FlaskConical, Search } from "lucide-react";
+import { Atom, BarChart3, BookOpen, Clock3, FlaskConical, Play, Search, Sparkles } from "lucide-react";
 import HomeLibrary from "./HomeLibrary.jsx";
 import HomeStatistics from "./HomeStatistics.jsx";
 import "./homeLibrary.css";
@@ -40,17 +40,27 @@ export default function LibraryPage({ onNavigate }) {
         </button>
       </header>
       <main className="library-page-main">
-        <section className="library-page-intro">
+        <section className="library-page-intro library-hero">
           <div>
-            <span className="hub-eyebrow">CHEMISTRY UNIVERSE</span>
-            <h1>One library for every chemistry journey</h1>
-            <p>Pick a subject, open a simulation, and keep learning from the same workspace.</p>
+            <span className="hub-eyebrow">CHEMISTRY UNIVERSE · DISCOVER MODE</span>
+            <h1>Explore Chemistry <em>without limits.</em></h1>
+            <p>Pick a discipline, open an interactive experience, and keep building your scientific intuition.</p>
           </div>
           <button type="button" onClick={() => onNavigate?.("molecule")}>
-            Open 3D Molecule Studio →
+            <Play size={15} /> Open 3D Molecule Studio
           </button>
         </section>
         <HomeStatistics />
+        <section className="library-quick-launch" aria-label="Quick launch">
+          <span><Sparkles size={15} /> QUICK LAUNCH</span>
+          {[['Periodic Table','table'],['Molecular Viewer','molecule'],['Reaction Lab','lab'],['Spectroscopy','spectroscopy-interpreter']].map(([label,id]) => <button key={id} onClick={() => onNavigate?.(id)}><span>{label}</span><Play size={13} /></button>)}
+        </section>
+        <section className="library-progress-strip" aria-label="Learning progress">
+          <div className="library-progress-copy"><BarChart3 size={18} /><span><b>Continue learning</b><small>Organic Chemistry · Aromatic compounds · Lesson 6 of 8</small></span></div>
+          <div className="library-progress-meter"><i /><strong>72%</strong></div>
+          <button onClick={() => onNavigate?.("organic-visuals")}>Resume lesson <Play size={13} /></button>
+        </section>
+        <div className="library-section-label"><span>YOUR CHEMISTRY UNIVERSE</span><b>Choose a path</b><small>Every card opens a focused workspace</small></div>
         <HomeLibrary
           query={query}
           setQuery={setQuery}

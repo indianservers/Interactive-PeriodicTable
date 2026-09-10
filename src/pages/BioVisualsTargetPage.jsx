@@ -1,291 +1,50 @@
-import { useState } from "react";
-import {
-  BookOpen,
-  CircleDot,
-  Dna,
-  Home,
-  Menu,
-  Play,
-  Settings2,
-  Sparkles,
-} from "lucide-react";
-const topics = [
-  "Proteins",
-  "Membranes",
-  "Carbohydrates",
-  "Nucleic acids",
-  "Metabolism",
-];
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Activity, CircleDot, Database, Dna, Home, Maximize2, Play, RotateCcw, Settings2, Sparkles } from 'lucide-react';
+import MolstarViewer from '../components/molecular-viewer/MolstarViewer.jsx';
+import ViewerErrorBoundary from '../components/molecular-viewer/ViewerErrorBoundary.jsx';
+import './biochemistryPages.css';
+
+const topics = ['Proteins', 'Membranes', 'Carbohydrates', 'Nucleic acids', 'Metabolism'];
 const topicData = {
-  Proteins: {
-    entity: "Hemoglobin",
-    subtitle: "Tetrameric oxygen transporter",
-    action: "oxygen binding",
-    metric: "Oxygen saturation",
-  },
-  Membranes: {
-    entity: "Lipid bilayer",
-    subtitle: "Selective transport barrier",
-    action: "transport flux",
-    metric: "Transport readiness",
-  },
-  Carbohydrates: {
-    entity: "Glucose",
-    subtitle: "Energy and structural polymer building block",
-    action: "ring/open-chain state",
-    metric: "Reducing-end activity",
-  },
-  "Nucleic acids": {
-    entity: "DNA / RNA",
-    subtitle: "Information chemistry and base pairing",
-    action: "base-pair state",
-    metric: "Pairing stability",
-  },
-  Metabolism: {
-    entity: "ATP",
-    subtitle: "Coupled energy-transfer currency",
-    action: "energy coupling",
-    metric: "Pathway activation",
-  },
+  Proteins: { entity:'Myoglobin', subtitle:'Oxygen-binding globin fold', action:'heme pocket', metric:'Structure readiness', id:'1MBN', source:{url:'/assets/proteins/1MBN.pdb',format:'pdb',label:'1MBN sperm whale myoglobin'}, sourceType:'pdb', metadata:'X-ray · 2.0 Å · Physeter catodon', route:'bio-proteins', icon:Dna, ligand:'HEM' },
+  Membranes: { entity:'Na⁺/K⁺-ATPase', subtitle:'Ion-pumping membrane transporter', action:'transport complex', metric:'Structure readiness', id:'4HQJ', source:{url:'/assets/membranes/structures/4HQJ.cif',format:'mmcif',label:'4HQJ Na,K-ATPase'}, sourceType:'mmcif', metadata:'X-ray · 4.30 Å · Sus scrofa', route:'bio-membranes', icon:CircleDot, ligand:'ADP' },
+  Carbohydrates: { entity:'D-Glucose', subtitle:'Pyranose energy building block', action:'stereochemistry', metric:'Conformer readiness', id:null, source:{url:'/assets/carbohydrate-studio/structures/d-glucose.sdf',format:'sdf',label:'PubChem D-glucose conformer'}, sourceType:'sdf', metadata:'PubChem CID 5793 · experimental stereochemistry', route:'bio-carbohydrates', icon:Sparkles, small:true },
+  'Nucleic acids': { entity:'B-DNA dodecamer', subtitle:'Double helix and base pairing', action:'base-pair geometry', metric:'Structure readiness', id:'1BNA', source:{url:'/assets/nucleic-acid/structures/1BNA.cif',format:'mmcif',label:'1BNA B-DNA dodecamer'}, sourceType:'mmcif', metadata:'X-ray · 1.90 Å · synthetic DNA', route:'bio-nucleic-acids', icon:Dna },
+  Metabolism: { entity:'Aconitase–citrate', subtitle:'Citric-acid-cycle enzyme complex', action:'active site', metric:'Structure readiness', id:'1C96', source:{url:'/assets/biochemistry/structures/1C96.cif',format:'mmcif',label:'1C96 aconitase citrate complex'}, sourceType:'mmcif', metadata:'X-ray · 1.81 Å · Sus scrofa', route:'bio-metabolism', icon:Activity, ligand:'FLC' },
 };
-export default function BioVisualsTargetPage() {
-  const [topic, setTopic] = useState("Proteins");
-  const [bound, setBound] = useState(false);
-  const [tab, setTab] = useState("Structure");
+
+export default function BioVisualsTargetPage({ onNavigate }) {
+  const viewerRef = useRef(null);
+  const [topic, setTopic] = useState('Proteins');
+  const [tab, setTab] = useState('Structure');
   const [route, setRoute] = useState(1);
-  const [oxygen, setOxygen] = useState(45);
-  const [query, setQuery] = useState("");
-  const [notice, setNotice] = useState("");
-  const announce = (x) => setNotice(x);
-  const topicSummary =
-    {
-      Proteins: "Hemoglobin · tetrameric oxygen transporter",
-      Membranes: "Lipid bilayer · selective transport",
-      Carbohydrates: "Glucose · energy and structural polymers",
-      "Nucleic acids": "DNA/RNA · information chemistry",
-      Metabolism: "ATP · coupled energy pathways",
-    }[topic] || "Connected biological chemistry";
-  const activeTopic = topicData[topic] || topicData.Proteins;
-  const effectiveOxygen = bound ? Math.max(oxygen, 80) : Math.min(oxygen, 55);
-  const activeMetric =
-    topic === "Proteins"
-      ? `${effectiveOxygen}%`
-      : bound
-        ? "Active"
-        : "Baseline";
-  return (
-    <div
-      className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
-      style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
-    >
-      <header className="flex h-[64px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5">
-        <Dna size={38} className="text-cyan-300" />
-        <div>
-          <h1 className="text-2xl font-black">Biochemistry Visual Lab</h1>
-          <p className="text-xs text-slate-400">Chemistry of living systems</p>
-        </div>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="ml-auto w-[430px] rounded-full border border-white/15 bg-slate-900/60 px-4 py-2 text-xs"
-          placeholder="Search molecules, pathways, or concepts..."
-        />
-        {["Explore", "Learn", "Simulate", "Resources"].map((x) => (
-          <button
-            key={x}
-            onClick={() => announce(x + " selected")}
-            className="text-xs"
-          >
-            {x}
-          </button>
-        ))}
-        <Settings2 size={18} />
-      </header>
-      <div className="grid h-[calc(100vh-64px)] grid-cols-[185px_1fr_325px] grid-rows-[1fr_145px] gap-2 p-2">
-        <aside className="row-span-2 flex flex-col gap-1 border-r border-white/10 bg-[#081c2d] p-3">
-          {[
-            [Home, "Home"],
-            [Dna, "Proteins"],
-            [CircleDot, "Membranes"],
-            [Sparkles, "Carbohydrates"],
-            [Dna, "Nucleic acids"],
-            [CircleDot, "Metabolism"],
-          ].map(([I, x]) => (
-            <button
-              key={x}
-              onClick={() => {
-                setTopic(x);
-                announce(x + " selected");
-              }}
-              className={`flex items-center gap-3 rounded px-3 py-3 text-left text-xs ${topic === x ? "bg-cyan-300/15 text-cyan-200" : "text-slate-300"}`}
-            >
-              <I size={19} />
-              {x}
-            </button>
-          ))}
-          <div className="mt-auto border-t border-white/10 pt-4 text-xs text-slate-500">
-            Science
-            <br />
-            Connects Life
-          </div>
-        </aside>
-        <main className="relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-[#0a2842] via-[#091b2d] to-[#11143a] p-3">
-          <h2 className="text-lg font-bold text-cyan-200">
-            Explore molecular scale · {topic}
-          </h2>
-          <p className="mt-1 text-xs text-slate-400">
-            {topicSummary}
-            {query ? ` · Searching “${query}”` : ""}
-          </p>
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs text-slate-400">
-            <span>
-              Atom
-              <br />◉
-            </span>
-            <span className="text-cyan-200">
-              Molecule
-              <br />
-              ●—●
-            </span>
-            <span>
-              Organelle
-              <br />◉
-            </span>
-          </div>
-          <div className="absolute right-4 top-12 text-center">
-            <div className="text-7xl text-indigo-300">✤</div>
-            <b className="text-cyan-200">Protein folding</b>
-            <p className="text-xs text-slate-400">Structure enables function</p>
-          </div>
-          <div className="absolute left-5 top-32 w-72 rounded-xl border border-cyan-300/60 bg-slate-950/70 p-4 shadow-[0_0_30px_rgba(34,211,238,.25)]">
-            <h2 className="text-xl font-bold">{activeTopic.entity}</h2>
-            <p className="text-xs text-slate-400">{activeTopic.subtitle}</p>
-            <div className="my-5 text-center text-7xl text-blue-400">✤</div>
-            <div className="flex justify-between text-xs">
-              <span>🔵 Structure</span>
-              <span>🔴 Function</span>
-              <span>🟡 Context</span>
-            </div>
-            <button
-              onClick={() => {
-                setBound((v) => !v);
-                announce(bound ? "Oxygen released" : "Oxygen bound");
-              }}
-              className="mt-4 w-full rounded-full bg-blue-500 px-3 py-3 text-sm font-bold"
-            >
-              <Play size={15} className="mr-2 inline" />
-              {bound
-                ? `Release ${activeTopic.action}`
-                : `Activate ${activeTopic.action}`}
-            </button>
-          </div>
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-8xl text-purple-300">
-            ◉
-          </div>
-          <div className="absolute bottom-14 right-10 text-center text-5xl text-cyan-300">
-            🧬
-            <br />
-            <span className="text-xs">Nucleic acids</span>
-          </div>
-          <div className="absolute bottom-8 left-1/2 ml-28 text-center text-5xl text-amber-300">
-            ✤<br />
-            <span className="text-xs">Metabolism</span>
-          </div>
-          <div className="absolute right-4 top-56 text-center text-5xl text-amber-200">
-            ⬡<br />
-            <span className="text-xs">Carbohydrates</span>
-          </div>
-        </main>
-        <aside className="row-span-2 overflow-y-auto rounded-lg border border-white/10 bg-[#0a1e31] p-4">
-          <h2 className="font-bold text-cyan-200">Learning route</h2>
-          {[
-            "Proteins and their functions",
-            "Membranes and transport",
-            "Carbohydrates in biology",
-            "Nucleic acids and information",
-            "Metabolism and energy",
-            "Systems integration",
-          ].map((x, i) => (
-            <button
-              key={x}
-              onClick={() => {
-                setRoute(i + 1);
-                announce(x + " selected");
-              }}
-              className={`flex w-full items-center gap-3 border-b border-white/10 py-3 text-left text-xs ${route === i + 1 ? "text-cyan-200" : "text-slate-300"}`}
-            >
-              <span
-                className={`grid h-7 w-7 place-items-center rounded-full ${route === i + 1 ? "bg-cyan-300 text-slate-900" : "border border-white/20"}`}
-              >
-                {i + 1}
-              </span>
-              {x}
-            </button>
-          ))}
-          <h2 className="mt-5 font-bold">Biological context</h2>
-          <div className="mt-2 h-20 rounded bg-gradient-to-r from-red-900 to-red-300" />
-          <h3 className="mt-3 font-bold">Oxygen transport in blood</h3>
-          <p className="mt-2 text-xs leading-5 text-slate-400">
-            Hemoglobin in red blood cells binds oxygen in the lungs and releases
-            it in tissues, enabling aerobic metabolism across the body.
-          </p>
-          <div className="mt-4 rounded border border-white/10 p-3 text-xs">
-            <b>Key points</b>
-            <br />• Tetramer (α₂β₂)
-            <br />• Each heme binds one O₂
-            <br />• Cooperative binding (allostery)
-            <br />• Regulated by pH, CO₂ and 2,3-BPG
-          </div>
-        </aside>
-        <section className="col-span-2 rounded-lg border border-white/10 bg-[#0a1e31] p-3">
-          <div className="flex border-b border-white/10">
-            {["Structure", "Function", "Dynamics", "Sequence", "Related"].map(
-              (x) => (
-                <button
-                  key={x}
-                  onClick={() => setTab(x)}
-                  className={`px-5 py-2 text-xs ${tab === x ? "border-b-2 border-cyan-300 text-cyan-200" : "text-slate-400"}`}
-                >
-                  {x}
-                </button>
-              ),
-            )}
-          </div>
-          <div className="mt-3 flex items-center justify-between text-xs">
-            <div>
-              <b>{activeTopic.entity}</b>
-              <br />
-              <span className="text-slate-400">
-                {activeTopic.metric}　•　{activeTopic.subtitle}
-              </span>
-            </div>
-            <div className="w-64">
-              <label>
-                {activeTopic.metric}　{activeMetric}
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={oxygen}
-                onChange={(e) => setOxygen(+e.target.value)}
-                className="w-full accent-cyan-300"
-              />
-            </div>
-            <div className="h-14 w-28 border-b border-l border-cyan-300/50">
-              <div className="mt-7 h-1 w-full bg-cyan-300" />
-            </div>
-          </div>
-        </section>
-      </div>
-      {notice && (
-        <div
-          role="status"
-          className="fixed bottom-4 right-5 rounded-full border border-cyan-300/40 bg-slate-950 px-4 py-2 text-xs"
-        >
-          {notice}
-        </div>
-      )}
-    </div>
-  );
+  const [query, setQuery] = useState('');
+  const [notice, setNotice] = useState('');
+  const [style, setStyle] = useState('Cartoon');
+  const [ready, setReady] = useState(false);
+  const [selectedAtom, setSelectedAtom] = useState(null);
+  const active = topicData[topic];
+  useEffect(() => { setReady(false); setSelectedAtom(null); setStyle(active.small ? 'Ball & stick' : 'Cartoon'); }, [active]);
+  const representation = useMemo(() => ({
+    Cartoon: style === 'Cartoon', Surface: style === 'Surface', BallAndStick: style === 'Atoms' || style === 'Ball & stick', Spacefill: style === 'Space filling', Ligand: !active.small, Branched: !active.small, Ion: !active.small,
+  }), [active.small, style]);
+  const styles = active.small ? ['Ball & stick', 'Space filling'] : ['Cartoon', 'Surface', 'Atoms'];
+  const filteredTopics = topics.filter(item => `${item} ${topicData[item].entity} ${topicData[item].subtitle}`.toLowerCase().includes(query.toLowerCase()));
+  const announce = message => setNotice(message);
+  return <div data-bio-page="overview" className="min-h-screen overflow-hidden bg-[#071522] text-slate-100" style={{fontFamily:'Inter,ui-sans-serif,system-ui'}}>
+    <header className="bio-hub-header flex h-[64px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5"><Dna size={38} className="text-cyan-300"/><div><h1 className="text-2xl font-black">Biochemistry Visual Lab</h1><p className="text-xs text-slate-400">Coordinate-backed chemistry of living systems</p></div><input value={query} onChange={e=>setQuery(e.target.value)} className="ml-auto w-[430px] rounded-full border border-white/15 bg-slate-900/60 px-4 py-2 text-xs" placeholder="Search structures, pathways, or concepts..."/>{['Explore','Learn','Simulate','Resources'].map(item=><button key={item} onClick={()=>announce(item+' selected')} className="text-xs">{item}</button>)}<Settings2 size={18}/></header>
+    <div className="bio-hub-layout grid h-[calc(100vh-64px)] grid-cols-[185px_1fr_325px] grid-rows-[1fr_145px] gap-2 p-2">
+      <aside className="row-span-2 flex flex-col gap-1 border-r border-white/10 bg-[#081c2d] p-3">{[[Home,'Home'],...topics.map(item=>[topicData[item].icon,item])].map(([Icon,item])=><button key={item} onClick={()=>{if(item==='Home'){onNavigate?.('dashboard');return;}setTopic(item);announce(item+' preview selected');}} className={`flex items-center gap-3 rounded px-3 py-3 text-left text-xs ${topic===item?'bg-cyan-300/15 text-cyan-200':'text-slate-300'}`}><Icon size={19}/>{item}</button>)}<div className="mt-auto border-t border-white/10 pt-4 text-xs text-slate-500">Experimental coordinates<br/>Local, repeatable previews</div></aside>
+      <main className="bio-hub-main relative min-h-0 overflow-hidden rounded-lg border border-white/10 bg-[#06131f]">
+        <div className="absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 bg-gradient-to-b from-[#06131ff5] to-transparent p-4 pb-12"><div><p className="text-[10px] uppercase tracking-[.2em] text-cyan-300">Interactive molecular preview</p><h2 className="text-2xl font-black">{active.entity}</h2><p className="text-xs text-slate-300">{active.subtitle} · {active.metadata}</p></div><div className="flex flex-wrap justify-end gap-1 rounded border border-white/10 bg-[#06131fdc] p-2 text-[10px]"><span className={ready?'mr-1 self-center text-emerald-300':'mr-1 self-center text-slate-400'}>{ready?'Mol* ready':'Loading coordinates…'}</span>{styles.map(item=><button key={item} aria-pressed={style===item} onClick={()=>setStyle(item)} className={`rounded border px-2 py-1 ${style===item?'border-cyan-300 bg-cyan-300/15':'border-white/15'}`}>{item}</button>)}{active.ligand&&<button onClick={()=>viewerRef.current?.focusLigandId(active.ligand,'A')} className="rounded border border-white/15 px-2 py-1">Focus ligand</button>}<button aria-label="Reset molecular preview" onClick={()=>viewerRef.current?.reset()} className="rounded border border-white/15 p-1"><RotateCcw size={13}/></button><button aria-label="Full screen molecular preview" onClick={()=>viewerRef.current?.fullscreen()} className="rounded border border-white/15 p-1"><Maximize2 size={13}/></button></div></div>
+        <ViewerErrorBoundary label={`${active.entity} preview`}><MolstarViewer ref={viewerRef} source={active.source} sourceType={active.sourceType} pdbId={active.id} label={active.entity} representation={representation} colorScheme={active.small?'element':'chain'} showLabels={false} onReady={()=>{setReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(active.small?1.45:1.18));}} onLoadError={()=>setReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary>
+        <div className="pointer-events-none absolute bottom-[92px] right-3 z-20 max-w-[65%] rounded bg-[#06131fdd] px-2 py-1 text-right text-[10px] text-slate-300">{selectedAtom?`${selectedAtom.element} · ${selectedAtom.residueName} ${selectedAtom.atom} · chain ${selectedAtom.chain} · [${selectedAtom.coordinates.map(value=>value.toFixed(2)).join(', ')}] Å`:'Select a topic, then click an atom to inspect its coordinate record'}</div>
+        <div className="bio-hub-cards absolute inset-x-3 bottom-3 z-20 grid grid-cols-5 gap-2">{filteredTopics.map(item=>{const data=topicData[item],Icon=data.icon;return <article key={item} className={`rounded border bg-[#071a29e8] p-2 backdrop-blur ${topic===item?'border-cyan-300':'border-white/15'}`}><button onClick={()=>setTopic(item)} className="flex w-full items-center gap-2 text-left"><Icon size={17} className="text-cyan-300"/><span><b className="block text-[11px]">{item}</b><small className="block text-[9px] text-slate-400">{data.id?`PDB ${data.id}`:`CID ${CARBOHYDRATE_CID}`}</small></span></button><button onClick={()=>onNavigate?.(data.route)} className="mt-2 w-full rounded border border-white/10 px-2 py-1 text-[9px] text-cyan-200">Open studio</button></article>})}</div>
+      </main>
+      <aside className="row-span-2 overflow-y-auto rounded-lg border border-white/10 bg-[#0a1e31] p-4"><h2 className="font-bold text-cyan-200">Learning route</h2>{topics.map((item,index)=><button key={item} onClick={()=>{setRoute(index+1);setTopic(item);}} className={`flex w-full items-center gap-3 border-b border-white/10 py-3 text-left text-xs ${route===index+1?'text-cyan-200':'text-slate-300'}`}><span className={`grid h-7 w-7 place-items-center rounded-full ${route===index+1?'bg-cyan-300 text-slate-900':'border border-white/20'}`}>{index+1}</span>{item}</button>)}<h2 className="mt-5 font-bold">Current structure</h2><div className="mt-2 rounded border border-cyan-300/20 bg-cyan-300/5 p-3 text-xs"><Database size={18} className="mb-2 text-cyan-300"/><b>{active.entity}</b><p className="mt-2 leading-5 text-slate-400">{active.subtitle}. This preview is loaded from a local coordinate file and rendered by Mol*.</p><p className="mt-2 text-cyan-200">{active.id?`PDB ${active.id}`:'PubChem CID 5793'}</p></div><button onClick={()=>onNavigate?.(active.route)} className="mt-4 w-full rounded bg-cyan-400/15 px-4 py-3 text-xs font-bold text-cyan-200">Open {topic} studio</button></aside>
+      <section className="col-span-2 rounded-lg border border-white/10 bg-[#0a1e31] p-3"><div className="flex border-b border-white/10">{['Structure','Function','Dynamics','Sequence','Related'].map(item=><button key={item} onClick={()=>setTab(item)} className={`px-5 py-2 text-xs ${tab===item?'border-b-2 border-cyan-300 text-cyan-200':'text-slate-400'}`}>{item}</button>)}</div><div className="mt-3 flex items-center justify-between gap-4 text-xs"><div><b>{active.entity}</b><br/><span className="text-slate-400">{tab} · {active.metadata}</span></div><div className="rounded border border-white/10 px-4 py-2"><span className={ready?'text-emerald-300':'text-amber-200'}>{active.metric}: {ready?'Ready':'Loading'}</span></div><button onClick={()=>{if(active.ligand)viewerRef.current?.focusLigandId(active.ligand,'A');announce(`Inspecting ${active.action}`);}} className="rounded bg-blue-500 px-4 py-2 font-bold"><Play size={14} className="mr-2 inline"/>Inspect {active.action}</button></div></section>
+    </div>{notice&&<div role="status" className="fixed bottom-4 right-5 z-50 rounded-full border border-cyan-300/40 bg-slate-950 px-4 py-2 text-xs">{notice}</div>}
+  </div>;
 }
+
+const CARBOHYDRATE_CID = 5793;

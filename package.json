@@ -6,13 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:drug-data": "node scripts/verify-drug-discovery-data.mjs",
+    "test:drug-browser": "node scripts/verify-drug-discovery-studio.mjs",
+    "test:physical": "node scripts/verify-physical-chemistry.mjs"
   },
   "dependencies": {
+    "@rdkit/rdkit": "^2025.3.4-1.0.0",
+    "3dmol": "^2.5.5",
+    "katex": "^0.18.7",
+    "lucide-react": "^0.441.0",
+    "molstar": "^4.18.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "lucide-react": "^0.441.0",
-    "three": "^0.168.0"
+    "three": "^0.168.0",
+    "umap-js": "^1.3.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",

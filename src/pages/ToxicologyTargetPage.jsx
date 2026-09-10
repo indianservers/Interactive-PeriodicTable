@@ -1,10 +1,25 @@
-import { useState } from "react";
-import { Activity, ShieldCheck, RotateCcw } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { Activity, Database, Maximize2, ShieldCheck, RotateCcw } from "lucide-react";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import "./biochemistryPages.css";
+
+const STRUCTURES = {
+  complex: { label:"Bound complex", title:"Lactoperoxidase–acetaminophen", source:{url:"/assets/toxicology/structures/3PY4.cif",format:"mmcif",label:"3PY4 lactoperoxidase paracetamol complex"}, type:"mmcif", pdbId:"3PY4", ligand:"TYL", metadata:"Experimental X-ray complex · 2.42 Å · Bos taurus", note:"A real paracetamol-bound structural reference; it is not a CYP2E1 metabolism model." },
+  acetaminophen: { label:"Acetaminophen", title:"Acetaminophen", source:{url:"/assets/toxicology/structures/acetaminophen.sdf",format:"sdf",label:"Acetaminophen PubChem conformer"}, type:"sdf", metadata:"PubChem CID 1983 · C₈H₉NO₂ · 151.16 g/mol", small:true },
+  napqi: { label:"NAPQI metabolite", title:"NAPQI", source:{url:"/assets/toxicology/structures/napqi.sdf",format:"sdf",label:"NAPQI PubChem conformer"}, type:"sdf", metadata:"PubChem CID 39763 · C₈H₇NO₂ · reactive metabolite", small:true },
+};
 export default function ToxicologyTargetPage() {
+  const viewerRef = useRef(null);
   const [dose, setDose] = useState(10);
   const [tab, setTab] = useState("Pathways");
   const [notice, setNotice] = useState("");
   const [nac, setNac] = useState(false);
+  const [structureKey, setStructureKey] = useState("complex");
+  const [structureStyle, setStructureStyle] = useState("Cartoon");
+  const [structureReady, setStructureReady] = useState(false);
+  const [selectedResidue, setSelectedResidue] = useState(null);
+  const [selectedAtom, setSelectedAtom] = useState(null);
   const announce = (x) => setNotice(x);
   const risk = nac ? "Low" : dose > 12 ? "High" : dose > 7 ? "Moderate" : "Low";
   const cypFraction = nac ? 12 : dose > 12 ? 32 : dose > 7 ? 24 : 16;
@@ -18,8 +33,11 @@ export default function ToxicologyTargetPage() {
     "Molecular Structures": "Acetaminophen, NAPQI, and glutathione interaction",
     "Clinical Timeline": "Dose → metabolism → biomarkers → intervention",
   }[tab];
+  const structure = STRUCTURES[structureKey];
+  const representations = useMemo(() => ({ Cartoon:structureStyle==="Cartoon", Surface:structureStyle==="Surface", BallAndStick:structureStyle==="Atoms"||structureStyle==="Ball & stick", Spacefill:structureStyle==="Space filling", Ligand:!structure.small, Branched:!structure.small, Ion:!structure.small }), [structure.small, structureStyle]);
+  const selectStructure = key => { setStructureKey(key); setStructureStyle(STRUCTURES[key].small?"Ball & stick":"Cartoon"); setStructureReady(false); setSelectedResidue(null); setSelectedAtom(null); };
   return (
-    <div
+    <div data-bio-page="toxicology"
       className="min-h-screen overflow-hidden bg-[#061522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
@@ -41,7 +59,7 @@ export default function ToxicologyTargetPage() {
           <span className="text-emerald-300">● Hepatotoxicity Module</span>
         </div>
       </header>
-      <div className="grid h-[calc(100vh-68px)] grid-cols-[230px_275px_1fr_400px] gap-3 p-3">
+      <div className="toxicology-layout grid h-[calc(100vh-68px)] grid-cols-[230px_275px_1fr_400px] gap-3 p-3">
         <aside className="rounded border border-white/10 bg-[#0a1e31] p-3">
           {[
             "Toxicology Studio",
@@ -112,7 +130,7 @@ export default function ToxicologyTargetPage() {
             Reset to default
           </button>
         </aside>
-        <main className="rounded border border-white/10 bg-gradient-to-br from-[#17384b] to-[#071522] p-3">
+        <main className="toxicology-main rounded border border-white/10 bg-gradient-to-br from-[#17384b] to-[#071522] p-3">
           <div className="flex rounded border border-white/10">
             {[
               "Pathways",
@@ -129,7 +147,13 @@ export default function ToxicologyTargetPage() {
               </button>
             ))}
           </div>
-          <div className="relative mt-3 h-[580px] overflow-hidden rounded border border-white/10 bg-[radial-gradient(circle_at_50%_45%,rgba(157,78,90,.55),transparent_55%),linear-gradient(135deg,#253c48,#14202f)]">
+          {tab === "Molecular Structures" ? <div className="relative mt-3 h-[580px] overflow-hidden rounded border border-white/10 bg-[#06131f]" data-toxicology-view="molecular">
+            <ViewerErrorBoundary label="Toxicology molecular structure"><MolstarViewer ref={viewerRef} source={structure.source} sourceType={structure.type} pdbId={structure.pdbId} label={structure.title} representation={representations} colorScheme={structure.small?"element":"chain"} selectedChain="A" selectedResidue={selectedResidue} focusOnSelection={Number.isFinite(selectedResidue)} showLabels={false} onReady={()=>{setStructureReady(true);requestAnimationFrame(()=>structure.ligand?viewerRef.current?.focusLigandId(structure.ligand,"A"):viewerRef.current?.zoom(1.45));}} onLoadError={()=>setStructureReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary>
+            <div className="toxicology-structure-metadata pointer-events-none absolute left-3 top-3 z-10 max-w-[58%] rounded border border-white/10 bg-[#06131fe8] px-3 py-2 text-[10px] text-slate-300"><b className="text-cyan-200">{structure.pdbId?`PDB ${structure.pdbId}`:structure.label}</b> · {structure.metadata}<br/><span className="text-amber-200">{structure.note}</span></div>
+            <div className="toxicology-structure-tools absolute right-3 top-3 z-10 flex flex-wrap justify-end gap-1 rounded border border-white/10 bg-[#06131fe8] p-2 text-[10px]"><span className={structureReady?"mr-1 self-center text-emerald-300":"mr-1 self-center text-slate-400"}>{structureReady?"Mol* ready":"Loading…"}</span>{(structure.small?["Ball & stick","Space filling"]:["Cartoon","Surface","Atoms"]).map(item=><button key={item} aria-pressed={structureStyle===item} onClick={()=>setStructureStyle(item)} className={`rounded border px-2 py-1 ${structureStyle===item?"border-cyan-300 bg-cyan-300/15":"border-white/15"}`}>{item}</button>)}<button onClick={()=>viewerRef.current?.reset()} className="rounded border border-white/15 px-2 py-1">Reset</button><button aria-label="Full screen toxicology structure" onClick={()=>viewerRef.current?.fullscreen()} className="rounded border border-white/15 p-1"><Maximize2 size={13}/></button></div>
+            <div className="toxicology-structure-selectors absolute bottom-3 left-3 z-10 max-w-[72%] rounded border border-white/10 bg-[#06131fe8] p-2 text-[10px]"><div className="flex flex-wrap gap-1">{Object.entries(STRUCTURES).map(([key,item])=><button key={key} aria-pressed={structureKey===key} onClick={()=>selectStructure(key)} className={`rounded border px-2 py-1 ${structureKey===key?"border-cyan-300 bg-cyan-300/15":"border-white/15"}`}>{item.label}</button>)}</div>{structureKey==="complex"&&<div className="mt-2 flex flex-wrap items-center gap-1"><span className="text-slate-400">Nearest heavy-atom contacts</span>{[[109,"His109 · 2.71 Å"],[258,"Glu258 · 2.89 Å"],[255,"Arg255 · 3.35 Å"],[381,"Phe381 · 3.36 Å"]].map(([residue,label])=><button key={residue} onClick={()=>setSelectedResidue(residue)} className="rounded border border-white/15 px-2 py-1">{label}</button>)}<button onClick={()=>viewerRef.current?.focusLigandId("TYL","A")} className="rounded border border-white/15 px-2 py-1">Focus TYL</button></div>}</div>
+            <div className="toxicology-structure-readout pointer-events-none absolute bottom-3 right-3 z-10 max-w-[28%] rounded bg-[#06131fe8] px-2 py-1 text-right text-[9px] text-slate-300">{selectedAtom?`${selectedAtom.element} · ${selectedAtom.residueName} ${selectedAtom.atom} · [${selectedAtom.coordinates.map(value=>value.toFixed(2)).join(", ")}] Å`:"Click an atom for coordinate inspection"}</div>
+          </div> : <div className="relative mt-3 h-[580px] overflow-hidden rounded border border-white/10 bg-[radial-gradient(circle_at_50%_45%,rgba(157,78,90,.55),transparent_55%),linear-gradient(135deg,#253c48,#14202f)]">
             <div className="absolute left-4 right-4 top-4 rounded border border-cyan-300/20 bg-slate-950/45 px-3 py-2 text-center text-xs text-cyan-100">
               {tabSummary}
             </div>
@@ -162,7 +186,7 @@ export default function ToxicologyTargetPage() {
             <div className="absolute left-[49%] top-[61%] text-5xl text-red-300">
               ↓
             </div>
-          </div>
+          </div>}
         </main>
         <aside className="space-y-3 overflow-auto">
           <section className="rounded border border-white/10 bg-[#0b2135] p-4">

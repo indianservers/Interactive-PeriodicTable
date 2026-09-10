@@ -1,271 +1,75 @@
-import { useEffect, useState } from "react";
-import {
-  Activity,
-  BarChart3,
-  BookOpen,
-  CircleDot,
-  Dna,
-  Home,
-  Play,
-  Settings2,
-} from "lucide-react";
-export default function ProteinTargetPage() {
-  const [view, setView] = useState("Cartoon");
-  const [animate, setAnimate] = useState(false);
-  const [time, setTime] = useState(200);
-  const [bonds, setBonds] = useState({
-    h: true,
-    ionic: true,
-    disulfide: false,
-    hydrophobic: true,
-  });
-  const [notice, setNotice] = useState("");
-  const [query, setQuery] = useState("");
-  const [mutationFrom, setMutationFrom] = useState("Leu");
-  const [mutationSite, setMutationSite] = useState("L29");
-  const [mutationTo, setMutationTo] = useState("Ala");
-  const mutationImpact =
-    mutationFrom === mutationTo
-      ? "neutral"
-      : mutationTo === "Ala"
-        ? "destabilizing"
-        : "context-dependent";
-  const announce = (x) => setNotice(x);
-  useEffect(() => {
-    if (!animate) return undefined;
-    const timer = window.setInterval(
-      () => setTime((value) => (value >= 200 ? 0 : value + 4)),
-      140,
-    );
-    return () => window.clearInterval(timer);
-  }, [animate]);
-  const foldingStage =
-    time < 50
-      ? "Unfolded chain"
-      : time < 110
-        ? "Secondary structure"
-        : time < 170
-          ? "Tertiary structure"
-          : "Native state";
-  return (
-    <div
-      className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
-      style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
-    >
-      <header className="flex h-[62px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5">
-        <Dna size={36} className="text-cyan-300" />
-        <h1 className="text-2xl font-black">Protein Folding Studio</h1>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="ml-auto w-[500px] rounded border border-white/15 bg-slate-900/60 p-2 text-xs"
-          placeholder="Search proteins, PDB IDs, or mutations..."
-        />
-        {["Gallery", "Tools", "Learn", "Help"].map((x) => (
-          <button
-            key={x}
-            onClick={() => announce(x + " opened")}
-            className="text-xs"
-          >
-            {x}
-          </button>
-        ))}
-        <Settings2 size={18} />
-      </header>
-      <div className="grid h-[calc(100vh-62px)] grid-cols-[310px_1fr_385px] grid-rows-[1fr_225px] gap-2 p-2">
-        <aside className="row-span-2 overflow-y-auto rounded-lg border border-white/10 bg-[#0a1e31] p-3">
-          <h2 className="text-2xl font-bold">
-            Myoglobin <span className="text-slate-400">· 153 residues</span>
-          </h2>
-          <p className="text-sm text-slate-400">
-            Oxygen storage protein from sperm whale
-          </p>
-          <div className="mt-3 rounded border border-white/10 p-3">
-            <h3 className="font-bold">
-              Primary Structure{" "}
-              <span className="float-right text-xs text-slate-400">
-                153 residues
-              </span>
-            </h3>
-            <pre className="mt-3 text-xs leading-6 text-cyan-200">
-              1　MGLSDGEWQLVLHVWAKVEAD
-              <br />
-              21 VAHGQEVLIRLFTGHPETLE
-              <br />
-              41 KFDRFKHLKTEAEMKASEDLK
-              <br />
-              61 HGTVVLTALGA ILKKKGHHEA
-              <br />
-              81 ELKPLAQS HAT K H K I P I K
-            </pre>
-          </div>
-          <div className="mt-4 space-y-2 text-xs">
-            <p>🟡 Hydrophobic　A V I L M F W Y</p>
-            <p>🔵 Polar　　　 S T N Q</p>
-            <p>🔴 Acidic　　　D E</p>
-            <p>🔷 Basic　　　 K R H</p>
-          </div>
-        </aside>
-        <main className="rounded-lg border border-white/10 bg-gradient-to-br from-[#102d48] to-[#081522] p-3">
-          <div className="flex justify-end gap-2">
-            {["Surface", "Cartoon", "Sticks"].map((x) => (
-              <button
-                key={x}
-                onClick={() => setView(x)}
-                className={`rounded border px-4 py-2 text-xs ${view === x ? "border-cyan-300 bg-cyan-300/15" : "border-white/20"}`}
-              >
-                {x}
-              </button>
-            ))}
-            <button
-              onClick={() => announce("Labels toggled")}
-              className="rounded border border-white/20 px-4 py-2 text-xs"
-            >
-              Labels
-            </button>
-          </div>
-          <div className="grid h-[470px] place-items-center">
-            <div className="relative text-center">
-              <div
-                className={`text-[210px] leading-none text-gradient ${animate ? "animate-pulse" : ""}`}
-                style={{ color: view === "Surface" ? "#335070" : "#2dd4bf" }}
-              >
-                ✤
-              </div>
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 text-sm text-white">
-                Heme group
-                <br />
-                (Fe²⁺)
-              </div>
-              <p className="mt-3 text-sm">Myoglobin · α-helical monomer</p>
-            </div>
-          </div>
-        </main>
-        <aside className="row-span-2 overflow-y-auto rounded-lg border border-white/10 bg-[#0a1e31] p-4">
-          <h2 className="font-bold">Molecular Interactions</h2>
-          {[
-            ["h", "Hydrogen bonds", "24"],
-            ["ionic", "Ionic interactions", "6"],
-            ["disulfide", "Disulfide bonds", "0"],
-            ["hydrophobic", "Hydrophobic contacts", "38"],
-          ].map(([k, x, n]) => (
-            <button
-              key={k}
-              onClick={() => setBonds((b) => ({ ...b, [k]: !b[k] }))}
-              className="mt-4 flex w-full items-center justify-between text-xs"
-            >
-              <span
-                className={`h-5 w-9 rounded-full p-0.5 ${bonds[k] ? "bg-cyan-400" : "bg-slate-600"}`}
-              >
-                <span
-                  className={`block h-4 w-4 rounded-full bg-white transition ${bonds[k] ? "translate-x-4" : ""}`}
-                />
-              </span>
-              {x}
-              <b>{bonds[k] ? n : "0"}</b>
-            </button>
-          ))}
-          <h2 className="mt-5 font-bold">Interaction Details</h2>
-          <div className="mt-2 rounded border border-white/10 p-3 text-xs leading-7">
-            1　🔵 H-bond　SER92 – HIS64　2.8 Å<br />
-            2　🔵 H-bond　THR67 – ASP60　2.9 Å<br />
-            3　🟣 Ionic　LYS45 – ASP102　3.1 Å<br />
-            4　🟡 Hydrophobic　LEU29 – VAL68　3.6 Å
-          </div>
-          <h2 className="mt-5 font-bold">Energy Landscape</h2>
-          <div className="mt-2 h-24 rounded border border-cyan-300/30 bg-gradient-to-b from-fuchsia-500/30 via-cyan-300/20 to-emerald-500/30 text-center pt-10">
-            ΔGfold = {mutationImpact === "destabilizing" ? "−38.4" : "−42.1"}{" "}
-            kcal/mol
-          </div>
-          <h2 className="mt-5 font-bold">Mutation Analysis</h2>
-          <div className="mt-2 grid grid-cols-3 gap-1">
-            <select
-              value={mutationFrom}
-              onChange={(e) => setMutationFrom(e.target.value)}
-              className="rounded bg-slate-950 p-2 text-xs"
-            >
-              <option>Leu</option>
-            </select>
-            <select
-              value={mutationSite}
-              onChange={(e) => setMutationSite(e.target.value)}
-              className="rounded bg-slate-950 p-2 text-xs"
-            >
-              <option>L29</option>
-            </select>
-            <select
-              value={mutationTo}
-              onChange={(e) => setMutationTo(e.target.value)}
-              className="rounded bg-slate-950 p-2 text-xs"
-            >
-              <option>Ala</option>
-            </select>
-          </div>
-          <button
-            onClick={() =>
-              announce(
-                `${mutationSite} ${mutationFrom}→${mutationTo}: ${mutationImpact}`,
-              )
-            }
-            className="mt-3 w-full rounded bg-indigo-500 px-3 py-2 text-xs"
-          >
-            Predict
-          </button>
-        </aside>
-        <section className="col-span-2 rounded-lg border border-white/10 bg-[#0a1e31] p-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold">
-              Folding Timeline · {foldingStage}
-              {query ? ` · Searching “${query}”` : ""}
-            </h3>
-            <button
-              onClick={() => setAnimate((v) => !v)}
-              className="rounded bg-blue-500 px-4 py-2 text-xs"
-            >
-              <Play size={14} className="mr-1 inline" />
-              {animate ? "Stop folding" : "Animate folding"}
-            </button>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="200"
-            value={time}
-            onChange={(e) => setTime(+e.target.value)}
-            className="mt-3 w-full accent-cyan-300"
-          />
-          <div className="mt-3 flex justify-between text-center text-xs text-slate-300">
-            <span>
-              Unfolded chain
-              <br />
-              (t = 0 ns)
-            </span>
-            <span>
-              Secondary structure
-              <br />
-              (α-helices form)
-            </span>
-            <span>
-              Tertiary structure
-              <br />
-              (packing)
-            </span>
-            <span>
-              Native state
-              <br />
-              (Myoglobin)
-            </span>
-          </div>
-        </section>
-      </div>
-      {notice && (
-        <div
-          role="status"
-          className="fixed bottom-4 right-5 rounded-full border border-cyan-300/40 bg-slate-950 px-4 py-2 text-xs"
-        >
-          {notice}
-        </div>
-      )}
-    </div>
-  );
+import {memo,useEffect,useRef,useState} from 'react';
+import {Activity,BarChart3,BookOpen,Check,ChevronDown,Download,Expand,FlaskConical,Home,Info,Layers,Library,Move,Pause,Play,RotateCcw,Search,Share2,SlidersHorizontal,Sparkles,X,ZoomIn,ZoomOut} from 'lucide-react';
+import ProteinMolecule from '../components/visualizers/ProteinMolecule.jsx';
+import ProteinEnergy from '../components/visualizers/ProteinEnergy.jsx';
+import {MolstarViewer,ViewerErrorBoundary,rcsbStructureUrl} from '../components/molecular-viewer/index.js';
+import {aminoAcids,categories,category,interactionTypes,mutationEstimate,parseMmcifProtein,parseProtein} from './proteinStudioData.js';
+import ProteinEnhancementCenter from '../components/protein/ProteinEnhancementCenter.jsx';
+import AlphaFoldExplorer from '../components/protein/AlphaFoldExplorer.jsx';
+import './proteinStudio.css';
+const stages=[['Unfolded chain','t = 0 ns',0],['Secondary structure','α-helices form',65],['Tertiary structure','packing',135],['Native state','Myoglobin',200]];
+const Preview=memo(function Preview({data,time}){return <ProteinMolecule data={data} time={time} mini/>;});
+const shortName=code=>code[0]+code.slice(1).toLowerCase();
+function IconButton({label,children,...props}){return <button type="button" title={label} aria-label={label} {...props}>{children}</button>;}
+export default function ProteinTargetPage({onNavigate}){
+ const [data,setData]=useState(null),[loadError,setLoadError]=useState(''),[retry,setRetry]=useState(0);
+ const [modes,setModes]=useState({Surface:true,Cartoon:true,Sticks:false,Labels:true});
+ const [colorScheme,setColorScheme]=useState('spectrum');
+ const [interactions,setInteractions]=useState({h:true,ionic:true,disulfide:false,hydrophobic:true});
+ const [time,setTime]=useState(200),[playing,setPlaying]=useState(false),[selected,setSelected]=useState(null),[hovered,setHovered]=useState(null);
+ const [pos,setPos]=useState(29),[to,setTo]=useState('A'),[mutation,setMutation]=useState(null),[result,setResult]=useState(null);
+ const [query,setQuery]=useState(''),[notice,setNotice]=useState(''),[dialog,setDialog]=useState(null),[active,setActive]=useState('Studio');
+ const [expanded,setExpanded]=useState({sequence:true,interactions:true,energy:true,mutation:true,folding:true});
+ const viewer=useRef(null),viewport=useRef(null),dialogRef=useRef(null);
+ useEffect(()=>{const controller=new AbortController();setLoadError('');fetch('/assets/proteins/1MBN.pdb',{signal:controller.signal}).then(r=>{if(!r.ok)throw new Error('PDB download failed');return r.text();}).then(pdb=>setData(parseProtein(pdb))).catch(e=>{if(e.name!=='AbortError')setLoadError(e.message);});return()=>controller.abort();},[retry]);
+ useEffect(()=>{if(!playing)return;let frame,last=performance.now();const tick=now=>{if(now-last>90){setTime(v=>Math.min(200,v+2));last=now;}frame=requestAnimationFrame(tick);};frame=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame);},[playing]);
+ useEffect(()=>{if(time>=200)setPlaying(false);},[time]);
+ useEffect(()=>{if(dialog){dialogRef.current?.showModal();}else dialogRef.current?.close();},[dialog]);
+ const chooseResidue=resi=>{setSelected(resi);if(data?.residues.some(r=>r.resi===resi)){setPos(resi);setMutation(null);setResult(null);}};
+ const reset=()=>{setTime(200);setPlaying(false);setSelected(null);setHovered(null);setMutation(null);setResult(null);setPos(29);setTo('A');setColorScheme('spectrum');setModes({Surface:true,Cartoon:true,Sticks:false,Labels:true});setInteractions({h:true,ionic:true,disulfide:false,hydrophobic:true});viewer.current?.reset();setNotice('Native structure and camera restored.');};
+ const jump=(name,id)=>{setActive(name);if(id){setExpanded(v=>({...v,[id]:true}));setTimeout(()=>{document.getElementById('ps-'+id)?.scrollIntoView({block:'nearest',behavior:'smooth'});document.getElementById('ps-'+id)?.focus({preventScroll:true});},0);}else if(name==='Studio'){setTime(200);viewer.current?.reset();}else if(name==='Structure'){viewport.current?.focus();}else setDialog('Library');};
+ const share=async()=>{try{await navigator.clipboard.writeText(location.origin+'/#/visuals/bio/proteins');setNotice('Studio link copied.');}catch{setDialog('Share');}};
+ const exportPNG=async()=>{const url=await viewer.current?.png();if(!url){setNotice('Wait until the Mol* viewer is ready.');return;}const a=document.createElement('a');a.href=url;a.download=`${data?.metadata.id||'structure'}-molstar.png`;a.click();};
+ const downloadCoordinates=()=>{if(!data?.pdb)return;const url=URL.createObjectURL(new Blob([data.pdb],{type:'chemical/x-pdb'}));const a=document.createElement('a');a.href=url;a.download=`${data.metadata.id||'structure'}.pdb`;a.click();setTimeout(()=>URL.revokeObjectURL(url),0);};
+ const loadPdbId=async value=>{const id=value.toUpperCase();setNotice(`Loading experimental coordinates for PDB ${id}…`);try{const response=await fetch(rcsbStructureUrl(id,'pdb'));if(!response.ok)throw new Error(`RCSB returned ${response.status}`);await loadStructure(await response.text(),`PDB ${id}`);}catch(error){setNotice(`PDB ${id} could not be loaded. ${error.message}. The bundled 1MBN sample remains available.`);}};
+ const search=async()=>{const q=query.trim();const match=q.match(/^([A-Z])?(\d{1,4})([A-Z])?$/i);if(match&&data&&!/^[0-9][A-Z0-9]{3}$/i.test(q)){const r=data.residues.find(r=>r.resi===+match[2]);if(!r||match[1]&&match[1].toUpperCase()!==r.letter){setNotice(`No matching residue in ${data.metadata.id}. Use its PDB residue numbering.`);return;}chooseResidue(r.resi);if(match[3]&&Object.values(aminoAcids).includes(match[3].toUpperCase()))setTo(match[3].toUpperCase());setNotice('Selected '+r.resn+' '+r.resi);return;}if(/^(1mbn|myoglobin)$/i.test(q)){const response=await fetch('/assets/proteins/1MBN.pdb');await loadStructure(await response.text(),'PDB 1MBN');setNotice('Showing bundled PDB 1MBN · Myoglobin');return;}if(/^[0-9][A-Z0-9]{3}$/i.test(q)){await loadPdbId(q);return;}setNotice('Search a four-character PDB ID, a residue such as H64, or a mutation such as L29A.');};
+ const panelTitle=(id,title,right)=><div className="ps-panel-title"><button className="ps-panel-toggle" aria-expanded={expanded[id]} onClick={()=>setExpanded(v=>({...v,[id]:!v[id]}))}>{title}<ChevronDown size={15}/></button>{right}</div>;
+ const wild=data?.residues.find(r=>r.resi===pos)?.letter||'L';
+ const introduce=()=>{setSelected(pos);setTime(200);setPlaying(false);setMutation({from:wild,to,pos});setResult(null);setNotice('Wild type in amber; replacement envelope in violet. Comparison is schematic, not a relaxed mutant structure.');};
+ const predict=()=>{introduce();setResult(mutationEstimate(wild,to,pos));};
+ const loadStructure=async(pdb,name)=>{const parsed=/\.(?:cif|mmcif)$/i.test(name)?await parseMmcifProtein(pdb):parseProtein(pdb);setData(parsed);setSelected(null);setHovered(null);setPos(parsed.residues[0]?.resi||1);setMutation(null);setResult(null);setDialog(null);setNotice(`${name} loaded into the Mol* workspace.`);};
+ const detailRows=data?Object.entries(interactions).filter(([,enabled])=>enabled).flatMap(([key])=>data.interactions[key].slice(0,key==='hydrophobic'?1:2)).slice(0,5):[];
+ const highlightedResidues=hovered?[hovered]:[];
+ return <div className="protein-studio">
+ <header className="ps-header"><button className="ps-brand" onClick={()=>onNavigate?.('dashboard')} aria-label="Home"><Activity/><h1>Protein Folding Studio</h1></button><form className="ps-search" onSubmit={e=>{e.preventDefault();search();}}><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} aria-label="Search proteins, PDB IDs, or mutations" placeholder="Search proteins, PDB IDs, or mutations…"/><button type="submit" aria-label="Search"><span>↵</span></button></form><nav aria-label="Studio resources">{['Gallery','Tools','Learn','Help'].map(name=><button key={name} onClick={()=>setDialog(name)}>{name}</button>)}</nav><button className="ps-avatar" onClick={()=>setDialog('Help')} aria-label="Studio profile">JS</button></header>
+ <nav className="ps-rail" aria-label="Protein navigation">{[[Home,'Studio'],[SlidersHorizontal,'Sequence','sequence'],[Activity,'Structure'],[Layers,'Folding','folding'],[Sparkles,'Mutations','mutation'],[BarChart3,'Analysis','energy'],[Library,'Library']].map(([Icon,label,id])=><button key={label} className={active===label?'active':''} onClick={()=>jump(label,id)}><Icon size={23}/><span>{label}</span></button>)}<div className="ps-pdb-card"><strong>PDB {data?.metadata.id||'1MBN'}</strong><span>{data?.metadata.molecule||'Myoglobin'}</span><button onClick={downloadCoordinates}><Download size={13}/>Download</button><button onClick={share}><Share2 size={13}/>Share</button><button onClick={reset}><RotateCcw size={13}/>Reset</button></div></nav>
+ {!data?<main className="ps-loading"><FlaskConical size={38}/><h2>{loadError?'Structure unavailable':'Loading PDB 1MBN…'}</h2><p>{loadError||'Reading the experimental coordinates and full amino-acid sequence.'}</p>{loadError&&<button onClick={()=>setRetry(v=>v+1)}>Retry</button>}</main>:
+ <main className="ps-dashboard">
+ <section className="ps-intro"><h2>{data.metadata.molecule} <span>· {data.residues.length} residues</span></h2><p>{data.metadata.title}{data.metadata.commonName&&<> · <em>{data.metadata.commonName}</em></>}</p><div className="ps-chips"><a href={`https://www.rcsb.org/structure/${data.metadata.id}`} target="_blank" rel="noreferrer">PDB {data.metadata.id}</a><span>{data.metadata.chains.length} chain{data.metadata.chains.length===1?'':'s'}</span>{data.metadata.ligands.length>0&&<span>Ligands: {data.metadata.ligands.join(', ')}</span>}<span className="ps-data-note">{data.metadata.method}{data.metadata.resolution?` · ${data.metadata.resolution.toFixed(1)} Å`:''}</span></div></section>
+ <section id="ps-sequence" tabIndex={-1} className={'ps-panel ps-sequence '+(!expanded.sequence?'ps-collapsed':'')}>{panelTitle('sequence','Primary Structure',<span>{data.residues.length} residues</span>)}<div className="ps-panel-body"><div className="ps-sequence-rows">{Array.from({length:Math.ceil(data.residues.length/20)},(_,row)=><div className="ps-sequence-row" key={row}><span>{data.residues[row*20]?.resi}</span><div>{data.residues.slice(row*20,row*20+20).map(r=><button key={`${r.chain}-${r.resi}`} title={r.resn+' '+r.resi} aria-label={r.resn+' '+r.resi} aria-pressed={selected===r.resi} className={hovered===r.resi?'hovered':''} style={{color:(category(r.letter)||categories[4])[2]}} onMouseEnter={()=>setHovered(r.resi)} onMouseLeave={()=>setHovered(null)} onFocus={()=>setHovered(r.resi)} onBlur={()=>setHovered(null)} onClick={()=>chooseResidue(r.resi)}>{r.letter}</button>)}</div></div>)}</div><div className="ps-residue-legend">{categories.map(([name,letters,color])=><div key={name}><i style={{background:color}}/><span>{name}</span><code style={{color}}>{letters.split('').join(' ')}</code></div>)}</div><p className="ps-fineprint">PDB chain{data.metadata.chains.length===1?'':'s'} {data.metadata.chains.join(', ')} · coordinate-derived sequence<br/>Hover to locate · click to select a residue</p></div></section>
+ <section className="ps-viewport" ref={viewport} tabIndex={-1} aria-label="Molecular viewport"><div className="ps-view-toolbar"><div>{['Surface','Cartoon','Sticks'].map(name=><button key={name} aria-pressed={modes[name]} onClick={()=>setModes(v=>({...v,[name]:!v[name]}))}>{name}</button>)}</div><button aria-pressed={modes.Labels} onClick={()=>setModes(v=>({...v,Labels:!v.Labels}))}>Labels</button><IconButton label="Fullscreen molecular viewport" onClick={()=>{if(document.fullscreenElement)document.exitFullscreen();else viewport.current?.requestFullscreen?.().catch(()=>setNotice('Fullscreen is unavailable in this browser.'));}}><Expand size={18}/></IconButton></div>
+ <div className="ps-molecule"><ViewerErrorBoundary onError={error=>setNotice(error.message)}><MolstarViewer ref={viewer} source={data.pdb} sourceType="pdb" label={data.metadata.molecule} pdbId={data.metadata.id} representation={modes} colorScheme={colorScheme} selectedChain={data.metadata.chains[0]} selectedResidue={selected} highlightedResidues={highlightedResidues} focusOnSelection showLabels={modes.Labels} annotations={data.metadata.id==='1MBN'?[{label:'Heme group · Fe²⁺'},{label:'Hydrophobic core · educational annotation'}]:[]} onSelectionChange={selection=>{if(data.residues.some(r=>r.resi===selection.residue))chooseResidue(selection.residue);}} onLoadError={error=>setNotice(`Mol* load error: ${error.message}`)}/></ViewerErrorBoundary>{mutation&&<span className="ps-morph-note">{mutation.from}{mutation.pos}{mutation.to} · schematic mutation selection; coordinates remain experimental</span>}</div>
+
+ <div className="ps-view-bottom"><span>{hovered?data.residues.find(r=>r.resi===hovered)?.resn+' '+hovered:'Drag to rotate · Shift-drag to pan · scroll to zoom'}</span><div><IconButton label="Rotate left" onClick={()=>viewer.current?.rotate('y',-15)}><RotateCcw size={15}/></IconButton><IconButton label="Pan right" onClick={()=>viewer.current?.pan(10,0)}><Move size={15}/></IconButton><IconButton label="Zoom in" onClick={()=>viewer.current?.zoom(1.15)}><ZoomIn size={16}/></IconButton><IconButton label="Zoom out" onClick={()=>viewer.current?.zoom(.87)}><ZoomOut size={16}/></IconButton><IconButton label="Reset camera" onClick={()=>viewer.current?.reset()}><Home size={15}/></IconButton></div></div>
+ {time<200&&<span className="ps-morph-note">Illustrative expansion / packing morph · native surface hidden</span>}
+ </section>
+ <div className="ps-right">
+ <section id="ps-interactions" tabIndex={-1} className={'ps-panel ps-interactions '+(!expanded.interactions?'ps-collapsed':'')}>{panelTitle('interactions','Molecular Interactions')}<div className="ps-panel-body"><div className="ps-interaction-toggles">{interactionTypes.map(([key,label,color])=><button key={key} aria-label={label} aria-pressed={interactions[key]} onClick={()=>{setInteractions(v=>({...v,[key]:!v[key]}));if(key==='disulfide')setNotice('1MBN contains no cysteine residues and therefore no disulfide bonds.');}}><i className="ps-switch"/><span>{label}</span><svg width="60" height="10"><path d="M3 5H57" stroke={color} strokeDasharray="3 5"/><circle cx="3" cy="5" r="2" fill={color}/><circle cx="57" cy="5" r="2" fill={color}/></svg><b>{data.interactions[key].length}</b></button>)}</div><h3>Interaction Details</h3><table><thead><tr><th>#</th><th>Type</th><th>Residues</th><th>Distance (Å)</th></tr></thead><tbody>{detailRows.map((p,i)=><tr key={p.key+p.pair} onClick={()=>{chooseResidue(p.a.resi);setHovered(p.b.resi);}}><td>{i+1}</td><td><i style={{background:interactionTypes.find(t=>t[0]===p.key)[2]}}/>{p.key==='h'?'H-bond':p.key==='ionic'?'Ionic':'Hydrophobic'}</td><td>{p.pair}</td><td>{p.d.toFixed(1)}</td></tr>)}</tbody></table><button className="ps-more" onClick={()=>setDialog('Contacts')}>… all displayed contacts</button><p className="ps-fineprint">Distance-screened examples, not a complete bond assignment.</p></div></section>
+ <section id="ps-energy" tabIndex={-1} className={'ps-panel ps-energy '+(!expanded.energy?'ps-collapsed':'')}>{panelTitle('energy','Energy Landscape')}<div className="ps-panel-body"><ProteinEnergy time={time}/><p className="ps-fineprint">*Illustrative landscape and energy, not measured for 1MBN.</p></div></section>
+ <section id="ps-mutation" tabIndex={-1} className={'ps-panel ps-mutation '+(!expanded.mutation?'ps-collapsed':'')}>{panelTitle('mutation','Mutation Analysis',<button className="ps-purple" onClick={introduce}><Sparkles size={14}/>Introduce mutation</button>)}<div className="ps-panel-body"><div className="ps-mutation-labels"><span>Wild-type residue</span><span>Mutate to</span></div><div className="ps-mutation-inputs"><select aria-label="Wild-type amino acid" value={wild} onChange={e=>{const r=data.residues.find(r=>r.letter===e.target.value);chooseResidue(r.resi);}}>{Object.entries(aminoAcids).filter(([,letter])=>data.residues.some(r=>r.letter===letter)).map(([name,letter])=><option key={letter} value={letter}>{shortName(name)}</option>)}</select><select aria-label="Residue position" value={pos} onChange={e=>chooseResidue(+e.target.value)}>{data.residues.map(r=><option key={r.resi} value={r.resi}>{r.letter}{r.resi}</option>)}</select><select aria-label="Mutant amino acid" value={to} onChange={e=>{setTo(e.target.value);setMutation(null);setResult(null);}}>{Object.entries(aminoAcids).map(([name,letter])=><option key={letter} value={letter}>{shortName(name)}</option>)}</select><button className="ps-purple" onClick={predict}>Predict</button></div><div className="ps-mutation-result"><p>Predicted stability change (ΔΔG) <small>· teaching estimate</small></p><div><strong className={result?.value<0?'stabilizing':''}>{result?(result.value>0?'+':'')+result.value.toFixed(1):'+1.8'} kcal/mol</strong><span><Info size={19}/>{result?.explanation||'Likely reduces hydrophobic core packing'}</span></div><b className={result?.value<0?'stabilizing':''}>{result?.classification||'Destabilizing mutation · L29A example'}</b><p className="ps-fineprint">Illustrative heuristic, not a validated ΔΔG prediction.</p>{mutation&&<p className="ps-comparison">Amber: wild type · violet: {mutation.to} replacement envelope (schematic)</p>}</div></div></section>
+ </div>
+ <section id="ps-folding" tabIndex={-1} className={'ps-panel ps-folding '+(!expanded.folding?'ps-collapsed':'')}><div className="ps-folding-heading"><div>{panelTitle('folding','Folding Timeline')}<p>From unfolded chain to native structure</p></div><button className="ps-blue" onClick={()=>{if(time===200)setTime(0);setPlaying(v=>!v);}}>{playing?<Pause size={16}/>:<Play size={16}/>} {playing?'Pause folding':'Animate folding'}</button><input aria-label="Folding progress" type="range" min="0" max="200" value={time} onChange={e=>{setPlaying(false);setTime(+e.target.value);}}/><span>t = {time} ns</span></div><div className="ps-panel-body"><div className="ps-stages">{stages.map(([title,subtitle,t],i)=><button key={title} aria-label={'Show '+title} aria-pressed={time===t} onClick={()=>{setPlaying(false);setTime(t);}}><Preview data={data} time={t}/><span>{title}<small>({subtitle})</small></span>{i<3&&<b>⟶</b>}</button>)}</div><p className="ps-fineprint">Illustrative stages derived from 1MBN; not a molecular-dynamics trajectory. The 0–200 ns scale is schematic.</p></div></section>
+ </main>}
+ {notice&&<div className="ps-notice" role="status"><span>{notice}</span><IconButton label="Dismiss notification" onClick={()=>setNotice('')}><X size={16}/></IconButton></div>}
+ <dialog ref={dialogRef} className="ps-dialog" onCancel={()=>setDialog(null)} onClose={()=>setDialog(null)}><header><h2>{dialog}</h2><IconButton label="Close dialog" onClick={()=>setDialog(null)}><X/></IconButton></header>
+ {['Gallery','Library'].includes(dialog)&&<><p>Bundled experimental structure</p><button className="ps-library-entry" onClick={()=>{reset();setDialog(null);}}><Activity/><span>1MBN · Myoglobin<br/><small>153 residues · 8 α-helices · heme cofactor</small></span><Check/></button><a href="https://www.rcsb.org/structure/1MBN" target="_blank" rel="noreferrer">Open structure and provenance at RCSB PDB ↗</a></>}
+ {['Gallery','Library','Tools'].includes(dialog)&&<button className="ps-blue" onClick={()=>setDialog('AlphaFold & open science')}>Explore AlphaFold prediction</button>}
+ {dialog==='AlphaFold & open science'&&<AlphaFoldExplorer/>}
+ {dialog==='Tools'&&<button onClick={exportPNG}>Export molecular viewport PNG</button>}
+ {dialog==='Tools'&&<ProteinEnhancementCenter data={data} selected={selected||data.residues[0]?.resi} chooseResidue={chooseResidue} modes={modes} setModes={setModes} colorScheme={colorScheme} setColorScheme={setColorScheme} viewer={viewer.current} onLoadStructure={loadStructure} onLoadPdbId={loadPdbId} onClose={()=>setDialog(null)} onNotice={setNotice}/>}
+ {['Learn','Help'].includes(dialog)&&<><p>Myoglobin is a globular, predominantly α-helical oxygen-storage protein. Its heme contains iron. This viewer uses the 1MBN experimental coordinates, not a generated protein illustration.</p><p>Rotate by dragging, pan with Shift-drag, and zoom with the scroll wheel or touch gestures. Hover or select any sequence residue to locate it in the structure.</p><h3>Scientific limitations</h3><p>The displayed contacts are the nearest residue-pair examples: N–O candidates at 2.4–3.5 Å, charged side-chain contacts within 6 Å, and hydrophobic side-chain carbon contacts at 2.8–4.5 Å. Hydrogen-bond angles/protonation are not assigned. Counts are selected examples, not totals.</p><p>Folding intermediates, the energy funnel, the −42.1 kcal/mol value and mutation estimates are teaching illustrations. A static PDB file cannot supply a folding trajectory or a validated stability prediction.</p><p>Archive caveat: {data?.caveat||'See the original PDB record.'}</p><a href="https://www.rcsb.org/structure/1MBN" target="_blank" rel="noreferrer">1MBN archive record ↗</a></>}
+ {dialog==='Contacts'&&<><p>Measured heavy-atom separations in the native PDB structure. Click a pair to select it.</p><div className="ps-all-contacts">{data&&interactionTypes.flatMap(([key,title,color])=>data.interactions[key].map(p=><button key={key+p.pair} onClick={()=>{chooseResidue(p.a.resi);setHovered(p.b.resi);setTime(200);setDialog(null);}}><i style={{background:color}}/>{title}: {p.pair}<span>{p.a.atom}–{p.b.atom}: {p.d.toFixed(2)} Å</span></button>))}</div></>}
+ {dialog==='Share'&&<input readOnly aria-label="Share URL" value={location.origin+'/#/visuals/bio/proteins'} onFocus={e=>e.target.select()}/>}
+ </dialog>
+ </div>;
 }

@@ -1,6 +1,6 @@
 .ci-app {
   height: 100vh;
-  overflow: hidden;
+  overflow: auto;
   background: radial-gradient(circle at 50% 30%, #0e2940, #030e19 68%);
   color: #e9f3ff;
   font:
@@ -124,7 +124,7 @@
   display: grid;
   grid-template-rows: 55px minmax(555px, 1fr) 208px;
   gap: 8px;
-  overflow: hidden;
+  overflow: auto;
 }
 .ci-title {
   display: flex;
@@ -194,6 +194,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 7px;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
 }
 .ci-groups h3 {
   grid-column: 1/-1;
@@ -206,12 +209,19 @@
   color: #bccfe0;
   text-align: left;
   padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
 }
+.ci-groups button small { color: #6d8ba5; font-size: 10px; }
 .ci-groups button.active {
   border-color: #4788ff;
   background: #172d50;
   color: #fff;
 }
+.ci-groups button.active small { color: #72dcff; }
 .ci-viewer {
   position: relative;
   overflow: hidden;
@@ -249,13 +259,28 @@
   background: #164b91;
   color: #fff;
 }
+.ci-inspection { position:absolute; inset:60px 0 95px; background:#020b13; }
+.ci-inspection .molstar-viewer, .ci-inspection .molstar-viewer-host { width:100%; height:100%; }
+.ci-inspection-note { position:absolute; z-index:3; left:12px; bottom:10px; max-width:calc(100% - 85px); display:flex; flex-direction:column; gap:2px; padding:8px 10px; border:1px solid #31546d; border-radius:5px; background:#071929e8; color:#b8cbd9; font-size:10px; pointer-events:none; }
+.ci-inspection-note b { color:#55e59a; font-size:11px; }
+.ci-inspection-note small { color:#73a9c8; }
+.ci-viewer > aside.ci-inspection-tools { bottom:104px; width:66px; max-height:calc(100% - 170px); overflow-y:auto; }
+.ci-viewer > aside.ci-inspection-tools button { min-height:43px; height:auto; padding:4px 2px; }
+.ci-viewer > aside.ci-inspection-tools small { font-size:9px; line-height:1.05; }
 .ci-molecule {
   position: absolute;
   inset: 60px 0 95px;
   background: radial-gradient(circle, #123a58, #051320 70%);
+  touch-action: none;
+  cursor: grab;
 }
+.ci-molecule.dragging { cursor: grabbing; }
+.ci-molecule-stage { position: absolute; inset: 0; transform-origin: center; transition: transform 120ms ease-out; }
+.ci-molecule.dragging .ci-molecule-stage { transition: none; }
 .ci-molecule:after {
-  content: "";
+  display: none;
+}
+.ci-molecule-bond {
   position: absolute;
   left: 25%;
   right: 20%;
@@ -338,6 +363,7 @@
   border: 1px solid #29485f;
   background: #0b1d2e;
   color: #c5d6e5;
+  cursor: pointer;
 }
 .ci-viewer > aside svg {
   width: 17px;

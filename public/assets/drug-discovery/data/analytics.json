@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-09-09",
+  "rdkitVersion": "2025.03.4",
+  "method": "UMAP",
+  "fingerprint": {
+    "type": "Morgan",
+    "radius": 2,
+    "bits": 2048
+  },
+  "umap": {
+    "nComponents": 2,
+    "nNeighbors": 4,
+    "minDist": 0.1,
+    "seed": 42
+  },
+  "points": [
+    {
+      "cid": 2662,
+      "slug": "celecoxib",
+      "coordinates": [
+        13.154000174400302,
+        -7.6673553316606124
+      ]
+    },
+    {
+      "cid": 5090,
+      "slug": "rofecoxib",
+      "coordinates": [
+        14.049816477392236,
+        -7.9483188420358175
+      ]
+    },
+    {
+      "cid": 119607,
+      "slug": "valdecoxib",
+      "coordinates": [
+        12.814976271851492,
+        -8.294277545483933
+      ]
+    },
+    {
+      "cid": 123619,
+      "slug": "etoricoxib",
+      "coordinates": [
+        13.789727355271943,
+        -8.606266530991503
+      ]
+    },
+    {
+      "cid": 4044,
+      "slug": "mefenamic-acid",
+      "coordinates": [
+        12.559486030260217,
+        -10.397231603336314
+      ]
+    },
+    {
+      "cid": 54677470,
+      "slug": "meloxicam",
+      "coordinates": [
+        12.045761864477639,
+        -9.213281878709124
+      ]
+    },
+    {
+      "cid": 3033,
+      "slug": "diclofenac",
+      "coordinates": [
+        12.804801771688805,
+        -9.390347368091446
+      ]
+    },
+    {
+      "cid": 3672,
+      "slug": "ibuprofen",
+      "coordinates": [
+        13.345258110589793,
+        -9.792327424044204
+      ]
+    }
+  ]
+}

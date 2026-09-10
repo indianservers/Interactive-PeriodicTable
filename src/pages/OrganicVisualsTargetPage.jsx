@@ -1,497 +1,176 @@
-import { useState } from "react";
-import {
-  Beaker,
-  BookOpen,
-  Check,
-  ChevronRight,
-  FlaskConical,
-  Home,
-  RotateCcw,
-  Search,
-  Settings,
-  SlidersHorizontal,
-} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Atom, BookOpen, ChartNoAxesColumn, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Crosshair, FlaskConical, Home, Minus, Plus, Search, RotateCcw, Pause, Play, X, SlidersHorizontal, ArrowRight, ArrowUpRight, ShieldAlert, Maximize2 } from "lucide-react";
+import OrganicMoleculeScene from "../components/visualizers/OrganicMoleculeScene.jsx";
+import { pathways, topics, reactionTypes, matchingPathways, networks, references, reagentDescription } from "./organicNetworkData.js";
+import "./organicVisualsTarget.css";
+import StructureGlyph from "../components/visualizers/OrganicStructure.jsx";
+import { molecules, atomStyles, subscript, expandMolecule } from "./organicMolecules.js";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
 
-const nodes = [
-  ["Alkene", "C=C", "alkene"],
-  ["Alkane", "C–C", "alkane"],
-  ["Haloalkane", "C–X", "haloalkane"],
-  ["Aldehyde", "–CHO", "aldehyde"],
-  ["Ketone", "C=O", "ketone"],
-  ["Aromatic", "Ar", "aromatic"],
-  ["Amine", "–NH₂", "amine"],
-  ["Carboxylic acid", "–COOH", "acid"],
-  ["Ester", "–COOR", "ester"],
-];
-const route = [
-  "Hydrocarbons",
-  "Functional groups",
-  "Alcohols",
-  "Carbonyl compounds",
-  "Carboxylic acids and esters",
-  "Amines",
-  "Aromatic chemistry",
-  "Synthesis and analysis",
-];
-const nodeDetails = {
-  Alcohols: {
-    formula: "Ethanol (C₂H₆O)",
-    group: "alcohol (–OH)",
-    boiling: "78.4 °C",
-    use: "Solvent, fuel, and oxidation/esterification model.",
-  },
-  Alkene: {
-    formula: "Ethene (C₂H₄)",
-    group: "alkene (C=C)",
-    boiling: "−103.7 °C",
-    use: "Polymer feedstock and addition-reaction model.",
-  },
-  Alkane: {
-    formula: "Ethane (C₂H₆)",
-    group: "alkane (C–C)",
-    boiling: "−88.6 °C",
-    use: "Fuel and radical-substitution reference.",
-  },
-  Haloalkane: {
-    formula: "Bromomethane (CH₃Br)",
-    group: "haloalkane (C–Br)",
-    boiling: "3.6 °C",
-    use: "Substrate for SN1/SN2 substitution.",
-  },
-  Aldehyde: {
-    formula: "Ethanal (CH₃CHO)",
-    group: "aldehyde (–CHO)",
-    boiling: "20.2 °C",
-    use: "Oxidation intermediate and carbonyl example.",
-  },
-  Ketone: {
-    formula: "Propanone (CH₃COCH₃)",
-    group: "ketone (C=O)",
-    boiling: "56.1 °C",
-    use: "Solvent and nucleophilic-addition example.",
-  },
-  Aromatic: {
-    formula: "Benzene (C₆H₆)",
-    group: "aromatic ring",
-    boiling: "80.1 °C",
-    use: "Electrophilic aromatic-substitution model.",
-  },
-  Amine: {
-    formula: "Methylamine (CH₃NH₂)",
-    group: "amine (–NH₂)",
-    boiling: "−6.3 °C",
-    use: "Basic nucleophile and salt formation.",
-  },
-  "Carboxylic acid": {
-    formula: "Acetic acid (CH₃COOH)",
-    group: "carboxylic acid (–COOH)",
-    boiling: "118.1 °C",
-    use: "Acid-base and esterification model.",
-  },
-  Ester: {
-    formula: "Ethyl acetate (CH₃COOCH₂CH₃)",
-    group: "ester (–COOR)",
-    boiling: "77.1 °C",
-    use: "Fragrance, solvent, and hydrolysis example.",
-  },
-};
+function organicMolSource(molecule,key){const model=expandMolecule(molecule),atoms=model.atoms.map(([e,x=0,y=0,z=0])=>`${Number(x).toFixed(4).padStart(10)}${Number(y).toFixed(4).padStart(10)}${Number(z).toFixed(4).padStart(10)} ${String(e).padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join("\n"),bonds=model.bonds.map(([a,b,o=1])=>`${String(a+1).padStart(3)}${String(b+1).padStart(3)}${String(Math.min(3,o)).padStart(3)}  0  0  0  0`).join("\n");return{data:`${molecule.name}\n  Organic Visual Lab\n\n${String(model.atoms.length).padStart(3)}${String(model.bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${atoms}\n${bonds}\nM  END\n`,format:"mol",label:`${molecule.name} ${key} coordinate preview`};}
 
-export default function OrganicVisualsTargetPage({ onNavigate }) {
-  const [selected, setSelected] = useState("Alcohols");
-  const [syllabus, setSyllabus] = useState("A-level (AQA)");
-  const [checked, setChecked] = useState(["Alcohols"]);
-  const [reactionFilters, setReactionFilters] = useState([]);
-  const [search, setSearch] = useState("");
-  const [tab, setTab] = useState("Properties");
-  const [step, setStep] = useState(2);
-  const [toggles, setToggles] = useState({
-    arrows: true,
-    intermediates: true,
-    conditions: true,
-    animation: true,
-  });
-  const [notice, setNotice] = useState("");
-  const announce = (message) => setNotice(message);
-  const detail = nodeDetails[selected] || nodeDetails.Alcohols;
-  const filteredNodes = nodes.filter(
-    ([name, formula]) =>
-      !search.trim() ||
-      `${name} ${formula}`.toLowerCase().includes(search.trim().toLowerCase()),
-  );
-  const toggle = (key) =>
-    setToggles((state) => ({ ...state, [key]: !state[key] }));
-  return (
-    <div
-      className="h-[calc(100vh-70px)] overflow-hidden bg-[#061426] text-slate-100"
-      style={{ fontFamily: "Inter, ui-sans-serif, system-ui" }}
-    >
-      <header className="flex h-[64px] items-center gap-5 border-b border-white/10 bg-[#07172a] px-6">
-        <FlaskConical className="text-cyan-300" size={32} />
-        <div className="min-w-[350px]">
-          <h1 className="text-[24px] font-black">
-            Organic Chemistry Visual Lab
-          </h1>
-          <p className="text-sm text-slate-400">
-            Navigate reactions by structure
-          </p>
-        </div>
-        <label className="ml-auto flex w-[430px] items-center gap-2 rounded-lg border border-sky-300/20 bg-slate-900/80 px-3 py-2 text-slate-400">
-          <Search size={16} />
-          <input
-            value={search}
-            className="w-full bg-transparent text-xs outline-none"
-            placeholder="Search molecules, reactions, reagents..."
-            onChange={(e) => {
-              setSearch(e.target.value);
-              announce(
-                e.target.value
-                  ? "Searching " + e.target.value
-                  : "Search cleared",
-              );
-            }}
-          />
-        </label>
-        {["Learn", "Practice", "Resources", "My Lab"].map((x) => (
-          <button
-            key={x}
-            onClick={() => announce(x + " selected")}
-            className="px-2 text-xs font-bold text-slate-300"
-          >
-            {x}
-          </button>
-        ))}
-        <span className="rounded-full bg-indigo-400 px-3 py-2 text-xs font-black">
-          JS
-        </span>
-      </header>
-      <div className="grid min-h-[calc(100vh-64px)] grid-cols-[78px_240px_1fr_340px] grid-rows-[1fr_180px] gap-2 p-2">
-        <aside className="row-span-2 flex flex-col items-center gap-4 border-r border-white/10 bg-[#081a30] py-5">
-          {[
-            [Home, "Explore"],
-            [BookOpen, "Syllabus"],
-            [Beaker, "Reactions"],
-            [Settings, "Mechanisms"],
-          ].map(([I, x], i) => (
-            <button
-              key={x}
-              onClick={() => announce(x + " section selected")}
-              className={
-                "flex w-full flex-col items-center gap-1 py-3 text-[10px] " +
-                (i === 0 ? "bg-sky-500/20 text-sky-300" : "text-slate-300")
-              }
-            >
-              <I size={21} />
-              {x}
-            </button>
-          ))}
-        </aside>
-        <aside className="row-span-2 overflow-y-auto rounded-xl border border-white/10 bg-[#0a1c31] p-3">
-          <h2 className="text-lg font-black">Filter by syllabus</h2>
-          <select
-            value={syllabus}
-            onChange={(e) => {
-              setSyllabus(e.target.value);
-              announce(e.target.value + " syllabus selected");
-            }}
-            className="mt-3 w-full rounded-lg border border-white/20 bg-slate-950 px-2 py-2 text-sm"
-          >
-            <option>A-level (AQA)</option>
-            <option>IB Chemistry</option>
-            <option>CBSE Class 12</option>
-          </select>
-          <div className="mt-3 space-y-2">
-            {[
-              "Alkanes",
-              "Alkenes",
-              "Haloalkanes",
-              "Alcohols",
-              "Carbonyl compounds",
-              "Carboxylic acids",
-              "Esters",
-              "Amines",
-              "Aromatic compounds",
-            ].map((x) => (
-              <label key={x} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={checked.includes(x)}
-                  onChange={() =>
-                    setChecked((a) =>
-                      a.includes(x) ? a.filter((v) => v !== x) : [...a, x],
-                    )
-                  }
-                />
-                {x}
-              </label>
-            ))}
-          </div>
-          <hr className="my-4 border-white/10" />
-          <h3 className="font-bold">Filter by reaction type</h3>
-          {[
-            "Oxidation",
-            "Reduction",
-            "Substitution",
-            "Addition",
-            "Elimination",
-            "Esterification",
-            "Hydrolysis",
-          ].map((x) => (
-            <button
-              key={x}
-              onClick={() => {
-                setReactionFilters((items) =>
-                  items.includes(x)
-                    ? items.filter((item) => item !== x)
-                    : [...items, x],
-                );
-                announce(
-                  x +
-                    " reaction filter " +
-                    (reactionFilters.includes(x) ? "cleared" : "selected"),
-                );
-              }}
-              className={
-                "mt-2 flex w-full items-center gap-2 text-left text-xs " +
-                (reactionFilters.includes(x)
-                  ? "text-cyan-200"
-                  : "text-slate-300")
-              }
-            >
-              <span
-                className={
-                  "h-3 w-3 rounded border " +
-                  (reactionFilters.includes(x)
-                    ? "border-cyan-300 bg-cyan-300"
-                    : "border-cyan-300/50")
-                }
-              />
-              {x}
-            </button>
-          ))}
-          <button
-            onClick={() => {
-              setChecked(["Alcohols"]);
-              setReactionFilters([]);
-              setSearch("");
-              announce("Filters reset");
-            }}
-            className="mt-5 flex items-center gap-2 rounded border border-white/20 px-3 py-2 text-xs"
-          >
-            <RotateCcw size={13} /> Reset filters
-          </button>
-        </aside>
-        <section className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-[#0a1c31] via-[#091a2d] to-[#102b43] p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-black">Reaction Map</h2>
-              <p className="text-sm text-slate-400">
-                Functional groups and their connections{" "}
-                {reactionFilters.length
-                  ? `· ${reactionFilters.join(", ")}`
-                  : ""}
-              </p>
-            </div>
-            <SlidersHorizontal size={18} className="text-slate-400" />
-          </div>
-          <svg
-            className="absolute inset-5 h-[calc(100%-28px)] w-[calc(100%-40px)]"
-            viewBox="0 0 700 570"
-            aria-label="Organic reaction map"
-          >
-            {[
-              [160, 170, 350, 110, "#62f4b1", "Reduction"],
-              [350, 110, 540, 175, "#ffd166", "Substitution"],
-              [350, 110, 350, 300, "#61a8ff", "Oxidation"],
-              [350, 300, 530, 360, "#ff7aa8", "Esterification"],
-              [350, 300, 190, 410, "#c17cff", "Elimination"],
-              [350, 300, 350, 490, "#64e8f2", "Reduction"],
-            ]
-              .filter(
-                ([, , , , , label]) =>
-                  !reactionFilters.length || reactionFilters.includes(label),
-              )
-              .map(([x1, y1, x2, y2, c, label], i) => (
-                <g key={i}>
-                  <line
-                    x1={x1}
-                    y1={y1}
-                    x2={x2}
-                    y2={y2}
-                    stroke={c}
-                    strokeWidth="3"
-                  />
-                  <text
-                    x={(x1 + x2) / 2}
-                    y={(y1 + y2) / 2 - 7}
-                    fill={c}
-                    fontSize="12"
-                  >
-                    {label}
-                  </text>
-                </g>
-              ))}
-          </svg>
-          <div className="relative z-10 mt-8 grid h-[500px] grid-cols-3 grid-rows-3 items-center justify-items-center">
-            {filteredNodes.map(([name, formula, id], i) => (
-              <button
-                key={id}
-                onClick={() => {
-                  setSelected(name);
-                  announce(name + " selected");
-                }}
-                className={
-                  "flex h-28 w-28 flex-col items-center justify-center rounded-full border-2 bg-slate-950/70 shadow-[0_0_35px_rgba(59,130,246,.28)] " +
-                  (selected === name
-                    ? "border-cyan-300 ring-4 ring-cyan-300/20"
-                    : "border-sky-300/40")
-                }
-                style={{ gridColumn: (i % 3) + 1, gridRow: (i % 3) + 1 }}
-              >
-                <span className="text-lg font-black">{formula}</span>
-                <span className="mt-1 text-xs">{name}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-        <aside className="overflow-y-auto rounded-xl border border-white/10 bg-[#0a1c31] p-4">
-          <h2 className="text-2xl font-black">{selected}</h2>
-          <p className="text-sm text-cyan-300">{detail.formula}</p>
-          <div className="mt-4 rounded-lg border border-white/10 bg-black/20 p-3 text-center text-5xl">
-            🧪
-          </div>
-          <div className="mt-3 flex border-b border-white/10">
-            {["Properties", "Spectra", "Uses"].map((x) => (
-              <button
-                key={x}
-                onClick={() => setTab(x)}
-                className={
-                  "flex-1 py-2 text-xs " +
-                  (tab === x
-                    ? "border-b-2 border-cyan-300 text-cyan-200"
-                    : "text-slate-400")
-                }
-              >
-                {x}
-              </button>
-            ))}
-          </div>
-          {tab === "Properties" ? (
-            <div className="mt-3 space-y-2 text-xs">
-              {[
-                ["IUPAC name", selected.toLowerCase()],
-                ["Functional group", detail.group],
-                ["Boiling point", detail.boiling],
-                ["Learning note", detail.use],
-              ].map(([a, b]) => (
-                <div
-                  key={a}
-                  className="flex justify-between gap-3 border-b border-white/10 py-2"
-                >
-                  <span className="text-slate-400">{a}</span>
-                  <b className="text-right">{b}</b>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-4 text-sm text-slate-300">
-              {tab === "Spectra"
-                ? `${detail.group} has a diagnostic IR and NMR signature.`
-                : detail.use}
-            </p>
-          )}
-          <h3 className="mt-5 font-bold">Possible transformations</h3>
-          {[
-            "Oxidation to aldehyde",
-            "Further oxidation to carboxylic acid",
-            "Dehydration to alkene",
-            "Substitution to haloalkane",
-            "Conversion to ester",
-          ].map((x) => (
-            <button
-              key={x}
-              onClick={() => announce(x + " selected")}
-              className="mt-2 flex w-full items-center gap-2 rounded border border-white/10 px-2 py-2 text-left text-xs"
-            >
-              <span className="rounded-full bg-rose-400 px-1">↗</span>
-              {x}
-            </button>
-          ))}
-        </aside>
-        <section className="col-span-2 rounded-xl border border-white/10 bg-[#0a1c31] p-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-black">Mechanism preview</h3>
-              <p className="text-xs text-slate-400">
-                Oxidation of a primary alcohol to an aldehyde (acidified
-                dichromate)
-              </p>
-            </div>
-            <button
-              onClick={() => onNavigate?.("organic-mechanisms")}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-xs font-bold"
-            >
-              Open mechanism <ChevronRight size={14} className="inline" />
-            </button>
-          </div>
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            {[
-              "Nucleophilic attack on Cr(VI)",
-              "Proton transfer",
-              "Elimination to give aldehyde",
-            ].map((x, i) => (
-              <button
-                key={x}
-                onClick={() => {
-                  setStep(i);
-                  announce("Mechanism step " + (i + 1) + " selected");
-                }}
-                className={
-                  "rounded-lg border p-3 text-left text-xs " +
-                  (step === i
-                    ? "border-cyan-300 bg-cyan-300/10"
-                    : "border-white/10")
-                }
-              >
-                <b>{i + 1}</b>
-                <p className="mt-6">{x}</p>
-              </button>
-            ))}
-          </div>
-        </section>
-        <aside className="row-span-1 rounded-xl border border-white/10 bg-[#0a1c31] p-4">
-          <h3 className="font-black">Your learning route</h3>
-          {route.map((x, i) => (
-            <button
-              key={x}
-              onClick={() => {
-                setStep(i);
-                announce(x + " route step selected");
-              }}
-              className="flex w-full items-center gap-2 border-b border-white/5 py-2 text-left text-xs"
-            >
-              <span
-                className={
-                  "h-5 w-5 rounded-full text-center " +
-                  (i < 2
-                    ? "bg-emerald-400 text-slate-900"
-                    : "border border-slate-500")
-                }
-              >
-                {i < 2 ? <Check size={14} className="m-auto" /> : i + 1}
-              </span>
-              {x}
-            </button>
-          ))}
-        </aside>
-      </div>
-      {notice && (
-        <div
-          role="status"
-          className="fixed bottom-4 right-5 rounded-full border border-cyan-300/40 bg-slate-950/95 px-4 py-2 text-xs text-cyan-100"
-        >
-          {notice}
-        </div>
-      )}
+function IconButton({label, children, ...props}) {
+ return <button type="button" title={label} aria-label={label} {...props}>{children}</button>;
+}
+function EnergyProfile({path, detailed=false}) {
+ const end = 108;
+ const curve = "M36 108 C90 108 112 99 144 62 S179 39 205 83 S243 "+end+" 313 "+end;
+ return <figure className="on-energy"><figcaption>Schematic activation barrier</figcaption>
+ <svg viewBox="0 0 350 168" role="img" aria-label={"Unquantified activation barrier for "+path.title}>
+ <title>Qualitative reaction coordinate — not measured energy data</title>
+ <path d="M27 142V30 M27 142H333" fill="none" stroke="#92a5c2" strokeWidth="1.4"/>
+ <path d="M23 35L27 28L31 35 M327 138L334 142L327 146" fill="#92a5c2"/>
+ <path d={curve} fill="none" stroke="#2365ff" strokeWidth="2"/>
+ <path d="M162 45V108" stroke="#8ea7d0" strokeDasharray="4 3"/>
+ <text x="169" y="39">Transition state</text><text x="39" y="124">Reactants</text><text x="254" y={end+14}>Products</text>
+ <text x="161" y="161">Reaction progress</text><text transform="translate(13 95) rotate(-90)">Energy</text>
+ {detailed && <><path d="M118 107V53" stroke="#eb7e1d"/><text x="81" y="76">Eₐ</text><text x="271" y="69">ΔE unknown</text><path d={"M290 108V"+end} stroke="#eb7e1d"/></>}
+ </svg><p>Conceptual barrier only, not a measured profile or elementary mechanism. Product energy and reaction enthalpy are unspecified.</p>
+ </figure>;
+}
+function PathwayStepper({path,step,setStep,playing,setPlaying,reset}) {
+ return <div className="on-stepper" aria-label="Pathway stepper">
+  <IconButton label="Previous step" onClick={()=>{setPlaying(false);setStep(Math.max(0,step-1));}} disabled={step===0}><ChevronLeft size={17}/></IconButton>
+  {["Reagent","Conditions","Product"].map((name,i)=><button type="button" className={"on-step "+(step===i?"active":"")} key={name} aria-current={step===i?"step":undefined} onClick={()=>{setPlaying(false);setStep(i);}}><span>{i+1}</span><div><b>{name}</b><small>{path.steps[i]}</small></div>{i<2&&<ChevronRight size={16}/>}</button>)}
+  <IconButton label="Next step" disabled={step===2} onClick={()=>{setPlaying(false);setStep(v=>Math.min(2,v+1));}}><ChevronRight size={17}/></IconButton>
+  <IconButton label={playing?"Pause pathway":"Play pathway"} className="on-play" onClick={()=>{if(step===2)setStep(0);setPlaying(!playing);}}>{playing?<Pause size={20}/>:<Play size={20}/>}</IconButton>
+  <IconButton label="Reset pathway" className="on-step-reset" onClick={reset}><RotateCcw size={16}/></IconButton>
+ </div>;
+}
+
+export default function OrganicVisualsTargetPage({onNavigate}) {
+ const inspectViewerRef=useRef(null);
+ const [selected,setSelected]=useState("oxidation");
+ const [search,setSearch]=useState("");
+ const [topicSearch,setTopicSearch]=useState("");
+ const [topic,setTopic]=useState("Alcohols");
+ const [types,setTypes]=useState([]);
+
+ const [filtersOpen,setFiltersOpen]=useState(()=>window.innerWidth>1150);
+ const [inspectorOpen,setInspectorOpen]=useState(()=>window.innerWidth>1150);
+ const [inspectorWidth,setInspectorWidth]=useState(410);
+ const [mode,setMode]=useState("3D");
+ const [labels,setLabels]=useState(false);
+ const [zoom,setZoom]=useState(1);
+ const [cameraReset,setCameraReset]=useState(0);
+ const [step,setStep]=useState(0);
+ const [playing,setPlaying]=useState(false);
+ const [reduced,setReduced]=useState(()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+ const [motion,setMotion]=useState(true);
+ const [tab,setTab]=useState("Overview");
+ const [atom,setAtom]=useState(null);
+ const [pan,setPan]=useState({x:0,y:0});
+ const [inspectTarget,setInspectTarget]=useState("reactant");
+ const [inspectStyle,setInspectStyle]=useState("Ball & stick");
+ const [inspectReady,setInspectReady]=useState(false);
+ const [inspectAtom,setInspectAtom]=useState(null);
+ const drag=useRef(null);
+ const searchRef=useRef(null);
+ const network=networks[topic], source=molecules[network.source];
+ const visible=matchingPathways(search,topic,types);
+ const path=visible.find(p=>p.id===selected)||visible[0]||null;
+ const selectedId=path?.id;
+ useEffect(()=>{setSelected(selectedId||null);setStep(0);setPlaying(false);setAtom(null);setTab("Overview");},[selectedId,topic]);
+ const selectTopic=value=>{setTopic(value);setSearch("");setTypes([]);setAtom(null);setStep(0);setPlaying(false);setZoom(1);setPan({x:0,y:0});};
+ const typeCounts=Object.fromEntries(reactionTypes.map(t=>[t,matchingPathways(search,topic,[t]).length]));
+ const reset=()=>{setStep(0);setPlaying(false);};
+ const clearFilters=()=>{setSearch("");setTopicSearch("");setTypes([]);};
+ const fit=()=>{setZoom(1);setPan({x:0,y:0});setCameraReset(v=>v+1);};
+ const choose=id=>{setSelected(id);reset();setAtom(null);setTab("Overview");};
+ useEffect(()=>{
+  const media=window.matchMedia("(prefers-reduced-motion: reduce)");
+  const update=()=>setReduced(media.matches);
+  media.addEventListener("change",update);
+  const compact=window.matchMedia("(max-width:1150px)");
+  const resize=()=>{setFiltersOpen(!compact.matches);setInspectorOpen(!compact.matches);};
+  compact.addEventListener("change",resize);
+  const shortcut=e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();searchRef.current?.focus();}if(e.key==="Escape"){setFiltersOpen(false);setInspectorOpen(false);}};
+  window.addEventListener("keydown",shortcut);
+  return()=>{media.removeEventListener("change",update);compact.removeEventListener("change",resize);window.removeEventListener("keydown",shortcut);};
+ },[]);
+ useEffect(()=>{
+  if(!playing)return;
+  const timer=setTimeout(()=>{if(step<2)setStep(v=>v+1);else setPlaying(false);},2400);
+  return()=>clearTimeout(timer);
+ },[playing,step]);
+ const toggle=(item,list,set)=>set(list.includes(item)?list.filter(v=>v!==item):[...list,item]);
+ const change=path?source.group+" → "+path.group:"";
+ const descriptions=path?.descriptions||[];
+ const inspectMolecule=inspectTarget==="product"&&path?molecules[path.product]:source;
+ const inspectSource=useMemo(()=>organicMolSource(inspectMolecule,inspectTarget),[inspectMolecule,inspectTarget]);
+ return <div className={"on-lab "+((!motion||reduced)?"on-still":"")} style={{"--inspector-width":inspectorWidth+"px"}}>
+  <header className="on-header"><FlaskConical className="on-logo"/><div className="on-brand"><h1>Organic Chemistry Visual Lab</h1><p>Navigate reactions by structure</p></div>
+   <label className="on-search"><Search size={18}/><input ref={searchRef} aria-label="Search molecules, reactions, reagents" placeholder={"Search within "+topic.toLowerCase()+"…"} value={search} onChange={e=>setSearch(e.target.value)}/><kbd>⌘ K</kbd></label>
+   <nav aria-label="Learning navigation">{[["Learn","syllabus"],["Practice","practice-tutor"],["Resources","library"],["My Lab","favorites"]].map(([label,dest])=><button type="button" key={label} onClick={()=>onNavigate?.(dest)}>{label}</button>)}</nav><span className="on-avatar" aria-label="User profile">JS</span>
+  </header>
+  <div className={"on-workspace "+(!filtersOpen?"on-filters-closed ":"")+(!inspectorOpen?"on-inspector-closed":"")}>
+   <nav className="on-rail" aria-label="Workspace navigation">{[[Home,"Home",()=>onNavigate?.("dashboard")],[BookOpen,"Syllabus",()=>onNavigate?.("syllabus")],[FlaskConical,"Reactions",()=>{clearFilters();fit();}],[Atom,"Mechanisms",()=>{setTab("Mechanism");setInspectorOpen(true);}],[ChartNoAxesColumn,"Progress",()=>onNavigate?.("learning-command")]].map(([Icon,label,action])=><button type="button" key={label} title={label} onClick={action} className={label==="Home"?"active":""}><Icon size={25}/><span>{label}</span></button>)}
+   {!filtersOpen&&<IconButton label="Open filters" onClick={()=>{setFiltersOpen(true);if(window.innerWidth<=1150)setInspectorOpen(false);}}><ChevronsRight/></IconButton>}
+   </nav>
+   {filtersOpen&&<aside className="on-filters" aria-label="Filters"><div className="on-panel-title"><h2>Filters</h2><IconButton label="Collapse filters" onClick={()=>setFiltersOpen(false)}><ChevronsLeft size={20}/></IconButton></div><div className="on-filter-body" tabIndex={0} role="region" aria-label="Scrollable filters">
+    <label className="on-field"><b>Topic network</b><span className="on-filter-help">Choose one starting family. Representative reactions, not a complete syllabus.</span></label>
+    <label className="on-search"><Search size={16}/><input aria-label="Search topics" value={topicSearch} onChange={e=>setTopicSearch(e.target.value)} placeholder="Search topics…"/></label>
+    <div className="on-topics" role="radiogroup" aria-label="Topic network">{topics.filter(t=>t.toLowerCase().includes(topicSearch.toLowerCase())).map(t=><label key={t}><input type="radio" aria-label={t} name="organic-topic" checked={topic===t} onChange={()=>selectTopic(t)}/><span>{t}</span><small>{pathways.filter(p=>p.topic===t).length}</small></label>)}{!topics.some(t=>t.toLowerCase().includes(topicSearch.toLowerCase()))&&<p>No topics match your search.</p>}</div>
+    <h3>Reaction type</h3><p className="on-filter-help">Select any combination. Counts apply to this topic and search.</p><div className="on-type-chips">{reactionTypes.map((t,i)=><button type="button" key={t} aria-label={t} disabled={!typeCounts[t]&&!types.includes(t)} aria-pressed={types.includes(t)} className={types.includes(t)?"active":""} onClick={()=>toggle(t,types,setTypes)}><span className={"on-type-icon color-"+i}><ArrowUpRight size={14}/></span>{t}<small>{typeCounts[t]}</small></button>)}</div>
+    <button type="button" className="on-clear" onClick={clearFilters}><RotateCcw size={18}/>Clear filters</button>
+   </div></aside>}
+   <section className="on-canvas" tabIndex={0} aria-label={network.title}>
+    <div className="on-canvas-heading"><div><h2>{network.title}</h2><p>Start with {source.name.toLowerCase()} · {visible.length} of {pathways.filter(p=>p.topic===topic).length} pathways</p></div><div className="on-toolbar">
+     <div className="on-segment">{["2D","3D","Inspect"].map(m=><button type="button" key={m} aria-pressed={mode===m} onClick={()=>{setMode(m);if(m==="Inspect"){setInspectReady(false);setInspectAtom(null);}}}>{m}</button>)}</div>
+     <div className="on-segment"><IconButton label="Zoom out network" onClick={()=>setZoom(v=>Math.max(.75,v-.1))}><Minus size={16}/></IconButton><IconButton label="Zoom in network" onClick={()=>setZoom(v=>Math.min(1.35,v+.1))}><Plus size={16}/></IconButton></div>
+     <IconButton label="Fit molecule and network" onClick={fit}><Crosshair size={18}/><span>Fit</span></IconButton>
+     <IconButton label="Reset view" onClick={()=>{fit();reset();}}><RotateCcw size={17}/><span>Reset</span></IconButton>
+     <button type="button" className="on-label-toggle" aria-pressed={labels} onClick={()=>setLabels(v=>!v)}><i/>Labels</button>
+    </div></div>
+    <div className="on-mobile-tools"><button type="button" onClick={()=>{setFiltersOpen(true);setInspectorOpen(false);}}><SlidersHorizontal size={16}/>Filters</button><button type="button" onClick={()=>{setInspectorOpen(true);setFiltersOpen(false);}}>Reaction details<ChevronRight size={16}/></button></div>
+    <div className="on-network" onPointerDown={e=>{if(e.pointerType!=="touch"&&e.target===e.currentTarget){drag.current={x:e.clientX,y:e.clientY,origin:pan};e.currentTarget.setPointerCapture(e.pointerId);}}} onPointerMove={e=>{if(drag.current)setPan({x:drag.current.origin.x+e.clientX-drag.current.x,y:drag.current.origin.y+e.clientY-drag.current.y});}} onPointerUp={()=>{drag.current=null;}} onPointerCancel={()=>{drag.current=null;}}>
+    {mode==="Inspect"?<div className="on-organic-inspect"><ViewerErrorBoundary label="Organic molecule inspection"><MolstarViewer ref={inspectViewerRef} source={inspectSource} sourceType="mol" label={inspectMolecule.name} representation={{BallAndStick:inspectStyle==="Ball & stick",Spacefill:inspectStyle==="Space filling",Sticks:inspectStyle==="Sticks",Ligand:false,Branched:false,Ion:false}} colorScheme="element" showLabels={false} onReady={()=>{setInspectReady(true);requestAnimationFrame(()=>inspectViewerRef.current?.zoom(1.4));}} onLoadError={()=>setInspectReady(false)} onSelectionChange={setInspectAtom}/></ViewerErrorBoundary><div className="on-organic-inspect-meta"><b>{inspectMolecule.name}</b> · {inspectMolecule.formula}<br/><span>Schematic coordinates from the reaction graph · connectivity inspection, not experimental geometry</span></div><div className="on-organic-inspect-tools"><span>{inspectReady?"Mol* ready":"Loading…"}</span><button aria-pressed={inspectTarget==="reactant"} onClick={()=>{setInspectTarget("reactant");setInspectReady(false);}}>Reactant</button><button aria-pressed={inspectTarget==="product"} disabled={!path} onClick={()=>{setInspectTarget("product");setInspectReady(false);}}>Product</button>{["Ball & stick","Space filling","Sticks"].map(item=><button key={item} aria-pressed={inspectStyle===item} onClick={()=>setInspectStyle(item)}>{item}</button>)}<button onClick={()=>inspectViewerRef.current?.reset()}>Reset</button><button aria-label="Full screen organic structure" onClick={()=>inspectViewerRef.current?.fullscreen()}><Maximize2 size={14}/></button></div><div className="on-organic-inspect-readout">{inspectAtom?`${inspectAtom.element} · atom ${inspectAtom.sourceIndex+1} · [${inspectAtom.coordinates.map(value=>value.toFixed(2)).join(", ")}] Å`:"Click an atom for coordinate inspection"}</div></div>:<div className="on-network-transform" style={{transform:"translate("+pan.x+"px,"+pan.y+"px) scale("+zoom+")"}}>
+     <svg className="on-edges" viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Directional reaction pathways"><title>{source.name} reactions and their products</title><defs>{["selected","other"].map((name,i)=><marker key={name} id={"on-arrow-"+name} markerUnits="userSpaceOnUse" markerWidth="3.5" markerHeight="3.5" refX="2.8" refY="1.75" orient="auto-start-reverse"><path d="M0 0 L3.5 1.75 L0 3.5 L.8 1.75Z" fill={i?"#79a8de":"#ff8a1e"}/></marker>)}</defs>
+      {visible.map(p=><g key={p.id}><path d={p.path} fill="none" stroke={p.id===selectedId?"#ff982c":"#bdd8f7"} strokeWidth={p.id===selectedId?0.7:0.6} markerStart={p.equation.includes("⇌")?"url(#on-arrow-"+(p.id===selectedId?"selected":"other")+")":undefined} markerEnd={"url(#on-arrow-"+(p.id===selectedId?"selected":"other")+")"}/>{p.id===selectedId&&playing&&motion&&!reduced&&<circle r=".6" fill="#f58a20"><animateMotion path={p.path} dur="1.8s" repeatCount="indefinite"/></circle>}</g>)}
+     </svg>
+     {visible.map(p=><div key={p.id}><button type="button" data-pathway={p.id} data-long-formula={p.formula.length>10} className={"on-node on-node-"+p.id+(selectedId===p.id?" selected":"")} aria-pressed={selectedId===p.id} aria-label={"Select "+p.name+" pathway"} style={{left:p.x+"%",top:p.y+"%"}} onClick={()=>choose(p.id)}><StructureGlyph moleculeId={p.product}/><b>{p.formula}</b><span>{p.name}</span><small>{p.group}</small></button>
+      <button type="button" data-slot={p.slot} className={"on-edge-label "+(selectedId===p.id?"selected":"")} style={{left:p.label[0]+"%",top:p.label[1]+"%"}} onClick={()=>choose(p.id)} aria-label={"Select "+p.title}><b>{p.reagent}</b><span>{p.conditions}</span></button>
+     </div>)}
+     <div className={"on-molecule "+(step===1?"on-heating":"")} aria-label={source.name+" model"}>
+      {mode==="3D"?<OrganicMoleculeScene moleculeId={network.source} animationEnabled={motion&&!reduced} showLabels={labels} cameraResetKey={cameraReset} onAtomSelect={setAtom}/>:<StructureGlyph moleculeId={network.source}/>}
+     </div>
+     <div className="on-source-card"><b>{source.formula}</b><span>{source.name}</span><small>{source.group}</small></div>
+     {atom&&<button type="button" className="on-atom-info" onClick={()=>setAtom(null)}>{atom.label} ({atom.type}) · atomic number {atom.number} <X size={12}/></button>}
+    </div>}
+    {!visible.length&&<div className="on-empty"><b>No pathways match these filters.</b><p>No reaction in the {topic.toLowerCase()} example matches this combination. Clear filters or choose another topic.</p><button type="button" onClick={clearFilters}>Clear filters</button></div>}
+    <div className="on-legend">{[...new Set([...source.atoms.map(a=>a[0]),...visible.flatMap(p=>molecules[p.product].atoms.map(a=>a[0])),"H"])].map(symbol=><span key={symbol}><i style={{background:"#"+atomStyles[symbol].color.toString(16).padStart(6,"0")}}/>{atomStyles[symbol].label} ({symbol})</span>)}<span><i className="path-selected"/>Selected pathway</span><span><i className="path-other"/>Other pathway</span></div>
     </div>
-  );
+    {path&&<PathwayStepper path={path} step={step} setStep={setStep} playing={playing} setPlaying={setPlaying} reset={reset}/>}
+    <div className="on-canvas-foot"><span>Schematic model · rotate by dragging · scroll on model to zoom</span><button type="button" onClick={()=>setMotion(v=>!v)} aria-pressed={!motion}>{motion?<Pause size={13}/>:<Play size={13}/>} {motion?"Pause motion":"Resume motion"}</button></div>
+   </section>
+   {inspectorOpen?<aside className="on-inspector" aria-label="Reaction inspector">
+    <div className="on-resizer" role="separator" aria-label="Resize inspector" aria-orientation="vertical" tabIndex={0} onKeyDown={e=>{if(e.key==="ArrowLeft")setInspectorWidth(v=>Math.min(470,v+10));if(e.key==="ArrowRight")setInspectorWidth(v=>Math.max(340,v-10));}} onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);e.currentTarget.dataset.resizing="true";}} onPointerMove={e=>{if(e.currentTarget.dataset.resizing==="true")setInspectorWidth(Math.max(340,Math.min(470,window.innerWidth-e.clientX-8)));}} onPointerUp={e=>{delete e.currentTarget.dataset.resizing;}}/>
+    <div className="on-inspector-scroll" tabIndex={0} role="region" aria-label="Scrollable reaction details">{path?<><div className="on-inspector-heading"><h2>{path.title}</h2><span className="on-selected-badge">● Selected</span><IconButton label="Close inspector" onClick={()=>setInspectorOpen(false)}><X size={19}/></IconButton></div>
+     <p className="on-inspector-subtitle">{source.name} <span className="on-formula">({subscript(source.molecular)})</span> → {path.name} <span className="on-formula">({subscript(path.molecular)}{path.charge>0?"⁺":path.charge<0?"⁻":""})</span></p>
+     <div className="on-equation">{path.equation}</div>
+     <div className="on-summary"><div><b>Reagent</b><strong>{path.reagent}</strong><p>{reagentDescription(path)}</p></div><div><b>Conditions</b><strong>{path.conditions}</strong><p>{path.note}</p></div></div>
+     <div className="on-tabs" role="tablist" aria-label="Reaction information">{["Overview","Mechanism","Energy","Safety"].map((t,i)=><button type="button" role="tab" aria-selected={tab===t} tabIndex={tab===t?0:-1} key={t} onClick={()=>setTab(t)} onKeyDown={e=>{const tabs=["Overview","Mechanism","Energy","Safety"];const next=e.key==="ArrowRight"?(i+1)%4:e.key==="ArrowLeft"?(i+3)%4:e.key==="Home"?0:e.key==="End"?3:null;if(next!==null){e.preventDefault();setTab(tabs[next]);e.currentTarget.parentElement.children[next].focus();}}}>{t}</button>)}</div>
+     <div role="tabpanel" aria-label={tab}>
+      {tab==="Overview"&&<><dl className="on-properties">{[["Reaction type",path.type],["Starting molecule",source.name],["Highlighted product",path.name+" ("+path.formula+")"],["Functional group change",change],["Topic",topic]].map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><EnergyProfile path={path}/></>}
+      {tab==="Energy"&&<EnergyProfile path={path} detailed/>}
+      {tab==="Mechanism"&&<div className="on-mechanism"><h3>Overall reaction steps</h3><p>An overall transformation, not a complete elementary mechanism.</p><div className="on-mechanism-structures"><StructureGlyph moleculeId={network.source}/><ArrowRight/><StructureGlyph moleculeId={path.product}/></div><h4>{["Reagent","Conditions","Product"][step]} · {step+1} of 3</h4><p>{descriptions[step]}</p><div className="on-mechanism-controls"><button type="button" disabled={step===0} onClick={()=>{setPlaying(false);setStep(v=>v-1);}}>Previous</button><button type="button" disabled={step===2} onClick={()=>{setPlaying(false);setStep(v=>v+1);}}>Next</button></div></div>}
+      {tab==="Safety"&&<div className="on-safety"><h3><ShieldAlert/>Laboratory safety</h3><ul>{[
+ "Educational simulation only. Do not use these summaries as laboratory instructions; consult the reagent SDS and a supervised risk assessment.",
+ ...(path.reagent.includes("Cr₂")?["Chromium(VI) compounds are carcinogenic, toxic oxidants; segregate chromium waste."]:[]),
+ ...(path.reagent.includes("H₂SO₄")||path.reagent.includes("HNO₃")?["Concentrated acids are corrosive; nitrating mixtures are strongly oxidising and can react violently."]:[]),
+ ...(path.reagent.includes("NaOH")||path.reagent.includes("KOH")?["Hydroxide solutions are corrosive."]:[]),
+ ...(path.source==="benzene"?["Benzene is carcinogenic and flammable."]:[]),
+ ...(path.id==="chlorination"?["Chlorine is a toxic gas; ultraviolet light also requires protection."]:[]),
+ ...(path.id==="hydrogenation"?["Hydrogen is flammable; metal catalysts and heated gas systems require specialist controls."]:[]),
+ ...(path.id==="ammonolysis"?["Ammonia is irritating; heating a sealed vessel presents a pressure hazard."]:[]),
+ "Organic reagents may be volatile, toxic or flammable. Use trained supervision and appropriate ventilation, PPE and waste procedures."
+ ].map(s=><li key={s}>{s}</li>)}</ul></div>}
+     </div>
+     <button type="button" className="on-explore" onClick={()=>{setTab("Mechanism");reset();}}><Atom size={25}/>Explore mechanism<ArrowRight size={19}/></button><p className="on-explore-note">{source.note||"Models show connectivity; positions and bond lengths are schematic."}</p><a className="on-reference" href={references[path.reference].url} target="_blank" rel="noreferrer">{references[path.reference].label} ↗</a></>:<div className="on-no-selection"><h2>No matching reaction</h2><p>Change the filters to select a pathway. No previous reaction is displayed.</p><button type="button" onClick={clearFilters}>Clear filters</button><IconButton label="Close inspector" onClick={()=>setInspectorOpen(false)}><X size={19}/></IconButton></div>}
+    </div>
+   </aside>:<div className="on-inspector-restore"><IconButton label="Open inspector" onClick={()=>setInspectorOpen(true)}><ChevronsLeft size={20}/></IconButton></div>}
+  </div>
+  <span className="on-sr" role="status">{path?path.title+". Step "+(step+1)+": "+path.steps[step]+".":"No matching reaction."} {visible.length} pathways visible for {topic}.</span>
+ </div>;
 }

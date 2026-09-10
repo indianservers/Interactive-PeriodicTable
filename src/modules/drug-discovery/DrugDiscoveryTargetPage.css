@@ -579,3 +579,41 @@
   }
 }
 .dd-notice { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:20; padding:9px 14px; border:1px solid #2ca8ed; border-radius:7px; background:#08243b; color:#c7efff; box-shadow:0 8px 24px #0008; font-size:12px; }
+
+/* Coordinate-backed structure workspace */
+.dd-pocket > header { display:flex; align-items:flex-start; gap:9px; background:linear-gradient(#071826f5 72%, transparent); }
+.dd-pocket > header > div { min-width:0; }
+.dd-pocket > header p { font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:11px; }
+.dd-evidence { margin-left:auto; white-space:nowrap; border:1px solid #167c64; border-radius:999px; padding:4px 8px; background:#0a4539; color:#82eac2; font-size:10px; text-transform:uppercase; letter-spacing:.05em; }
+.dd-evidence.uploaded { border-color:#6a5e2e; background:#352e14; color:#f5d77b; }
+.dd-upload { display:flex; align-items:center; gap:5px; border:1px solid #31546c; border-radius:4px; background:#0b2336; color:#cae4f5; padding:5px 8px; font-size:11px; }
+.dd-upload svg { width:14px; height:14px; }
+.dd-surface { background:#050f18; }
+.dd-surface:after { display:none; }
+.dd-surface .molstar-viewer { position:absolute; inset:0; }
+.dd-interaction-panel { position:absolute; z-index:6; top:76px; left:12px; width:205px; padding:8px; border:1px solid #315168; border-radius:5px; background:#071a28e8; backdrop-filter:blur(5px); }
+.dd-interaction-panel > b { display:block; margin-bottom:6px; color:#d9ecf8; font-size:10px; text-transform:uppercase; letter-spacing:.06em; }
+.dd-interaction-panel button { display:block; width:100%; border:0; border-top:1px solid #223d50; background:none; color:#75ccff; text-align:left; padding:6px 0; }
+.dd-interaction-panel button span,.dd-interaction-panel button small { display:block; }
+.dd-interaction-panel button small,.dd-interaction-panel > small { color:#8faabd; font-size:9px; line-height:1.3; }
+.dd-selection-readout { position:absolute; z-index:6; right:10px; bottom:9px; display:flex; flex-direction:column; max-width:270px; padding:6px 8px; border:1px solid #315168; border-radius:4px; background:#061624e8; font:10px/1.35 "IBM Plex Mono", ui-monospace, monospace; color:#9bc6df; pointer-events:none; }
+.dd-selection-readout b { color:#e3f3ff; }
+.dd-pocket > footer { gap:5px; overflow-x:auto; }
+.dd-pocket > footer button,.dd-pocket > footer select { flex:0 0 auto; padding:0 9px; font-size:11px; }
+.dd-pocket > footer button.active { border-color:#35bdf3; background:#123d59; color:#8cddff; }
+.dd-pocket > footer button svg { width:14px; height:14px; }
+.dd-lead > header span { border-color:#796b2b; background:#493c10; color:#f5d878; }
+.dd-props h2 small { float:right; color:#e8c96b; font:9px/1.5 "IBM Plex Mono", monospace; text-transform:uppercase; }
+.dd-structure { position:relative; overflow:hidden; }
+.dd-chemical-diagram { display:grid; place-items:center; width:100%; height:100%; margin:0; padding:16px; color:#dbeafa; }
+.dd-chemical-diagram svg { width:min(100%,430px); max-height:245px; }
+.dd-chemical-diagram figcaption { color:#83a9c0; font:10px "IBM Plex Mono", monospace; }
+.dd-reference-view { position:absolute; inset:0; }
+.dd-reference-view > span { position:absolute; z-index:7; left:8px; right:8px; bottom:8px; padding:5px 8px; border:1px solid #675b2b; background:#211e10e8; color:#f4d77d; font:9px/1.35 "IBM Plex Mono", monospace; }
+.dd-property-note { display:grid; place-items:center; max-width:330px; text-align:center; color:#a9bfd0; }
+.dd-property-note svg { width:34px; color:#5cc8f5; }
+.dd-property-note b { color:#e2f3ff; }
+.dd-method { margin:7px 0 4px; color:#d4bd70; font-size:9px; line-height:1.3; }
+.dd-analog-glyph { display:grid!important; place-items:center; font:10px/1.6 "IBM Plex Mono", monospace!important; letter-spacing:.15em; color:#7ca9c4; border:1px solid #254255; background:repeating-linear-gradient(135deg,#0b2132,#0b2132 6px,#0d2639 6px,#0d2639 12px); }
+.dd-notice { display:flex; align-items:center; gap:12px; }
+.dd-notice button { border:0; background:none; color:#c7efff; font-size:18px; line-height:1; }

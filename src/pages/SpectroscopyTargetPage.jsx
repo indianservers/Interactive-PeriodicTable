@@ -1,12 +1,17 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
   CheckCircle2,
   FileText,
+  Maximize2,
+  Ruler,
   Search,
   Sun,
   Waves,
 } from "lucide-react";
+import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
+import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import "./spectroscopyTarget.css";
 const peaks = [
   {
     shift: "4.12",
@@ -37,7 +42,9 @@ const modeMeta = {
   "Mass Spectrum": { title: "Mass Spectrum · EI", axis: "m/z", suffix: "m/z" },
   "UV-Vis": { title: "UV–Vis · Absorbance", axis: "Wavelength (nm)", suffix: "nm" },
 };
-export default function SpectroscopyTargetPage() {
+const assignmentAtoms={"O–CH₂–":[0,2,6,7],"CO–CH₃":[4,5,11,12,13],"–CH₃":[3,8,9,10]};
+export default function SpectroscopyTargetPage({ onNavigate }) {
+  const viewerRef=useRef(null);
   const [mode, setMode] = useState("¹H NMR");
   const [peak, setPeak] = useState(peaks[0]);
   const [representation, setRepresentation] = useState("Ball & Stick");
@@ -48,6 +55,8 @@ export default function SpectroscopyTargetPage() {
   const [notebookAdded, setNotebookAdded] = useState(false);
   const [query, setQuery] = useState("");
   const [notice, setNotice] = useState("");
+  const [viewerReady,setViewerReady]=useState(false);
+  const [pickedAtoms,setPickedAtoms]=useState([]);
   const announce = (x) => setNotice(x);
   const modePeaks = useMemo(
     () =>
@@ -83,9 +92,13 @@ export default function SpectroscopyTargetPage() {
     [mode],
   );
   const metadata = modeMeta[mode];
+  useEffect(()=>{setPeak(modePeaks[0]);},[mode,modePeaks]);
+  const selectedAtomIndices=assignmentAtoms[peak.assignment]||[];
+  const measuredDistance=pickedAtoms.length===2?Math.hypot(...pickedAtoms[0].coordinates.map((value,index)=>value-pickedAtoms[1].coordinates[index])).toFixed(2):null;
+  const inspectAtom=atom=>setPickedAtoms(current=>current.some(item=>item.sourceIndex===atom.sourceIndex)?current:(current.length>=2?[atom]:[...current,atom]));
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#061522] text-slate-100"
+      className="spectro-app min-h-screen overflow-hidden bg-[#061522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-4 border-b border-white/10 bg-[#091c2e] px-6">
@@ -116,7 +129,7 @@ export default function SpectroscopyTargetPage() {
           LC　Lab Chemist
         </span>
       </header>
-      <div className="grid h-[calc(100vh-64px)] grid-cols-[185px_1fr] gap-3 p-3">
+      <div className="spectro-shell grid h-[calc(100vh-64px)] grid-cols-[185px_1fr] gap-3 p-3">
         <aside className="rounded border border-white/10 bg-[#0a1e31] p-3">
           {[
             "Home",
@@ -128,7 +141,7 @@ export default function SpectroscopyTargetPage() {
           ].map((x, i) => (
             <button
               key={x}
-              onClick={() => announce(`${x} selected`)}
+              onClick={() => (x === "Home" ? onNavigate?.("dashboard") : announce(`${x} selected`))}
               className={`mb-1 w-full rounded px-3 py-3 text-left text-sm ${i === 1 ? "border-l-2 border-cyan-300 bg-blue-500/15 text-cyan-200" : "text-slate-300"}`}
             >
               {x}
@@ -196,7 +209,7 @@ export default function SpectroscopyTargetPage() {
               </button>
             ))}
           </div>
-          <div className="mt-2 grid grid-cols-[1.35fr_.75fr_1fr] gap-2">
+          <div className="spectro-workspace mt-2 grid grid-cols-[1.35fr_.75fr_1fr] gap-2">
             <section className="rounded border border-white/10 bg-[#0b2135] p-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold">{metadata.title}</h3>
@@ -272,17 +285,10 @@ export default function SpectroscopyTargetPage() {
               </div>
             </section>
             <section className="rounded border border-white/10 bg-[#0b2135] p-4">
-              <h3 className="font-bold">3D Structure (Ethyl acetate)</h3>
-              <div className="mt-3 grid h-60 place-items-center rounded border border-white/10 bg-gradient-to-br from-[#1a3450] to-[#0a1725]">
-                <div
-                  className={`relative h-28 w-44 transition-transform ${representation === "Spacefill" ? "scale-125" : ""}`}
-                  aria-label={`${representation} representation`}
-                >
-                  <span className="absolute left-12 top-8 h-16 w-16 rounded-full bg-slate-500 shadow-[0_0_20px_#38bdf8]" />
-                  <span className="absolute right-8 top-10 h-12 w-12 rounded-full bg-red-400" />
-                  <span className="absolute left-2 top-16 h-10 w-10 rounded-full bg-red-300" />
-                  <span className="absolute right-0 top-4 h-8 w-8 rounded-full bg-blue-300" />
-                </div>
+              <div className="flex items-center justify-between gap-2"><h3 className="font-bold">3D Structure (Ethyl acetate)</h3><button aria-label="Full screen ethyl acetate" onClick={()=>viewerRef.current?.fullscreen()} className="rounded border border-white/15 p-1.5 text-slate-300"><Maximize2 size={14}/></button></div>
+              <div className="relative mt-3 h-60 overflow-hidden rounded border border-white/10 bg-[#071521]">
+                <ViewerErrorBoundary label="Ethyl acetate structure viewer"><MolstarViewer ref={viewerRef} source={{url:"/assets/spectroscopy/ethyl-acetate.sdf",format:"sdf",label:"Ethyl acetate · PubChem CID 8857"}} sourceType="sdf" label="Ethyl acetate · PubChem CID 8857" representation={{BallAndStick:representation==="Ball & Stick",Spacefill:representation==="Spacefill",Ligand:false,Branched:false,Ion:false}} colorScheme="element" selectedAtomIndices={selectedAtomIndices} onReady={()=>{setViewerReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(1.25));}} onLoadError={()=>setViewerReady(false)} onSelectionChange={inspectAtom}/></ViewerErrorBoundary>
+                <span className="absolute left-2 top-2 rounded border border-cyan-300/20 bg-slate-950/80 px-2 py-1 font-mono text-[9px] text-cyan-100">{viewerReady?"Mol* ready":"Loading…"} · CID 8857</span>
               </div>
               <div className="mt-3 flex gap-2">
                 <button
@@ -303,6 +309,8 @@ export default function SpectroscopyTargetPage() {
                 <span className="text-cyan-200">{peak.assignment}</span> (
                 {peak.integration})
               </p>
+              <div className="mt-2 rounded border border-white/10 bg-slate-950/35 p-2 font-mono text-[10px] text-slate-400"><div className="flex items-center gap-1 text-slate-200"><Ruler size={12}/>Atom distance</div>{measuredDistance?`${pickedAtoms[0].element}${pickedAtoms[0].sourceIndex+1}–${pickedAtoms[1].element}${pickedAtoms[1].sourceIndex+1}: ${measuredDistance} Å`:pickedAtoms.length===1?"Select one more atom in Mol*":"Select two atoms in Mol*"}{pickedAtoms.length>0&&<button onClick={()=>setPickedAtoms([])} className="ml-2 text-cyan-300">Clear</button>}<br/>Highlighted group: atoms {selectedAtomIndices.map(index=>index+1).join(", ")}</div>
+              <p className="mt-2 text-[10px] leading-4 text-slate-500">PubChem computed 3D conformer · CID 8857 · C₄H₈O₂ · 88.11 g/mol. Peak assignments are synchronized teaching data.</p>
             </section>
             <aside className="rounded border border-white/10 bg-[#0b2135] p-4">
               <h3 className="font-bold">Peak Table ({mode})</h3>
@@ -336,10 +344,10 @@ export default function SpectroscopyTargetPage() {
               </ul>
             </aside>
           </div>
-          <div className="mt-2 grid grid-cols-[1fr_360px] gap-2">
+          <div className="spectro-reasoning mt-2 grid grid-cols-[1fr_360px] gap-2">
             <section className="rounded border border-white/10 bg-[#0b2135] p-4">
               <h3 className="font-bold">Structure Elimination & Reasoning</h3>
-              <div className="mt-3 grid grid-cols-5 gap-2">
+              <div className="spectro-candidates mt-3 grid grid-cols-5 gap-2">
                 {[
                   ["Ethyl acetate", "C₄H₈O₂", "Most consistent"],
                   ["Methyl propanoate", "C₄H₈O₂", "Would give OCH₃ singlet"],

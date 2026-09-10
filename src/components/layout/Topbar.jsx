@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Menu, Atom, ChevronRight, Home, Search, Star, Share2, Printer, Maximize2, Download, BookOpen } from 'lucide-react';
+import { Menu, Atom, ChevronRight, Home, Search, Star, Share2, Printer, Maximize2, Download, BookOpen, PauseCircle, PlayCircle } from 'lucide-react';
 import { ThemeToggle } from '../common/ThemeToggle.jsx';
 import { elements } from '../../data/elements.js';
 import { ALL_MOLECULES } from '../../data/molecules.js';
@@ -232,7 +232,7 @@ const glossaryTerms = [
   ['pChEMBL', 'Normalized potency scale used by ChEMBL for comparable activity values.'],
 ];
 
-export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNavigate, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, studyMode = false, onStudyModeToggle, canInstall = false, onInstallApp, isOnline = true }) => {
+export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNavigate, recentPages = [], favoritePages = [], onFavoritePageToggle, onSelectElement, studyMode = false, onStudyModeToggle, canInstall = false, onInstallApp, isOnline = true, motionEnabled = true, onMotionToggle }) => {
   const breadcrumbs = parentCrumbs[currentPage] || [{ id: 'dashboard', label: 'Dashboard' }];
   const [searchOpen, setSearchOpen] = useState(false);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
@@ -402,6 +402,9 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
         </button>
         <button onClick={onStudyModeToggle} className={`hidden lg:block rounded-xl border border-white/10 px-3 py-2 text-xs ${studyMode ? 'bg-cyan-500/15 text-cyan-200' : 'text-gray-400 hover:text-gray-100'}`} title="Study mode">
           Study
+        </button>
+        <button onClick={onMotionToggle} className={`rounded-xl border border-white/10 p-2 ${motionEnabled ? 'text-cyan-200 hover:bg-cyan-500/10' : 'bg-amber-500/15 text-amber-200'}`} title={motionEnabled ? 'Pause animations' : 'Play animations'} aria-label={motionEnabled ? 'Pause animations' : 'Play animations'} aria-pressed={!motionEnabled}>
+          {motionEnabled ? <PauseCircle size={16} /> : <PlayCircle size={16} />}
         </button>
         <button onClick={() => window.print()} className="rounded-xl border border-white/10 p-2 text-gray-400 hover:text-gray-100" title="Print page">
           <Printer size={16} />

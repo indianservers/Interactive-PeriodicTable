@@ -159,11 +159,15 @@
   line-height: 1.4;
   margin: 0;
 }
-.cs-problem > button {
+.cs-problem-actions {
+  position: absolute;
+  right: 18px;
+  top: 16px;
+  display: flex;
+  gap: 8px;
+}
+.cs-problem-actions button {
   position: relative;
-  float: right;
-  margin-left: 8px;
-  margin-top: -43px;
   height: 37px;
   border: 1px solid #30445a;
   border-radius: 6px;
@@ -171,9 +175,10 @@
   color: #c4d7eb;
   padding: 0 13px;
 }
-.cs-problem > button svg {
+.cs-problem-actions button svg {
   width: 16px;
   display: inline;
+  vertical-align: middle;
 }
 .cs-edit {
   display: none;
@@ -625,3 +630,91 @@
   }
 }
 .cs-tab-note { margin:0 14px 8px; padding:8px 11px; border:1px solid #2a6a91; border-radius:6px; background:#08253c; color:#a9e7ff; font-size:11px; }
+
+.cs-side-workspace,
+.cs-topic-workspace {
+  height: calc(100vh - 96px);
+  overflow: auto;
+  display: block;
+  padding: 32px;
+}
+.cs-side-workspace > section,
+.cs-topic-problem,
+.cs-topic-solution,
+.cs-topic-visual {
+  border: 1px solid #243b52;
+  border-radius: 12px;
+  background: #101b2a;
+  box-shadow: 0 18px 60px #02081266;
+}
+.cs-side-workspace > section {
+  min-height: 540px;
+  padding: 32px;
+}
+.cs-side-workspace h2 { margin: 0 0 8px; font-size: 28px; }
+.cs-side-workspace > section > p { color: #9db4ca; }
+.cs-side-workspace textarea {
+  width: 100%; min-height: 360px; margin-top: 20px; resize: vertical;
+  border: 1px solid #36516c; border-radius: 9px; padding: 18px;
+  background: #071321; color: #eef7ff; font: inherit; line-height: 1.7;
+}
+.cs-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.cs-card-grid button, .cs-saved-list button {
+  min-height: 150px; border: 1px solid #31516d; border-radius: 10px; padding: 20px;
+  background: linear-gradient(145deg, #14283c, #0c1725); color: #eaf5ff;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px; text-align: left;
+}
+.cs-card-grid button:hover, .cs-saved-list button:hover { border-color: #49bfff; background: #17314a; }
+.cs-card-grid svg, .cs-saved-list svg { color: #68cfff; }
+.cs-card-grid strong, .cs-saved-list strong { font-size: 17px; }
+.cs-card-grid span, .cs-saved-list span { color: #91aac0; }
+.cs-reference { max-width: 760px; margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; }
+.cs-reference dt, .cs-reference dd { margin: 0; padding: 15px; border-bottom: 1px solid #294157; }
+.cs-reference dd { color: #7fdcff; font-family: Georgia, serif; }
+.cs-saved-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.cs-primary-action { margin-top: 22px; border: 0; border-radius: 7px; padding: 12px 18px; background: #536cff; color: white; font-weight: 800; }
+.cs-topic-workspace { display: grid; grid-template-columns: 1.1fr .9fr; grid-template-rows: auto 1fr; gap: 16px; }
+.cs-topic-problem { grid-column: 1 / -1; min-height: 150px; padding: 25px; }
+.cs-topic-problem h2 { margin: 4px 0 12px; font-size: 25px; }
+.cs-topic-problem p { max-width: 900px; font-size: 19px; }
+.cs-kicker { color: #67d2ff; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.cs-topic-solution { padding: 24px; overflow: auto; }
+.cs-topic-solution .cs-equation { margin-bottom: 25px; }
+.cs-topic-solution li { min-height: 72px; font-size: 16px; line-height: 1.55; }
+.cs-topic-solution footer { grid-template-columns: 1fr 1fr; margin-top: 24px; }
+.cs-topic-visual { display: grid; place-items: center; align-content: center; gap: 26px; padding: 30px; text-align: center; background: radial-gradient(circle at 50% 38%, #274b6a, #08131f 65%); }
+.cs-topic-visual > svg { width: 110px; height: 110px; color: #72ceff; }
+.cs-topic-visual > span { font: 24px Georgia, serif; }
+.cs-topic-visual > strong { padding: 13px 24px; border: 1px solid #24ca8a; border-radius: 8px; color: #4cf0ae; font-size: 21px; }
+.cs-topic-visual p { max-width: 420px; color: #9bb3c9; }
+.cs-tab-panel { position: absolute; left: 18px; right: 18px; top: 76px; bottom: 250px; border: 1px solid #29445d; border-radius: 9px; background: #0b1724; }
+.cs-curve-panel > p { margin: 14px; color: #a7c4dd; }
+.cs-curve-panel .cs-curve { left: 18px; right: 18px; top: 54px; width: auto; height: calc(100% - 72px); }
+.cs-curve-panel .cs-curve svg { height: calc(100% - 38px); }
+.cs-molecular-panel { display: grid; grid-template-columns: auto auto auto auto auto; place-content: center; align-items: center; gap: 18px; text-align: center; }
+.cs-molecular-panel > span { font-size: 30px; color: #87a6c1; }
+.cs-molecular-panel h3, .cs-molecular-panel p { grid-column: 1 / -1; }
+.cs-molecular-panel p { max-width: 560px; margin: 0; color: #a8bfd3; line-height: 1.6; }
+.cs-particle, .cs-water { width: 90px; height: 90px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; font-weight: 900; box-shadow: inset 0 0 25px #ffffff30, 0 0 35px currentColor; }
+.cs-particle.acid { background: #8f43ca; color: #e5b9ff; }
+.cs-particle.base { background: #167fae; color: #a8eaff; }
+.cs-water { background: #197fa0; color: #ccf5ff; border-radius: 44% 56% 52% 48%; }
+.cs-equivalence-wide { left: 18px; right: 18px; top: auto; bottom: 76px; width: auto; }
+.cs-equivalence-wide dl { grid-template-columns: repeat(6, 1fr); }
+.cs-equivalence-wide dt, .cs-equivalence-wide dd { text-align: center; }
+.cs-note-wide { left: 18px; right: 18px; bottom: 10px; width: auto; }
+
+@media (max-width: 1200px) {
+  .cs-side-workspace, .cs-topic-workspace { height: auto; min-height: calc(100vh - 96px); }
+  .cs-topic-workspace { grid-template-columns: 1fr; }
+  .cs-topic-problem { grid-column: auto; }
+  .cs-topic-visual { min-height: 480px; }
+}
+@media (max-width: 700px) {
+  .cs-side-workspace, .cs-topic-workspace { padding: 12px; }
+  .cs-card-grid, .cs-saved-list { grid-template-columns: 1fr; }
+  .cs-reference { grid-template-columns: 1fr; }
+  .cs-reference dd { padding-top: 0; }
+  .cs-molecular-panel { grid-template-columns: auto auto auto; }
+  .cs-molecular-panel > span:nth-of-type(2), .cs-water { grid-row: 2; }
+}

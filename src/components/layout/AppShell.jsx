@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Home, PauseCircle, PlayCircle } from "lucide-react";
 import { Sidebar } from "./Sidebar.jsx";
 import { Topbar } from "./Topbar.jsx";
 import { MobileNav } from "./MobileNav.jsx";
@@ -19,6 +20,8 @@ export const AppShell = ({
   canInstall = false,
   onInstallApp,
   isOnline = true,
+  motionEnabled = true,
+  onMotionToggle,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarMini, setSidebarMini] = useState(false);
@@ -57,6 +60,7 @@ export const AppShell = ({
   // isolated here prevents its layout from affecting protected tool routes.
   if (
     currentPage === "dashboard" ||
+    currentPage === "library" ||
     currentPage === "molecule" ||
     currentPage === "lab" ||
     currentPage === "syllabus" ||
@@ -65,6 +69,7 @@ export const AppShell = ({
     currentPage === "quiz" ||
     currentPage === "favorites" ||
     currentPage === "settings" ||
+    currentPage === "atom-builder" ||
     currentPage === "gas-properties" ||
     currentPage === "reaction-leftovers" ||
     currentPage === "acid-base-solutions" ||
@@ -72,6 +77,9 @@ export const AppShell = ({
     currentPage === "molecules-light" ||
     currentPage === "states-matter" ||
     currentPage === "chemistry-solver" ||
+    currentPage === "chemistry-solver-questions" ||
+    currentPage === "chemistry-solver-bookmarks" ||
+    currentPage === "chemistry-solver-practice" ||
     currentPage === "chemistry-inventor" ||
     currentPage === "drug-discovery" ||
     currentPage === "ar-vr-mr" ||
@@ -102,6 +110,13 @@ export const AppShell = ({
     currentPage === "bio-nucleic-acids" ||
     currentPage === "bio-metabolism" ||
     currentPage === "pharma-visuals" ||
+    currentPage === "pharma-medicinal" ||
+    currentPage === "pharma-api-synthesis" ||
+    currentPage === "pharma-preformulation" ||
+    currentPage === "pharma-tablet-formulation" ||
+    currentPage === "pharma-dissolution" ||
+    currentPage === "pharma-hplc" ||
+    currentPage === "pharma-stability" ||
     currentPage === "pharma-adme" ||
     currentPage === "pharma-dosage" ||
     currentPage === "pharma-qc" ||
@@ -115,10 +130,25 @@ export const AppShell = ({
     currentPage === "iupac-nomenclature" ||
     currentPage === "retrosynthesis-planner" ||
     currentPage === "subject-modules"
+    || currentPage === "physical-chemistry"
+    || currentPage === "organic-chemistry"
+    || currentPage === "inorganic-chemistry"
+    || currentPage === "analytical-chemistry"
+    || currentPage === "virtual-labs"
   ) {
     return (
       <div className={isDark ? "dark" : "light"}>
-        <main className="min-h-screen overflow-x-hidden">{children}</main>
+        <main className="min-h-screen overflow-x-hidden">
+          {children}
+          {currentPage !== "dashboard" && currentPage !== "states-matter" && currentPage !== "organic-visuals" && currentPage !== "bio-proteins" && currentPage !== "inorganic-visuals" && currentPage !== "inorganic-deep-module" && currentPage !== "inorganic-crystals" && (
+            <>
+              <button type="button" aria-label="Home" onClick={() => onNavigate?.("dashboard")} className="fixed bottom-4 left-4 z-[140] inline-flex items-center gap-2 rounded-xl border border-cyan-300/35 bg-[#071a2c]/95 px-3 py-2 text-xs font-bold text-cyan-100 shadow-xl shadow-black/30 backdrop-blur transition hover:border-cyan-200 hover:bg-[#0c2b45]"><Home size={16} /> Home</button>
+              {currentPage !== "atom-builder" && (
+                <button type="button" aria-label={motionEnabled ? "Pause animations" : "Play animations"} aria-pressed={!motionEnabled} onClick={onMotionToggle} className={`fixed bottom-4 right-4 z-[140] inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold shadow-xl shadow-black/30 backdrop-blur transition ${motionEnabled ? "border-cyan-300/35 bg-[#071a2c]/95 text-cyan-100 hover:border-cyan-200" : "border-amber-300/40 bg-amber-500/15 text-amber-100"}`}>{motionEnabled ? <PauseCircle size={16} /> : <PlayCircle size={16} />}{motionEnabled ? "Pause motion" : "Play motion"}</button>
+              )}
+            </>
+          )}
+        </main>
       </div>
     );
   }
@@ -156,6 +186,8 @@ export const AppShell = ({
           canInstall={canInstall}
           onInstallApp={onInstallApp}
           isOnline={isOnline}
+          motionEnabled={motionEnabled}
+          onMotionToggle={onMotionToggle}
         />
         <main
           className={`flex-1 min-h-0 ${isSimulation ? "overflow-y-auto pb-20 lg:overflow-hidden lg:pb-0" : "overflow-y-auto pb-20 lg:pb-6"}`}

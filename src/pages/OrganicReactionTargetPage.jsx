@@ -156,7 +156,7 @@ function MoleculeSvg({ kind, trace }) {
     </svg>
   );
 }
-export default function OrganicReactionTargetPage() {
+export default function OrganicReactionTargetPage({ onNavigate }) {
   const [step, setStep] = useState(1);
   const [substrate, setSubstrate] = useState(substrates[0]);
   const [base, setBase] = useState("NaOH");
@@ -237,7 +237,7 @@ export default function OrganicReactionTargetPage() {
             ].map((x, i) => (
               <button
                 key={x}
-                onClick={() => announce(`${x} selected`)}
+              onClick={() => (x === "Home" ? onNavigate?.("dashboard") : announce(`${x} selected`))}
                 className={`mb-1 w-full rounded px-3 py-3 text-left text-sm ${i === 1 ? "border-l-2 border-cyan-300 bg-blue-500/15 text-cyan-200" : "text-slate-300"}`}
               >
                 {x}
