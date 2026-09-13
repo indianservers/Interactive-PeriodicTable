@@ -1,0 +1,6 @@
+export const DEFAULTS={acidM:1,baseM:1,acidMl:50,baseMl:50,initialC:25,peakC:30.92,correctedC:31.32,solutionMassG:100,specificHeat:4.18,calorimeterConstant:35};
+export function calibration({hotMass=50,coldMass=50,hotC=48,coldC=22,finalC=34.15,specificHeat=4.18,heatLossCorrection=5.76}={}){const raw=(hotMass*specificHeat*(hotC-finalC)-coldMass*specificHeat*(finalC-coldC))/(finalC-coldC);return{raw,constant:raw+heatLossCorrection,uncertainty:1.8}}
+export function limitingMoles({acidM=1,baseM=1,acidMl=50,baseMl=50}={}){return Math.min(acidM*acidMl/1000,baseM*baseMl/1000)}
+export function neutralisation(values={}){const v={...DEFAULTS,...values},deltaT=v.correctedC-v.initialC,moles=limitingMoles(v),qSolution=v.solutionMassG*v.specificHeat*deltaT/1000,qCal=v.calorimeterConstant*deltaT/1000,qReaction=-(qSolution+qCal),enthalpy=qReaction/moles;return{deltaT,moles,qSolution,qCal,qReaction,enthalpy,percentDifference:Math.abs((enthalpy+57.3)/57.3)*100}}
+export function temperatureAt(t,{initial=25,peak=30.92,corrected=31.32,mixTime=60}={}){if(t<mixTime)return initial+.015*Math.sin(t/8);const rise=corrected-initial,heating=initial+rise*(1-Math.exp(-(t-mixTime)/38));return t<155?Math.min(peak,heating):peak-.014*(t-155)}
+export const ACID_COMPARISON=[{acid:'HCl',enthalpy:-57.3,note:'strong acid'},{acid:'CH₃COOH',enthalpy:-55.2,note:'weak acid'}];

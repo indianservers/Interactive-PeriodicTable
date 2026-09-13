@@ -1,0 +1,808 @@
+.soil-app {
+  --blue: #075de8;
+  --navy: #080c68;
+  --line: #c6d7f0;
+  min-height: 100vh;
+  background: #fff;
+  color: var(--navy);
+  font:
+    15px Inter,
+    system-ui;
+}
+.soil-app * {
+  box-sizing: border-box;
+}
+.soil-app button,
+.soil-app input {
+  font: inherit;
+}
+.soil-head {
+  height: 47px;
+  border-bottom: 1px solid #8cb1f2;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 28px;
+  color: #053ae1;
+}
+.soil-head > button {
+  border: 0;
+  background: none;
+  color: #053ae1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+}
+.soil-head > b {
+  margin-left: auto;
+}
+.soil-head > i {
+  display: flex;
+  gap: 7px;
+}
+.soil-head em {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #cedaf0;
+}
+.soil-head em.on {
+  background: #0862e8;
+}
+.soil-page {
+  padding: 16px 20px 18px;
+  min-height: calc(100vh - 47px);
+}
+.soil-title {
+  height: 132px;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+.soil-title > svg {
+  width: 36px;
+  height: 36px;
+  color: #08a3d6;
+}
+.soil-title small {
+  display: block;
+  font-size: 18px;
+  color: #075de8;
+}
+.soil-title h1 {
+  font-size: 42px;
+  line-height: 1.05;
+  margin: 7px 0 2px;
+}
+.soil-title p {
+  margin: 0;
+  color: #0648e8;
+  font-size: 19px;
+}
+.soil-card {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  padding: 12px;
+  color: #08218a;
+}
+.soil-card h2 {
+  font-size: 20px;
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d5e1f2;
+}
+.soil-card p {
+  line-height: 1.4;
+}
+.soil-card strong {
+  font-size: 23px;
+}
+.soil-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.soil-card th,
+.soil-card td {
+  border: 1px solid #cddcf0;
+  padding: 8px;
+  text-align: left;
+}
+.soil-card label {
+  display: block;
+  margin: 8px 0;
+}
+.soil-card input[type="number"] {
+  height: 37px;
+  border: 1px solid #a8c0e5;
+  border-radius: 5px;
+  padding: 6px;
+  margin: 4px;
+}
+.soil-primary {
+  border: 0 !important;
+  background: #075fea !important;
+  color: #fff !important;
+  min-height: 54px;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.soil-home {
+  display: grid;
+  grid-template-columns: 310px 380px 1fr;
+  gap: 15px;
+}
+.soil-home > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.soil-home > div:nth-child(2) .soil-card {
+  flex: 1;
+}
+.soil-home > .soil-card {
+  height: 515px;
+}
+.soil-home ul {
+  padding-left: 28px;
+  line-height: 1.5;
+}
+.soil-home > .soil-card h2:nth-of-type(2) {
+  margin-top: 25px;
+}
+.soil-home > .soil-card .soil-primary {
+  margin-top: 14px;
+  width: 100%;
+}
+.soil-chart {
+  width: 100%;
+  height: 180px;
+}
+.soil-chart > path {
+  stroke: #183977;
+  stroke-width: 2;
+  fill: none;
+}
+.soil-chart g path {
+  stroke: #d4def0;
+  stroke-width: 1;
+}
+.soil-chart polyline {
+  fill: none;
+  stroke: #075fea;
+  stroke-width: 3;
+}
+.soil-chart text {
+  fill: #12367c;
+  text-anchor: middle;
+}
+.soil-map {
+  height: 210px;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    #34702f,
+    #ffd128 45%,
+    #e74735 75%,
+    #2f64d8
+  );
+  isolation: isolate;
+}
+.soil-map:before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 2px solid #fff8;
+  transform: sk(-2deg);
+  background:
+    repeating-linear-gradient(0deg, #fff0 0 28px, #fff6 29px),
+    repeating-linear-gradient(90deg, #fff0 0 45px, #fff6 46px);
+  z-index: -1;
+}
+.soil-map.ec {
+  filter: hue-rotate(20deg);
+}
+.soil-map > b {
+  position: absolute;
+  color: #fff;
+  text-shadow: 0 1px 3px #000;
+}
+.soil-map > b:nth-of-type(1) {
+  left: 18%;
+  top: 18%;
+}
+.soil-map > b:nth-of-type(2) {
+  left: 38%;
+  top: 36%;
+}
+.soil-map > b:nth-of-type(3) {
+  left: 52%;
+  top: 52%;
+}
+.soil-map > b:nth-of-type(4) {
+  right: 12%;
+  top: 60%;
+}
+.soil-map > b:nth-of-type(5) {
+  left: 25%;
+  bottom: 9%;
+}
+.soil-map > b:before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #223;
+  margin-right: 4px;
+}
+.soil-map > b.selected:before {
+  background: #075fea;
+  width: 22px;
+  height: 22px;
+  border-color: #fff;
+}
+.soil-map small {
+  display: block;
+  background: #fff;
+  color: #10338c;
+  text-shadow: none;
+  padding: 7px;
+  border-radius: 5px;
+}
+.soil-hero {
+  height: 515px;
+  background: linear-gradient(140deg, #d9e5ea, #fafafa);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.soil-labbench {
+  height: 100%;
+  position: relative;
+  background: linear-gradient(#e0e8ed 65%, #b9b3a7 66%);
+}
+.soil-labbench .soil-meter {
+  position: absolute;
+  bottom: 10px;
+  width: 43%;
+  height: 320px;
+}
+.soil-labbench .soil-meter.ph {
+  left: 5%;
+}
+.soil-labbench .soil-meter.ec {
+  right: 4%;
+}
+.soil-sieve {
+  position: absolute;
+  top: 80px;
+  left: 10%;
+  font-size: 20px;
+  border: 10px double #999;
+  border-radius: 50%;
+  padding: 40px;
+}
+.soil-bottles {
+  position: absolute;
+  top: 100px;
+  right: 8%;
+  background: #fff;
+  padding: 30px;
+  border-radius: 7px;
+}
+.soil-meter {
+  position: relative;
+  height: 400px;
+  background: linear-gradient(#d8e2e8 65%, #bbb 66%);
+  overflow: hidden;
+}
+.soil-probe {
+  position: absolute;
+  width: 22px;
+  height: 230px;
+  background: #194770;
+  left: 32%;
+  top: 45px;
+  z-index: 2;
+}
+.soil-beaker {
+  position: absolute;
+  width: 180px;
+  height: 170px;
+  left: 18%;
+  bottom: 0;
+  border: 4px solid #95a8b3;
+  border-radius: 4px 4px 22px 22px;
+  background: #9d744f88;
+}
+.soil-meter.ec .soil-beaker {
+  background: #d9eef477;
+}
+.soil-display {
+  position: absolute;
+  right: 5%;
+  top: 55px;
+  width: 210px;
+  background: #d9ebff;
+  border: 12px solid #293742;
+  padding: 10px;
+  text-align: center;
+}
+.soil-display > * {
+  display: block;
+}
+.soil-display b {
+  font-size: 32px;
+}
+.soil-display em {
+  color: green;
+}
+.soil-modes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.soil-modes button {
+  min-height: 130px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  color: #0648df;
+  text-align: left;
+  padding: 18px;
+}
+.soil-modes b,
+.soil-modes span {
+  display: block;
+}
+.soil-modes b {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.soil-sampling {
+  display: grid;
+  grid-template-columns: 350px 1fr 380px;
+  gap: 10px;
+}
+.soil-sampling > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.soil-sampling .soil-map {
+  height: 240px;
+}
+.soil-workflow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.soil-workflow > h2 {
+  grid-column: 1/-1;
+}
+.soil-workflow > div {
+  background: #eaf2fc;
+  border-radius: 6px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+}
+.soil-workflow > div > i {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #075fe8;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+}
+.soil-workflow .prep {
+  grid-column: 1/-1;
+  height: 190px;
+  margin-top: 8px;
+  background: linear-gradient(145deg, #cbd9df, #876f54);
+}
+.soil-workflow .p2,
+.soil-workflow .p4 {
+  background: linear-gradient(145deg, #eee, #9b795a);
+}
+.soil-workflow .p3 {
+  background: radial-gradient(circle, #a28b70, #bfc8cb);
+}
+.soil-workflow .p5 {
+  background: linear-gradient(#d8f1ff, #99775a);
+}
+.soil-workflow .p6 {
+  background: linear-gradient(#d8e5ec, #243e56);
+}
+.soil-workflow .p7 {
+  background: linear-gradient(#eee, #d9c196);
+}
+.soil-page footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 12px;
+}
+.soil-page footer button {
+  min-width: 190px;
+  min-height: 48px;
+  border: 1px solid #075fea;
+  border-radius: 6px;
+  background: #fff;
+  color: #0751df;
+}
+.soil-page footer button:disabled {
+  opacity: 0.45;
+}
+.soil-cal {
+  display: grid;
+  grid-template-columns: 270px 1fr 1fr 370px;
+  gap: 10px;
+}
+.soil-cal > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.soil-cal > div > button {
+  height: 64px;
+  border: 0;
+  background: #e3edfb;
+  color: #102d9f;
+  font-size: 18px;
+  text-align: left;
+  padding: 14px;
+}
+.soil-cal .soil-meter {
+  height: 520px;
+}
+.soil-standards {
+  background: #eef4fa;
+  padding: 22px;
+  text-align: center;
+}
+.pass {
+  float: right;
+  color: #07983d;
+  font-size: 14px;
+}
+.pass svg {
+  width: 18px;
+  vertical-align: middle;
+}
+.soil-measure {
+  display: grid;
+  grid-template-columns: 265px 1fr 455px;
+  gap: 12px;
+}
+.soil-measure > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+}
+.soil-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.soil-tabs button {
+  height: 43px;
+  border: 0;
+  background: #e4ecf8;
+  color: #0746df;
+  font-weight: 700;
+}
+.soil-tabs button.active {
+  background: #075fea;
+  color: #fff;
+}
+.soil-meters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+.soil-meters .soil-meter {
+  height: 420px;
+}
+.soil-meters .soil-display {
+  width: 195px;
+}
+.soil-measure .soil-card h3 span {
+  background: #dff6e6;
+  color: #078a3e;
+  padding: 6px;
+  border-radius: 5px;
+}
+.soil-field {
+  display: grid;
+  grid-template-columns: 360px 1fr 540px;
+  gap: 10px;
+}
+.soil-field > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.soil-field .soil-card tr.selected {
+  background: #d5e8ff;
+}
+.soil-field .soil-card tr {
+  cursor: pointer;
+}
+.soil-field .soil-card button {
+  height: 48px;
+  border: 1px solid #aac5ec;
+  background: #e7effa;
+  color: #083dda;
+  padding: 9px;
+}
+.soil-gradient {
+  height: 30px;
+  background: linear-gradient(90deg, #e33, #ff0, #2c5);
+  margin-top: 15px;
+}
+.soil-map-tabs,
+.soil-maps,
+.soil-field-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.soil-map-tabs b {
+  text-align: center;
+  background: #075fea;
+  color: #fff;
+  padding: 10px;
+}
+.soil-maps .soil-map {
+  height: 420px;
+}
+.zone {
+  border: 1px solid #9dd5b6;
+  background: #edfff3;
+  padding: 10px;
+  margin: 8px 0;
+}
+.zone span {
+  float: right;
+}
+.zone.z1 {
+  background: #fff8e3;
+  border-color: #f1cc65;
+}
+.zone.z2 {
+  background: #fff0f1;
+  border-color: #ef9aa0;
+}
+.soil-report {
+  display: grid;
+  grid-template-columns: 370px 1fr 420px;
+  gap: 10px;
+}
+.soil-report > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.soil-report progress {
+  width: 100%;
+  height: 26px;
+}
+.soil-report .soil-card p svg {
+  width: 26px;
+  color: #0b9e4e;
+  vertical-align: middle;
+}
+.soil-tools {
+  height: 120px;
+  background: #e5ebf1;
+  display: grid;
+  place-items: center;
+}
+.soil-report-maps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.soil-report fieldset {
+  border: 0;
+  background: #ebfaf1;
+  margin: 8px;
+  padding: 10px;
+}
+.soil-report fieldset button {
+  border: 1px solid #9cccb0;
+  background: #fff;
+  padding: 7px;
+  margin: 4px;
+}
+.soil-report fieldset button.active {
+  background: #c9f2d8;
+}
+.soil-report .soil-chart {
+  height: 140px;
+}
+@media (max-width: 1200px) {
+  .soil-title h1 {
+    font-size: 34px;
+  }
+  .soil-home {
+    grid-template-columns: 280px 1fr;
+  }
+  .soil-hero {
+    grid-column: 1/-1;
+  }
+  .soil-home > .soil-card {
+    height: auto;
+  }
+  .soil-sampling {
+    grid-template-columns: 300px 1fr;
+  }
+  .soil-sampling > div:last-child {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .soil-cal {
+    grid-template-columns: 240px 1fr 1fr;
+  }
+  .soil-cal > div:last-child {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .soil-measure {
+    grid-template-columns: 230px 1fr;
+  }
+  .soil-measure > div:last-child {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .soil-field {
+    grid-template-columns: 300px 1fr;
+  }
+  .soil-field > div:last-child {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .soil-report {
+    grid-template-columns: 300px 1fr;
+  }
+  .soil-report > div:last-child {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .soil-head {
+    height: 55px;
+    padding: 0 10px;
+  }
+  .soil-head > span,
+  .soil-head > b,
+  .soil-head > svg,
+  .soil-head > button:last-child {
+    display: none;
+  }
+  .soil-head > i {
+    margin-left: auto;
+  }
+  .soil-head em {
+    width: 11px;
+    height: 11px;
+  }
+  .soil-page {
+    padding: 10px;
+  }
+  .soil-title {
+    height: auto;
+    min-height: 125px;
+  }
+  .soil-title h1 {
+    font-size: 29px;
+  }
+  .soil-title p {
+    font-size: 15px;
+  }
+  .soil-home,
+  .soil-sampling,
+  .soil-cal,
+  .soil-measure,
+  .soil-field,
+  .soil-report,
+  .soil-meters,
+  .soil-report-maps {
+    display: block;
+  }
+  .soil-home > *,
+  .soil-sampling > *,
+  .soil-cal > *,
+  .soil-measure > *,
+  .soil-field > *,
+  .soil-report > *,
+  .soil-meters > *,
+  .soil-report-maps > * {
+    margin-bottom: 10px;
+  }
+  .soil-hero {
+    height: 780px;
+  }
+  .soil-labbench .soil-meter {
+    width: 90%;
+    height: 340px;
+    left: 5% !important;
+  }
+  .soil-labbench .soil-meter.ph {
+    top: 20px;
+  }
+  .soil-labbench .soil-meter.ec {
+    top: 390px;
+  }
+  .soil-sieve,
+  .soil-bottles {
+    display: none;
+  }
+  .soil-modes {
+    grid-template-columns: 1fr 1fr;
+  }
+  .soil-workflow {
+    grid-template-columns: 1fr 1fr;
+  }
+  .soil-sampling > div:last-child,
+  .soil-cal > div:last-child,
+  .soil-measure > div:last-child,
+  .soil-field > div:last-child,
+  .soil-report > div:last-child {
+    display: flex;
+    flex-direction: column;
+  }
+  .soil-cal .soil-meter,
+  .soil-meters .soil-meter {
+    height: 400px;
+  }
+  .soil-field .soil-maps {
+    display: block;
+  }
+  .soil-maps .soil-map {
+    height: 320px;
+    margin-bottom: 10px;
+  }
+  .soil-field-bottom {
+    display: block;
+  }
+  .soil-page footer {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .soil-page footer button {
+    min-width: 0;
+  }
+  .soil-workflow .prep {
+    height: 140px;
+  }
+  .soil-report table {
+    font-size: 11px;
+  }
+  .soil-chart {
+    min-width: 400px;
+  }
+  .soil-card:has(.soil-chart) {
+    overflow-x: auto;
+  }
+}

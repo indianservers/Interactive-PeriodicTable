@@ -32,6 +32,8 @@ import HomeLibrary from "./HomeLibrary.jsx";
 import ConceptIcon from "../components/ConceptIcon.jsx";
 import { conceptPng } from "../data/homeIconManifest.js";
 import HomeStatistics from "./HomeStatistics.jsx";
+import { completedVirtualLabs } from "../data/completedVirtualLabs.js";
+import "./completedLabs.css";
 import "./homeLibrary.css";
 
 const ATOMS = [
@@ -353,6 +355,10 @@ export const DashboardPage = ({ onNavigate }) => {
           </section>
           <HomeStatistics/>
           <div className="hub-quick-browse"><button onClick={() => onNavigate("virtual-labs")}><ConceptIcon icon="simulation"/>Virtual Labs <ChevronRight size={14}/></button><button onClick={() => onNavigate("physical-chemistry")}><ConceptIcon icon="gas"/>Physical chemistry</button><button onClick={() => onNavigate("organic-chemistry")}><ConceptIcon icon="organic"/>Organic chemistry</button><button onClick={() => onNavigate("inorganic-chemistry")}><ConceptIcon icon="crystal"/>Inorganic chemistry</button><button onClick={() => onNavigate("analytical-chemistry")}><ConceptIcon icon="research"/>Analytical chemistry</button><button onClick={() => browse()}>Browse all categories <ChevronRight size={14}/></button></div>
+          <section className="dash-new-labs" aria-labelledby="dash-new-labs-title">
+            <header><div><span className="hub-eyebrow">NEW INTERACTIVE EXPERIENCES</span><h2 id="dash-new-labs-title">Virtual Labs &amp; Simulators</h2><p>Launch any of the {completedVirtualLabs.length} completed, model-driven laboratory workflows.</p></div><button onClick={() => onNavigate("virtual-labs")}>View lab home <ChevronRight size={14}/></button></header>
+            <div>{completedVirtualLabs.map(lab=><button key={lab.id} onClick={()=>onNavigate(lab.route)}><FlaskConical size={15}/><span><b>{lab.title}</b><small>{lab.subject} · {lab.screens} screens</small></span><ChevronRight size={13}/></button>)}</div>
+          </section>
           <div className="dash-workspace">
             <section className="dash-panel dash-molecule-card">
               <div className="dash-molecule-info">

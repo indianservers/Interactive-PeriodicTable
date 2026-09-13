@@ -3,6 +3,7 @@ import { Home, PauseCircle, PlayCircle } from "lucide-react";
 import { Sidebar } from "./Sidebar.jsx";
 import { Topbar } from "./Topbar.jsx";
 import { MobileNav } from "./MobileNav.jsx";
+import { syllabusInteractiveIds } from "../../modules/core-simulations/syllabusInteractiveModel.js";
 
 export const AppShell = ({
   children,
@@ -25,15 +26,33 @@ export const AppShell = ({
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarMini, setSidebarMini] = useState(false);
+  const isSyllabusLab = syllabusInteractiveIds.includes(currentPage);
   const isSimulation = new Set([
     "atom-builder",
     "gas-properties",
     "reaction-leftovers",
     "acid-base-solutions",
+    "beer-lambert-law",
+    "chromatography-separation",
+    "distillation-crystallisation",
+    "bromination-phenol-aniline",
+    "benzoylation-aniline-phenol",
+    "flame-photometry",
+    "gravimetric-precipitation",
+    "molecular-dynamics",
     "molecule-polarity",
     "molecules-light",
+    "neutralisation-calorimetry",
+    "polarography-concentration",
+    "real-gas-laws",
+    "statistical-thermodynamics",
+    "tafel-plot",
+    "thermodynamics",
+    "viscosity-poiseuille",
+    "soil-ph-conductivity",
     "states-matter",
     "symmetry",
+    ...syllabusInteractiveIds,
   ]).has(currentPage);
   const currentYear = new Date().getFullYear();
   const handleTouchStart = (event) => {
@@ -59,6 +78,7 @@ export const AppShell = ({
   // Dashboard has a page-specific full-viewport learning shell. Keeping it
   // isolated here prevents its layout from affecting protected tool routes.
   if (
+    isSyllabusLab ||
     currentPage === "dashboard" ||
     currentPage === "library" ||
     currentPage === "molecule" ||
@@ -73,8 +93,24 @@ export const AppShell = ({
     currentPage === "gas-properties" ||
     currentPage === "reaction-leftovers" ||
     currentPage === "acid-base-solutions" ||
+    currentPage === "beer-lambert-law" ||
+    currentPage === "chromatography-separation" ||
+    currentPage === "distillation-crystallisation" ||
+    currentPage === "bromination-phenol-aniline" ||
+    currentPage === "benzoylation-aniline-phenol" ||
+    currentPage === "flame-photometry" ||
+    currentPage === "gravimetric-precipitation" ||
+    currentPage === "molecular-dynamics" ||
     currentPage === "molecule-polarity" ||
     currentPage === "molecules-light" ||
+    currentPage === "neutralisation-calorimetry" ||
+    currentPage === "polarography-concentration" ||
+    currentPage === "real-gas-laws" ||
+    currentPage === "statistical-thermodynamics" ||
+    currentPage === "tafel-plot" ||
+    currentPage === "thermodynamics" ||
+    currentPage === "viscosity-poiseuille" ||
+    currentPage === "soil-ph-conductivity" ||
     currentPage === "states-matter" ||
     currentPage === "chemistry-solver" ||
     currentPage === "chemistry-solver-questions" ||
@@ -129,25 +165,63 @@ export const AppShell = ({
     currentPage === "physical-simulators" ||
     currentPage === "iupac-nomenclature" ||
     currentPage === "retrosynthesis-planner" ||
-    currentPage === "subject-modules"
-    || currentPage === "physical-chemistry"
-    || currentPage === "organic-chemistry"
-    || currentPage === "inorganic-chemistry"
-    || currentPage === "analytical-chemistry"
-    || currentPage === "virtual-labs"
+    currentPage === "subject-modules" ||
+    currentPage === "physical-chemistry" ||
+    currentPage === "organic-chemistry" ||
+    currentPage === "inorganic-chemistry" ||
+    currentPage === "analytical-chemistry" ||
+    currentPage === "virtual-labs"
   ) {
     return (
       <div className={isDark ? "dark" : "light"}>
         <main className="min-h-screen overflow-x-hidden">
           {children}
-          {currentPage !== "dashboard" && currentPage !== "states-matter" && currentPage !== "organic-visuals" && currentPage !== "bio-proteins" && currentPage !== "inorganic-visuals" && currentPage !== "inorganic-deep-module" && currentPage !== "inorganic-crystals" && (
-            <>
-              <button type="button" aria-label="Home" onClick={() => onNavigate?.("dashboard")} className="fixed bottom-4 left-4 z-[140] inline-flex items-center gap-2 rounded-xl border border-cyan-300/35 bg-[#071a2c]/95 px-3 py-2 text-xs font-bold text-cyan-100 shadow-xl shadow-black/30 backdrop-blur transition hover:border-cyan-200 hover:bg-[#0c2b45]"><Home size={16} /> Home</button>
-              {currentPage !== "atom-builder" && (
-                <button type="button" aria-label={motionEnabled ? "Pause animations" : "Play animations"} aria-pressed={!motionEnabled} onClick={onMotionToggle} className={`fixed bottom-4 right-4 z-[140] inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold shadow-xl shadow-black/30 backdrop-blur transition ${motionEnabled ? "border-cyan-300/35 bg-[#071a2c]/95 text-cyan-100 hover:border-cyan-200" : "border-amber-300/40 bg-amber-500/15 text-amber-100"}`}>{motionEnabled ? <PauseCircle size={16} /> : <PlayCircle size={16} />}{motionEnabled ? "Pause motion" : "Play motion"}</button>
-              )}
-            </>
-          )}
+          {currentPage !== "dashboard" &&
+            !isSyllabusLab &&
+            currentPage !== "states-matter" &&
+            currentPage !== "acid-base-solutions" &&
+            currentPage !== "beer-lambert-law" &&
+            currentPage !== "chromatography-separation" &&
+            currentPage !== "distillation-crystallisation" &&
+            currentPage !== "bromination-phenol-aniline" &&
+            currentPage !== "benzoylation-aniline-phenol" &&
+            currentPage !== "flame-photometry" &&
+            currentPage !== "gravimetric-precipitation" &&
+            currentPage !== "molecular-dynamics" &&
+            currentPage !== "organic-visuals" &&
+            currentPage !== "bio-proteins" &&
+            currentPage !== "inorganic-visuals" &&
+            currentPage !== "inorganic-deep-module" &&
+            currentPage !== "inorganic-crystals" && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Home"
+                  onClick={() => onNavigate?.("dashboard")}
+                  className="fixed bottom-4 left-4 z-[140] inline-flex items-center gap-2 rounded-xl border border-cyan-300/35 bg-[#071a2c]/95 px-3 py-2 text-xs font-bold text-cyan-100 shadow-xl shadow-black/30 backdrop-blur transition hover:border-cyan-200 hover:bg-[#0c2b45]"
+                >
+                  <Home size={16} /> Home
+                </button>
+                {currentPage !== "atom-builder" && (
+                  <button
+                    type="button"
+                    aria-label={
+                      motionEnabled ? "Pause animations" : "Play animations"
+                    }
+                    aria-pressed={!motionEnabled}
+                    onClick={onMotionToggle}
+                    className={`fixed bottom-4 right-4 z-[140] inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold shadow-xl shadow-black/30 backdrop-blur transition ${motionEnabled ? "border-cyan-300/35 bg-[#071a2c]/95 text-cyan-100 hover:border-cyan-200" : "border-amber-300/40 bg-amber-500/15 text-amber-100"}`}
+                  >
+                    {motionEnabled ? (
+                      <PauseCircle size={16} />
+                    ) : (
+                      <PlayCircle size={16} />
+                    )}
+                    {motionEnabled ? "Pause motion" : "Play motion"}
+                  </button>
+                )}
+              </>
+            )}
         </main>
       </div>
     );

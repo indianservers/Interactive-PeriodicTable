@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, BookOpen, CheckCircle2, Clock3, FlaskConical, Home, Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { BIOCHEMISTRY_VIRTUAL_LABS } from "../data/biochemistryVirtualLabs.js";
+import { completedVirtualLabs, completedVirtualLabScreens } from "../data/completedVirtualLabs.js";
 import { upcomingExperiences } from "../data/upcomingExperiences.js";
 import { virtualLabCoverage } from "../data/virtualLabCoverage.js";
+import { syllabusInteractives, syllabusConcepts } from "../modules/core-simulations/syllabusInteractiveModel.js";
 
 const statusLabel = { all: "All experiments", active: "In progress", completed: "Completed", upcoming: "Upcoming" };
 
@@ -19,6 +21,15 @@ export default function VirtualLabsHomePage({ onNavigate }) {
       route: "lab",
     })),
     {
+      id: "rbvrr-bsc-vl",
+      subject: "Analytical",
+      title: "RBVRR B.Sc Chemistry Practicals 2026–27",
+      experiments: [...syllabusInteractives, ...syllabusConcepts].map((item) => [item.title, "covered"]),
+      duration: 45,
+      difficulty: "Foundation to advanced",
+      route: "virtual-labs",
+    },
+    {
       id: "biochemistry-vl",
       subject: "Biochemistry",
       title: "Biochemistry Virtual Lab",
@@ -32,6 +43,7 @@ export default function VirtualLabsHomePage({ onNavigate }) {
   const matches = (text) => text.toLowerCase().includes(query.toLowerCase());
   const visibleLabs = labs.filter((lab) => (subject === "All" || lab.subject === subject) && matches(`${lab.title} ${lab.subject} ${lab.experiments.map(([name]) => name).join(" ")}`));
   const visiblePlanned = planned.filter((item) => (subject === "All" || item.title.startsWith(subject)) && matches(`${item.title} ${item.description}`));
+  const visibleCompleted = completedVirtualLabs.filter((lab) => (subject === "All" || lab.subject === subject) && matches(`${lab.title} ${lab.subject} ${lab.description}`));
   const experimentCount = labs.reduce((total, lab) => total + lab.experiments.length, 0);
 
   return (
@@ -48,10 +60,11 @@ export default function VirtualLabsHomePage({ onNavigate }) {
               <h1 className="mt-4 text-4xl font-black md:text-6xl">Virtual Laboratories</h1>
               <p className="mt-3 max-w-3xl text-lg text-slate-300">Run guided experiments, collect evidence, explain results and build laboratory confidence.</p>
             </div>
-            <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="grid grid-cols-2 gap-2 text-center md:grid-cols-4">
               <div className="rounded-xl border border-white/10 bg-black/20 p-3"><b className="block text-2xl text-cyan-200">{labs.length}</b><small className="text-[10px] text-slate-400">Lab collections</small></div>
               <div className="rounded-xl border border-white/10 bg-black/20 p-3"><b className="block text-2xl text-cyan-200">{experimentCount}</b><small className="text-[10px] text-slate-400">Experiments</small></div>
-              <div className="rounded-xl border border-white/10 bg-black/20 p-3"><b className="block text-2xl text-amber-200">{planned.length}</b><small className="text-[10px] text-slate-400">Upcoming</small></div>
+              <div className="rounded-xl border border-white/10 bg-black/20 p-3"><b className="block text-2xl text-emerald-200">{completedVirtualLabs.length}</b><small className="text-[10px] text-slate-400">Interactive labs</small></div>
+              <div className="rounded-xl border border-white/10 bg-black/20 p-3"><b className="block text-2xl text-emerald-200">{completedVirtualLabScreens}</b><small className="text-[10px] text-slate-400">Guided screens</small></div>
             </div>
           </div>
           <button onClick={() => onNavigate("biochemistry-module")} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-3 text-sm font-black text-slate-950">Open Biochemistry VL <ArrowUpRight size={16} /></button>
@@ -67,6 +80,18 @@ export default function VirtualLabsHomePage({ onNavigate }) {
             </div>
           </div>
         </section>
+
+        {status !== "upcoming" && <section id="completed-virtual-labs" className="mt-7">
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">READY TO LAUNCH</span><h2 className="mt-1 text-2xl font-black">Interactive virtual labs</h2><p className="mt-1 text-xs text-slate-400">Direct access to every rebuilt simulator, with complete guided workflows and assessments.</p></div><span className="text-xs text-slate-500">{visibleCompleted.length} shown</span></div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleCompleted.map((lab) => <article key={lab.id} className="flex min-h-44 flex-col rounded-2xl border border-emerald-300/15 bg-gradient-to-br from-emerald-300/[.07] to-[#0b2034] p-4 transition hover:-translate-y-0.5 hover:border-emerald-300/40">
+              <div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-widest text-emerald-300">{lab.subject} chemistry</p><h3 className="mt-1 font-black text-white">{lab.title}</h3></div><CheckCircle2 size={18} className="shrink-0 text-emerald-300"/></div>
+              <p className="mt-2 flex-1 text-xs leading-5 text-slate-400">{lab.description}</p>
+              <div className="mt-4 flex items-center justify-between"><span className="text-[10px] font-bold text-slate-500">{lab.screens} guided screens</span><button onClick={() => onNavigate(lab.route)} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-300 px-3 py-2 text-xs font-black text-slate-950">Launch lab <ArrowUpRight size={13}/></button></div>
+            </article>)}
+          </div>
+          {!visibleCompleted.length && <div className="rounded-2xl border border-white/10 bg-[#0b2034] p-8 text-center text-sm text-slate-400">No completed virtual labs match these filters.</div>}
+        </section>}
 
         <section className="mt-6">
           <div className="mb-3 flex items-end justify-between"><div><span className="text-[10px] font-black uppercase tracking-widest text-cyan-300">LAB CATALOG</span><h2 className="mt-1 text-2xl font-black">Choose an experiment collection</h2></div><span className="text-xs text-slate-500">{visibleLabs.length + (status === "upcoming" ? visiblePlanned.length : 0)} shown</span></div>

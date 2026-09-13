@@ -1,10 +1,10 @@
-export const categoryPng = {simulators:'simulation',elements:'periodic',organic:'organic',inorganic:'crystal',biochemistry:'dna',pharma:'drug',analytical:'research',explore:'symmetry',learn:'learn'};
+export const categoryPng = {simulators:'simulation',elements:'periodic',organic:'organic',inorganic:'crystal',biochemistry:'dna',pharma:'drug',analytical:'research',explore:'symmetry',learn:'learn','bsc-cbcs':'curriculum'};
 export const subgroupPng = {
  'Physical chemistry':'gas','Reactions & solutions':'acid','Atoms & interactions':'atom',
  'Periodic table':'periodic','Atomic structure':'atom','Physical laboratory':'gas','Reactions & synthesis':'synthesis','Structure & identification':'isomer',
  'Coordination & materials':'coordination','Elements & analysis':'test','Biomolecules':'protein','Cells & energy':'metabolism',
  'Discovery & delivery':'adme','Analysis & safety':'quality','3D & symmetry':'symmetry','Create & solve':'inventor','Visuals & research':'research',
- 'Courses & curriculum':'curriculum','Practice & resources':'quiz','Advanced analysis':'research'
+ 'Courses & curriculum':'curriculum','Practice & resources':'quiz','Advanced analysis':'research','College practicals':'test','Theory simulations':'learn'
 };
 export const conceptPng = {
  'physical-simulators':'gas','gas-properties':'gas','states-matter':'phases','acid-base-solutions':'acid','reaction-leftovers':'stoichiometry','lab':'simulation','atom-builder':'atom','molecule-polarity':'polarity','molecules-light':'light','physical-chemistry-vl':'gas',

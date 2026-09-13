@@ -1,0 +1,54 @@
+.ch-app:has(.chb-home),.ch-app:has(.chb-tlc){padding-bottom:0}
+.ch-head{gap:24px;font-family:"Roboto Condensed",Arial,sans-serif;font-size:18px}
+.ch-head>button:first-child{width:42px;height:38px;margin-left:3px;padding:0;border:1px solid #8db7f6}
+.ch-head>button:first-child svg{width:24px;height:24px}
+.ch-head>strong{margin-left:auto}
+.ch-head>small{font-weight:800}
+.chb-home,.chb-tlc{font-family:"Roboto Condensed",Arial,sans-serif}
+.chb-home{grid-template-columns:48.5% 51.5%;grid-template-rows:minmax(0,1fr) 221px}
+.chb-home .chb-kicker{margin-bottom:16px}
+.chb-home h1{font-size:48px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
+.chb-home .chb-subtitle{margin-bottom:26px}
+.chb-home .chb-principles{margin-right:-34px;grid-template-columns:335px minmax(0,1fr)}
+.chb-home .chb-start{width:calc(100% - 40px);height:60px;margin:18px 20px 0;box-shadow:0 0 0 18px #fff,0 0 0 19px #bdd3ef}
+.chb-home .chb-modes{padding:8px 25px 25px}
+.chb-home .chb-modes strong{font-size:19px}
+.chb-home .chb-modes p{font-size:16px}
+.chb-home .chb-formula{margin:20px 0 16px}
+.chb-home .chb-formula>.chb-fraction{display:inline-flex;flex-direction:column;align-items:center;padding:0;border:0;line-height:1.05}
+.chb-home .chb-formula>.chb-fraction>span:first-child{padding:0 7px 4px;border-bottom:2px solid}
+.chb-home .chb-formula>.chb-fraction>span:last-child{padding-top:3px}
+.chb-home .chb-principles hr{margin:20px 0}
+.ch-app .chb-start{border:0;background:linear-gradient(135deg,#0758e7,#087bf7);color:#fff}
+.chb-home-scene{background-position:right center;background-size:170% 100%}
+.chb-live-monitor{left:50%;width:45%}
+.chb-scene-bands{left:17%;width:5%}
+.chb-tlc{grid-template-columns:443px minmax(0,1fr) 420px}
+.chb-tlc h1{font-size:42px;font-weight:700;letter-spacing:-1px;white-space:nowrap}
+.chb-tlc-left{padding-top:30px}
+.chb-tlc-left>p:not(.chb-kicker){margin-bottom:20px}
+.chb-control-card{min-height:628px}
+.chb-control-card>label{padding:14px 8px}
+.chb-control-card hr{margin:14px 0}
+.chb-number{min-height:70px;margin:20px 0}
+.chb-tlc-centre{padding-left:0}
+.chb-tlc-right{padding-left:0}
+.chb-tlc-photo{background-image:none!important}
+.chb-tlc-photo:before,.chb-tlc-photo:after{content:"";position:absolute;z-index:0;top:0;bottom:0;background-image:url("../../assets/virtual-labs/chromatography/tlc-apparatus-v2.png");background-repeat:no-repeat}
+.chb-tlc-photo:before{left:0;width:62%;background-position:left center;background-size:177% 100%}
+.chb-tlc-photo:after{right:0;width:38%;background-position:right center;background-size:230% 100%}
+.chb-tlc-right>section:first-child{min-height:330px}
+.chb-tlc-right>section:last-child{min-height:308px}
+.chb-tlc-right h2{margin-bottom:12px}
+.chb-tlc-right th,.chb-tlc-right td{padding:11px 8px}
+.chb-tlc .chb-valid{align-items:flex-start}
+.chb-tlc .chb-valid>span{display:block;flex:1}
+.chb-tlc .chb-valid small{margin-top:4px}
+.chb-solvent-chart{height:207px}
+.chb-number input{background:#fff}
+.chb-tlc .chb-lower-cards h2{font-size:18px}
+.chb-tlc .chb-lower-cards p{font-size:14px}
+.chb-tlc .chb-lower-cards{margin-top:14px}
+.chb-tlc .chb-lower-cards>section{height:172px}
+@media(min-width:1201px){.chb-tlc-footer button{display:flex;align-items:center;justify-content:center;gap:18px;font-size:21px}.chb-tlc-footer button svg{width:28px;height:28px}}
+@media(min-width:1201px){.chb-tlc-footer{position:relative;display:block}.chb-tlc-footer button{position:absolute;top:9px}.chb-tlc-footer button:nth-child(1){left:25px;width:238px}.chb-tlc-footer button:nth-child(2){left:623px;width:390px}.chb-tlc-footer button:nth-child(3){left:1124px;width:238px}.chb-tlc-footer button:nth-child(4){right:25px;width:264px}}

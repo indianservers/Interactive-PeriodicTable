@@ -13,6 +13,7 @@ import { SettingsPage } from "./pages/SettingsPage.jsx";
 import LibraryPage from "./pages/LibraryPage.jsx";
 import { ChemistryLabPage } from "./pages/ChemistryLabPage.jsx";
 import { SyllabusPage } from "./pages/SyllabusPage.jsx";
+import { syllabusInteractiveIds } from "./modules/core-simulations/syllabusInteractiveModel.js";
 import { LearningPathTargetPage } from "./pages/LearningPathTargetPage.jsx";
 import { ReactionBalancerTargetPage } from "./pages/ReactionBalancerTargetPage.jsx";
 import { StudyToolkitTargetPage } from "./pages/StudyToolkitTargetPage.jsx";
@@ -90,9 +91,7 @@ const ResearchToolkitDashboardPage = lazy(
 const BiochemistryTargetPage = lazy(
   () => import("./pages/BiochemistryTargetPage.jsx"),
 );
-const MembraneTargetPage = lazy(
-  () => import("./pages/MembraneTargetPage.jsx"),
-);
+const MembraneTargetPage = lazy(() => import("./pages/MembraneTargetPage.jsx"));
 const ARVRMRModule = lazy(
   () => import("./modules/ar-vr-mr/ImmersiveChemistryTargetPage.jsx"),
 );
@@ -108,11 +107,59 @@ const ReactionLeftoversPage = lazy(
 const AcidBaseSolutionsPage = lazy(
   () => import("./modules/core-simulations/AcidBaseSolutionsPage.jsx"),
 );
+const BeerLambertLab = lazy(
+  () => import("./modules/core-simulations/BeerLambertLab.jsx"),
+);
+const ChromatographyLab = lazy(
+  () => import("./modules/core-simulations/ChromatographyLab.jsx"),
+);
+const DistillationCrystallisationLab = lazy(
+  () => import("./modules/core-simulations/DistillationCrystallisationLab.jsx"),
+);
+const SyllabusInteractiveLab = lazy(
+  () => import("./modules/core-simulations/SyllabusInteractiveLab.jsx"),
+);
+const OrganicAromaticPrepLab = lazy(
+  () => import("./modules/core-simulations/OrganicAromaticPrepLab.jsx"),
+);
+const FlamePhotometryLab = lazy(
+  () => import("./modules/core-simulations/FlamePhotometryLab.jsx"),
+);
+const GravimetricPrecipitationLab = lazy(
+  () => import("./modules/core-simulations/GravimetricPrecipitationLab.jsx"),
+);
+const MolecularDynamicsLab = lazy(
+  () => import("./modules/core-simulations/MolecularDynamicsLab.jsx"),
+);
 const MoleculePolarityPage = lazy(
   () => import("./modules/core-simulations/MoleculePolarityPage.jsx"),
 );
 const MoleculesLightPage = lazy(
   () => import("./modules/core-simulations/MoleculesLightPage.jsx"),
+);
+const NeutralisationCalorimetryLab = lazy(
+  () => import("./modules/core-simulations/NeutralisationCalorimetryLab.jsx"),
+);
+const PolarographyConcentrationLab = lazy(
+  () => import("./modules/core-simulations/PolarographyConcentrationLab.jsx"),
+);
+const RealGasLawsLab = lazy(
+  () => import("./modules/core-simulations/RealGasLawsLab.jsx"),
+);
+const StatisticalThermodynamicsLab = lazy(
+  () => import("./modules/core-simulations/StatisticalThermodynamicsLab.jsx"),
+);
+const TafelPlotLab = lazy(
+  () => import("./modules/core-simulations/TafelPlotLab.jsx"),
+);
+const ThermodynamicsLab = lazy(
+  () => import("./modules/core-simulations/ThermodynamicsLab.jsx"),
+);
+const ViscosityPoiseuilleLab = lazy(
+  () => import("./modules/core-simulations/ViscosityPoiseuilleLab.jsx"),
+);
+const SoilPhConductivityLab = lazy(
+  () => import("./modules/core-simulations/SoilPhConductivityLab.jsx"),
 );
 const StatesMatterPage = lazy(
   () => import("./modules/core-simulations/StatesMatterPage.jsx"),
@@ -124,8 +171,24 @@ const pageHashMap = {
   "gas-properties": "simulations/gas-properties",
   "reaction-leftovers": "simulations/reaction-leftovers",
   "acid-base-solutions": "simulations/acid-base-solutions",
+  "beer-lambert-law": "simulations/beer-lambert-law",
+  "chromatography-separation": "simulations/chromatography-separation",
+  "distillation-crystallisation": "simulations/distillation-crystallisation",
+  "bromination-phenol-aniline": "simulations/bromination-phenol-aniline",
+  "benzoylation-aniline-phenol": "simulations/benzoylation-aniline-phenol",
+  "flame-photometry": "simulations/flame-photometry",
+  "gravimetric-precipitation": "simulations/gravimetric-precipitation",
+  "molecular-dynamics": "physical-chemistry/molecular-dynamics",
   "molecule-polarity": "simulations/molecule-polarity",
   "molecules-light": "simulations/molecules-light",
+  "neutralisation-calorimetry": "simulations/neutralisation-calorimetry",
+  "polarography-concentration": "simulations/polarography-concentration",
+  "real-gas-laws": "physical-chemistry/real-gas-laws",
+  "statistical-thermodynamics": "physical-chemistry/statistical-thermodynamics",
+  "tafel-plot": "simulations/tafel-plot",
+  thermodynamics: "physical-chemistry/thermodynamics",
+  "viscosity-poiseuille": "physical-chemistry/viscosity-poiseuille",
+  "soil-ph-conductivity": "simulations/soil-ph-conductivity",
   "states-matter": "simulations/states-matter",
   symmetry: "molecular-symmetry",
   "symmetry-operations": "molecular-symmetry/operations",
@@ -200,8 +263,24 @@ const hashPageMap = {
   "simulations/gas-properties": "gas-properties",
   "simulations/reaction-leftovers": "reaction-leftovers",
   "simulations/acid-base-solutions": "acid-base-solutions",
+  "simulations/beer-lambert-law": "beer-lambert-law",
+  "simulations/chromatography-separation": "chromatography-separation",
+  "simulations/distillation-crystallisation": "distillation-crystallisation",
+  "simulations/bromination-phenol-aniline": "bromination-phenol-aniline",
+  "simulations/benzoylation-aniline-phenol": "benzoylation-aniline-phenol",
+  "simulations/flame-photometry": "flame-photometry",
+  "simulations/gravimetric-precipitation": "gravimetric-precipitation",
+  "physical-chemistry/molecular-dynamics": "molecular-dynamics",
   "simulations/molecule-polarity": "molecule-polarity",
   "simulations/molecules-light": "molecules-light",
+  "simulations/neutralisation-calorimetry": "neutralisation-calorimetry",
+  "simulations/polarography-concentration": "polarography-concentration",
+  "physical-chemistry/real-gas-laws": "real-gas-laws",
+  "physical-chemistry/statistical-thermodynamics": "statistical-thermodynamics",
+  "simulations/tafel-plot": "tafel-plot",
+  "physical-chemistry/thermodynamics": "thermodynamics",
+  "physical-chemistry/viscosity-poiseuille": "viscosity-poiseuille",
+  "simulations/soil-ph-conductivity": "soil-ph-conductivity",
   "simulations/states-matter": "states-matter",
   "molecular-symmetry": "symmetry",
   "molecular-symmetry/operations": "symmetry-operations",
@@ -268,6 +347,19 @@ const hashPageMap = {
   "analytical-chemistry": "analytical-chemistry",
   "virtual-labs": "virtual-labs",
 };
+
+Object.assign(
+  pageHashMap,
+  Object.fromEntries(
+    syllabusInteractiveIds.map((id) => [id, `simulations/${id}`]),
+  ),
+);
+Object.assign(
+  hashPageMap,
+  Object.fromEntries(
+    syllabusInteractiveIds.map((id) => [`simulations/${id}`, id]),
+  ),
+);
 
 const symmetrySections = {
   symmetry: "visualizer",
@@ -337,6 +429,10 @@ const pageStatusLabels = {
   "acid-base-solutions": "Acid-Base Solutions",
   "molecule-polarity": "Molecule Polarity",
   "molecules-light": "Molecules and Light",
+  "neutralisation-calorimetry": "Neutralisation Calorimetry",
+  "polarography-concentration": "Polarography Concentration",
+  "real-gas-laws": "Real Gas Laws",
+  "soil-ph-conductivity": "Soil pH and Conductivity",
   "states-matter": "States of Matter",
   molecule: "3D Molecule Viewer",
   symmetry: "Molecular Symmetry Visualizer",
@@ -767,6 +863,20 @@ function App() {
   };
 
   const renderPage = () => {
+    if (syllabusInteractiveIds.includes(currentPage)) {
+      return (
+        <Suspense
+          fallback={
+            <div className="flex min-h-[40vh] items-center justify-center text-slate-300">
+              Loading laboratory…
+            </div>
+          }
+        >
+          <SyllabusInteractiveLab experimentId={currentPage} />
+        </Suspense>
+      );
+    }
+
     switch (currentPage) {
       case "dashboard":
         return (
@@ -859,6 +969,126 @@ function App() {
             <AcidBaseSolutionsPage />
           </Suspense>
         );
+      case "beer-lambert-law":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading Beer–Lambert laboratory"
+                detail="Preparing standards, spectrophotometer, and calibration analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <BeerLambertLab />
+          </Suspense>
+        );
+      case "chromatography-separation":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading chromatography laboratory"
+                detail="Preparing TLC, silica column, fraction collector, and chromatogram..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <ChromatographyLab />
+          </Suspense>
+        );
+      case "distillation-crystallisation":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading distillation and crystallisation laboratory"
+                detail="Preparing glassware, condensers, fraction collection, and crystal analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <DistillationCrystallisationLab />
+          </Suspense>
+        );
+      case "bromination-phenol-aniline":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading bromination laboratory"
+                detail="Preparing phenol, aniline, bromine water, and isolation workflow..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <OrganicAromaticPrepLab experiment="bromination" />
+          </Suspense>
+        );
+      case "benzoylation-aniline-phenol":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading benzoylation laboratory"
+                detail="Preparing Schotten–Baumann reagents, alkali, and crystallisation..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <OrganicAromaticPrepLab experiment="benzoylation" />
+          </Suspense>
+        );
+      case "flame-photometry":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading flame photometry laboratory"
+                detail="Preparing standards, burner, emission filters, and calibration analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <FlamePhotometryLab />
+          </Suspense>
+        );
+      case "gravimetric-precipitation":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading gravimetric precipitation laboratory"
+                detail="Preparing sample, precipitating reagent, filtration, and constant-mass analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <GravimetricPrecipitationLab />
+          </Suspense>
+        );
+      case "molecular-dynamics":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading molecular dynamics laboratory"
+                detail="Preparing argon particles, Lennard-Jones forces, trajectory analysis, and parameter studies..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <MolecularDynamicsLab />
+          </Suspense>
+        );
       case "molecule-polarity":
         return (
           <Suspense
@@ -889,6 +1119,126 @@ function App() {
             <MoleculesLightPage />
           </Suspense>
         );
+      case "neutralisation-calorimetry":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading neutralisation calorimetry"
+                detail="Preparing insulated calorimeter, temperature probe, calibration, and enthalpy analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <NeutralisationCalorimetryLab />
+          </Suspense>
+        );
+      case "polarography-concentration":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading polarography concentration laboratory"
+                detail="Preparing cadmium standards, three-electrode cell, nitrogen purge, and calibration analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <PolarographyConcentrationLab />
+          </Suspense>
+        );
+      case "real-gas-laws":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading real gas laws studio"
+                detail="Preparing equations of state, critical behavior, and Joule–Thomson analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <RealGasLawsLab />
+          </Suspense>
+        );
+      case "statistical-thermodynamics":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading statistical thermodynamics studio"
+                detail="Preparing microstates, partition functions, molecular modes, and thermodynamic properties..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <StatisticalThermodynamicsLab />
+          </Suspense>
+        );
+      case "tafel-plot":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading Tafel plot laboratory"
+                detail="Preparing the three-electrode cell, OCP acquisition, polarization scan, and corrosion analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <TafelPlotLab />
+          </Suspense>
+        );
+      case "thermodynamics":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading thermodynamics laboratory"
+                detail="Preparing first-law balances, reversible paths, entropy, and Gibbs-energy analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <ThermodynamicsLab />
+          </Suspense>
+        );
+      case "viscosity-poiseuille":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading viscosity and Poiseuille laboratory"
+                detail="Preparing the Ostwald viscometer, temperature study, and polymer analysis..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <ViscosityPoiseuilleLab />
+          </Suspense>
+        );
+      case "soil-ph-conductivity":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading soil analysis laboratory"
+                detail="Preparing soil extraction, calibrated sensors, and field interpretation..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <SoilPhConductivityLab />
+          </Suspense>
+        );
       case "states-matter":
         return (
           <Suspense
@@ -901,7 +1251,10 @@ function App() {
               />
             }
           >
-            <StatesMatterPage reducedMotion={reducedMotion} onNavigate={navigate} />
+            <StatesMatterPage
+              reducedMotion={reducedMotion}
+              onNavigate={navigate}
+            />
           </Suspense>
         );
       case "molecule":
@@ -961,10 +1314,12 @@ function App() {
           >
             <ChemistrySolverModule
               key={currentPage}
-              initialPage={{
-                "chemistry-solver-bookmarks": "Saved Solutions",
-                "chemistry-solver-practice": "Simulations",
-              }[currentPage] || "New Problem"}
+              initialPage={
+                {
+                  "chemistry-solver-bookmarks": "Saved Solutions",
+                  "chemistry-solver-practice": "Simulations",
+                }[currentPage] || "New Problem"
+              }
             />
           </Suspense>
         );
@@ -1130,7 +1485,16 @@ function App() {
         );
       case "bio-membranes":
         return (
-          <Suspense fallback={<LoadingProgress title="Loading Membrane Structure Studio" detail="Preparing the 4HQJ membrane-pump structure and transport schematic..." height={620} reducedMotion={reducedMotion} />}>
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading Membrane Structure Studio"
+                detail="Preparing the 4HQJ membrane-pump structure and transport schematic..."
+                height={620}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
             <MembraneTargetPage />
           </Suspense>
         );

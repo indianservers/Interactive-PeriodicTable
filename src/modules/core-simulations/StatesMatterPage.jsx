@@ -1,275 +1,31 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Atom, Beaker, BookOpen, ChevronDown, CircleHelp, FlaskConical, Gauge,
-  Home, Moon, Pause, Play, RotateCcw, Sparkles, Sun, Thermometer, Undo2,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Atom, BarChart3, Beaker, BookOpen, Check, Download, FileText, Flame, FlaskConical, Gauge, Home, Pause, Play, RotateCcw, Snowflake, Thermometer, Trophy } from "lucide-react";
+import { SUBSTANCES, WATER_HEATING, heatingState, meanKineticEnergy, phaseAt, RANKING } from "./statesMatterModel.js";
 import "./StatesMatterPage.css";
 
-const substances = {
-  water: { name: "Water", formula: "H₂O", mass: "18.015", mp: 0, bp: 100, icon: "💧", enthalpy: "40.7" },
-  argon: { name: "Argon", formula: "Ar", mass: "39.948", mp: -189, bp: -186, icon: "●", enthalpy: "6.4" },
-  oxygen: { name: "Oxygen", formula: "O₂", mass: "31.998", mp: -219, bp: -183, icon: "◉", enthalpy: "6.8" },
-};
+const screens=["home","particle-explorer","heating-curve","phase-diagram","substance-comparison","report-assessment"];
+const names=["Introduction","Particle Explorer","Heating Curve","Phase Diagram","Compare","Report & Assessment"];
+function Header({step,go}){return <header className="som-header"><button className="som-brand" onClick={()=>go(0)}><FlaskConical/><span><b>Chemistry Virtual Lab</b><small>Explore · Experiment · Understand</small></span></button><div className="som-head-title"><b>States of Matter Lab</b><small>Screen {step+1} of 6 · {names[step]}</small></div><nav><button onClick={()=>go(0)}><Home/> Home</button><button onClick={()=>go(2)}><BarChart3/> Data &amp; Graphs</button><button onClick={()=>go(5)}><BookOpen/> Notebook</button></nav></header>}
+function Steps({step,go}){return <aside className="som-steps">{names.map((n,i)=><button key={n} className={i===step?"active":i<step?"done":""} onClick={()=>go(i)}><i>{i<step?<Check/>:i+1}</i><span><b>{n}</b><small>{["Goals & background","Interact with particles","See phase changes","Explore conditions","Different substances","Summarize results"][i]}</small></span></button>)}</aside>}
+function Card({title,icon,className="",children}){return <section className={`som-card ${className}`}><h2>{icon}{title}</h2>{children}</section>}
 
-const presets = [
-  { phase: "Solid", description: "Ordered lattice · Vibrating in place", temp: "−10 °C", energy: 80 },
-  { phase: "Liquid", description: "Close particles · Able to flow", temp: "25 °C", energy: 450 },
-  { phase: "Gas", description: "Distant particles · Rapid motion", temp: "200 °C", energy: 900 },
-];
+function drawParticle(c,x,y,id,i){c.save();c.translate(x,y);if(id==="argon"){c.fillStyle="#8b5cf6";c.beginPath();c.arc(0,0,7,0,7);c.fill()}else if(id==="carbonDioxide"){c.fillStyle="#252b35";c.beginPath();c.arc(0,0,6,0,7);c.fill();c.fillStyle="#ef4444";[-9,9].forEach(a=>{c.beginPath();c.arc(a,0,5,0,7);c.fill()})}else{c.fillStyle="#ef4444";c.beginPath();c.arc(0,0,7,0,7);c.fill();c.fillStyle="#f8fafc";[-7,7].forEach(a=>{c.beginPath();c.arc(a,-5,4,0,7);c.fill()});if(id==="ethanol"&&i%2){c.fillStyle="#222";c.beginPath();c.arc(-10,6,5,0,7);c.fill()}}c.restore()}
+function ParticleCanvas({phase="Liquid",substance="water",running=true,speed=1,trails=true,count=90}){const ref=useRef(),particles=useRef([]);useEffect(()=>{const canvas=ref.current,c=canvas?.getContext("2d");if(!c)return;const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=r.width*d;canvas.height=r.height*d;c.setTransform(d,0,0,d,0,0)};resize();const ro=new ResizeObserver(resize);ro.observe(canvas);particles.current=Array.from({length:count},(_,i)=>({x:20+(i*53)%700,y:20+(i*37)%350,vx:Math.sin(i*2.1)*75,vy:Math.cos(i*1.4)*70}));let last=performance.now(),raf;const draw=now=>{const w=canvas.clientWidth,h=canvas.clientHeight,dt=Math.min(.03,(now-last)/1000)*speed;last=now;c.clearRect(0,0,w,h);particles.current.forEach((p,i)=>{const solid=phase.includes("Solid"),gas=phase.includes("Gas")||phase.includes("Supercritical");if(solid){const cols=Math.max(5,Math.floor(Math.sqrt(count*w/Math.max(h,1))));p.x=24+(i%cols)*Math.max(15,(w-48)/(cols-1))+Math.sin(now/130+i)*1.2;p.y=h*.38+Math.floor(i/cols)*18+Math.cos(now/140+i)*1.2}else if(running){p.x+=p.vx*dt*(gas?1.5:.55);p.y+=p.vy*dt*(gas?1.5:.55);if(!gas)p.vy+=20*dt;if(p.x<12||p.x>w-12)p.vx*=-1;if(p.y<(gas?12:h*.36)||p.y>h-12)p.vy*=-1;p.x=Math.max(12,Math.min(w-12,p.x));p.y=Math.max(gas?12:h*.36,Math.min(h-12,p.y))}if(trails&&!solid){c.strokeStyle="rgba(78,166,240,.28)";c.beginPath();c.moveTo(p.x,p.y);c.lineTo(p.x-p.vx*.08,p.y-p.vy*.08);c.stroke()}drawParticle(c,p.x,p.y,substance,i)});raf=requestAnimationFrame(draw)};raf=requestAnimationFrame(draw);return()=>{cancelAnimationFrame(raf);ro.disconnect()}},[phase,substance,running,speed,trails,count]);return <canvas ref={ref} aria-label={`${SUBSTANCES[substance].name} particles in the ${phase.toLowerCase()} phase`}/>}
 
-const experiments = [
-  { id: "pressure", title: "Boil without more heat", task: "Lower pressure until the liquid begins boiling.", setup: { energy: 625, pressure: 1.4 } },
-  { id: "triple", title: "Find the triple point", task: "Move the phase point close to the meeting of all three regions.", setup: { energy: 315, pressure: 0.7 } },
-  { id: "forces", title: "Compare attractions", task: "Switch between force modes and observe the molecular model.", setup: { energy: 450, pressure: 1 } },
-];
+function HomeScreen({go}){return <main className="som-home"><section className="som-home-main"><h1>States of Matter Lab</h1><p>Explore solids, liquids, gases, and phase changes from particle motion to phase diagrams.</p><div className="som-state-previews">{[["Solid","Ice (Solid)","−10 °C"],["Liquid","Liquid Water (Liquid)","25 °C"],["Gas","Water Vapor (Gas)","100 °C"]].map(([phase,label,temp])=><article key={phase}><div><ParticleCanvas phase={phase} count={phase==="Gas"?8:phase==="Solid"?36:65}/></div><h2>{label}</h2><p>H₂O molecules {phase==="Solid"?"ordered and vibrating in fixed positions":phase==="Liquid"?"close together in a disordered arrangement":"far apart, moving rapidly and randomly"}.</p><b>T = {temp}</b></article>)}</div><Card title="Choose a Lab Mode" icon={<FlaskConical/>} className="som-mode-card"><div className="som-modes">{[[Atom,"Particle Explorer",1],[Thermometer,"Heat & Cool",2],[BarChart3,"Phase Diagram",3],[Beaker,"Real Substances",4]].map(([Icon,label,to])=><button key={label} onClick={()=>go(to)}><Icon/><span><b>{label}</b><small>{["Visualize and control particle motion.","Observe phase changes and heating curves.","Explore phase boundaries and critical points.","Compare water with common substances."][to-1]}</small></span></button>)}</div></Card><div className="som-home-actions"><button className="primary" onClick={()=>go(1)}><Play/> Start with Water →</button><button onClick={()=>go(3)}><BookOpen/> View Theory</button></div></section><aside className="som-home-aside"><blockquote>“Same molecules. Different behavior. A more vivid view of matter.”</blockquote><Card title="Key Concepts" icon={<Atom/>}><p><b>Kinetic molecular theory</b><br/>Particle motion explains properties of solids, liquids, and gases.</p><p><b>Temperature and pressure controls</b><br/>Adjust conditions and observe behavior in real time.</p><hr/><p><b>Estimated duration</b><br/>25–35 minutes</p><p><b>Level</b><br/>Intermediate</p></Card><Card title="Learning Objectives" icon={<Trophy/>}>{["Describe particle arrangement in each state.","Explain intermolecular forces.","Interpret heating curves and phase changes.","Read and analyze phase diagrams."].map((x,i)=><p className="som-objective" key={x}><i>{i+1}</i>{x}</p>)}</Card></aside></main>}
 
-function thermalState(energy, substance, pressure) {
-  const boilingPoint = substance.bp + Math.log(Math.max(0.1, pressure)) * 18;
-  if (energy < 150) return { phase: "Solid", temp: substance.mp - 50 + energy / 3, boilingPoint };
-  if (energy < 300) return { phase: "Melting", temp: substance.mp, boilingPoint };
-  if (energy < 650) return { phase: "Liquid", temp: substance.mp + ((energy - 300) / 350) * (boilingPoint - substance.mp), boilingPoint };
-  if (energy < 800) return { phase: "Boiling", temp: boilingPoint, boilingPoint };
-  return { phase: "Gas", temp: boilingPoint + (energy - 800) * 0.25, boilingPoint };
-}
+function Histogram({temp=25,blue=false}){const n=14,peak=Math.max(2,Math.min(10,5+(temp+20)/50));return <svg className="som-hist" viewBox="0 0 420 145"><line x1="30" y1="120" x2="405" y2="120"/><line x1="30" y1="15" x2="30" y2="120"/>{Array.from({length:n},(_,i)=>{const h=95*Math.exp(-Math.pow(i-peak,2)/12);return <rect key={i} x={38+i*25} y={120-h} width="19" height={h} fill={blue?"#0f5aa7":"#45c3d2"}/>})}<text x="170" y="140">{blue?"Distance (nm)":"Speed (m/s)"}</text></svg>}
+function ParticleScreen({go}){const [substance,setSubstance]=useState("water"),[temp,setTemp]=useState(25),[pressure,setPressure]=useState(1),[volume,setVolume]=useState(1),[running,setRunning]=useState(true),[speed,setSpeed]=useState(1),[trails,setTrails]=useState(true);const phase=phaseAt(substance,temp,pressure),s=SUBSTANCES[substance];return <main className="som-stage"><Steps step={1} go={go}/><div className="som-particle-work"><div className="som-chamber"><div className="som-overlay"><b>{s.formula} ({phase[0]})</b><span>T = {temp} °C</span><span>P = {pressure.toFixed(2)} atm</span><span>V = {volume.toFixed(2)} L</span><span>N = 100 molecules</span></div><ParticleCanvas phase={phase} substance={substance} running={running} speed={speed} trails={trails}/><small>{s.name} particles in {phase.toLowerCase()} state — arrangement and speed respond to conditions.</small></div><div className="som-play-row"><button className="primary" onClick={()=>setRunning(!running)}>{running?<Pause/>:<Play/>}{running?"Pause":"Play"}</button><button onClick={()=>setSpeed(speed===1?.35:1)}><Gauge/>{speed===1?"Slow Motion":"Normal Speed"}</button><label><input type="checkbox" checked={trails} onChange={e=>setTrails(e.target.checked)}/> Velocity trails</label></div><div className="som-mini-charts"><Card title="Speed Distribution"><Histogram temp={temp}/></Card><Card title="Intermolecular Distance Distribution"><Histogram temp={phase==="Gas"?140:phase==="Solid"?-30:25} blue/></Card></div></div><aside className="som-controls"><Card title="Controls"><label>Substance<select value={substance} onChange={e=>{setSubstance(e.target.value);setTemp(e.target.value==="argon"?-186:e.target.value==="carbonDioxide"?-78.5:25)}}>{Object.entries(SUBSTANCES).map(([id,x])=><option value={id} key={id}>{x.formula} ({x.name})</option>)}</select></label>{[["Temperature (°C)",temp,setTemp,-250,400],["Pressure (atm)",pressure,setPressure,.1,220],["Container Volume (L)",volume,setVolume,.1,5]].map(([l,v,set,min,max])=><label key={l}>{l}<input type="range" min={min} max={max} step={l[0]==="P"?.1:1} value={v} onChange={e=>set(+e.target.value)}/><output>{Number(v).toFixed(l[0]==="T"?0:2)}</output></label>)}<div className="som-heat-buttons"><button onClick={()=>setTemp(Math.min(400,temp+10))}><Flame/>Heat</button><button onClick={()=>setTemp(Math.max(-250,temp-10))}><Snowflake/>Cool</button></div></Card><Card title="Phase Selection"><div className="som-phase-buttons">{[["Solid",s.mp-15],["Liquid",(s.mp+s.bp)/2],["Gas",s.bp+15]].map(([p,t])=><button className={phase===p?"active":""} onClick={()=>setTemp(t)} key={p}>{p}</button>)}</div></Card><Card title="Live Metrics"><dl><div><dt>Average kinetic energy</dt><dd>{meanKineticEnergy(temp).toFixed(2)} zJ</dd></div><div><dt>Density (illustrative)</dt><dd>{phase==="Gas"?"0.0007":phase==="Solid"?"0.917":"0.997"} g/mL</dd></div><div><dt>Phase</dt><dd>{phase}</dd></div><div><dt>Dominant attraction</dt><dd>{s.force}</dd></div></dl></Card><button className="som-next primary" onClick={()=>go(2)}>Continue to Heating Curve →</button></aside></main>}
 
-function transitionMessage(energy, state) {
-  if (energy >= 130 && energy < 150) return "Approaching melting";
-  if (energy >= 150 && energy < 300) return "Melting · temperature is holding steady";
-  if (energy >= 620 && energy < 650) return "Approaching boiling";
-  if (energy >= 650 && energy < 800) return `Boiling at ${state.boilingPoint.toFixed(0)} °C · absorbing latent heat`;
-  if (energy >= 800 && energy < 840) return "Phase change complete · fully gaseous";
-  return `${state.phase} · ${state.temp.toFixed(0)} °C`;
-}
+function HeatingCurve({energy,compact=false}){const x=45+energy/WATER_HEATING.qMax*560,st=heatingState(energy),y=210-(st.temperature+30)/200*170;return <svg className={`som-heating-svg ${compact?"compact":""}`} viewBox="0 0 650 260"><g className="grid">{[40,90,140,190,230].map(v=><line key={v} x1="45" y1={v} x2="620" y2={v}/>)}</g><line x1="45" y1="230" x2="625" y2="230"/><line x1="45" y1="25" x2="45" y2="230"/><polyline points="45,220 52,194 107,194 176,108 238,108 544,108 620,35"/><g className="som-curve-labels"><text x="52" y="185">Ice warming</text><text x="108" y="185">Melting</text><text x="178" y="98">Liquid warming</text><text x="360" y="98">Vaporization</text><text x="545" y="98">Steam warming</text></g><line className="marker" x1={x} y1="25" x2={x} y2="230"/><circle className="dot" cx={x} cy={Math.max(35,Math.min(220,y))} r="7"/><text x="260" y="253">Heat Added (kJ)</text><text transform="rotate(-90 14 150)" x="14" y="150">Temperature (°C)</text></svg>}
+function HeatingScreen({go}){const [energy,setEnergy]=useState(209),[running,setRunning]=useState(false),st=heatingState(energy);useEffect(()=>{if(!running)return;const t=setInterval(()=>setEnergy(e=>e>=3500?0:e+7),40);return()=>clearInterval(t)},[running]);return <main className="som-heating"><aside><Card title="Experimental Setup"><div className="som-apparatus"><Thermometer/><div className="som-beaker-ice">❄ ❄<br/>❄ ❄ ❄</div><div className="som-hotplate"><b>{st.temperature.toFixed(1)} °C</b><span>500 W</span></div></div><p><b>1.00 kg H₂O</b><br/>Initial temperature: −20 °C</p></Card><Card title="Controls"><button className="som-round primary" onClick={()=>setRunning(!running)}>{running?<Pause/>:<Play/>}</button><label>Scrub heat added<input type="range" min="0" max="3500" value={energy} onChange={e=>setEnergy(+e.target.value)}/><output>{Math.round(energy)} kJ</output></label></Card><button className="som-next primary" onClick={()=>go(3)}>Continue →</button></aside><section><Card title="Heating Curve for Water (1.00 kg)"><HeatingCurve energy={energy}/></Card><div className="som-two"><Card title="Current State (from graph)"><dl><div><dt>Heat Added</dt><dd>{Math.round(energy)} kJ</dd></div><div><dt>Temperature</dt><dd>{st.temperature.toFixed(0)} °C</dd></div><div><dt>Phase</dt><dd>{st.phase}</dd></div></dl></Card><Card title="Energy Ledger (kJ)"><p>q = mcΔT　·　q = mL</p><b>{st.phase}</b><small>Flat regions absorb latent heat without a temperature change.</small></Card></div></section><aside><Card title="Particle View (Molecular Model)"><div className="som-phase-strip">{["Solid","Melting","Liquid","Gas"].map(p=><div key={p}><ParticleCanvas phase={p} count={p==="Gas"?8:22}/><b>{p}</b></div>)}</div></Card><Card title="Phase Composition (current)"><div className="som-composition"><i style={{width:`${st.solid*100}%`}}>{Math.round(st.solid*100)}%</i><i style={{width:`${st.liquid*100}%`}}>{Math.round(st.liquid*100)}%</i><i style={{width:`${st.gas*100}%`}}>{Math.round(st.gas*100)}%</i></div></Card><Card title="Data Table: Properties of Water"><table><tbody><tr><td>Specific heat capacity (ice)</td><td>2.1 kJ kg⁻¹ K⁻¹</td></tr><tr><td>Specific heat capacity (liquid)</td><td>4.18 kJ kg⁻¹ K⁻¹</td></tr><tr><td>Latent heat of fusion</td><td>334 kJ kg⁻¹</td></tr><tr><td>Latent heat of vaporization</td><td>2257 kJ kg⁻¹</td></tr></tbody></table></Card></aside></main>}
 
-function ParticleCanvas({ phase = "Boiling", running = true, speed = 1, compact = false, trails = false, labels = false, labelText = "H₂O" }) {
-  const ref = useRef(null);
-  const particles = useRef([]);
-  useEffect(() => {
-    const canvas = ref.current;
-    const ctx = canvas?.getContext("2d");
-    if (!ctx) return undefined;
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      const density = Math.min(2, devicePixelRatio || 1);
-      canvas.width = rect.width * density;
-      canvas.height = rect.height * density;
-      ctx.setTransform(density, 0, 0, density, 0, 0);
-    };
-    resize();
-    const observer = new ResizeObserver(resize);
-    observer.observe(canvas);
-    const count = compact ? 38 : 78;
-    if (particles.current.length !== count) {
-      particles.current = Array.from({ length: count }, (_, index) => ({
-        x: 0, y: 0, vx: Math.sin(index * 1.71) * 75,
-        vy: Math.cos(index * 1.13) * 75, seed: index * 0.73,
-      }));
-    }
-    let previous = performance.now();
-    let frameId;
-    const frame = (now) => {
-      const dt = Math.min(0.03, (now - previous) / 1000) * speed;
-      previous = now;
-      const width = canvas.clientWidth;
-      const height = canvas.clientHeight;
-      const solid = phase === "Solid";
-      const gas = phase === "Gas";
-      const changing = phase === "Boiling" || phase === "Melting";
-      ctx.clearRect(0, 0, width, height);
-      particles.current.forEach((particle, index) => {
-        if (!particle.x) {
-          particle.x = 18 + ((index * 47.3) % Math.max(1, width - 36));
-          particle.y = gas ? 18 + ((index * 31.7) % Math.max(1, height - 36)) : height * (0.5 + ((index * 0.037) % 0.42));
-        }
-        if (solid) {
-          const columns = compact ? 7 : 10;
-          particle.x = width * 0.12 + (index % columns) * ((width * 0.76) / (columns - 1)) + Math.sin(now * 0.004 + particle.seed) * 1.4;
-          particle.y = height * 0.2 + Math.floor(index / columns) * (compact ? 19 : 25) + Math.cos(now * 0.004 + particle.seed) * 1.4;
-        } else if (running) {
-          const lift = changing && particle.y > height * 0.56 && Math.sin(now * 0.002 + particle.seed) > 0.985;
-          particle.vy += lift ? -110 : gas ? 0 : 18 * dt;
-          particle.x += particle.vx * dt * (gas ? 1.35 : 0.55);
-          particle.y += particle.vy * dt * (gas ? 1.35 : 0.55);
-          if (!gas && particle.y < height * 0.42) { particle.y = height * 0.42; particle.vy = Math.abs(particle.vy); }
-          if (particle.x < 10 || particle.x > width - 10) particle.vx *= -1;
-          if (particle.y < 10 || particle.y > height - 10) particle.vy *= -1;
-          particle.x = Math.max(10, Math.min(width - 10, particle.x));
-          particle.y = Math.max(10, Math.min(height - 10, particle.y));
-        }
-        if (trails && !solid) {
-          ctx.strokeStyle = "rgba(117, 211, 255, .32)";
-          ctx.lineWidth = compact ? 1 : 1.5;
-          ctx.beginPath(); ctx.moveTo(particle.x, particle.y);
-          ctx.lineTo(particle.x - particle.vx * (gas ? 0.12 : 0.06), particle.y - particle.vy * (gas ? 0.12 : 0.06)); ctx.stroke();
-        }
-        ctx.save(); ctx.translate(particle.x, particle.y);
-        ctx.fillStyle = "#f04444"; ctx.shadowBlur = compact ? 3 : 7; ctx.shadowColor = "#ef5449";
-        ctx.beginPath(); ctx.arc(0, 0, compact ? 4.7 : 6.5, 0, Math.PI * 2); ctx.fill();
-        ctx.shadowBlur = 0; ctx.fillStyle = "#f7fbff";
-        [[-5, -5], [6, -4]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x * (compact ? 0.7 : 1), y * (compact ? 0.7 : 1), compact ? 2.8 : 4.1, 0, Math.PI * 2); ctx.fill(); });
-        if (labels && !compact && index % 8 === 0) { ctx.fillStyle = "rgba(226, 245, 255, .9)"; ctx.font = "600 11px Inter, sans-serif"; ctx.fillText(labelText, 9, -11); }
-        ctx.restore();
-      });
-      frameId = requestAnimationFrame(frame);
-    };
-    frameId = requestAnimationFrame(frame);
-    return () => { cancelAnimationFrame(frameId); observer.disconnect(); };
-  }, [phase, running, speed, compact, trails, labels, labelText]);
-  return <canvas ref={ref} aria-hidden="true" />;
-}
+function PhaseDiagram({temperature=25,pressure=1,compact=false}){const x=75+(temperature+200)/600*520,y=230-Math.log10(Math.max(.001,pressure)/.001)/6*195;return <svg className={`som-phase-svg ${compact?"compact":""}`} viewBox="0 0 650 280"><path className="solid" d="M75 230V35H210Q190 115 205 183L190 230Z"/><path className="liquid" d="M210 35H600V60Q380 120 205 183Q190 115 210 35Z"/><path className="gas" d="M75 230H600V60Q380 120 205 183Z"/><path className="boundary" d="M75 230Q150 207 205 183Q385 118 600 60M210 35Q190 115 205 183"/><text x="120" y="130">Solid</text><text x="325" y="95">Liquid</text><text x="450" y="190">Gas</text><circle cx="205" cy="183" r="5"/><text x="212" y="202">Triple point</text><circle cx="600" cy="60" r="6"/><text x="492" y="48">Critical point</text>{!compact&&<><line className="guide" x1={x} y1="35" x2={x} y2="230"/><line className="guide" x1="75" y1={y} x2="600" y2={y}/><circle className="current" cx={x} cy={y} r="8"/></>}<text x="280" y="270">Temperature (°C)</text><text transform="rotate(-90 18 165)" x="18" y="165">Pressure (atm, log scale)</text></svg>}
+function PhaseScreen({go}){const [substance,setSubstance]=useState("water"),[temp,setTemp]=useState(25),[pressure,setPressure]=useState(1),s=SUBSTANCES[substance],phase=phaseAt(substance,temp,pressure);return <main className="som-phase-page"><aside><Card title="1. Select Substance"><div className="som-substance-list">{["water","carbonDioxide","argon"].map(id=><button className={id===substance?"active":""} onClick={()=>setSubstance(id)} key={id}>{SUBSTANCES[id].name} ({SUBSTANCES[id].formula})</button>)}</div></Card><Card title="2. Set Conditions"><label>Temperature (°C)<input type="range" min="-200" max="400" value={temp} onChange={e=>setTemp(+e.target.value)}/><output>{temp}</output></label><label>Pressure (atm)<input type="range" min=".001" max="220" step=".1" value={pressure} onChange={e=>setPressure(+e.target.value)}/><output>{pressure.toFixed(2)}</output></label></Card><Card title="3. Path Presets">{["Isobaric heating (P = constant)","Isothermal compression (T = constant)","Sublimation (solid → gas)","Custom path"].map((x,i)=><label key={x}><input type="radio" name="path" defaultChecked={!i}/>{x}</label>)}</Card><button className="primary" onClick={()=>setTemp(t=>Math.min(400,t+25))}><Play/> Trace Path</button><button onClick={()=>go(4)}>Compare Substance →</button></aside><section><Card title={`Phase Diagram: ${s.name} (${s.formula})`}><PhaseDiagram temperature={temp} pressure={pressure}/></Card><div className="som-two"><Card title={`Particle View (current state: ${phase})`}><div className="som-phase-particle"><ParticleCanvas phase={phase} substance={substance} count={40}/><ul><li>Particle spacing follows the phase.</li><li>Motion increases with temperature.</li><li>Pressure shifts phase boundaries.</li></ul></div></Card><Card title="Boundary Insight"><p>At 0 °C and 1 atm, water freezes or melts. Its solid–liquid boundary has a negative slope because ice is less dense than liquid water.</p></Card></div></section><aside><Card title="Current State"><dl><div><dt>Temperature</dt><dd>{temp} °C</dd></div><div><dt>Pressure</dt><dd>{pressure.toFixed(2)} atm</dd></div><div><dt>Phase</dt><dd>{phase}</dd></div><div><dt>Molar mass</dt><dd>{s.molarMass} g/mol</dd></div></dl><div className="som-current-particles"><ParticleCanvas phase={phase} substance={substance} count={30}/></div></Card><Card title="Phase Rule"><p className="som-formula">F = C − P + 2</p><p>For a pure substance C = 1. In a single phase P = 1 and F = 2.</p></Card><Card title={`Key Phase Boundaries (${s.formula})`}><table><tbody><tr><td>Triple point</td><td>{s.tripleT} °C, {s.tripleP} atm</td></tr><tr><td>Melting point</td><td>{s.mp} °C</td></tr><tr><td>Boiling / sublimation</td><td>{s.bp} °C</td></tr><tr><td>Critical point</td><td>{s.criticalT} °C, {s.criticalP} atm</td></tr></tbody></table></Card></aside></main>}
 
-function RangeField({ id, label, valueLabel, children, ticks }) {
-  return <div className="sm-range-field">
-    <span><label htmlFor={id}>{label}</label><output htmlFor={id}>{valueLabel}</output></span>
-    {children}
-    {ticks && <small className="sm-range-ticks">{ticks.map((tick) => <span key={tick}>{tick}</span>)}</small>}
-  </div>;
-}
+function MiniCurve(){return <svg viewBox="0 0 260 95" className="som-mini-curve"><polyline points="8,82 55,60 100,60 145,28 190,28 220,8 252,8"/><text x="25" y="50">Solid</text><text x="125" y="20">Liquid</text><text x="215" y="28">Gas</text></svg>}
+function ComparisonScreen({go}){const [temps,setTemps]=useState({water:25,carbonDioxide:-78.5,argon:-186,ethanol:78.4}),[running,setRunning]=useState(true),[answer,setAnswer]=useState([]),correct=answer.join(",")===RANKING.join(","),toggle=id=>setAnswer(a=>a.includes(id)?a.filter(x=>x!==id):[...a,id]);return <main className="som-compare"><section><div className="som-comparison-grid">{Object.entries(SUBSTANCES).map(([id,s])=>{const phase=phaseAt(id,temps[id],1);return <article className="som-substance" key={id}><h2>{s.name} ({s.formula})</h2><label>T = <output>{temps[id]} °C</output><input type="range" min={s.mp-60} max={s.bp+70} step=".1" value={temps[id]} onChange={e=>setTemps({...temps,[id]:+e.target.value})}/></label><div className="som-jar"><ParticleCanvas phase={phase} substance={id} running={running} count={45}/></div><b>{phase}</b><small>{s.force}</small><Card title="Heating Curve (normalized)"><MiniCurve/></Card><Card title="Phase Diagram (1 atm highlighted)"><PhaseDiagram compact/></Card></article>})}</div><Card title="Key Properties and Intermolecular Forces"><table><thead><tr><th>Substance</th><th>Melting Point</th><th>Boiling / Sublimation Point</th><th>Critical Temperature</th><th>Dominant Force</th></tr></thead><tbody>{Object.values(SUBSTANCES).map(s=><tr key={s.name}><td>{s.name} ({s.formula})</td><td>{s.mp} °C</td><td>{s.bp} °C</td><td>{s.criticalT} °C</td><td>{s.force}</td></tr>)}</tbody></table></Card></section><aside><Card title="Controls"><label><input type="checkbox" defaultChecked/> Lock pressure at 1 atm</label><label><input type="checkbox" defaultChecked/> Show intermolecular forces</label><label><input type="checkbox" checked={running} onChange={e=>setRunning(e.target.checked)}/> Animate particle motion</label><button className="primary" onClick={()=>setRunning(!running)}><Play/> Animate All</button><button><Download/> Export Comparison</button></Card><Card title="Key Insight"><p>Stronger intermolecular attractions generally lead to higher boiling points, but molecular structure also matters.</p></Card><Card title="Challenge"><p>Rank by normal boiling point, highest to lowest.</p><div className="som-rank">{Object.entries(SUBSTANCES).map(([id,s])=><button className={answer.includes(id)?"active":""} onClick={()=>toggle(id)} key={id}>{answer.indexOf(id)+1||"·"} {s.formula}</button>)}</div>{answer.length===4&&<b className={correct?"right":"wrong"}>{correct?"Correct — ethanol, water, CO₂, argon.":"Try again. Compare the boiling-point row."}</b>}<button className="primary" onClick={()=>go(5)}>Generate Lab Report →</button></Card></aside></main>}
 
-export default function StatesMatterPage({ reducedMotion = false, onNavigate }) {
-  const [substanceId, setSubstanceId] = useState("water");
-  const [energy, setEnergy] = useState(700);
-  const [pressure, setPressure] = useState(1);
-  const [input, setInput] = useState(0);
-  const [running, setRunning] = useState(true);
-  const [motionEnabled, setMotionEnabled] = useState(!reducedMotion);
-  const [speed, setSpeed] = useState(1);
-  const [forces, setForces] = useState(true);
-  const [trails, setTrails] = useState(true);
-  const [labels, setLabels] = useState(false);
-  const [forceMode, setForceMode] = useState("Hydrogen bonding");
-  const [theme, setTheme] = useState("dark");
-  const [notice, setNotice] = useState("");
-  const [undoState, setUndoState] = useState(null);
-  const [activeExperiment, setActiveExperiment] = useState(null);
-  const phaseRef = useRef(null);
-  const labRef = useRef(null);
-  const chartsRef = useRef(null);
-  const guideRef = useRef(null);
-  const substance = substances[substanceId];
-  const state = useMemo(() => thermalState(energy, substance, pressure), [energy, substance, pressure]);
-  const phasePoint = { x: 58 + (energy / 1000) * 380, y: 218 - ((pressure - 0.1) / 4.9) * 160 };
-  const heatLabel = input === 0 ? "Neutral" : `${input > 0 ? "+" : ""}${input.toFixed(2)} energy/tick`;
+function ReportScreen({go}){const [answers,setAnswers]=useState({}),qs=[["What does latent heat represent?","Energy used for a state change without a temperature change."],["Why is water’s solid–liquid line negatively sloped?","Ice is less dense than liquid water."],["What is CO₂ at 1 atm near −78.5 °C?","It sublimes between solid and gas."]],score=Object.values(answers).filter(Boolean).length;return <main className="som-report"><Steps step={5} go={go}/><section><div className="som-report-title"><FileText/><span><h1>Report &amp; Assessment</h1><p>Summarize results, complete the assessment, and reflect on what you learned.</p></span><b>100% Complete</b></div><div className="som-summary-grid"><Card title="Lab Summary"><dl><div><dt>States explored</dt><dd>3</dd></div><div><dt>Substances compared</dt><dd>4</dd></div><div><dt>Phase transitions analyzed</dt><dd>6</dd></div><div><dt>Data accuracy</dt><dd>95%</dd></div></dl></Card><Card title="Energy Analysis: Heating Curve"><table><tbody><tr><td>Ice warming</td><td>42 kJ</td></tr><tr><td>Melting</td><td>334 kJ</td></tr><tr><td>Liquid warming</td><td>418 kJ</td></tr><tr><td>Vaporization</td><td>2,257 kJ</td></tr></tbody></table></Card><Card title="Phase Diagram (Water)"><p>Triple point: 0.01 °C, 0.00604 atm</p><p>Critical point: 374 °C, 218 atm</p><p>Solid–liquid slope: negative</p></Card><Card title="Substance Comparison"><table><tbody>{Object.values(SUBSTANCES).map(s=><tr key={s.name}><td>{s.formula}</td><td>{s.mp} °C</td><td>{s.bp} °C</td></tr>)}</tbody></table></Card></div><div className="som-report-plots"><Card title="Heating Curve of Water"><HeatingCurve compact energy={3051}/></Card><Card title="Phase Diagram of Water"><PhaseDiagram compact/></Card><Card title="Particle View: States of Matter"><div className="som-report-particles">{["Solid","Liquid","Gas"].map(p=><div key={p}><b>{p}</b><ParticleCanvas phase={p} count={p==="Gas"?8:28}/><small>{p==="Solid"?"Fixed arrangement":p==="Liquid"?"Close together":"Far apart"}</small></div>)}</div></Card></div><div className="som-report-bottom"><Card title="Your Report"><div className="som-report-text"><p><b>Aim</b>To investigate how temperature and pressure affect states of matter.</p><p><b>Method</b>Heated water, recorded temperature versus energy, analyzed boundaries, and compared substances.</p><p><b>Evidence</b>42 kJ ice warming; 334 kJ melting; 418 kJ liquid warming; 2,257 kJ vaporization.</p><p><b>Conclusion</b>Temperature, pressure, and intermolecular forces determine phase behavior.</p></div></Card><Card title={`Knowledge Check ${score} / 3`}>{qs.map(([q,a],i)=><fieldset key={q}><legend>{i+1}. {q}</legend><button className={answers[i]?"correct":""} onClick={()=>setAnswers({...answers,[i]:true})}>{answers[i]&&<Check/>}{a}</button><button onClick={()=>setAnswers({...answers,[i]:false})}>Another explanation</button></fieldset>)}</Card></div></section><aside><div className="som-complete"><Trophy/><h2>Experiment Complete!</h2><p>You have finished all six stages of the States of Matter Lab.</p></div><Card title="Achievement Badges"><p>🏅 <b>Phase Explorer</b><br/>Explored three states and phase diagrams.</p><p>⚛️ <b>Particle Scientist</b><br/>Connected particle models to behavior.</p></Card><Card title="Export & Next Steps"><button><Download/> Download PDF</button><button><Download/> Export CSV</button><button className="primary" onClick={()=>go(0)}><RotateCcw/> Restart Lab</button></Card></aside></main>}
 
-  useEffect(() => {
-    if (!running || !input) return undefined;
-    const timer = setInterval(() => setEnergy((value) => Math.max(0, Math.min(1000, value + input * speed))), 60);
-    return () => clearInterval(timer);
-  }, [running, input, speed]);
-  useEffect(() => {
-    if (!notice) return undefined;
-    const timer = setTimeout(() => setNotice(""), 4200);
-    return () => clearTimeout(timer);
-  }, [notice]);
-
-  const snapshot = () => ({ substanceId, energy, pressure, input, running, speed, forces, trails, labels, forceMode });
-  const reset = () => {
-    setUndoState(snapshot()); setSubstanceId("water"); setEnergy(700); setPressure(1); setInput(0);
-    setRunning(true); setSpeed(1); setForces(true); setTrails(true); setLabels(false);
-    setForceMode("Hydrogen bonding"); setActiveExperiment(null);
-    setNotice("Lab reset to water at standard pressure.");
-  };
-  const undoReset = () => {
-    if (!undoState) return;
-    const setters = { substanceId: setSubstanceId, energy: setEnergy, pressure: setPressure, input: setInput, running: setRunning, speed: setSpeed, forces: setForces, trails: setTrails, labels: setLabels, forceMode: setForceMode };
-    Object.entries(undoState).forEach(([key, value]) => setters[key]?.(value));
-    setUndoState(null); setNotice("Previous lab settings restored.");
-  };
-  const applyPreset = (preset) => { setEnergy(preset.energy); setInput(0); setNotice(`${preset.phase} example loaded. Temperature and pressure remain adjustable.`); };
-  const startExperiment = (experiment) => {
-    setActiveExperiment(experiment.id); setEnergy(experiment.setup.energy); setPressure(experiment.setup.pressure);
-    setInput(0); setRunning(false);
-    labRef.current?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
-    setNotice(`${experiment.title} is ready. Follow the highlighted challenge.`);
-  };
-  const updatePhasePoint = (event) => {
-    const bounds = phaseRef.current?.getBoundingClientRect();
-    if (!bounds) return;
-    const svgX = ((event.clientX - bounds.left) / bounds.width) * 500;
-    const svgY = ((event.clientY - bounds.top) / bounds.height) * 290;
-    const nextEnergy = Math.round(Math.max(0, Math.min(1, (svgX - 58) / 380)) * 1000);
-    const nextPressure = +(0.1 + (1 - Math.max(0, Math.min(1, (svgY - 48) / 170))) * 4.9).toFixed(1);
-    setEnergy(nextEnergy); setPressure(nextPressure); setInput(0);
-  };
-  const scrollTo = (ref) => ref.current?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
-
-  return <div className={`sm-app sm-theme-${theme}`}>
-    <a className="sm-skip" href="#sm-lab">Skip to lab controls</a>
-    <header className="sm-header">
-      <button className="sm-home" type="button" aria-label="Return to chemistry home" onClick={() => onNavigate?.("dashboard")}><Home /></button>
-      <FlaskConical className="sm-logo" aria-hidden="true" />
-      <div className="sm-title"><h1>States of Matter Lab</h1><p>Change temperature and pressure. Watch the same particles form different states.</p></div>
-      <div className="sm-header-actions">
-        <label className="sm-substance-select"><span>Substance</span><select value={substanceId} onChange={(event) => setSubstanceId(event.target.value)}>{Object.entries(substances).map(([id, item]) => <option key={id} value={id}>{item.icon} {item.formula} · {item.name}</option>)}</select></label>
-        <button type="button" title="Open guided experiments" onClick={() => scrollTo(guideRef)}><Sparkles /> <span>Guided labs</span></button>
-        <button type="button" title={`Use ${theme === "dark" ? "light" : "dark"} theme`} aria-label={`Use ${theme === "dark" ? "light" : "dark"} theme`} onClick={() => setTheme((value) => value === "dark" ? "light" : "dark")}>{theme === "dark" ? <Sun /> : <Moon />}</button>
-        <button type="button" onClick={reset}><RotateCcw /> <span>Reset</span></button>
-      </div>
-    </header>
-
-    <nav className="sm-section-nav" aria-label="Lab sections">
-      <button type="button" onClick={() => scrollTo(labRef)}><Beaker /> Lab</button>
-      <button type="button" onClick={() => scrollTo(chartsRef)}><Gauge /> Diagrams</button>
-      <button type="button" onClick={() => scrollTo(guideRef)}><BookOpen /> Guided labs</button>
-    </nav>
-
-    <main>
-      <section className="sm-previews" aria-labelledby="sm-presets-title">
-        <div className="sm-section-heading"><div><span>Quick presets</span><h2 id="sm-presets-title">See how particles arrange themselves</h2></div><p>Select an example, then fine-tune the conditions below.</p></div>
-        <div className="sm-preview-grid">{presets.map((preset) => <button type="button" className={`sm-preview sm-preview-${preset.phase.toLowerCase()} ${state.phase === preset.phase ? "active" : ""}`} key={preset.phase} onClick={() => applyPreset(preset)} aria-label={`Load ${preset.phase} example at ${preset.temp}`}>
-          <span className="sm-preview-title"><i aria-hidden="true" />{preset.phase}<small>Jump to example</small></span>
-          <span className="sm-preview-canvas"><ParticleCanvas phase={preset.phase} compact running={motionEnabled} /></span>
-          <span className="sm-preview-copy">{preset.description}<b>{preset.temp}</b></span>
-        </button>)}</div>
-      </section>
-
-      <section className="sm-workspace" id="sm-lab" ref={labRef} aria-labelledby="sm-current-state">
-        <div className="sm-control-dock">
-          <div className={`sm-state-badge sm-state-${state.phase.toLowerCase()}`}><span>Current state</span><strong id="sm-current-state">{state.phase}</strong><small>{transitionMessage(energy, state)}</small></div>
-          <RangeField id="sm-pressure" label="Pressure" valueLabel={`${pressure.toFixed(1)} atm · ${(pressure * 101.3).toFixed(0)} kPa`} ticks={["0.1", "1", "2.5", "5 atm"]}>
-            <div className="sm-range-with-steps"><button type="button" aria-label="Decrease pressure by 0.1 atmosphere" onClick={() => setPressure((value) => Math.max(0.1, +(value - 0.1).toFixed(1)))}>−</button><input id="sm-pressure" type="range" min="0.1" max="5" step="0.1" value={pressure} onChange={(event) => setPressure(Number(event.target.value))} /><button type="button" aria-label="Increase pressure by 0.1 atmosphere" onClick={() => setPressure((value) => Math.min(5, +(value + 0.1).toFixed(1)))}>+</button></div>
-          </RangeField>
-          <RangeField id="sm-heat" label="Heat flow" valueLabel={heatLabel} ticks={["Cool", "Neutral", "Heat"]}><input id="sm-heat" className="sm-heat-range" type="range" min="-5" max="5" step="0.25" value={input} onChange={(event) => setInput(Number(event.target.value))} /></RangeField>
-          <div className="sm-playback" aria-label="Simulation playback controls"><button type="button" disabled={running} title={running ? "Pause the simulation to advance one step" : "Advance by one energy step"} onClick={() => setEnergy((value) => Math.min(1000, value + 10))}>Step</button><button type="button" className="primary" aria-pressed={running} onClick={() => setRunning((value) => !value)}>{running ? <Pause /> : <Play />}<span>{running ? "Pause" : "Play"}</span></button><label><span>Speed</span><select aria-label="Simulation speed" value={speed} onChange={(event) => setSpeed(Number(event.target.value))}><option value=".5">0.5×</option><option value="1">1×</option><option value="2">2×</option></select></label></div>
-        </div>
-
-        {activeExperiment && <div className="sm-challenge" role="status"><Sparkles /><span><b>{experiments.find((item) => item.id === activeExperiment)?.title}</b>{experiments.find((item) => item.id === activeExperiment)?.task}</span><button type="button" onClick={() => setActiveExperiment(null)}>End challenge</button></div>}
-
-        <div className="sm-lab-grid">
-          <article className="sm-info-card"><div className="sm-card-heading"><Atom /><div><span>System</span><h2>{substance.formula} · {substance.name}</h2></div></div><dl><div><dt>Molar mass</dt><dd>{substance.mass} g/mol</dd></div><div><dt>Chamber volume</dt><dd>1.00 L</dd></div><div><dt>Total molecules</dt><dd>3.34 × 10²²</dd></div></dl><div className="sm-meter"><span><b>Energy input</b><output>{energy} / 1000</output></span><progress value={energy} max="1000">{energy / 10}%</progress><small>{state.phase === "Melting" || state.phase === "Boiling" ? "Added energy is changing phase, not temperature." : "Energy changes particle motion and temperature."}</small></div><button type="button" className="sm-motion" aria-pressed={!motionEnabled} onClick={() => setMotionEnabled((value) => !value)}>{motionEnabled ? <Pause /> : <Play />}{motionEnabled ? "Pause particle motion" : "Resume particle motion"}</button></article>
-
-          <article className="sm-vessel-card" aria-label={`${substance.name} molecular chamber. ${transitionMessage(energy, state)}`}><div className="sm-vessel"><ParticleCanvas phase={state.phase} running={running && motionEnabled} speed={speed} trails={trails} labels={labels} labelText={substance.formula} />{state.phase !== "Gas" && <div className="sm-water" />}<div className="sm-vessel-status"><span>{state.phase}</span><strong>{state.temp.toFixed(0)} °C</strong><small>{transitionMessage(energy, state)}</small></div></div></article>
-
-          <article className="sm-readout-card"><div className="sm-card-heading"><Thermometer /><div><span>Live readings</span><h2>Conditions</h2></div></div><dl><div><dt>Temperature</dt><dd>{state.temp.toFixed(0)} °C</dd></div><div><dt>Pressure</dt><dd>{(pressure * 101.3).toFixed(1)} kPa</dd></div><div><dt>Boiling point</dt><dd>{state.boilingPoint.toFixed(0)} °C</dd></div><div><dt>Mean speed</dt><dd>{Math.max(90, Math.round(300 + energy * 0.5))} m/s</dd></div></dl><div className="sm-transition-track" aria-label={`Energy progress ${Math.round(energy / 10)} percent`}><i style={{ width: `${energy / 10}%` }} /><span style={{ left: `${Math.min(98, Math.max(2, energy / 10))}%` }} /></div><div className="sm-transition-labels"><span>Solid</span><span>Liquid</span><span>Gas</span></div></article>
-        </div>
-      </section>
-
-      <section className="sm-analysis" ref={chartsRef} aria-label="Synchronized scientific diagrams">
-        <article className="sm-phase-card"><div className="sm-section-heading"><div><span>Pressure × temperature</span><h2>Phase diagram</h2></div><output>{state.temp.toFixed(0)} °C · {pressure.toFixed(1)} atm</output></div><p className="sm-card-instruction">Drag anywhere on the plot to change both temperature and pressure.</p>
-          <svg ref={phaseRef} className="sm-phase-svg" viewBox="0 0 500 290" role="img" aria-label={`Interactive phase diagram. Current point is ${state.phase} at ${state.temp.toFixed(0)} degrees Celsius and ${pressure.toFixed(1)} atmospheres.`} onPointerDown={(event) => { event.currentTarget.setPointerCapture?.(event.pointerId); updatePhasePoint(event); }} onPointerMove={(event) => { if (event.buttons === 1) updatePhasePoint(event); }}>
-            <defs><pattern id="sm-solid-pattern" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8L8 0" stroke="#2dd4bf" strokeOpacity=".2" /></pattern><pattern id="sm-gas-pattern" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#fbbf24" fillOpacity=".35" /></pattern></defs>
-            <path className="solid" d="M58 218V48H175L158 218Z" /><path className="solid-pattern" d="M58 218V48H175L158 218Z" /><path className="liquid" d="M175 48H438L182 202L158 218Z" /><path className="gas" d="M182 202L438 48V218H58Z" /><path className="gas-pattern" d="M182 202L438 48V218H58Z" /><path className="line" d="M58 218Q145 210 182 202Q300 126 438 48" />
-            <g className="axes"><line x1="58" y1="218" x2="448" y2="218" /><line x1="58" y1="218" x2="58" y2="35" /><text x="250" y="278">Temperature / energy →</text><text x="16" y="150" transform="rotate(-90 16 150)">Pressure (atm) →</text><text x="48" y="238">0</text><text x="425" y="238">1000</text><text x="28" y="220">0.1</text><text x="36" y="55">5</text></g>
-            <text className="region-label" x="90" y="132">▧ Solid</text><text className="region-label" x="220" y="98">≈ Liquid</text><text className="region-label" x="365" y="166">◌ Gas</text><text x="190" y="223">Triple point</text><text x="350" y="39">Critical point</text><circle className="current-halo" cx={phasePoint.x} cy={phasePoint.y} r="13" /><circle className="current-point" cx={phasePoint.x} cy={phasePoint.y} r="7" /><text className="you-are-here" x={Math.min(390, phasePoint.x + 12)} y={Math.max(28, phasePoint.y - 12)}>Current conditions</text>
-          </svg>
-          <RangeField id="sm-energy" label="Temperature / energy coordinate" valueLabel={`${energy} / 1000`} ticks={["Solid", "Phase changes", "Gas"]}><input id="sm-energy" type="range" min="0" max="1000" value={energy} onChange={(event) => { setEnergy(Number(event.target.value)); setInput(0); }} /></RangeField>
-        </article>
-
-        <article className="sm-energy-card"><div className="sm-section-heading"><div><span>Energy added</span><h2>Heating curve &amp; enthalpy</h2></div><output>{energy} units</output></div><div className="sm-chart-legend" aria-label="Chart legend"><span><i className="temperature" />Temperature</span><span><i className="energy" />Phase-change plateau</span><span><i className="current" />Current point</span></div>
-          <svg className="sm-energy-svg" viewBox="0 0 500 250" role="img" aria-label={`Heating curve with current energy at ${energy} out of 1000.`}><g className="grid"><line x1="55" y1="45" x2="465" y2="45" /><line x1="55" y1="100" x2="465" y2="100" /><line x1="55" y1="155" x2="465" y2="155" /><line x1="55" y1="210" x2="465" y2="210" /></g><g className="axes"><line x1="55" y1="210" x2="470" y2="210" /><line x1="55" y1="210" x2="55" y2="30" /><text x="220" y="244">Energy added (relative units)</text><text x="18" y="150" transform="rotate(-90 18 150)">Temperature (°C)</text><text x="48" y="228">0</text><text x="246" y="228">500</text><text x="438" y="228">1000</text><text x="28" y="214">−50</text><text x="36" y="159">0</text><text x="27" y="104">100</text><text x="27" y="49">200</text></g><polyline className="temperature-line" points="55,195 118,155 180,155 325,83 388,83 465,40" /><line className="latent" x1="118" y1="148" x2="180" y2="148" /><line className="latent" x1="325" y1="76" x2="388" y2="76" /><text x="118" y="137">Melting plateau</text><text x="310" y="64">Vaporization: ΔH = {substance.enthalpy} kJ/mol</text><line className="current-line" x1={55 + energy * 0.41} y1="32" x2={55 + energy * 0.41} y2="210" /><circle className="current-dot" cx={55 + energy * 0.41} cy={energy < 150 ? 195 - energy * .267 : energy < 300 ? 155 : energy < 650 ? 155 - (energy - 300) * .206 : energy < 800 ? 83 : 83 - (energy - 800) * .215} r="7" /></svg>
-          <p className="sm-chart-note"><b>{transitionMessage(energy, state)}.</b> Flat sections show latent heat: energy changes particle arrangement while temperature stays constant.</p>
-        </article>
-
-        <article className="sm-forces-card"><div className="sm-section-heading"><div><span>Molecular attraction</span><h2>Intermolecular forces</h2></div><CircleHelp aria-hidden="true" /></div><div className="sm-force-tabs" role="radiogroup" aria-label="Intermolecular force model">{["Off", "Van der Waals", "Hydrogen bonding"].map((mode) => <button type="button" role="radio" aria-checked={forceMode === mode} key={mode} className={forceMode === mode ? "active" : ""} onClick={() => { setForceMode(mode); setForces(mode !== "Off"); setNotice(`${mode} model selected.`); }}>{mode}</button>)}</div><div className="sm-force-body"><div className="sm-force-model" aria-label={`${forceMode} molecular attraction illustration`}><MiniWater active={forces} /><MiniWater active={forces} /><MiniWater active={forces} /></div><fieldset><legend>Display options</legend><label><input type="checkbox" checked={forces} onChange={(event) => { const checked = event.target.checked; setForces(checked); setForceMode(checked ? "Hydrogen bonding" : "Off"); }} /> Show force lines</label><label><input type="checkbox" checked={trails} onChange={(event) => setTrails(event.target.checked)} /> Show speed trails</label><label><input type="checkbox" checked={labels} onChange={(event) => setLabels(event.target.checked)} /> Show molecular labels</label></fieldset></div><p>Stronger attractions raise melting and boiling points because more energy is needed to separate particles.</p></article>
-      </section>
-
-      <section className="sm-guides" ref={guideRef} aria-labelledby="sm-guides-title"><div className="sm-section-heading"><div><span>Learn by changing one variable</span><h2 id="sm-guides-title">Guided experiments</h2></div><p>Each challenge loads a starting condition; you remain in control.</p></div><div className="sm-guide-grid">{experiments.map((experiment, index) => <article key={experiment.id}><span>0{index + 1}</span><h3>{experiment.title}</h3><p>{experiment.task}</p><button type="button" onClick={() => startExperiment(experiment)}>Start challenge</button></article>)}</div><details className="sm-glossary"><summary><CircleHelp /> Key terms <ChevronDown /></summary><div><p><b>Triple point</b>The one temperature and pressure where solid, liquid, and gas coexist.</p><p><b>Critical point</b>Beyond this point, liquid and gas become indistinguishable.</p><p><b>Latent heat</b>Energy used to change state without changing temperature.</p><p><b>Intermolecular forces</b>Attractions between neighboring molecules.</p></div></details></section>
-    </main>
-
-    {notice && <div className="sm-toast" role="status" aria-live="polite"><span>{notice}</span>{undoState && notice.startsWith("Lab reset") && <button type="button" onClick={undoReset}><Undo2 /> Undo</button>}</div>}
-  </div>;
-}
-
-function MiniWater({ active = false }) {
-  return <span className={`sm-mini-water ${active ? "sm-force-active" : ""}`} aria-hidden="true"><i /><i /><i /></span>;
-}
+export default function StatesMatterPage(){const initial=new URLSearchParams(location.search).get("screen")||"home",[screen,setScreen]=useState(screens.includes(initial)?initial:"home"),step=screens.indexOf(screen),go=i=>{const s=screens[i];setScreen(s);const u=new URL(location.href);u.searchParams.set("screen",s);history.replaceState(null,"",u);scrollTo(0,0)};return <div className="som-app"><Header step={step} go={go}/>{step===0?<HomeScreen go={go}/>:step===1?<ParticleScreen go={go}/>:step===2?<HeatingScreen go={go}/>:step===3?<PhaseScreen go={go}/>:step===4?<ComparisonScreen go={go}/>:<ReportScreen go={go}/>}</div>}

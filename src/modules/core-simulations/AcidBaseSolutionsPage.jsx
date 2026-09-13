@@ -1,284 +1,50 @@
-import { useMemo, useState } from "react";
-import {
-  Atom,
-  BarChart3,
-  BookOpen,
-  Droplets,
-  FlaskConical,
-  Lightbulb,
-  List,
-  RotateCcw,
-  Settings,
-  SlidersHorizontal,
-} from "lucide-react";
-import "./AcidBaseSolutionsPage.css";
+import { useEffect, useMemo, useState } from 'react';
+import { BarChart3, Beaker, Check, ChevronLeft, ChevronRight, CircleHelp, ClipboardList, Download, Droplets, FlaskConical, Gauge, Home, Lightbulb, Play, RefreshCw, Settings, ShieldCheck, Target, TestTube2, Thermometer, Trophy } from 'lucide-react';
+import { ACID_BASE_SOLUTIONS, acetateBuffer, indicatorForPH, solveSolution, strongAcidTitration, titrationSeries } from './acidBaseModel.js';
+import './AcidBaseSolutionsPage.css';
 
-const solveWeak = (c, k) => (-k + Math.sqrt(k * k + 4 * k * c)) / 2;
-const makeData = (strong, c, k = 1.8e-5) => {
-  const h = strong ? c : solveWeak(c, k);
-  return { pH: -Math.log10(h), alpha: strong ? 1 : h / c, h };
-};
-function Particle({ kind, i }) {
-  return (
-    <i
-      className={`ab-particle ${kind}`}
-      style={{
-        left: `${8 + ((i * 37) % 82)}%`,
-        top: `${8 + ((i * 29) % 82)}%`,
-      }}
-    />
-  );
+const SCREENS = [['home','Home'],['solutions','Solutions'],['measurements','Measurements'],['titration','Titration'],['buffer','Buffer'],['report','Report']];
+const ICONS = [Home, Beaker, BarChart3, TestTube2, Droplets, ClipboardList];
+const screenFromUrl = () => Math.max(0, SCREENS.findIndex(([id]) => id === new URLSearchParams(location.search).get('screen')));
+const exp = v => v.toExponential(2).replace('e-', ' × 10⁻').replace('e+', ' × 10');
+
+function Molecules({ data, compact=false }) {
+  const n = Math.max(2, Math.round(data.ionisation * (compact ? 14 : 24)));
+  return <div className={`ab2-particles ${compact?'compact':''}`} aria-label={`Particle model, ${(data.ionisation*100).toFixed(1)} percent ionised`}>
+    {Array.from({length:compact?22:40},(_,i)=><i className="water" key={`w${i}`} style={{'--x':`${5+(i*37)%90}%`,'--y':`${7+(i*53)%86}%`,'--d':`${(i%5)*-.4}s`}}/>)}
+    {Array.from({length:n},(_,i)=><i className={i%2?'anion':'hydronium'} key={`i${i}`} style={{'--x':`${8+(i*61)%84}%`,'--y':`${10+(i*43)%78}%`,'--d':`${(i%4)*-.5}s`}}/>)}
+  </div>;
 }
-function Beaker({ strong, data, indicator }) {
-  const ions = strong ? 12 : 3;
-  return (
-    <article className={`ab-solution ${strong ? "strong" : "weak"} indicator-${indicator.toLowerCase().replace(/\s+/g, "-")}`}>
-      <div className="ab-solution-head">
-        <select defaultValue={strong ? "0.10 M HCl" : "0.10 M CH₃COOH"}>
-          <option>{strong ? "0.10 M HCl" : "0.10 M CH₃COOH"}</option>
-        </select>
-        <b>{strong ? "Strong acid" : "Weak acid"}</b>
-      </div>
-      <div className="ab-ion">
-        <span>Ionization</span>
-        <strong>{(data.alpha * 100).toFixed(strong ? 0 : 1)}%</strong>
-        <i>
-          <em style={{ width: `${data.alpha * 100}%` }} />
-        </i>
-      </div>
-      <div className="ab-apparatus">
-        <div className="ab-meter">
-          <small>pH</small>
-          <b>{data.pH.toFixed(2)}</b>
-        </div>
-        <div className="ab-beaker">
-          <div className="ab-liquid" aria-label={`${strong ? "strong" : "weak"} acid particle view`}>
-            {Array.from({ length: 20 }, (_, i) => (
-              <Particle key={"w" + i} kind="water" i={i} />
-            ))}
-            {Array.from({ length: ions }, (_, i) => (
-              <Particle
-                key={"i" + i}
-                kind={
-                  strong
-                    ? i % 2
-                      ? "chloride"
-                      : "hydronium"
-                    : i % 2
-                      ? "acetate"
-                      : "hydronium"
-                }
-                i={i + 22}
-              />
-            ))}
-          </div>
-          <span className="ab-probe left" />
-          <span className="ab-probe right" />
-        </div>
-        <div className={`ab-bulb ${strong ? "on" : ""}`}>
-          💡
-          <b>
-            Conductivity<small>{strong ? "High" : "Low"}</small>
-          </b>
-        </div>
-      </div>
-      <div className="ab-legend">
-        <span>🔴 H₂O</span>
-        <span>🟣 H₃O⁺</span>
-        <span>{strong ? "🟢 Cl⁻" : "⚫ CH₃COOH"}</span>
-      </div>
-      <footer>
-        {strong ? "HCl + H₂O → H₃O⁺ + Cl⁻" : "CH₃COOH + H₂O ⇌ H₃O⁺ + CH₃COO⁻"}
-        <small>({strong ? "complete" : "partial"} ionization)</small>
-      </footer>
-    </article>
-  );
+
+function Glass({ data, volume=250, probe=false, label='' }) {
+  const indicator=indicatorForPH(data.pH);
+  return <div className="ab2-glass-wrap">{probe&&<div className="ab2-probe"><span>pH</span><b>{data.pH.toFixed(2)}</b><i/></div>}<div className="ab2-glass" style={{'--liquid':`${Math.min(82,28+volume/5)}%`,'--solution':`${indicator.color}2a`}}><div className="ab2-meniscus"/><b>{data.concentration.toFixed(3)} M</b><strong>{data.solution.formula}</strong><small>V = {volume} mL<br/>T = {data.temperature.toFixed(0)} °C</small></div>{label&&<em>{label}</em>}</div>;
 }
-export default function AcidBaseSolutionsPage() {
-  const [c, setC] = useState(0.1),
-    [ka, setKa] = useState(1.8e-5),
-    [indicator, setIndicator] = useState("None"),
-    [acidType, setAcidType] = useState("CH₃COOH (acetic acid)"),
-    [view, setView] = useState("Molecular View"),
-    [activeSide, setActiveSide] = useState("Compare solutions");
-  const strong = useMemo(() => makeData(true, c), [c]),
-    weak = useMemo(() => makeData(false, c, ka), [c, ka]);
-  const selectedData = acidType.startsWith("HCl") ? strong : weak;
-  const reset = () => {
-    setC(0.1);
-    setKa(1.8e-5);
-    setIndicator("None");
-    setAcidType("CH₃COOH (acetic acid)");
-    setView("Molecular View");
-  };
-  return (
-    <div className="ab-app">
-      <header>
-        <FlaskConical />
-        <div>
-          <h1>Acid–Base Solutions Lab</h1>
-          <p>Explore ionization, pH, and conductivity at the molecular level</p>
-        </div>
-        <nav>
-          {[
-            [Atom, "Molecular View"],
-            [BarChart3, "Chart View"],
-            [List, "Table View"],
-          ].map(([I, n]) => (
-            <button
-              key={n}
-              className={view === n ? "active" : ""}
-              onClick={() => setView(n)}
-            >
-              <I />
-              {n}
-            </button>
-          ))}
-          <button onClick={reset}>
-            <RotateCcw />
-            Reset
-          </button>
-        </nav>
-      </header>
-      <aside>
-        {[
-          [FlaskConical, "Compare solutions"],
-          [BarChart3, "pH meter"],
-          [FlaskConical, "Titration"],
-          [Droplets, "Indicators"],
-          [Atom, "Solubility"],
-          [Atom, "Molecular view"],
-          [BookOpen, "Theory"],
-          [List, "Lab notes"],
-        ].map(([I, n], i) => (
-          <button key={n} className={activeSide === n ? "active" : ""} onClick={() => {
-            setActiveSide(n);
-            if (["pH meter", "Titration", "Theory"].includes(n)) setView("Chart View");
-            if (["Molecular view", "Indicators", "Compare solutions"].includes(n)) setView("Molecular View");
-            if (["Solubility", "Lab notes"].includes(n)) setView("Table View");
-          }}>
-            <I />
-            {n}
-          </button>
-        ))}
-        <p>
-          ⚛<br />
-          Small
-          <br />
-          Molecules
-          <br />
-          Big Questions™
-        </p>
-      </aside>
-      <main>
-        <div className="ab-title">
-          <SlidersHorizontal />
-          <h2>{activeSide}</h2>
-          <span>
-            Same concentration. Different strengths. See how ionization changes
-            everything.
-          </span>
-          <b className="ab-selected-readout">Selected: {acidType} · pH {selectedData.pH.toFixed(2)}</b>
-        </div>
-        {view === "Chart View" && <section className="ab-view-panel"><h3>Chart view</h3><p>Compare pH and ionization as concentration changes. Strong acid: <b>{strong.pH.toFixed(2)}</b> · Weak acid: <b>{weak.pH.toFixed(2)}</b>.</p><div className="ab-chart-bars"><i style={{height:`${Math.max(10, strong.alpha*100)}%`}} /><i style={{height:`${Math.max(10, weak.alpha*100)}%`}} /></div></section>}
-        {view === "Table View" && <section className="ab-view-panel"><h3>Species table</h3><table><thead><tr><th>Species</th><th>Concentration</th><th>Role</th></tr></thead><tbody><tr><td>H₃O⁺</td><td>{weak.h.toExponential(2)} M</td><td>Acidic ion</td></tr><tr><td>CH₃COOH</td><td>{(c-weak.h).toFixed(4)} M</td><td>Weak acid</td></tr><tr><td>CH₃COO⁻</td><td>{weak.h.toExponential(2)} M</td><td>Conjugate base</td></tr></tbody></table></section>}
-        <section className="ab-compare">
-          <Beaker strong data={strong} indicator={indicator} />
-          <Beaker data={weak} indicator={indicator} />
-        </section>
-        <section className="ab-controls">
-          <h2>
-            <Settings />
-            Solution controls
-          </h2>
-          <label>
-            Concentration (M)<b>{c.toFixed(2)}</b>
-            <input
-              type="range"
-              min=".001"
-              max="1"
-              step=".001"
-              value={c}
-              onChange={(e) => setC(+e.target.value)}
-            />
-            <small>0.001　　0.01　　 0.10　　　1.0</small>
-          </label>
-          <label>
-            Acid / Base
-            <select value={acidType} onChange={(e) => setAcidType(e.target.value)} aria-label="Acid or base selection">
-              <option>CH₃COOH (acetic acid)</option>
-              <option>HCl (hydrochloric acid)</option>
-            </select>
-          </label>
-          <label>
-            Acid strength (Kₐ)<b>{ka.toExponential(1)}</b>
-            <input
-              type="range"
-              min=".000001"
-              max=".01"
-              step=".000001"
-              value={ka}
-              onChange={(e) => setKa(+e.target.value)}
-            />
-          </label>
-          <label>
-            Add indicator (3 drops)
-            <select
-              value={indicator}
-              onChange={(e) => setIndicator(e.target.value)}
-            >
-              <option>None</option>
-              <option>Phenolphthalein</option>
-              <option>Methyl orange</option>
-            </select>
-          </label>
-        </section>
-        <section className="ab-equilibrium">
-          <h3>Ionization equation</h3>
-          <p>CH₃COOH + H₂O ⇌ H₃O⁺ + CH₃COO⁻</p>
-          <b>Kₐ = {ka.toExponential(1)}</b>
-        </section>
-        <section className="ab-pie">
-          <h3>Species distribution ({c.toFixed(2)} M)</h3>
-          <i style={{ "--ion": `${weak.alpha * 100 * 3.6}deg` }} />
-          <div>
-            <span>🔵 CH₃COOH　{((1 - weak.alpha) * 100).toFixed(1)}%</span>
-            <span>🟣 CH₃COO⁻　{(weak.alpha * 100).toFixed(1)}%</span>
-            <span>🔴 H₃O⁺　　 {(weak.alpha * 100).toFixed(1)}%</span>
-          </div>
-        </section>
-        <section className="ab-ph">
-          <h3>pH scale (25 °C)</h3>
-          <div>
-            <i />
-            <mark style={{ left: `${(strong.pH / 14) * 100}%` }}>
-              {strong.pH.toFixed(2)}
-            </mark>
-            <mark className="weak" style={{ left: `${(weak.pH / 14) * 100}%` }}>
-              {weak.pH.toFixed(2)}
-            </mark>
-          </div>
-          <span>0　 1　 2　 3　 4　 5　 6　 7　 8　 9　10　11　12　13　14</span>
-          <footer>
-            ← More acidic <b>Neutral</b> More basic →
-          </footer>
-        </section>
-        <section className="ab-take">
-          <h3>
-            <Lightbulb />
-            Key takeaways
-          </h3>
-          {[
-            "Strong acids ionize 100% in water.",
-            "Weak acids ionize partially (established by Kₐ).",
-            "More ions → higher conductivity.",
-            "Lower pH means higher [H₃O⁺].",
-            "Same concentration, different behavior.",
-          ].map((x) => (
-            <p key={x}>✓ {x}</p>
-          ))}
-        </section>
-      </main>
-    </div>
-  );
+
+function Chart({ points, marker, title='Titration Curve' }) {
+  const w=640,h=300,p=48, poly=points.map(q=>`${p+q.x/50*(w-p*2)},${h-p-q.y/14*(h-p*2)}`).join(' ');
+  return <div className="ab2-chart"><h3>{title}</h3><svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={title}>{Array.from({length:8},(_,i)=><line key={`h${i}`} x1={p} x2={w-p} y1={h-p-i*(h-p*2)/7} y2={h-p-i*(h-p*2)/7}/>)}{Array.from({length:6},(_,i)=><line key={`v${i}`} y1={p} y2={h-p} x1={p+i*(w-p*2)/5} x2={p+i*(w-p*2)/5}/>)}<polyline points={poly}/>{marker&&<><line className="marker" x1={p+marker.x/50*(w-p*2)} x2={p+marker.x/50*(w-p*2)} y1={p} y2={h-p}/><circle cx={p+marker.x/50*(w-p*2)} cy={h-p-marker.y/14*(h-p*2)} r="7"/></>}<text x="12" y="30">pH</text><text x="240" y="292">Volume of NaOH added (mL)</text>{[0,10,20,30,40,50].map((x,i)=><text key={x} x={p+i*(w-p*2)/5-7} y="273">{x}</text>)}{[0,2,4,6,8,10,12,14].map((y,i)=><text key={y} x="24" y={h-p-i*(h-p*2)/7+5}>{y}</text>)}</svg></div>;
+}
+
+const Readings=({data})=><>{[['pH',data.pH.toFixed(2)],['pOH',data.pOH.toFixed(2)],['[H₃O⁺]',`${exp(data.h)} M`],['Ionisation',`${(data.ionisation*100).toFixed(2)} %`],['Conductivity',`${data.conductivity.toFixed(2)} mS/cm`]].map(([a,b])=><div className="reading" key={a}><span>{a}</span><b>{b}</b></div>)}</>;
+
+function HomeScreen({go}) { return <main className="ab2-home"><section className="ab2-hero-copy"><p className="eyebrow"><Droplets/> Aqueous chemistry</p><h1>Acid–Base Solutions Lab</h1><p className="lead">Explore ionisation, pH, conductivity, indicators, buffers, and titration at the particle level.</p><div className="ab2-concept"><h3>The pH scale</h3><div className="ph-strip"/><small>0　1　2　3　4　5　6　7　8　9　10　11　12　13　14</small><p><b>HA + H₂O ⇌ H₃O⁺ + A⁻</b><br/>pH = −log[H₃O⁺]</p></div><button className="primary" onClick={()=>go(1)}><Play/> Enter Lab <ChevronRight/></button></section><section className="ab2-hero-lab">{['hcl','acetic','naoh','ammonia'].map(id=>{const d=solveSolution(id,.1);return <div className="hero-beaker" key={id}><Glass data={d} volume={180} label={d.solution.kind.replace('-',' ')}/><span>{d.pH.toFixed(2)} pH</span></div>})}</section><section className="ab2-objectives"><h2><Target/> Learning Objectives</h2>{['Compare strong and weak electrolytes','Connect ions to pH and conductivity','Perform a complete titration','Design and test a buffer'].map((x,i)=><article key={x}><span>{i+1}</span><b>{x}</b><p>{['Relate ionisation to observable properties.','Explain meter readings with particles.','Find the equivalence point from live data.','Apply Henderson–Hasselbalch.'][i]}</p></article>)}</section></main> }
+
+function SolutionsScreen(p) { const {solutionId,setSolutionId,concentration,setConcentration,data,setRecorded}=p; return <main className="ab2-workspace"><aside className="ab2-controls"><h2>Solution Setup</h2><label>Solute<select value={solutionId} onChange={e=>setSolutionId(e.target.value)}>{Object.values(ACID_BASE_SOLUTIONS).map(s=><option key={s.id} value={s.id}>{s.name} ({s.formula})</option>)}</select></label><label>Concentration <b>{concentration.toFixed(3)} M</b><input type="range" min=".001" max="1" step=".001" value={concentration} onChange={e=>setConcentration(+e.target.value)}/></label><h3>Particle ratio</h3><div className="ab2-ratio"><span>Unionised solute</span><b>{((1-data.ionisation)*100).toFixed(1)}%</b><span>Ions</span><b>{(data.ionisation*100).toFixed(1)}%</b></div></aside><section className="ab2-stage"><Glass data={data}/><div className="ab2-magnifier"><h3>Particle-level view</h3><Molecules data={data}/></div><div className="ab2-equation"><b>{data.solution.formula}</b> + H₂O <strong>{data.solution.kind.includes('weak')?'⇌':'→'}</strong> hydrated ions</div></section><aside className="ab2-results"><h2>Live Solution Values</h2><Readings data={data}/><button className="primary" onClick={()=>setRecorded(r=>[...r,data])}><ClipboardList/> Record Trial</button><div className="insight"><Lightbulb/><p><b>Key insight</b><br/>{data.solution.kind.includes('weak')?'Only a fraction ionises, establishing dynamic equilibrium.':'Strong electrolytes dissociate essentially completely.'}</p></div></aside></main> }
+
+function MeasurementsScreen({data,recorded,setRecorded,go}) { const ind=indicatorForPH(data.pH); return <main className="ab2-measure"><aside className="ab2-toolbox"><h2>Equipment & Tools</h2>{[[Gauge,'pH Probe','0–14 pH · ±0.01'],[Gauge,'Conductivity Meter','0–200 mS/cm'],[Droplets,'Universal Indicator','pH 1–14'],[Thermometer,'Temperature','25.0 °C']].map(([I,a,b])=><button key={a}><I/><span><b>{a}</b><small>{b}</small></span><ChevronRight/></button>)}<h3>Calibration Status</h3>{['pH 4.00','pH 7.00','pH 10.00','Cell constant'].map(x=><p className="cal" key={x}><Check/> {x}<small>Passed</small></p>)}</aside><section className="ab2-bench"><div className="ab2-meters"><div><small>pH</small><b>{data.pH.toFixed(2)}</b></div><Glass data={data} probe/><div><small>Conductivity</small><b>{data.conductivity.toFixed(2)}</b></div></div><div className="ab2-sample"><Molecules data={data} compact/><span>Indicator: <i style={{background:ind.color}}/> {ind.name}</span></div></section><aside className="ab2-live"><h2>Live Measurements</h2><Readings data={data}/><h3>Data Table</h3><table><thead><tr><th>Solution</th><th>pH</th><th>mS/cm</th></tr></thead><tbody>{recorded.map((r,i)=><tr key={i}><td>{r.solution.formula}</td><td>{r.pH.toFixed(2)}</td><td>{r.conductivity.toFixed(2)}</td></tr>)}</tbody></table><button className="primary" onClick={()=>setRecorded(r=>[...r,data])}>Record Trial</button><button onClick={()=>go(3)}>Next: Titration <ChevronRight/></button></aside></main> }
+
+function TitrationScreen({baseVolume,setBaseVolume,trials,setTrials,go}) { const result=strongAcidTitration({baseVolume}),points=useMemo(()=>titrationSeries({},50,.5),[]),add=n=>setBaseVolume(v=>Math.min(50,+(v+n).toFixed(2))); return <main className="ab2-titration"><section className="ab2-titration-apparatus"><h2>Titration Lab</h2><p>0.1000 M HCl with 0.1000 M NaOH</p><div className="burette"><i style={{height:`${100-baseVolume*1.5}%`}}/><b>{baseVolume.toFixed(2)} mL</b></div><div className="flask"><div style={{background:result.pH>8.2?'#f9a8d477':'#dbeafe77'}}/><span>pH {result.pH.toFixed(2)}</span></div></section><section><Chart points={points} marker={{x:baseVolume,y:result.pH}}/><div className="ab2-trial-table"><h3>Trial Data</h3>{trials.map((x,i)=><span key={i}>Trial {i+1}: {x.toFixed(2)} mL</span>)}</div></section><aside className="ab2-results"><h2>Titration Controls</h2><button className="primary" onClick={()=>add(1)}>▶▶ Add 1.00 mL</button><button onClick={()=>add(.1)}>▶ Add 0.10 mL</button><button onClick={()=>add(.05)}>💧 Add one drop</button><button onClick={()=>setBaseVolume(0)}><RefreshCw/> Reset</button>{[['Initial pH','1.00'],['Current volume',`${baseVolume.toFixed(2)} mL`],['Current pH',result.pH.toFixed(2)],['Equivalence',`${result.equivalenceVolume.toFixed(2)} mL`]].map(([a,b])=><div className="reading" key={a}><span>{a}</span><b>{b}</b></div>)}<button onClick={()=>setTrials(t=>[...t,result.equivalenceVolume])}>Fit Equivalence Point</button><button className="teal" onClick={()=>go(4)}>Continue to Buffer <ChevronRight/></button></aside></main> }
+
+function BufferScreen({acidVolume,setAcidVolume,baseStockVolume,setBaseStockVolume,stress,setStress,go}) { const initial=acetateBuffer({acidVolume,baseVolume:baseStockVolume}),buffer=acetateBuffer({acidVolume,baseVolume:baseStockVolume,addedAcidMmol:stress==='acid'?1:0,addedBaseMmol:stress==='base'?1:0}); return <main className="ab2-buffer"><section className="ab2-goal"><Target/><div><h2>Goal</h2><p>Prepare 250.0 mL acetate buffer with pH 4.76 and total concentration 0.200 M.</p></div>{[['Target pH',Math.abs(initial.pH-4.76)<.03],['Ratio correct',Math.abs(initial.ratio-1)<.03],['Concentration',Math.abs(initial.totalConcentration-.2)<.01]].map(([x,ok])=><span className={ok?'ok':''} key={x}>{ok?<Check/>:'○'} {x}</span>)}</section><section className="ab2-buffer-bench"><div className="stock red">CH₃COOH<small>0.500 M</small></div><div className="stock blue">CH₃COONa<small>0.500 M</small></div><Glass data={solveSolution('acetic',.2)} probe/><div className="ab2-sliders"><label>CH₃COOH <b>{acidVolume.toFixed(1)} mL</b><input type="range" min="0" max="200" value={acidVolume} onChange={e=>setAcidVolume(+e.target.value)}/></label><label>CH₃COONa <b>{baseStockVolume.toFixed(1)} mL</b><input type="range" min="0" max="200" value={baseStockVolume} onChange={e=>setBaseStockVolume(+e.target.value)}/></label></div></section><aside className="ab2-results"><h2>Henderson–Hasselbalch</h2><div className="formula">pH = pKₐ + log([A⁻]/[HA])</div>{[['Moles HA',`${buffer.acidMmol.toFixed(1)} mmol`],['Moles A⁻',`${buffer.baseMmol.toFixed(1)} mmol`],['[A⁻]/[HA]',buffer.ratio.toFixed(2)],['Predicted pH',buffer.pH.toFixed(2)]].map(([a,b])=><div className="reading" key={a}><span>{a}</span><b>{b}</b></div>)}<h3>Buffer Capacity Test</h3><div className="button-row"><button onClick={()=>setStress('acid')}>+ HCl</button><button onClick={()=>setStress('base')}>+ NaOH</button><button onClick={()=>setStress('none')}>Clear</button></div><p className="insight">ΔpH = {(buffer.pH-initial.pH).toFixed(2)}. The conjugate pair consumes added H⁺ or OH⁻.</p><button className="primary" onClick={()=>go(5)}>Save & Continue <ChevronRight/></button></aside></main> }
+
+function ReportScreen({recorded,trials,buffer,reset}) { const [answer,setAnswer]=useState(''),correct=answer==='complete'; const csv=()=>{const rows=['solution,concentration,pH,conductivity',...recorded.map(r=>`${r.solution.name},${r.concentration},${r.pH},${r.conductivity}`)],url=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'})),a=document.createElement('a');a.href=url;a.download='acid-base-results.csv';a.click();URL.revokeObjectURL(url)}; return <main className="ab2-report"><aside className="ab2-report-nav"><Trophy/><h2>Experiment Complete!</h2>{SCREENS.map(([id,label],i)=><p key={id}><Check/> {i+1}. {label}</p>)}<div className="progress"><i style={{width:'100%'}}/></div><b>6 / 6 steps · 100%</b></aside><section className="ab2-report-main"><h1>Lab Report & Skill Assessment</h1><div className="summary-cards">{[['HCl pH','2.00'],['Acetic acid pH','3.37'],['NaOH pH','12.00'],['Titration Vₑq',`${(trials.at(-1)||25).toFixed(2)} mL`],['Buffer pH',buffer.pH.toFixed(2)]].map(([a,b])=><article key={a}><FlaskConical/><span>{a}</span><b>{b}</b></article>)}</div><div className="report-grid"><article><h3>Solution Measurements</h3><table><tbody>{recorded.map((r,i)=><tr key={i}><td>{r.solution.name}</td><td>{r.concentration.toFixed(3)} M</td><td>{r.pH.toFixed(2)}</td></tr>)}</tbody></table></article><article><Chart points={titrationSeries({},50,1)} marker={{x:25,y:7}} title="Titration Results"/></article><article><h3>Conclusion</h3><p>Strong electrolytes ionise completely; weak acids establish equilibria. Equivalence occurs at equal stoichiometric moles. A conjugate pair resists pH change.</p></article></div><div className="report-actions"><button className="primary" onClick={()=>print()}><Download/> PDF Report</button><button onClick={csv}><Download/> CSV Data</button><button onClick={reset}><RefreshCw/> Restart Lab</button></div></section><aside className="ab2-assessment"><h2>Knowledge Check</h2><p>Why does HCl ionise essentially completely?</p><label><input type="radio" name="q" value="complete" checked={answer==='complete'} onChange={e=>setAnswer(e.target.value)}/> It is a strong acid with a very large dissociation constant.</label><label><input type="radio" name="q" value="buffer" checked={answer==='buffer'} onChange={e=>setAnswer(e.target.value)}/> It acts as a buffer.</label>{answer&&<p className={correct?'success':'error'}>{correct?'Correct — complete dissociation produces H₃O⁺ and Cl⁻.':'Try again: relate strength to equilibrium.'}</p>}<h3>Safety Checklist</h3>{['Wear eye protection','Rinse probes','Dispose correctly','Keep the bench clean'].map(x=><p key={x}><ShieldCheck/> {x}</p>)}</aside></main> }
+
+export default function AcidBaseSolutionsPage(){
+  const [screen,setScreen]=useState(screenFromUrl),[solutionId,setSolutionId]=useState('acetic'),[concentration,setConcentration]=useState(.1),[recorded,setRecorded]=useState(()=>['hcl','acetic','naoh','ammonia'].map(id=>solveSolution(id,.01))),[baseVolume,setBaseVolume]=useState(25),[trials,setTrials]=useState([25,24.98,25.02]),[acidVolume,setAcidVolume]=useState(100),[baseStockVolume,setBaseStockVolume]=useState(100),[stress,setStress]=useState('none');
+  const data=useMemo(()=>solveSolution(solutionId,concentration),[solutionId,concentration]);
+  const go=next=>{const i=Math.max(0,Math.min(5,next));setScreen(i);const url=new URL(location.href);url.searchParams.set('screen',SCREENS[i][0]);history.replaceState({},'',url);scrollTo(0,0)};
+  const reset=()=>{setSolutionId('acetic');setConcentration(.1);setRecorded(['hcl','acetic','naoh','ammonia'].map(id=>solveSolution(id,.01)));setBaseVolume(0);setTrials([]);setAcidVolume(100);setBaseStockVolume(100);setStress('none');go(0)};
+  useEffect(()=>{const f=()=>setScreen(screenFromUrl());addEventListener('popstate',f);return()=>removeEventListener('popstate',f)},[]);
+  return <div className="ab2-app"><header className="ab2-header"><div className="brand"><FlaskConical/><span><b>Chemistry Virtual Lab</b><small>Explore　•　Experiment　•　Understand</small></span></div><div className="lab-title"><b>Acid–Base Solutions Lab</b><small>Screen {screen+1} of 6: {SCREENS[screen][1]}</small></div><nav>{SCREENS.map(([id,label],i)=>{const I=ICONS[i];return <button key={id} className={screen===i?'active':''} onClick={()=>go(i)} aria-current={screen===i?'page':undefined}><I/><span>{label}</span></button>})}</nav><div className="ab2-header-tools"><CircleHelp/><Settings/></div></header><div className="ab2-progress"><i style={{width:`${screen/5*100}%`}}/><span>{Math.round(screen/5*100)}% complete</span></div>{screen===0&&<HomeScreen go={go}/>} {screen===1&&<SolutionsScreen {...{solutionId,setSolutionId,concentration,setConcentration,data,setRecorded}}/>} {screen===2&&<MeasurementsScreen {...{data,recorded,setRecorded,go}}/>} {screen===3&&<TitrationScreen {...{baseVolume,setBaseVolume,trials,setTrials,go}}/>} {screen===4&&<BufferScreen {...{acidVolume,setAcidVolume,baseStockVolume,setBaseStockVolume,stress,setStress,go}}/>} {screen===5&&<ReportScreen recorded={recorded} trials={trials} buffer={acetateBuffer({acidVolume,baseVolume:baseStockVolume})} reset={reset}/>} {screen>0&&screen<5&&<footer className="ab2-footer"><button onClick={()=>go(screen-1)}><ChevronLeft/> Previous</button><span>Understanding today. A safer, brighter tomorrow.</span><button className="primary" onClick={()=>go(screen+1)}>Next <ChevronRight/></button></footer>}</div>;
 }
