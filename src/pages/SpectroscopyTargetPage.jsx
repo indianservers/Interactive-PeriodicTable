@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
 import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import { SciencePlot } from "../components/science/SciencePlot.jsx";
 import "./spectroscopyTarget.css";
 const peaks = [
   {
@@ -43,6 +44,49 @@ const modeMeta = {
   "UV-Vis": { title: "UV–Vis · Absorbance", axis: "Wavelength (nm)", suffix: "nm" },
 };
 const assignmentAtoms={"O–CH₂–":[0,2,6,7],"CO–CH₃":[4,5,11,12,13],"–CH₃":[3,8,9,10]};
+const lorentz = (x, center, width, height) => height * (width * width) / ((x - center) ** 2 + width * width);
+function buildSpectrum(mode, modePeaks) {
+  if (mode === "Mass Spectrum") {
+    return {
+      series: [{ label: "Relative intensity", data: modePeaks.map((peak, index) => ({ x: Number(peak.shift), y: [88, 100, 42][index] || 30 })), color: "#43d7ff", kind: "bar" }],
+      xDomain: [0, 120],
+      yDomain: [0, 110],
+      reverseX: false,
+      yLabel: "Relative intensity",
+    };
+  }
+  if (mode === "IR") {
+    const xs = Array.from({ length: 181 }, (_, i) => 400 + i * 20);
+    return {
+      series: [{ label: "%T", data: xs.map((x) => ({ x, y: 96 - modePeaks.reduce((sum, peak, index) => sum + lorentz(x, Number(peak.shift), [18, 40, 28][index], [72, 28, 36][index]), 0) })), color: "#43d7ff" }],
+      xDomain: [400, 4000],
+      yDomain: [0, 100],
+      reverseX: true,
+      yLabel: "Transmittance (%)",
+    };
+  }
+  if (mode === "UV-Vis") {
+    const xs = Array.from({ length: 141 }, (_, i) => 190 + i);
+    return {
+      series: [{ label: "Absorbance", data: xs.map((x) => ({ x, y: modePeaks.reduce((sum, peak, index) => sum + lorentz(x, Number(peak.shift), [8, 14, 12][index], [0.9, 0.35, 0.18][index]), 0) })), color: "#43d7ff" }],
+      xDomain: [190, 330],
+      yDomain: [0, 1.1],
+      reverseX: false,
+      yLabel: "Absorbance",
+    };
+  }
+  const domain = mode === "¹³C NMR" ? [80, 0] : [6, 0];
+  const xs = Array.from({ length: 241 }, (_, i) => domain[0] + (domain[1] - domain[0]) * i / 240);
+  const widths = mode === "¹³C NMR" ? [0.18, 0.18, 0.18] : [0.035, 0.018, 0.03];
+  const heights = mode === "¹³C NMR" ? [1, 1, 1] : [2, 3, 3];
+  return {
+    series: [{ label: "Intensity", data: xs.map((x) => ({ x, y: modePeaks.reduce((sum, peak, index) => sum + lorentz(x, Number(peak.shift), widths[index], heights[index]), 0) })), color: "#43d7ff" }],
+    xDomain: domain,
+    yDomain: [0, mode === "¹³C NMR" ? 1.2 : 3.4],
+    reverseX: true,
+    yLabel: "Intensity",
+  };
+}
 export default function SpectroscopyTargetPage({ onNavigate }) {
   const viewerRef=useRef(null);
   const [mode, setMode] = useState("¹H NMR");
@@ -92,6 +136,7 @@ export default function SpectroscopyTargetPage({ onNavigate }) {
     [mode],
   );
   const metadata = modeMeta[mode];
+  const plotSpec = useMemo(() => buildSpectrum(mode, modePeaks), [mode, modePeaks]);
   useEffect(()=>{setPeak(modePeaks[0]);},[mode,modePeaks]);
   const selectedAtomIndices=assignmentAtoms[peak.assignment]||[];
   const measuredDistance=pickedAtoms.length===2?Math.hypot(...pickedAtoms[0].coordinates.map((value,index)=>value-pickedAtoms[1].coordinates[index])).toFixed(2):null;
@@ -234,41 +279,33 @@ export default function SpectroscopyTargetPage({ onNavigate }) {
                   </button>
                 </div>
               </div>
-              <div className="relative mt-3 h-64 border-b border-l border-slate-500">
-                <div className="absolute inset-x-0 bottom-0 h-40 bg-[linear-gradient(90deg,transparent_10%,rgba(34,211,238,.25)_10.2%,transparent_10.4%,transparent_45%,rgba(167,139,250,.3)_45.2%,transparent_45.4%,transparent_72%,rgba(251,191,36,.25)_72.2%,transparent_72.4%)]" />
-                <svg
-                  viewBox="0 0 800 250"
-                  className="absolute inset-0 h-full w-full"
-                >
-                  <path
-                    d="M0 230 L165 230 L170 210 L175 230 L180 180 L185 230 L190 205 L195 230 L405 230 L410 90 L415 230 L565 230 L570 205 L575 160 L580 205 L585 230 L590 175 L595 230 L800 230"
-                    fill="none"
-                    stroke="#43d7ff"
-                    strokeWidth="3"
-                  />
-                </svg>
-                {modePeaks.map((x, i) => (
-                  <button
-                    key={x.shift}
-                    onClick={() => setPeak(x)}
-                    className="absolute bottom-[74%] rounded border px-2 py-1 text-xs"
-                    style={{
-                      left: `${[18, 50, 73][i]}%`,
-                      borderColor: x.color,
-                      color: x.color,
-                    }}
-                  >
-                    {x.shift}
-                  </button>
-                ))}
+              <div className="relative mt-3 h-64">
+                <SciencePlot
+                  title={metadata.title}
+                  series={plotSpec.series}
+                  xLabel={metadata.axis}
+                  yLabel={plotSpec.yLabel}
+                  xDomain={plotSpec.xDomain}
+                  yDomain={plotSpec.yDomain}
+                  reverseX={plotSpec.reverseX}
+                  height={256}
+                  legend={false}
+                  onPointClick={(event) => {
+                    const x = event?.points?.[0]?.x;
+                    if (x == null) return;
+                    const nearest = modePeaks.reduce((best, item) => {
+                      const distance = Math.abs(Number(item.shift) - Number(x));
+                      return distance < best.distance ? { item, distance } : best;
+                    }, { item: modePeaks[0], distance: Infinity });
+                    setPeak(nearest.item);
+                    announce(`Selected ${nearest.item.assignment}`);
+                  }}
+                />
                 {peakPicking && (
                   <span className="absolute right-2 top-2 rounded bg-cyan-300/10 px-2 py-1 text-[10px] text-cyan-200">
                     Click a peak to inspect assignment
                   </span>
                 )}
-                <span className="absolute bottom-1 left-1/2 text-xs text-slate-400">
-                  {metadata.axis}
-                </span>
               </div>
               <div className="mt-3 grid grid-cols-3 gap-2">
                 {modePeaks.map((x) => (

@@ -1,13 +1,52 @@
 import {useEffect,useMemo,useState} from "react";
 import {Activity,Beaker,Check,CircleHelp,Download,FileText,FlaskConical,Gauge,Pause,Play,RefreshCw,ShieldCheck,Target,Trophy,Zap} from "lucide-react";
 import {TAFEL_DEFAULTS,ocpAt,polarizationSeries,scanState,tafelAnalysis} from "./tafelModel.js";
+import { SciencePlot } from "../../components/science/SciencePlot.jsx";
 import "./TafelPlotLab.css";
 const ids=["home","cell-setup","ocp-stabilization","polarization-scan","tafel-analysis","report-assessment"];
 function Header({step,go}){return <header className="tf-head"><button onClick={()=>go(Math.max(0,step-1))}>←</button><span>Virtual Labs　/　Electrochemistry　/　<b>Tafel Plot &amp; Corrosion Laboratory</b></span><strong>{step+1} of 6</strong><i>{ids.map((_,i)=><em className={i<=step?"on":""} key={i}/>)}</i><button><CircleHelp/>Help</button><button onClick={()=>go(0)}><RefreshCw/>Reset</button></header>}
 function Card({title,className="",children}){return <section className={`tf-card ${className}`}><h2>{title}</h2>{children}</section>}
 function Apparatus({compact=false}){return <div className={`tf-apparatus ${compact?"compact":""}`} aria-label="Three-electrode electrochemical cell"><div className="tf-wire green"/><div className="tf-wire blue"/><div className="tf-wire red"/><div className="tf-cell"><i className="we"/><i className="re"/><i className="ce"/><span>3.5% NaCl<br/>250 mL</span></div><div className="tf-pot"><b>Potentiostat</b><span>WE　RE　CE</span><em>● Power　● Cell On</em></div><label className="we-label">Working Electrode<br/>(Carbon Steel)</label><label className="re-label">Ag/AgCl Reference<br/>(sat. KCl)</label><label className="ce-label">Counter Electrode<br/>(Pt Mesh)</label></div>}
-function PolarChart({analysis=false,progress=1}){const data=polarizationSeries(),shown=data.slice(0,Math.max(2,Math.floor(data.length*progress))),mapX=E=>45+(E+.75)/.8*550,mapY=j=>220-(Math.log10(Math.max(1e-7,j))+7)/6*185,pts=shown.map(d=>`${mapX(d.E)},${mapY(d.absCurrentDensity)}`).join(" ");return <svg className="tf-polar" viewBox="0 0 650 275" role="img" aria-label="Logarithmic polarization curve"><g className="grid">{[35,66,97,128,159,190,220].map(y=><line key={y} x1="45" y1={y} x2="600" y2={y}/>)}</g><line x1="45" y1="220" x2="605" y2="220"/><line x1="45" y1="25" x2="45" y2="220"/><polyline points={pts}/>{analysis&&<><rect x={mapX(-.62)} y="25" width={mapX(-.52)-mapX(-.62)} height="195" className="cat"/><rect x={mapX(-.37)} y="25" width={mapX(-.27)-mapX(-.37)} height="195" className="ano"/><line className="fit catline" x1={mapX(-.7)} y1={mapY(1e-3)} x2={mapX(TAFEL_DEFAULTS.ecorr)} y2={mapY(TAFEL_DEFAULTS.icorr)}/><line className="fit anoline" x1={mapX(TAFEL_DEFAULTS.ecorr)} y1={mapY(TAFEL_DEFAULTS.icorr)} x2={mapX(-.18)} y2={mapY(1e-3)}/><circle className="corr" cx={mapX(TAFEL_DEFAULTS.ecorr)} cy={mapY(TAFEL_DEFAULTS.icorr)} r="7"/><text x={mapX(TAFEL_DEFAULTS.ecorr)+10} y={mapY(TAFEL_DEFAULTS.icorr)-8}>E₍corr₎ = −0.447 V</text></>}<text x="240" y="260">Potential vs Ag/AgCl (V)</text><text transform="rotate(-90 15 160)" x="15" y="160">|j| (A cm⁻²)</text></svg>}
-function OcpChart({time=600}){const data=Array.from({length:121},(_,i)=>({t:i*5,v:ocpAt(i*5)})),pts=data.filter(d=>d.t<=time).map(d=>`${45+d.t/600*550},${30+(d.v+.40)/-.06*175}`).join(" ");return <svg className="tf-ocp-chart" viewBox="0 0 650 250"><g className="grid">{[35,75,115,155,195].map(y=><line key={y} x1="45" y1={y} x2="600" y2={y}/>)}</g><line x1="45" y1="210" x2="605" y2="210"/><line x1="45" y1="20" x2="45" y2="210"/><rect x="540" y="20" width="60" height="190"/><polyline points={pts}/><text x="285" y="240">Time (s)</text><text transform="rotate(-90 15 150)" x="15" y="150">Potential (V)</text></svg>}
+function PolarChart({analysis=false,progress=1}){
+  const shown=polarizationSeries().slice(0,Math.max(2,Math.floor(180*progress)));
+  return (
+    <div className="tf-polar">
+      <SciencePlot
+        title="Logarithmic polarization curve"
+        series={[
+          { label: "|j|", data: shown.map((row)=>({x:row.E,y:row.absCurrentDensity})), color: "#35b8ff" },
+          analysis ? { label: "Ecorr", data: [{x:TAFEL_DEFAULTS.ecorr,y:TAFEL_DEFAULTS.icorr}], color: "#fb7185", mode: "markers", hideLine: true, markerSize: 10 } : null,
+        ].filter(Boolean)}
+        xLabel="Potential vs Ag/AgCl (V)"
+        yLabel="|j| (A cm⁻²)"
+        logY
+        xDomain={[-0.75, 0.05]}
+        height={275}
+        shapes={analysis ? [
+          { type: "rect", x0: -0.62, x1: -0.52, y0: 1e-7, y1: 1e-1, fillcolor: "rgba(56,189,248,0.12)", line: { width: 0 } },
+          { type: "rect", x0: -0.37, x1: -0.27, y0: 1e-7, y1: 1e-1, fillcolor: "rgba(251,191,36,0.12)", line: { width: 0 } },
+        ] : []}
+        annotations={analysis ? [{ x: TAFEL_DEFAULTS.ecorr, y: TAFEL_DEFAULTS.icorr, text: "Ecorr = −0.447 V", font: { color: "#fb7185", size: 11 }, showarrow: false, yshift: 16 }] : []}
+      />
+    </div>
+  );
+}
+function OcpChart({time=600}){
+  const data=Array.from({length:121},(_,i)=>({x:i*5,y:ocpAt(i*5)})).filter((row)=>row.x<=time);
+  return (
+    <div className="tf-ocp-chart">
+      <SciencePlot
+        title="Open-circuit potential"
+        series={[{ label: "OCP", data, color: "#5ad5a0" }]}
+        xLabel="Time (s)"
+        yLabel="Potential (V)"
+        xDomain={[0, 600]}
+        height={250}
+        legend={false}
+      />
+    </div>
+  );
+}
 
 function HomeScreen({go}){return <main className="tf-home"><section><small><Beaker/> Electrochemical Interfaces and Corrosion</small><h1>Tafel Plot &amp; Corrosion Laboratory</h1><p>Build a three-electrode cell. Record polarization. Determine corrosion kinetics.</p><div className="tf-home-cards"><Card title="Butler–Volmer / Tafel Relation"><p className="formula">η = a + b log |i|</p><p>η = overpotential (V)<br/>i = current density (A cm⁻²)<br/>b = Tafel slope (V decade⁻¹)</p><hr/><p>Electrolyte: <b>3.5% NaCl (aq)</b><br/>Working electrode: <b>Carbon steel</b><br/>Reference: <b>Ag/AgCl (sat. KCl)</b></p><button className="primary" onClick={()=>go(1)}><FlaskConical/>Start Experiment →</button></Card><Card title="Example: Tafel Plot"><PolarChart analysis/><p>Tafel slopes describe anodic and cathodic kinetics and determine corrosion rate.</p></Card></div></section><section className="tf-home-visual"><Apparatus/></section><div className="tf-home-modes">{[["Cell Setup","Assemble a three-electrode cell."],["Open-Circuit Potential","Measure and stabilize OCP."],["Polarization Scan","Generate anodic and cathodic branches."],["Corrosion Analysis","Fit Tafel regions and calculate rate."]].map(([a,b],i)=><button key={a} onClick={()=>go(i+1)}><span>{i+1}</span><b>{a}</b><small>{b}</small></button>)}</div></main>}
 function SideIntro({title,copy,children}){return <aside className="tf-side"><small><Beaker/> Electrochemical Interfaces and Corrosion</small><h1>{title}</h1><p>{copy}</p>{children}</aside>}

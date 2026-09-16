@@ -117,6 +117,7 @@ export const AppShell = ({
     currentPage === "chemistry-solver-bookmarks" ||
     currentPage === "chemistry-solver-practice" ||
     currentPage === "chemistry-inventor" ||
+    currentPage === "structure-draw" ||
     currentPage === "drug-discovery" ||
     currentPage === "ar-vr-mr" ||
     currentPage === "school-mastery" ||
@@ -181,6 +182,7 @@ export const AppShell = ({
             currentPage !== "states-matter" &&
             currentPage !== "acid-base-solutions" &&
             currentPage !== "beer-lambert-law" &&
+            currentPage !== "structure-draw" &&
             currentPage !== "chromatography-separation" &&
             currentPage !== "distillation-crystallisation" &&
             currentPage !== "bromination-phenol-aniline" &&

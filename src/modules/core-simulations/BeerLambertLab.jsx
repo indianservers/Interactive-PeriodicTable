@@ -1,13 +1,39 @@
 import { useMemo, useState } from 'react';
 import { ArrowLeft, Check, ChevronRight, Download, Eye, FlaskConical, Gauge, HelpCircle, Lightbulb, Play, RefreshCw, Save, ShieldCheck, TestTube2, Trophy } from 'lucide-react';
 import { absorbance, linearRegression, spectrum, standards, transmittance, unknownFromAbsorbance } from './beerLambertModel.js';
+import { SciencePlot } from '../../components/science/SciencePlot.jsx';
 import './BeerLambertLab.css';
 
 const STEPS=[['home','Home'],['prepare','Prepare standards'],['measure','Measure absorbance'],['scan','Wavelength scan'],['calibration','Calibration curve'],['unknown','Unknown analysis'],['report','Report']];
 const getStep=()=>Math.max(0,STEPS.findIndex(([id])=>id===new URLSearchParams(location.search).get('screen')));
 const sci=(v,d=2)=>`${(v/10**Math.floor(Math.log10(Math.abs(v)||1))).toFixed(d)} × 10${String(Math.floor(Math.log10(Math.abs(v)||1))).replace('-','⁻')}`;
 
-function Plot({type='calibration',fit,rows,unknown}){const w=720,h=390,p=55;let points;if(type==='spectrum')points=Array.from({length:176},(_,i)=>({x:400+i*2,y:spectrum(400+i*2)}));else points=rows.map(r=>({x:r.concentration,y:r.absorbance}));const sx=x=>type==='spectrum'?p+(x-400)/350*(w-p*2):p+x/8e-5*(w-p*2),sy=y=>h-p-y*(h-p*2);const poly=points.map(q=>`${sx(q.x)},${sy(q.y)}`).join(' ');return <svg className="bl-plot" viewBox={`0 0 ${w} ${h}`} role="img" aria-label={type==='spectrum'?'UV-visible absorption spectrum':'Calibration curve'}>{Array.from({length:6},(_,i)=><line key={i} x1={p} x2={w-p} y1={p+i*(h-p*2)/5} y2={p+i*(h-p*2)/5}/>)}<polyline points={poly}/>{points.filter((_,i)=>type==='spectrum'?i%12===0:true).map((q,i)=><circle key={i} cx={sx(q.x)} cy={sy(q.y)} r={type==='spectrum'?3:7}/>)}{type==='spectrum'&&<line className="peak" x1={sx(620)} x2={sx(620)} y1={p} y2={h-p}/>} {unknown&&<><line className="unknown" x1={p} x2={sx(unknown.x)} y1={sy(unknown.y)} y2={sy(unknown.y)}/><circle className="unknown-dot" cx={sx(unknown.x)} cy={sy(unknown.y)} r="8"/></>}<text x="15" y="35">A</text><text x="280" y="380">{type==='spectrum'?'Wavelength (nm)':'Concentration (mol L⁻¹)'}</text>{fit&&<text x="85" y="85">A = {fit.slope.toExponential(2)}c + {fit.intercept.toFixed(3)}　R² = {fit.r2.toFixed(4)}</text>}</svg>}
+function Plot({type='calibration',fit,rows=[],unknown}){
+  const points = type==='spectrum'
+    ? Array.from({length:176},(_,i)=>({x:400+i*2,y:spectrum(400+i*2)}))
+    : rows.map((row)=>({x:row.concentration,y:row.absorbance}));
+  const xs = points.map((point)=>point.x);
+  const xmax = Math.max(...xs, unknown?.x || 0, type==='spectrum' ? 750 : 8e-5);
+  const series = [
+    { label: type==='spectrum' ? 'Absorbance' : 'Standards', data: points, color: '#2d8cff', points: type!=='spectrum' },
+    fit && type!=='spectrum' ? { label: 'Linear fit', data: [{x:0,y:fit.intercept},{x:xmax,y:fit.intercept+fit.slope*xmax}], color: '#f2c94c' } : null,
+    unknown ? { label: 'Unknown', data: [unknown], color: '#fb7185', points: true, mode: 'markers', hideLine: true, markerSize: 10 } : null,
+  ].filter(Boolean);
+  return (
+    <div className="bl-plot">
+      <SciencePlot
+        title={type==='spectrum' ? 'UV–Vis absorption spectrum' : fit ? `A = ${fit.slope.toExponential(2)}c + ${fit.intercept.toFixed(3)} · R² = ${fit.r2.toFixed(4)}` : 'Calibration curve'}
+        series={series}
+        xLabel={type==='spectrum' ? 'Wavelength (nm)' : 'Concentration (mol L⁻¹)'}
+        yLabel="Absorbance"
+        xDomain={type==='spectrum' ? [400, 750] : [0, Math.max(8e-5, xmax)]}
+        yDomain={[0, Math.max(1, ...points.map((point)=>point.y), unknown?.y || 0)]}
+        shapes={type==='spectrum' ? [{ type: 'line', x0: 620, x1: 620, y0: 0, y1: 1, yref: 'paper', line: { color: '#f2c94c', dash: 'dot' } }] : []}
+        height={320}
+      />
+    </div>
+  );
+}
 function Instrument({reading=.412,label='S3'}){return <div className="bl-instrument"><div className="lid"/><div className="slot"><div className="cuvette"><i style={{height:`${Math.min(90,20+reading*70)}%`}}/></div></div><div className="display"><small>λ　620 nm</small><b>A = {reading.toFixed(3)}</b><span>{label}</span></div><strong>UV–Vis Spectrophotometer</strong></div>}
 function Panel({title,children,className=''}){return <section className={`bl-panel ${className}`}><h2>{title}</h2>{children}</section>}
 function Header({step,go,reset}){return <><header className="bl-head"><button onClick={()=>go(Math.max(0,step-1))} aria-label="Previous screen"><ArrowLeft/></button><span>Virtual Labs　/　Instrumental Analysis</span><b>Beer–Lambert Laboratory</b><em>{step+1} of 7</em><div className="bl-dots">{STEPS.map((_,i)=><i className={i<=step?'done':''} key={i}/>)}</div><button><HelpCircle/> Help</button><button onClick={reset}><RefreshCw/> Reset</button></header><div className="bl-mobile-steps">{STEPS.map(([id,name],i)=><button key={id} className={i===step?'active':''} onClick={()=>go(i)}>{i+1}<span>{name}</span></button>)}</div></>}

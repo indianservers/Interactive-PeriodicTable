@@ -544,6 +544,12 @@ const baseChemistryCategories = [
           "Build and explore chemistry ideas",
         ],
         [
+          "structure-draw",
+          "Structure Draw",
+          "Draw molecules and reactions in Ketcher",
+          "draw",
+        ],
+        [
           "chemistry-solver",
           "Chemistry Solver",
           "Explore chemical problems and solutions",

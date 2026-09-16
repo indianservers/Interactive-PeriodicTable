@@ -26,6 +26,7 @@ import {
   spectrum,
   transmittanceAt,
 } from "./moleculesLightModel.js";
+import { SciencePlot } from "../../components/science/SciencePlot.jsx";
 import "./MoleculesLightPage.css";
 const STEPS = [
     ["home", "Home"],
@@ -447,33 +448,28 @@ function Response({
   );
 }
 function SpectrumPlot({ molecule = "CO2", concentration = 400, path = 10 }) {
-  const pts = useMemo(
+  const points = useMemo(
     () =>
-      spectrum(molecule, concentration, path)
-        .map((p, i) => `${55 + i * 3.05},${35 + (100 - p.transmittance) * 2}`)
-        .join(" "),
+      spectrum(molecule, concentration, path).map((point) => ({
+        x: point.wn,
+        y: point.transmittance,
+      })),
     [molecule, concentration, path],
   );
   return (
-    <svg
-      className="ml2-chart"
-      viewBox="0 0 650 270"
-      role="img"
-      aria-label={`${molecule} infrared transmittance spectrum`}
-    >
-      <line x1="55" x2="605" y1="235" y2="235" />
-      <line x1="55" x2="55" y1="25" y2="235" />
-      <polyline points={pts} />
-      <text x="240" y="263">
-        Wavenumber (cm⁻¹)
-      </text>
-      <text x="170" y="60">
-        2349 cm⁻¹ · 4.26 μm
-      </text>
-      <text x="500" y="140">
-        667 cm⁻¹
-      </text>
-    </svg>
+    <div className="ml2-chart">
+      <SciencePlot
+        title={`${molecule} infrared transmittance`}
+        series={[{ label: "Transmittance", data: points, color: "#43d7ff" }]}
+        xLabel="Wavenumber (cm⁻¹)"
+        yLabel="Transmittance (%)"
+        reverseX
+        xDomain={[400, 4000]}
+        yDomain={[0, 100]}
+        height={270}
+        legend={false}
+      />
+    </div>
   );
 }
 function Scan({

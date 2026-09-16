@@ -4,6 +4,7 @@ import { syllabusInteractiveById } from "./syllabusInteractiveModel.js";
 import { benchKindFor, INTERACTIVE_STRUCTURES } from "./labStructures.js";
 import LabBenchVisual from "./LabBenchVisual.jsx";
 import LabMoleculeStage from "./LabMoleculeStage.jsx";
+import { SciencePlot } from "../../components/science/SciencePlot.jsx";
 import "./OrganicAromaticPrepLab.css";
 
 const STEPS = [
@@ -19,15 +20,16 @@ const initialStep = () => Math.max(0, STEPS.findIndex(([id]) => id === new URLSe
 
 function Chart({ points }) {
   if (!points?.length) return null;
-  const maxY = Math.max(...points.map((p) => p.y), 1);
-  const span = Math.max(points.length - 1, 1);
-  const poly = points.map((p, i) => `${24 + (i / span) * 500},${210 - (p.y / maxY) * 170}`).join(" ");
   return (
-    <svg className="dc-chart" viewBox="0 0 540 230" role="img" aria-label="Live experimental plot">
-      <line x1="24" x2="524" y1="210" y2="210" stroke="#7492b8" />
-      <line x1="24" x2="24" y1="20" y2="210" stroke="#7492b8" />
-      <polyline points={poly} fill="none" stroke="#0865f5" strokeWidth="4" />
-    </svg>
+    <div className="dc-chart">
+      <SciencePlot
+        series={[{ label: "Live data", data: points, color: "#2d8cff", points: true }]}
+        xLabel="Independent variable"
+        yLabel="Response"
+        height={230}
+        legend={false}
+      />
+    </div>
   );
 }
 

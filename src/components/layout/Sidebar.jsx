@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Activity, Atom, BadgeCheck, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock, Droplets,
+  Activity, Atom, BadgeCheck, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock, Droplets, PenTool,
   FileQuestion, FlaskConical, FlaskRound, GitCompare, GraduationCap, Heart,
   LayoutDashboard, Lightbulb, ListTree, Microscope, Orbit, PanelLeftClose,
   PanelLeftOpen, Pill, Puzzle, Route, Scale, Search, Settings, Sigma, Sparkles,
@@ -31,6 +31,7 @@ export const navGroups = [
       { id: 'molecules-light', label: 'Molecules and Light', icon: Waves },
       { id: 'states-matter', label: 'States of Matter', icon: Droplets },
       { id: 'molecule', label: '3D Molecules', icon: Box },
+      { id: 'structure-draw', label: 'Structure Draw', icon: PenTool },
       { id: 'ar-vr-mr', label: 'AR/VR/MR Chemistry', icon: Orbit },
       {
         id: 'chemistry-visuals',

@@ -16,6 +16,7 @@ import {
   Microscope,
   Moon,
   Move3D,
+  PenTool,
   Pause,
   Play,
   Rotate3D,
@@ -244,6 +245,7 @@ const navItems = [
   ["simulators", "Simulators", FlaskConical],
   ["syllabus", "Learn", BookOpen],
   ["molecule", "3D Explorer", Boxes],
+  ["structure-draw", "Structure Draw", PenTool],
   ["lab", "Virtual Lab", FlaskConical],
   ["chemistry-solver", "Reaction Solver", Sparkles],
   ["study-tools", "Resources", BookOpen],
@@ -257,6 +259,7 @@ const modules = [
   ["symmetry", "Molecular Symmetry", "Explore point groups", Waypoints],
   ["organic-mechanisms", "Organic Mechanisms", "Step by step", Move3D],
   ["drug-discovery", "Drug Discovery", "Design molecules", Microscope],
+  ["structure-draw", "Structure Draw", "Ketcher editor", PenTool],
 ];
 
 export const DashboardPage = ({ onNavigate }) => {
@@ -323,6 +326,9 @@ export const DashboardPage = ({ onNavigate }) => {
           </label>
           <div className="dash-top-links">
             <button onClick={() => browse()}>Explore</button>
+            <button onClick={() => onNavigate("structure-draw")}>
+              Draw
+            </button>
             <button onClick={() => onNavigate("chemistry-inventor")}>
               Create
             </button>
@@ -354,7 +360,7 @@ export const DashboardPage = ({ onNavigate }) => {
             </div>
           </section>
           <HomeStatistics/>
-          <div className="hub-quick-browse"><button onClick={() => onNavigate("virtual-labs")}><ConceptIcon icon="simulation"/>Virtual Labs <ChevronRight size={14}/></button><button onClick={() => onNavigate("physical-chemistry")}><ConceptIcon icon="gas"/>Physical chemistry</button><button onClick={() => onNavigate("organic-chemistry")}><ConceptIcon icon="organic"/>Organic chemistry</button><button onClick={() => onNavigate("inorganic-chemistry")}><ConceptIcon icon="crystal"/>Inorganic chemistry</button><button onClick={() => onNavigate("analytical-chemistry")}><ConceptIcon icon="research"/>Analytical chemistry</button><button onClick={() => browse()}>Browse all categories <ChevronRight size={14}/></button></div>
+          <div className="hub-quick-browse"><button onClick={() => onNavigate("virtual-labs")}><ConceptIcon icon="simulation"/>Virtual Labs <ChevronRight size={14}/></button><button onClick={() => onNavigate("structure-draw")}><ConceptIcon icon="inventor"/>Structure Draw</button><button onClick={() => onNavigate("physical-chemistry")}><ConceptIcon icon="gas"/>Physical chemistry</button><button onClick={() => onNavigate("organic-chemistry")}><ConceptIcon icon="organic"/>Organic chemistry</button><button onClick={() => onNavigate("inorganic-chemistry")}><ConceptIcon icon="crystal"/>Inorganic chemistry</button><button onClick={() => onNavigate("analytical-chemistry")}><ConceptIcon icon="research"/>Analytical chemistry</button><button onClick={() => browse()}>Browse all categories <ChevronRight size={14}/></button></div>
           <section className="dash-new-labs" aria-labelledby="dash-new-labs-title">
             <header><div><span className="hub-eyebrow">NEW INTERACTIVE EXPERIENCES</span><h2 id="dash-new-labs-title">Virtual Labs &amp; Simulators</h2><p>Launch any of the {completedVirtualLabs.length} completed, model-driven laboratory workflows.</p></div><button onClick={() => onNavigate("virtual-labs")}>View lab home <ChevronRight size={14}/></button></header>
             <div>{completedVirtualLabs.map(lab=><button key={lab.id} onClick={()=>onNavigate(lab.route)}><FlaskConical size={15}/><span><b>{lab.title}</b><small>{lab.subject} · {lab.screens} screens</small></span><ChevronRight size={13}/></button>)}</div>

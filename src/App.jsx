@@ -161,6 +161,9 @@ const SoilPhConductivityLab = lazy(
 const StatesMatterPage = lazy(
   () => import("./modules/core-simulations/StatesMatterPage.jsx"),
 );
+const StructureDrawPage = lazy(
+  () => import("./pages/StructureDrawPage.jsx"),
+);
 
 const pageHashMap = {
   library: "library",
@@ -197,6 +200,7 @@ const pageHashMap = {
   "chemistry-solver-bookmarks": "chemistry-solver/bookmarks",
   "chemistry-solver-practice": "chemistry-solver/practice",
   "chemistry-inventor": "chemistry-inventor",
+  "structure-draw": "draw",
   "drug-discovery": "drug-discovery",
   "ar-vr-mr": "ar-vr-mr",
   "school-mastery": "school-mastery",
@@ -289,6 +293,8 @@ const hashPageMap = {
   "chemistry-solver/bookmarks": "chemistry-solver-bookmarks",
   "chemistry-solver/practice": "chemistry-solver-practice",
   "chemistry-inventor": "chemistry-inventor",
+  draw: "structure-draw",
+  "structure-draw": "structure-draw",
   "drug-discovery": "drug-discovery",
   "ar-vr-mr": "ar-vr-mr",
   "school-mastery": "school-mastery",
@@ -449,6 +455,7 @@ const pageStatusLabels = {
   "chemistry-solver-bookmarks": "Chemistry Solver Bookmarks",
   "chemistry-solver-practice": "Chemistry Solver Practice",
   "chemistry-inventor": "Chemistry Inventor Studio",
+  "structure-draw": "Structure Draw",
   "drug-discovery": "Drug Discovery",
   "ar-vr-mr": "AR/VR/MR Chemistry",
   "school-mastery": "School Chemistry Mastery",
@@ -525,6 +532,8 @@ const getLoadingDetail = (page) => {
     return "Preparing research workflows, data fitting, provenance, and reproducibility tools...";
   if (page === "chemistry-inventor")
     return "Preparing builder palette, canvas, inspector, and simulation status...";
+  if (page === "structure-draw")
+    return "Preparing the Ketcher structure editor...";
   if (page === "ar-vr-mr")
     return "Preparing WebXR support checks, immersive scene, and AR/VR/MR controls...";
   return "Preparing page content and interactive controls...";
@@ -1336,6 +1345,21 @@ function App() {
             }
           >
             <ChemistryInventorStudio />
+          </Suspense>
+        );
+      case "structure-draw":
+        return (
+          <Suspense
+            fallback={
+              <LoadingProgress
+                title="Loading Structure Draw"
+                detail="Preparing the Ketcher editor and Indigo chemistry engine..."
+                height={640}
+                reducedMotion={reducedMotion}
+              />
+            }
+          >
+            <StructureDrawPage onNavigate={navigate} />
           </Suspense>
         );
       case "drug-discovery":

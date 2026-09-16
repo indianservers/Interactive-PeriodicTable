@@ -1,0 +1,24 @@
+.science-plot {
+  min-width: 0;
+  width: 100%;
+}
+
+.science-plot .js-plotly-plot,
+.science-plot .plot-container,
+.science-plot .svg-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.pcs-plot .science-plot {
+  height: 208px;
+}
+
+.bl-plot,
+.ml2-chart,
+.dc-chart,
+.tf-polar,
+.tf-ocp-chart {
+  width: 100%;
+  min-height: 240px;
+}
