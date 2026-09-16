@@ -15219,7 +15219,7 @@ export const ChemistryLabPage = ({
                 onChange={(e) => setActiveSyllabusFilter(e.target.value)}
                 className="input text-sm"
               >
-                <option value="all">All syllabus</option>
+                <option value="all">All topics</option>
                 {syllabusTracks.map((track) => (
                   <option key={track.id} value={track.id}>
                     {track.label}

@@ -1,0 +1,1040 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-10T10:27:50.528Z",
+  "referenceRoot": "D:/Chemistry UI Upgrading/Chemistry-VL-complete-mockups",
+  "summary": {
+    "simulators": 19,
+    "screens": 115,
+    "implemented": 19,
+    "pending": 0
+  },
+  "simulators": [
+    {
+      "slug": "acid-base-solutions",
+      "title": "Acid–Base Solutions Lab",
+      "referenceFolder": "acid-base-solutions-lab-complete-mockups",
+      "duplicateFolders": [
+        "acid-base-solutions"
+      ],
+      "catalogRoute": "#/simulations/acid-base-solutions",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/acid-base-solutions",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-solution-explorer.png",
+          "id": "solution-explorer",
+          "route": "/?screen=solutions#/simulations/acid-base-solutions",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-measurements.png",
+          "id": "measurements",
+          "route": "/?screen=measurements#/simulations/acid-base-solutions",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-titration.png",
+          "id": "titration",
+          "route": "/?screen=titration#/simulations/acid-base-solutions",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-buffer-challenge.png",
+          "id": "buffer-challenge",
+          "route": "/?screen=buffer#/simulations/acid-base-solutions",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/acid-base-solutions",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "beer-lambert-law",
+      "title": "Beer–Lambert Law",
+      "referenceFolder": "beer-lambert-law",
+      "duplicateFolders": [],
+      "catalogRoute": "#/simulations/beer-lambert-law",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-simulator-home.png",
+          "id": "simulator-home",
+          "route": "/?screen=home#/simulations/beer-lambert-law",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-solution-preparation.png",
+          "id": "solution-preparation",
+          "route": "/?screen=prepare#/simulations/beer-lambert-law",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-measure-absorbance.png",
+          "id": "measure-absorbance",
+          "route": "/?screen=measure#/simulations/beer-lambert-law",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-wavelength-scan.png",
+          "id": "wavelength-scan",
+          "route": "/?screen=scan#/simulations/beer-lambert-law",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-calibration-curve.png",
+          "id": "calibration-curve",
+          "route": "/?screen=calibration#/simulations/beer-lambert-law",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-unknown-analysis.png",
+          "id": "unknown-analysis",
+          "route": "/?screen=unknown#/simulations/beer-lambert-law",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "07-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/beer-lambert-law",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "chromatography-separation",
+      "title": "Chromatography Separation",
+      "referenceFolder": "chromatography-separation-complete-mockups",
+      "duplicateFolders": [
+        "chromatography-separation"
+      ],
+      "catalogRoute": "#/simulations/chromatography-separation",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/chromatography-separation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-tlc-method-development.png",
+          "id": "tlc-method-development",
+          "route": "/?screen=tlc#/simulations/chromatography-separation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-column-packing-loading.png",
+          "id": "column-packing-loading",
+          "route": "/?screen=column#/simulations/chromatography-separation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-elution-fractions.png",
+          "id": "elution-fractions",
+          "route": "/?screen=elution#/simulations/chromatography-separation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-fraction-analysis.png",
+          "id": "fraction-analysis",
+          "route": "/?screen=analysis#/simulations/chromatography-separation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/chromatography-separation",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "distillation-crystallisation",
+      "title": "Distillation & Crystallisation",
+      "referenceFolder": "distillation-crystallisation-complete-mockups",
+      "duplicateFolders": [
+        "distillation-crystallisation"
+      ],
+      "catalogRoute": "#/simulations/distillation-crystallisation",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/distillation-crystallisation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-mixture-apparatus.png",
+          "id": "mixture-apparatus",
+          "route": "/?screen=setup#/simulations/distillation-crystallisation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-fractional-distillation.png",
+          "id": "fractional-distillation",
+          "route": "/?screen=fractional#/simulations/distillation-crystallisation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-steam-distillation.png",
+          "id": "steam-distillation",
+          "route": "/?screen=steam#/simulations/distillation-crystallisation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-recrystallisation-purity.png",
+          "id": "recrystallisation-purity",
+          "route": "/?screen=crystals#/simulations/distillation-crystallisation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/distillation-crystallisation",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "flame-photometry",
+      "title": "Flame Photometry",
+      "referenceFolder": "flame-photometry-complete-mockups",
+      "duplicateFolders": [
+        "flame-photometry"
+      ],
+      "catalogRoute": "#/simulations/flame-photometry",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/flame-photometry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-standards-preparation.png",
+          "id": "standards-preparation",
+          "route": "/?screen=standards#/simulations/flame-photometry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-flame-optimization.png",
+          "id": "flame-optimization",
+          "route": "/?screen=flame#/simulations/flame-photometry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-emission-spectrum.png",
+          "id": "emission-spectrum",
+          "route": "/?screen=spectrum#/simulations/flame-photometry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-calibration-unknown.png",
+          "id": "calibration-unknown",
+          "route": "/?screen=calibration#/simulations/flame-photometry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/flame-photometry",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "gravimetric-precipitation",
+      "title": "Gravimetric Precipitation",
+      "referenceFolder": "gravimetric-precipitation-complete-mockups",
+      "duplicateFolders": [
+        "gravimetric-precipitation"
+      ],
+      "catalogRoute": "#/simulations/gravimetric-precipitation",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/gravimetric-precipitation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-sample-reagent-preparation.png",
+          "id": "sample-reagent-preparation",
+          "route": "/?screen=preparation#/simulations/gravimetric-precipitation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-precipitation-digestion.png",
+          "id": "precipitation-digestion",
+          "route": "/?screen=digestion#/simulations/gravimetric-precipitation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-filtration-washing.png",
+          "id": "filtration-washing",
+          "route": "/?screen=filtration#/simulations/gravimetric-precipitation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-constant-mass-calculation.png",
+          "id": "constant-mass-calculation",
+          "route": "/?screen=mass#/simulations/gravimetric-precipitation",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/gravimetric-precipitation",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "molecular-dynamics",
+      "title": "Molecular Dynamics",
+      "referenceFolder": "molecular-dynamics-complete-mockups",
+      "duplicateFolders": [
+        "molecular-dynamics"
+      ],
+      "catalogRoute": "#/physical-chemistry/molecular-dynamics",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-overview.png",
+          "id": "overview",
+          "route": "/?screen=overview#/physical-chemistry/molecular-dynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-build-system.png",
+          "id": "build-system",
+          "route": "/?screen=build#/physical-chemistry/molecular-dynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-run-simulation.png",
+          "id": "run-simulation",
+          "route": "/?screen=run#/physical-chemistry/molecular-dynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-analysis.png",
+          "id": "analysis",
+          "route": "/?screen=analysis#/physical-chemistry/molecular-dynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-parameter-study.png",
+          "id": "parameter-study",
+          "route": "/?screen=study#/physical-chemistry/molecular-dynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-validation.png",
+          "id": "report-validation",
+          "route": "/?screen=report#/physical-chemistry/molecular-dynamics",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "molecule-polarity",
+      "title": "Molecule Polarity",
+      "referenceFolder": "molecule-polarity",
+      "duplicateFolders": [],
+      "catalogRoute": "#/simulations/molecule-polarity",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/molecule-polarity",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-bond-builder.png",
+          "id": "bond-builder",
+          "route": "/?screen=builder#/simulations/molecule-polarity",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-geometry-vector-sum.png",
+          "id": "geometry-vector-sum",
+          "route": "/?screen=geometry#/simulations/molecule-polarity",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-symmetry-comparison.png",
+          "id": "symmetry-comparison",
+          "route": "/?screen=comparison#/simulations/molecule-polarity",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-electric-field-properties.png",
+          "id": "electric-field-properties",
+          "route": "/?screen=field#/simulations/molecule-polarity",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/molecule-polarity",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "molecules-light",
+      "title": "Molecules & Light",
+      "referenceFolder": "molecules-light-complete-mockups",
+      "duplicateFolders": [
+        "molecules-light"
+      ],
+      "catalogRoute": "#/simulations/molecules-light",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/molecules-light",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-light-source.png",
+          "id": "light-source",
+          "route": "/?screen=source#/simulations/molecules-light",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-molecular-response.png",
+          "id": "molecular-response",
+          "route": "/?screen=response#/simulations/molecules-light",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-spectrum-scan.png",
+          "id": "spectrum-scan",
+          "route": "/?screen=scan#/simulations/molecules-light",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-radiation-comparison.png",
+          "id": "radiation-comparison",
+          "route": "/?screen=compare#/simulations/molecules-light",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/molecules-light",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "neutralisation-calorimetry",
+      "title": "Neutralisation Calorimetry",
+      "referenceFolder": "neutralisation-calorimetry-complete-mockups",
+      "duplicateFolders": [
+        "neutralisation-calorimetry"
+      ],
+      "catalogRoute": "#/simulations/neutralisation-calorimetry",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/neutralisation-calorimetry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-setup-preparation.png",
+          "id": "setup-preparation",
+          "route": "/?screen=setup#/simulations/neutralisation-calorimetry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-calibration.png",
+          "id": "calibration",
+          "route": "/?screen=calibration#/simulations/neutralisation-calorimetry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-live-reaction.png",
+          "id": "live-reaction",
+          "route": "/?screen=reaction#/simulations/neutralisation-calorimetry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-analysis.png",
+          "id": "analysis",
+          "route": "/?screen=analysis#/simulations/neutralisation-calorimetry",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/neutralisation-calorimetry",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "polarography-concentration",
+      "title": "Polarography Concentration",
+      "referenceFolder": "polarography-concentration",
+      "duplicateFolders": [],
+      "catalogRoute": "#/simulations/polarography-concentration",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/polarography-concentration",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-standards-cell-setup.png",
+          "id": "standards-cell-setup",
+          "route": "/?screen=setup#/simulations/polarography-concentration",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-deaeration-baseline.png",
+          "id": "deaeration-baseline",
+          "route": "/?screen=deaeration#/simulations/polarography-concentration",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-polarogram-scan.png",
+          "id": "polarogram-scan",
+          "route": "/?screen=scan#/simulations/polarography-concentration",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-calibration-unknown.png",
+          "id": "calibration-unknown",
+          "route": "/?screen=calibration#/simulations/polarography-concentration",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/polarography-concentration",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "reactants-products-leftovers",
+      "title": "Reactants, Products & Leftovers",
+      "referenceFolder": "reactants-products-leftovers-complete-mockups",
+      "duplicateFolders": [
+        "reactants-products-leftovers"
+      ],
+      "catalogRoute": "#/simulations/reaction-leftovers",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/reaction-leftovers",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-build-reaction.png",
+          "id": "build-reaction",
+          "route": "/?screen=build#/simulations/reaction-leftovers",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-reaction-outcome.png",
+          "id": "reaction-outcome",
+          "route": "/?screen=outcome#/simulations/reaction-leftovers",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-stoichiometry-yield.png",
+          "id": "stoichiometry-yield",
+          "route": "/?screen=yield#/simulations/reaction-leftovers",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-challenge.png",
+          "id": "challenge",
+          "route": "/?screen=challenge#/simulations/reaction-leftovers",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report#/simulations/reaction-leftovers",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "real-gas-laws",
+      "title": "Real Gas Laws",
+      "referenceFolder": "real-gas-laws-complete-mockups",
+      "duplicateFolders": [
+        "real-gas-laws"
+      ],
+      "catalogRoute": "#/physical-chemistry/real-gas-laws",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-overview.png",
+          "id": "overview",
+          "route": "/?screen=overview#/physical-chemistry/real-gas-laws",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-pvt-explorer.png",
+          "id": "pvt-explorer",
+          "route": "/?screen=pvt-explorer#/physical-chemistry/real-gas-laws",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-compressibility.png",
+          "id": "compressibility",
+          "route": "/?screen=compressibility#/physical-chemistry/real-gas-laws",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-critical-behavior.png",
+          "id": "critical-behavior",
+          "route": "/?screen=critical-behavior#/physical-chemistry/real-gas-laws",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-joule-thomson.png",
+          "id": "joule-thomson",
+          "route": "/?screen=joule-thomson#/physical-chemistry/real-gas-laws",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report-assessment#/physical-chemistry/real-gas-laws",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "soil-ph-conductivity",
+      "title": "Soil pH & Conductivity",
+      "referenceFolder": "soil-ph-conductivity-complete-mockups",
+      "duplicateFolders": [
+        "soil-ph-conductivity"
+      ],
+      "catalogRoute": "#/virtual-labs/soil-ph-conductivity",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=homeundefined",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-sampling-extraction.png",
+          "id": "sampling-extraction",
+          "route": "/?screen=sampling-extractionundefined",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-sensor-calibration.png",
+          "id": "sensor-calibration",
+          "route": "/?screen=sensor-calibrationundefined",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-measurements.png",
+          "id": "measurements",
+          "route": "/?screen=measurementsundefined",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-field-interpretation.png",
+          "id": "field-interpretation",
+          "route": "/?screen=field-interpretationundefined",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report-assessmentundefined",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "states-of-matter",
+      "title": "States of Matter",
+      "referenceFolder": "states-of-matter-lab-complete-mockups",
+      "duplicateFolders": [
+        "states-of-matter"
+      ],
+      "catalogRoute": "#/simulations/states-matter",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/states-matter",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-particle-explorer.png",
+          "id": "particle-explorer",
+          "route": "/?screen=particle-explorer#/simulations/states-matter",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-heating-curve.png",
+          "id": "heating-curve",
+          "route": "/?screen=heating-curve#/simulations/states-matter",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-phase-diagram.png",
+          "id": "phase-diagram",
+          "route": "/?screen=phase-diagram#/simulations/states-matter",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-substance-comparison.png",
+          "id": "substance-comparison",
+          "route": "/?screen=substance-comparison#/simulations/states-matter",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report-assessment#/simulations/states-matter",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "statistical-thermodynamics",
+      "title": "Statistical Thermodynamics",
+      "referenceFolder": "statistical-thermodynamics-complete-mockups",
+      "duplicateFolders": [
+        "statistical-thermodynamics"
+      ],
+      "catalogRoute": "#/physical-chemistry/statistical-thermodynamics",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-overview.png",
+          "id": "overview",
+          "route": "/?screen=overview#/physical-chemistry/statistical-thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-microstates.png",
+          "id": "microstates",
+          "route": "/?screen=microstates#/physical-chemistry/statistical-thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-partition-function.png",
+          "id": "partition-function",
+          "route": "/?screen=partition-function#/physical-chemistry/statistical-thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-molecular-partition.png",
+          "id": "molecular-partition",
+          "route": "/?screen=molecular-partition#/physical-chemistry/statistical-thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-properties.png",
+          "id": "properties",
+          "route": "/?screen=properties#/physical-chemistry/statistical-thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report-assessment#/physical-chemistry/statistical-thermodynamics",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "tafel-plot",
+      "title": "Tafel Plot",
+      "referenceFolder": "tafel-plot-complete-mockups",
+      "duplicateFolders": [
+        "tafel-plot"
+      ],
+      "catalogRoute": "#/simulations/tafel-plot",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/simulations/tafel-plot",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-cell-setup.png",
+          "id": "cell-setup",
+          "route": "/?screen=cell-setup#/simulations/tafel-plot",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-ocp-stabilization.png",
+          "id": "ocp-stabilization",
+          "route": "/?screen=ocp-stabilization#/simulations/tafel-plot",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-polarization-scan.png",
+          "id": "polarization-scan",
+          "route": "/?screen=polarization-scan#/simulations/tafel-plot",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-tafel-analysis.png",
+          "id": "tafel-analysis",
+          "route": "/?screen=tafel-analysis#/simulations/tafel-plot",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report-assessment#/simulations/tafel-plot",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "thermodynamics",
+      "title": "Thermodynamics",
+      "referenceFolder": "thermodynamics-complete-mockups",
+      "duplicateFolders": [
+        "thermodynamics"
+      ],
+      "catalogRoute": "#/physical-chemistry/thermodynamics",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-overview.png",
+          "id": "overview",
+          "route": "/?screen=overview#/physical-chemistry/thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-first-law.png",
+          "id": "first-law",
+          "route": "/?screen=first-law#/physical-chemistry/thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-pv-processes.png",
+          "id": "pv-processes",
+          "route": "/?screen=pv-processes#/physical-chemistry/thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-entropy.png",
+          "id": "entropy",
+          "route": "/?screen=entropy#/physical-chemistry/thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-gibbs-energy.png",
+          "id": "gibbs-energy",
+          "route": "/?screen=gibbs-energy#/physical-chemistry/thermodynamics",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report-assessment#/physical-chemistry/thermodynamics",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "slug": "viscosity-poiseuille",
+      "title": "Viscosity & Poiseuille",
+      "referenceFolder": "viscosity-poiseuille-complete-mockups",
+      "duplicateFolders": [
+        "viscosity-poiseuille"
+      ],
+      "catalogRoute": "#/physical-chemistry/viscosity-poiseuille",
+      "status": "implemented",
+      "screens": [
+        {
+          "file": "01-home.png",
+          "id": "home",
+          "route": "/?screen=home#/physical-chemistry/viscosity-poiseuille",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "02-apparatus-setup.png",
+          "id": "apparatus-setup",
+          "route": "/?screen=apparatus-setup#/physical-chemistry/viscosity-poiseuille",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "03-capillary-flow.png",
+          "id": "capillary-flow",
+          "route": "/?screen=capillary-flow#/physical-chemistry/viscosity-poiseuille",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "04-temperature-study.png",
+          "id": "temperature-study",
+          "route": "/?screen=temperature-study#/physical-chemistry/viscosity-poiseuille",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "05-polymer-analysis.png",
+          "id": "polymer-analysis",
+          "route": "/?screen=polymer-analysis#/physical-chemistry/viscosity-poiseuille",
+          "implemented": true,
+          "verified": true
+        },
+        {
+          "file": "06-report-assessment.png",
+          "id": "report-assessment",
+          "route": "/?screen=report-assessment#/physical-chemistry/viscosity-poiseuille",
+          "implemented": true,
+          "verified": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "simulator": "viscosity-poiseuille",
+  "passed": true,
+  "screens": [
+    {
+      "id": "home",
+      "passed": true
+    },
+    {
+      "id": "apparatus-setup",
+      "passed": true
+    },
+    {
+      "id": "capillary-flow",
+      "passed": true
+    },
+    {
+      "id": "temperature-study",
+      "passed": true
+    },
+    {
+      "id": "polymer-analysis",
+      "passed": true
+    },
+    {
+      "id": "report-assessment",
+      "passed": true
+    }
+  ],
+  "layouts": [
+    {
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "overflow": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "scrollWidth": 1024,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "scrollWidth": 768,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "overflow": false
+    }
+  ],
+  "consoleErrors": [],
+  "model": {
+    "eta25": 8.15,
+    "activationKJ": 23.399999999991508,
+    "intrinsic": 0.8200000000000003,
+    "molecularWeight": 7802.443211497919,
+    "reynolds": 6.798336407090969
+  }
+}

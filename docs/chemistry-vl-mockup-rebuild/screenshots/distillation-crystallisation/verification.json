@@ -1,0 +1,57 @@
+{
+  "simulator": "distillation-crystallisation",
+  "passed": true,
+  "screens": [
+    {
+      "id": "home",
+      "passed": true
+    },
+    {
+      "id": "setup",
+      "passed": true
+    },
+    {
+      "id": "fractional",
+      "passed": true
+    },
+    {
+      "id": "steam",
+      "passed": true
+    },
+    {
+      "id": "crystals",
+      "passed": true
+    },
+    {
+      "id": "report",
+      "passed": true
+    }
+  ],
+  "layouts": [
+    {
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "overflow": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "scrollWidth": 1024,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "scrollWidth": 768,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "overflow": false
+    }
+  ],
+  "consoleErrors": []
+}

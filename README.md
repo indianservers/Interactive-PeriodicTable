@@ -138,7 +138,7 @@ Major pages include:
 - `ComparePage.jsx` - two-element property comparison
 - `AtomVisualizerPage.jsx` - electron shell diagrams
 - `MoleculeScenePage.jsx` - Three.js molecule viewer
-- `QuizPage.jsx` - quizzes, flashcards, daily challenge, and guessing game
+- `ChallengeLabTargetPage.jsx` - quizzes, flashcards, daily challenge, and guessing game
 - `ChemistryLabPage.jsx` - broad collection of chemistry calculators and study simulations
 - `ChemistryLabPage.jsx` also includes a guided experiment catalog and learning layer that simplifies the full lab into one focused experiment at a time
 - `SyllabusPage.jsx` - syllabus coverage map that links lab tools to school and entrance-exam chemistry tracks

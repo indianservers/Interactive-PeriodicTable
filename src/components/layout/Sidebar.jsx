@@ -113,7 +113,7 @@ export const navGroups = [
         icon: FlaskConical,
         subItems: [
           { id: 'lab', label: 'Open Lab', icon: FlaskRound },
-          { id: 'syllabus', label: 'Syllabus Tags', icon: GraduationCap },
+          { id: 'syllabus', label: 'Topic Tags', icon: GraduationCap },
           { id: 'study-tools', label: 'Study Tools', icon: Trophy },
         ],
       },
@@ -146,7 +146,7 @@ export const navGroups = [
           { id: 'retrosynthesis-planner', label: 'Retrosynthesis Planner', icon: GitCompare },
         ],
       },
-      { id: 'syllabus', label: 'Syllabus Map', icon: GraduationCap },
+      { id: 'syllabus', label: 'Learning Path', icon: GraduationCap },
       { id: 'study-tools', label: 'Study Tools', icon: Trophy },
       {
         id: 'chemistry-solver',

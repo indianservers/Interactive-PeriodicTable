@@ -85,7 +85,7 @@ export const ElementTile = memo(({
       title={`${element.name} - Group ${element.group ?? 'f-block'} - Period ${element.period} - ${element.category}`}
     >
       {isStudied && (
-        <span className="absolute right-1 top-1 z-10 h-2 w-2 rounded-full bg-emerald-300 shadow-sm shadow-emerald-300/70" title="Studied in active syllabus" />
+        <span className="absolute right-1 top-1 z-10 h-2 w-2 rounded-full bg-emerald-300 shadow-sm shadow-emerald-300/70" title="Highlighted in the active topic track" />
       )}
       {compact ? (
         <div className="p-0.5 h-full flex flex-col items-center justify-center">

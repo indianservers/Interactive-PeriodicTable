@@ -87,7 +87,7 @@ export const SyllabusPage = ({ onNavigate }) => {
           <div>
             <div className="flex items-center gap-2 text-white">
               <GraduationCap size={22} className="text-cyan-300" />
-              <h2 className="text-xl font-black">Syllabus Map</h2>
+              <h2 className="text-xl font-black">Learning Path</h2>
             </div>
             <p className="text-sm text-gray-400 mt-1 max-w-3xl">
               See AP State, CBSE, IGCSE/Cambridge, and IB chemistry coverage from Grade 6 to 12, with direct 2D and 3D interactive visualizations.
@@ -457,7 +457,7 @@ export const SyllabusPage = ({ onNavigate }) => {
             </div>
 
             {filteredTools.length === 0 && (
-              <div className="py-12 text-center text-sm text-gray-500">No tools match this syllabus filter yet.</div>
+              <div className="py-12 text-center text-sm text-gray-500">No tools match this topic filter yet.</div>
             )}
           </section>
         </main>

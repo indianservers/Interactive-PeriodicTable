@@ -1,6 +1,9 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, ChevronRight, Download, FlaskConical, HelpCircle, Pause, Play, RefreshCw, ShieldCheck, Trophy } from "lucide-react";
 import { syllabusInteractiveById } from "./syllabusInteractiveModel.js";
+import { benchKindFor, INTERACTIVE_STRUCTURES } from "./labStructures.js";
+import LabBenchVisual from "./LabBenchVisual.jsx";
+import LabMoleculeStage from "./LabMoleculeStage.jsx";
 import "./OrganicAromaticPrepLab.css";
 
 const STEPS = [
@@ -37,6 +40,9 @@ export default function SyllabusInteractiveLab({ experimentId }) {
   const [validated, setValidated] = useState(false);
   const [picked, setPicked] = useState({});
   const result = useMemo(() => spec.compute(values), [spec, values]);
+  const bench = benchKindFor(spec.id, spec.subject);
+  const structure = INTERACTIVE_STRUCTURES[spec.id];
+  const fill = running ? "#2f7de1" : "#8ec8ef";
 
   const go = (n) => {
     n = Math.max(0, Math.min(5, n));
@@ -78,7 +84,7 @@ export default function SyllabusInteractiveLab({ experimentId }) {
       {step === 0 && (
         <main className="ap-home">
           <section className="ap-panel intro">
-            <p className="kicker"><FlaskConical /> {spec.kicker} · {spec.kind === "sim" ? "Interactive simulation" : "College practical"}</p>
+            <p className="kicker"><FlaskConical /> {spec.kicker} · {spec.kind === "sim" ? "Interactive simulation" : "Guided practical"}</p>
             <h2>{spec.title}</h2>
             <p className="lead">{spec.lead}</p>
             <div className="ap-eq">{spec.equation}</div>
@@ -86,10 +92,7 @@ export default function SyllabusInteractiveLab({ experimentId }) {
             <button className="primary" onClick={() => go(1)}><FlaskConical /> Start <ChevronRight /></button>
           </section>
           <section className="ap-hero">
-            <div className="ap-bench" role="img" aria-label="Experiment bench">
-              <div className="ap-stand" />
-              <div className="ap-flask" style={{ "--fill": "#8ec8ef" }}><span>Ready</span></div>
-            </div>
+            {structure ? <LabMoleculeStage structureId={spec.id} label={structure.label} /> : <LabBenchVisual kind={bench} label={spec.kicker} fill="#8ec8ef" />}
             <div className="ap-danger" style={{ position: "absolute", right: 20, top: 24, maxWidth: 240 }}><ShieldCheck /> {spec.hazard}</div>
           </section>
         </main>
@@ -141,7 +144,8 @@ export default function SyllabusInteractiveLab({ experimentId }) {
             <button className={running ? "primary" : ""} onClick={() => setRunning((x) => !x)}>{running ? <Pause /> : <Play />}{running ? "Pause" : "Run"}</button>
           </section>
           <section className="ap-panel">
-            <h2>Live model</h2>
+            <h2>Live experiment</h2>
+            {structure ? <LabMoleculeStage structureId={spec.id} label={structure.label} /> : <LabBenchVisual kind={bench} running={running} fill={fill} label={result.primary} />}
             <Chart points={result.chart} />
             <p className={running ? "ap-valid" : "ap-notice"}>{running ? result.observation : "Press Run to lock in the live observation."}</p>
           </section>

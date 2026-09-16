@@ -84,7 +84,7 @@ export const SeniorChemistryCorePage = () => {
         {[
           [Home, "Home"],
           [Atom, "Concept Map"],
-          [BookOpen, "Syllabus"],
+          [BookOpen, "Course"],
           [FlaskConical, "Practicals"],
           [BookOpen, "Revision"],
           [BookOpen, "Past Papers"],
@@ -127,7 +127,7 @@ export const SeniorChemistryCorePage = () => {
         <section className="scc-left">
           <article className="scc-progress">
             <header>
-              <h2>Syllabus Progress</h2>
+              <h2>Course Progress</h2>
               <small>Year 12–13</small>
             </header>
             {chapters.map((c, i) => (

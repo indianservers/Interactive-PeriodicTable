@@ -18,13 +18,13 @@ export default function VirtualLabsHomePage({ onNavigate }) {
       subject: ["Physical", "Organic", "Inorganic", "Analytical"][index],
       duration: [35, 40, 45, 50][index],
       difficulty: ["Foundation", "Intermediate", "Intermediate", "Advanced"][index],
-      route: "lab",
+      route: lab.experiments[0]?.[2] || "virtual-labs",
     })),
     {
-      id: "rbvrr-bsc-vl",
+      id: "college-practicals-vl",
       subject: "Analytical",
-      title: "RBVRR B.Sc Chemistry Practicals 2026–27",
-      experiments: [...syllabusInteractives, ...syllabusConcepts].map((item) => [item.title, "covered"]),
+      title: "College Chemistry Practicals",
+      experiments: [...syllabusInteractives, ...syllabusConcepts].map((item) => [item.title, "covered", item.id]),
       duration: 45,
       difficulty: "Foundation to advanced",
       route: "virtual-labs",
@@ -101,8 +101,8 @@ export default function VirtualLabsHomePage({ onNavigate }) {
                 <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">{lab.subject} · Lab collection</p><h3 className="mt-1 text-xl font-black">{lab.title}</h3></div><CheckCircle2 size={20} className="text-emerald-300" /></div>
                 <p className="mt-3 text-sm text-slate-400">{lab.experiments.length} experiments with procedures, observations and calculations.</p>
                 <div className="mt-4 flex flex-wrap gap-2 text-[10px] text-slate-300"><span className="rounded-full border border-white/10 px-2 py-1"><Clock3 size={11} className="mr-1 inline" />{lab.duration} min each</span><span className="rounded-full border border-white/10 px-2 py-1">{lab.difficulty}</span><span className="rounded-full border border-emerald-300/20 px-2 py-1 text-emerald-200">Available</span></div>
-                <div className="mt-4 flex flex-wrap gap-1.5">{lab.experiments.slice(0, 4).map(([name]) => <span key={name} className="rounded-lg border border-white/10 bg-white/[.04] px-2 py-1 text-[10px] text-slate-300">{name}</span>)}</div>
-                <div className="mt-5 flex items-center justify-between"><button onClick={() => onNavigate(lab.route)} className="inline-flex items-center gap-1.5 rounded-xl bg-cyan-300 px-3 py-2 text-xs font-black text-slate-950">Open collection <ArrowUpRight size={13} /></button>{lab.sourceUrl && <a href={lab.sourceUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-cyan-300 underline">Reference source</a>}</div>
+                <div className="mt-4 flex flex-wrap gap-1.5">{lab.experiments.slice(0, 6).map(([name, , route]) => <button key={name} onClick={() => onNavigate(route || lab.route)} className="rounded-lg border border-white/10 bg-white/[.04] px-2 py-1 text-[10px] text-slate-300 hover:border-cyan-300/50">{name}</button>)}</div>
+                <div className="mt-5 flex items-center justify-between"><button onClick={() => onNavigate(lab.route)} className="inline-flex items-center gap-1.5 rounded-xl bg-cyan-300 px-3 py-2 text-xs font-black text-slate-950">Open first experiment <ArrowUpRight size={13} /></button><span className="text-[10px] font-bold text-slate-500">Tap a title to launch</span></div>
               </article>
             ))}
             {status !== "completed" && visiblePlanned.map((item) => <article key={item.id} className="rounded-2xl border border-amber-300/20 bg-amber-300/[.04] p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-black uppercase tracking-widest text-amber-200">Planned collection</p><h3 className="mt-1 text-xl font-black">{item.title}</h3></div><Sparkles size={20} className="text-amber-300" /></div><p className="mt-3 text-sm text-slate-400">{item.description}</p><span className="mt-4 inline-block rounded-full border border-amber-300/25 px-2 py-1 text-[10px] font-bold uppercase text-amber-200">Upcoming</span></article>)}

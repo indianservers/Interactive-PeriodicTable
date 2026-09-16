@@ -128,9 +128,6 @@ const FlamePhotometryLab = lazy(
 const GravimetricPrecipitationLab = lazy(
   () => import("./modules/core-simulations/GravimetricPrecipitationLab.jsx"),
 );
-const MolecularDynamicsLab = lazy(
-  () => import("./modules/core-simulations/MolecularDynamicsLab.jsx"),
-);
 const MoleculePolarityPage = lazy(
   () => import("./modules/core-simulations/MoleculePolarityPage.jsx"),
 );
@@ -441,7 +438,7 @@ const pageStatusLabels = {
   "symmetry-practice": "Self Learning Predictor",
   "symmetry-teaching": "Symmetry Teaching Resources",
   lab: "Chemistry Lab",
-  syllabus: "Syllabus Map",
+  syllabus: "Learning Path",
   quiz: "Quiz Mode",
   favorites: "Favorites",
   settings: "Settings",
@@ -658,7 +655,10 @@ function App() {
 
   const navigate = useCallback(
     (page) => {
-      const label = formatPageStatusLabel(page);
+      const resolvedPage = String(page).startsWith("modules/physical/")
+        ? "physical-simulators"
+        : page;
+      const label = formatPageStatusLabel(resolvedPage);
       setRouteProgress(18);
       setRouteStatus({
         visible: true,
@@ -666,7 +666,7 @@ function App() {
         detail: "Syncing route and preparing chemistry tools...",
         ready: false,
       });
-      setCurrentPage(page);
+      setCurrentPage(resolvedPage);
       const nextHash = pageHashMap[page] || page;
       if (window.location.hash.replace(/^#\/?/, "") !== nextHash) {
         window.location.hash = nextHash;
@@ -1086,7 +1086,7 @@ function App() {
               />
             }
           >
-            <MolecularDynamicsLab />
+            <PhysicalTargetPage onNavigate={navigate} />
           </Suspense>
         );
       case "molecule-polarity":

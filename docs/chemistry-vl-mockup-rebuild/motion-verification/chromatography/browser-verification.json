@@ -1,0 +1,1732 @@
+{
+  "passed": true,
+  "errors": [],
+  "frames": [
+    {
+      "action": "shake",
+      "label": "initial",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/shake-initial.png",
+      "state": {
+        "phase": "idle",
+        "time": 0.7499999999999998,
+        "elapsed": 0.7499999999999998,
+        "paused": false,
+        "x": 0,
+        "angle": 0,
+        "velocity": 0,
+        "angularVelocity": 0,
+        "slosh": 0,
+        "sloshVelocity": 0,
+        "mixing": 0,
+        "suspension": 0.9474999999999958,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Shake the sample tube, then aspirate 2 µL.",
+        "history": []
+      }
+    },
+    {
+      "action": "shake",
+      "label": "early",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/shake-early.png",
+      "state": {
+        "phase": "shaking",
+        "time": 2.777899999999994,
+        "elapsed": 0.24999999999999997,
+        "paused": false,
+        "x": 0.03167302818053774,
+        "angle": 0.018193601473702647,
+        "velocity": -0.056489872201875596,
+        "angularVelocity": -0.3378964346613173,
+        "slosh": -0.009382642354178407,
+        "sloshVelocity": 0.15305957129793185,
+        "mixing": 0.012752216537847125,
+        "suspension": 0.8131983299226943,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": -0.04735573573809862,
+        "targetAngle": -0.12108839924926847,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Shake the sample tube, then aspirate 2 µL.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          }
+        ]
+      }
+    },
+    {
+      "action": "shake",
+      "label": "middle",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/shake-middle.png",
+      "state": {
+        "phase": "shaking",
+        "time": 5.048800000000041,
+        "elapsed": 2.5208999999999935,
+        "paused": false,
+        "x": 0.09620296908988153,
+        "angle": 0.07495721348176342,
+        "velocity": -0.5311081363849418,
+        "angularVelocity": -1.3300474333648478,
+        "slosh": -0.050144363227639634,
+        "sloshVelocity": 0.7540701712510978,
+        "mixing": 0.8555920150851016,
+        "suspension": 1,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": -0.17350579413245812,
+        "targetAngle": -0.28950666252402407,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Shake the sample tube, then aspirate 2 µL.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          }
+        ]
+      }
+    },
+    {
+      "action": "shake",
+      "label": "maximum",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/shake-maximum.png",
+      "state": {
+        "phase": "settling",
+        "time": 7.562600000000165,
+        "elapsed": 2.0304666666666615,
+        "paused": false,
+        "x": -5.289320364354011e-10,
+        "angle": 8.842365912136522e-10,
+        "velocity": 2.1553080103596745e-8,
+        "angularVelocity": 7.142838674991092e-9,
+        "slosh": -0.0003101704316496711,
+        "sloshVelocity": -0.0011474976917643987,
+        "mixing": 0.9882263430364626,
+        "suspension": 0.8602338703982718,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Shake the sample tube, then aspirate 2 µL.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          }
+        ]
+      }
+    },
+    {
+      "action": "shake",
+      "label": "settling",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/shake-settling.png",
+      "state": {
+        "phase": "mixed",
+        "time": 10.076500000000067,
+        "elapsed": 4.544366666666679,
+        "paused": false,
+        "x": 5.177487010283e-18,
+        "angle": 4.102469552625868e-18,
+        "velocity": -3.9070140974957586e-17,
+        "angularVelocity": -4.5125352272576484e-17,
+        "slosh": -0.0000032727439921536682,
+        "sloshVelocity": -7.207653135718933e-7,
+        "mixing": 0.9882263435670926,
+        "suspension": 0.6842608707166459,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample settled. Aspirate 2 µL with the micropipette.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          }
+        ]
+      }
+    },
+    {
+      "action": "shake",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/shake-final.png",
+      "state": {
+        "phase": "mixed",
+        "time": 12.104299999999952,
+        "elapsed": 6.572166666666778,
+        "paused": false,
+        "x": 1.6954224700776969e-25,
+        "angle": 3.1810685208906047e-25,
+        "velocity": 1.1930046247740482e-24,
+        "angularVelocity": -1.1252663328637703e-24,
+        "slosh": 5.391567134094298e-8,
+        "sloshVelocity": -3.341205813035697e-7,
+        "mixing": 0.9882263435670926,
+        "suspension": 0.5423148707166346,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample settled. Aspirate 2 µL with the micropipette.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          }
+        ]
+      }
+    },
+    {
+      "action": "aspirate",
+      "label": "initial",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/aspirate-initial.png",
+      "state": {
+        "phase": "mixed",
+        "time": 13.868299999999852,
+        "elapsed": 8.336166666666829,
+        "paused": false,
+        "x": -2.6843569743258765e-31,
+        "angle": -2.8996312010249364e-31,
+        "velocity": 9.846079439083478e-31,
+        "angularVelocity": 2.1922926118340942e-30,
+        "slosh": -2.1469239283651865e-9,
+        "sloshVelocity": 8.624054389593625e-9,
+        "mixing": 0.9882263435670926,
+        "suspension": 0.41883487071663256,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample settled. Aspirate 2 µL with the micropipette.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          }
+        ]
+      }
+    },
+    {
+      "action": "aspirate",
+      "label": "early",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/aspirate-early.png",
+      "state": {
+        "phase": "aspirating",
+        "time": 15.639099999999756,
+        "elapsed": 0.24999999999999997,
+        "paused": false,
+        "x": 2.304868649832943e-37,
+        "angle": 1.7694387675868196e-37,
+        "velocity": -1.818565892076585e-36,
+        "angularVelocity": -2.0232919450770853e-36,
+        "slosh": 7.548709353040051e-11,
+        "sloshVelocity": -1.902941591792975e-10,
+        "mixing": 0.9882263435670926,
+        "suspension": 0.29487887071663416,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample settled. Aspirate 2 µL with the micropipette.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          }
+        ]
+      }
+    },
+    {
+      "action": "aspirate",
+      "label": "middle",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/aspirate-middle.png",
+      "state": {
+        "phase": "aspirated",
+        "time": 17.896199999999634,
+        "elapsed": 0.16666666666666666,
+        "paused": false,
+        "x": 3.191745019406061e-45,
+        "angle": 2.1580964805219435e-45,
+        "velocity": -2.9143877627019957e-44,
+        "angularVelocity": -2.860342624008181e-44,
+        "slosh": 7.067910351858528e-13,
+        "sloshVelocity": 2.2327340349507576e-12,
+        "mixing": 0.9882263435670926,
+        "suspension": 0.1368818707166361,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 2,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "2 µL aspirated. Dispense onto the TLC origin.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          }
+        ]
+      }
+    },
+    {
+      "action": "aspirate",
+      "label": "maximum",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/aspirate-maximum.png",
+      "state": {
+        "phase": "aspirated",
+        "time": 19.69489999999954,
+        "elapsed": 1.9653666666666667,
+        "paused": false,
+        "x": -1.0928874850509712e-51,
+        "angle": -1.8469038611986707e-52,
+        "velocity": 1.7482324545545309e-50,
+        "angularVelocity": 1.0897543940268439e-50,
+        "slosh": -1.927799192301489e-14,
+        "sloshVelocity": -8.71896625215683e-14,
+        "mixing": 0.9882263435670926,
+        "suspension": 0.01097287071663548,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 2,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "2 µL aspirated. Dispense onto the TLC origin.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          }
+        ]
+      }
+    },
+    {
+      "action": "aspirate",
+      "label": "settling",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/aspirate-settling.png",
+      "state": {
+        "phase": "aspirated",
+        "time": 21.96589999999941,
+        "elapsed": 4.2363666666666715,
+        "paused": false,
+        "x": -8.225406139819065e-60,
+        "angle": 3.186736276430413e-60,
+        "velocity": 1.9364740140299787e-58,
+        "angularVelocity": 9.12550001877542e-59,
+        "slosh": 4.782953912133449e-17,
+        "sloshVelocity": -2.0544583280848853e-15,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 2,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "2 µL aspirated. Dispense onto the TLC origin.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          }
+        ]
+      }
+    },
+    {
+      "action": "aspirate",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/aspirate-final.png",
+      "state": {
+        "phase": "aspirated",
+        "time": 23.743599999999308,
+        "elapsed": 6.014066666666757,
+        "paused": false,
+        "x": -3.7738408006569153e-66,
+        "angle": -9.180014501461765e-66,
+        "velocity": -5.522497852184756e-65,
+        "angularVelocity": 2.0427702091292434e-65,
+        "slosh": -4.243306753899615e-18,
+        "sloshVelocity": 6.784106639788125e-17,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 2,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "2 µL aspirated. Dispense onto the TLC origin.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          }
+        ]
+      }
+    },
+    {
+      "action": "dispense",
+      "label": "initial",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/dispense-initial.png",
+      "state": {
+        "phase": "aspirated",
+        "time": 25.264599999999238,
+        "elapsed": 7.535066666666846,
+        "paused": false,
+        "x": -3.999981772001524e-71,
+        "angle": -1.552751605845179e-72,
+        "velocity": 7.104310163850004e-70,
+        "angularVelocity": 4.089202076258171e-70,
+        "slosh": 6.094114609478543e-19,
+        "sloshVelocity": 1.852613120421828e-20,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 2,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "2 µL aspirated. Dispense onto the TLC origin.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          }
+        ]
+      }
+    },
+    {
+      "action": "dispense",
+      "label": "early",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/dispense-early.png",
+      "state": {
+        "phase": "dispensing",
+        "time": 27.542399999999116,
+        "elapsed": 0.24999999999999997,
+        "paused": false,
+        "x": -2.122680012776228e-79,
+        "angle": 2.2882719601168744e-79,
+        "velocity": 6.976527230570049e-78,
+        "angularVelocity": 2.6454424956216584e-78,
+        "slosh": 3.4413352952408246e-21,
+        "sloshVelocity": 3.140339319539034e-20,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 2,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "2 µL aspirated. Dispense onto the TLC origin.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          }
+        ]
+      }
+    },
+    {
+      "action": "dispense",
+      "label": "middle",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/dispense-middle.png",
+      "state": {
+        "phase": "spotted",
+        "time": 29.799299999998983,
+        "elapsed": 0.16666666666666666,
+        "paused": false,
+        "x": -4.853321941273991e-88,
+        "angle": 5.239593526507286e-87,
+        "velocity": 7.975495557367206e-86,
+        "angularVelocity": 1.5428516959910895e-86,
+        "slosh": -4.377145107502174e-23,
+        "sloshVelocity": 5.642492233823059e-22,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample spotted. Place the plate in the chamber.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          }
+        ]
+      }
+    },
+    {
+      "action": "dispense",
+      "label": "maximum",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/dispense-maximum.png",
+      "state": {
+        "phase": "spotted",
+        "time": 31.813099999998858,
+        "elapsed": 2.18046666666665,
+        "paused": false,
+        "x": -1.1581471325467718e-93,
+        "angle": -6.732902659858723e-94,
+        "velocity": 1.2054109186463726e-92,
+        "angularVelocity": 1.0572494259401711e-92,
+        "slosh": -1.090999070637457e-24,
+        "sloshVelocity": -7.360319511046343e-24,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample spotted. Place the plate in the chamber.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          }
+        ]
+      }
+    },
+    {
+      "action": "dispense",
+      "label": "settling",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/dispense-settling.png",
+      "state": {
+        "phase": "spotted",
+        "time": 33.89639999999874,
+        "elapsed": 4.263766666666659,
+        "paused": false,
+        "x": -6.362241215278302e-101,
+        "angle": -6.041051938644631e-101,
+        "velocity": 3.4582333981881545e-100,
+        "angularVelocity": 5.351253319678115e-100,
+        "slosh": 3.537301948482822e-26,
+        "sloshVelocity": -1.2887176715195004e-25,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample spotted. Place the plate in the chamber.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          }
+        ]
+      }
+    },
+    {
+      "action": "dispense",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/dispense-final.png",
+      "state": {
+        "phase": "spotted",
+        "time": 35.91029999999864,
+        "elapsed": 6.277666666666767,
+        "paused": false,
+        "x": 1.655839349518348e-109,
+        "angle": -2.946997819408115e-108,
+        "velocity": -4.283164857212572e-107,
+        "angularVelocity": -7.472657996464457e-108,
+        "slosh": -1.8629011927701436e-28,
+        "sloshVelocity": 4.2483464748536345e-27,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample spotted. Place the plate in the chamber.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          }
+        ]
+      }
+    },
+    {
+      "action": "place",
+      "label": "initial",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/place-initial.png",
+      "state": {
+        "phase": "spotted",
+        "time": 37.438099999998556,
+        "elapsed": 7.805466666666844,
+        "paused": false,
+        "x": -2.394983158584648e-113,
+        "angle": -7.604478516780204e-114,
+        "velocity": 3.3436031535448547e-112,
+        "angularVelocity": 2.309155241206545e-112,
+        "slosh": 3.9356456108290513e-29,
+        "sloshVelocity": -3.108972097093651e-29,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample spotted. Place the plate in the chamber.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          }
+        ]
+      }
+    },
+    {
+      "action": "place",
+      "label": "early",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/place-early.png",
+      "state": {
+        "phase": "placing",
+        "time": 39.70919999999843,
+        "elapsed": 0,
+        "paused": false,
+        "x": -2.0817931445022275e-121,
+        "angle": 5.924110267239664e-123,
+        "velocity": 3.881089034667263e-120,
+        "angularVelocity": 2.1480662789346513e-120,
+        "slosh": 2.6454448197073163e-31,
+        "sloshVelocity": 1.7456038651728058e-30,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Sample spotted. Place the plate in the chamber.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          }
+        ]
+      }
+    },
+    {
+      "action": "place",
+      "label": "middle",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/place-middle.png",
+      "state": {
+        "phase": "positioned",
+        "time": 41.71609999999831,
+        "elapsed": 2.0068999999999897,
+        "paused": false,
+        "x": -4.284627587937761e-128,
+        "angle": -3.5179971080919683e-128,
+        "velocity": 3.0585119569987436e-127,
+        "angularVelocity": 3.699300774937641e-127,
+        "slosh": -1.0367149591880922e-32,
+        "sloshVelocity": 1.5947102799921958e-32,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          }
+        ]
+      }
+    },
+    {
+      "action": "place",
+      "label": "maximum",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/place-maximum.png",
+      "state": {
+        "phase": "positioned",
+        "time": 43.72989999999819,
+        "elapsed": 4.020699999999972,
+        "paused": false,
+        "x": -9.881566299158738e-136,
+        "angle": -2.594884463639785e-135,
+        "velocity": -1.7142280913608598e-134,
+        "angularVelocity": 4.982329935247128e-135,
+        "slosh": 1.2590948748803428e-34,
+        "sloshVelocity": -1.131705729587441e-33,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          }
+        ]
+      }
+    },
+    {
+      "action": "place",
+      "label": "settling",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/place-settling.png",
+      "state": {
+        "phase": "positioned",
+        "time": 45.99379999999805,
+        "elapsed": 6.284600000000078,
+        "paused": false,
+        "x": -2.601620460486545e-143,
+        "angle": -4.198876826598087e-143,
+        "velocity": -9.379543928243981e-143,
+        "angularVelocity": 1.8364594980148483e-142,
+        "slosh": 2.6797843115810266e-36,
+        "sloshVelocity": -6.078440357288915e-36,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          }
+        ]
+      }
+    },
+    {
+      "action": "place",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/place-final.png",
+      "state": {
+        "phase": "positioned",
+        "time": 48.25769999999793,
+        "elapsed": 8.548500000000141,
+        "paused": false,
+        "x": -4.966323268894558e-151,
+        "angle": -6.251684904997421e-151,
+        "velocity": 6.049920745080084e-151,
+        "angularVelocity": 3.857824270413644e-150,
+        "slosh": 2.4356583360538e-38,
+        "sloshVelocity": 7.992677164067267e-38,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          }
+        ]
+      }
+    },
+    {
+      "action": "develop",
+      "label": "initial",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/develop-initial.png",
+      "state": {
+        "phase": "positioned",
+        "time": 50.5215999999978,
+        "elapsed": 10.812400000000007,
+        "paused": false,
+        "x": -8.219749837155472e-159,
+        "angle": -8.716625710927884e-159,
+        "velocity": 3.2150303935257087e-158,
+        "angularVelocity": 6.709727138656082e-158,
+        "slosh": -2.3909781981017394e-41,
+        "sloshVelocity": 2.2975053743663575e-39,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          }
+        ]
+      }
+    },
+    {
+      "action": "develop",
+      "label": "early",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/develop-early.png",
+      "state": {
+        "phase": "developing",
+        "time": 53.313199999997614,
+        "elapsed": 0.5000000000000007,
+        "paused": false,
+        "x": 1.6834877372690598e-168,
+        "angle": 1.6921361198030737e-168,
+        "velocity": -7.781492095879689e-168,
+        "angularVelocity": -1.3888803615656364e-167,
+        "slosh": 1.8986786422955972e-42,
+        "sloshVelocity": -6.010603130682115e-42,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0.06250000000000008,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          }
+        ]
+      }
+    },
+    {
+      "action": "develop",
+      "label": "middle",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/develop-middle.png",
+      "state": {
+        "phase": "developing",
+        "time": 55.82699999999746,
+        "elapsed": 3.0137999999999803,
+        "paused": false,
+        "x": 1.4949117981482958e-177,
+        "angle": -2.9216778942079195e-178,
+        "velocity": -3.124396116980475e-176,
+        "angularVelocity": -1.5877747804023048e-176,
+        "slosh": 1.1819943832586189e-44,
+        "sloshVelocity": -7.257297855516703e-44,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0.37672499999999753,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          }
+        ]
+      }
+    },
+    {
+      "action": "develop",
+      "label": "maximum",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/develop-maximum.png",
+      "state": {
+        "phase": "developing",
+        "time": 58.090899999997326,
+        "elapsed": 5.277700000000034,
+        "paused": false,
+        "x": 9.291628206477766e-186,
+        "angle": -1.334840531392252e-185,
+        "velocity": -3.5019858838661927e-184,
+        "angularVelocity": -1.2089666356536394e-184,
+        "slosh": 1.9040984488521214e-46,
+        "sloshVelocity": -1.7943308038386736e-46,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0.6597125000000043,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          }
+        ]
+      }
+    },
+    {
+      "action": "develop",
+      "label": "settling",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/develop-settling.png",
+      "state": {
+        "phase": "developing",
+        "time": 60.6117999999972,
+        "elapsed": 7.798600000000181,
+        "paused": false,
+        "x": -7.846841915832655e-194,
+        "angle": -6.113345899427203e-194,
+        "velocity": 6.024433411230636e-193,
+        "angularVelocity": 6.817708687073294e-193,
+        "slosh": 1.416969631097194e-48,
+        "sloshVelocity": -4.957144443055042e-48,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0.9748250000000226,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Origin is above solvent level. Develop the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          }
+        ]
+      }
+    },
+    {
+      "action": "develop",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/develop-final.png",
+      "state": {
+        "phase": "developed",
+        "time": 63.12569999999705,
+        "elapsed": 10.312500000000055,
+        "paused": false,
+        "x": 1.1923436170728804e-204,
+        "angle": 6.365854255582009e-203,
+        "velocity": 8.431688755912134e-202,
+        "angularVelocity": 1.1362335215819163e-202,
+        "slosh": 8.517947569460261e-51,
+        "sloshVelocity": -5.695333101783183e-50,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Development complete. Remove and inspect the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          }
+        ]
+      }
+    },
+    {
+      "action": "inspect",
+      "label": "initial",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/inspect-initial.png",
+      "state": {
+        "phase": "developed",
+        "time": 65.14649999999793,
+        "elapsed": 12.333299999999959,
+        "paused": false,
+        "x": -1.1872960461327387e-209,
+        "angle": -6.319613134626431e-210,
+        "velocity": 1.309430820099778e-208,
+        "angularVelocity": 1.088475722567425e-208,
+        "slosh": 4.749011440459557e-53,
+        "sloshVelocity": 1.1185543581940305e-51,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Development complete. Remove and inspect the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          }
+        ]
+      }
+    },
+    {
+      "action": "inspect",
+      "label": "early",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/inspect-early.png",
+      "state": {
+        "phase": "removing",
+        "time": 66.67439999999914,
+        "elapsed": 0,
+        "paused": false,
+        "x": 6.003833240715755e-215,
+        "angle": 5.396487652845865e-215,
+        "velocity": -3.6233725830982056e-214,
+        "angularVelocity": -5.06861056035898e-214,
+        "slosh": 1.1867796177236385e-53,
+        "sloshVelocity": -3.7954978864490365e-53,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": true,
+        "uv": false,
+        "message": "Development complete. Remove and inspect the plate.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          },
+          {
+            "action": "inspect",
+            "time": 66.67439999999914
+          }
+        ]
+      }
+    },
+    {
+      "action": "inspect",
+      "label": "middle",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/inspect-middle.png",
+      "state": {
+        "phase": "inspected",
+        "time": 68.93140000000093,
+        "elapsed": 2.2569999999999943,
+        "paused": false,
+        "x": 8.843980035382227e-223,
+        "angle": 7.100411150699978e-223,
+        "velocity": -6.483001938730985e-222,
+        "angularVelocity": -7.625270798012733e-222,
+        "slosh": 1.263554683056436e-55,
+        "sloshVelocity": 2.58780363247426e-55,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Inspect the separated spots in visible light or UV.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          },
+          {
+            "action": "inspect",
+            "time": 66.67439999999914
+          }
+        ]
+      }
+    },
+    {
+      "action": "inspect",
+      "label": "maximum",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/inspect-maximum.png",
+      "state": {
+        "phase": "inspected",
+        "time": 70.71610000000236,
+        "elapsed": 4.041700000000002,
+        "paused": false,
+        "x": -4.733711191497249e-229,
+        "angle": -2.2645357553346023e-229,
+        "velocity": 5.571625227941657e-228,
+        "angularVelocity": 4.391060328000468e-228,
+        "slosh": -3.38462395228961e-57,
+        "sloshVelocity": -1.3186796813085312e-56,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Inspect the separated spots in visible light or UV.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          },
+          {
+            "action": "inspect",
+            "time": 66.67439999999914
+          }
+        ]
+      }
+    },
+    {
+      "action": "inspect",
+      "label": "settling",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/inspect-settling.png",
+      "state": {
+        "phase": "inspected",
+        "time": 72.48700000000376,
+        "elapsed": 5.812600000000083,
+        "paused": false,
+        "x": 1.604725519067084e-235,
+        "angle": -3.3882764349552157e-236,
+        "velocity": -3.390521654447328e-234,
+        "angularVelocity": -1.7074606145791915e-234,
+        "slosh": 7.555467067073725e-59,
+        "sloshVelocity": 6.2608029124705246e-58,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Inspect the separated spots in visible light or UV.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          },
+          {
+            "action": "inspect",
+            "time": 66.67439999999914
+          }
+        ]
+      }
+    },
+    {
+      "action": "inspect",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/inspect-final.png",
+      "state": {
+        "phase": "inspected",
+        "time": 74.52170000000542,
+        "elapsed": 7.8473000000002235,
+        "paused": false,
+        "x": 3.1617985354520523e-242,
+        "angle": 2.240512926851538e-242,
+        "velocity": -2.7286349170277207e-241,
+        "angularVelocity": -2.7894336650140752e-241,
+        "slosh": -3.2255042828454754e-60,
+        "sloshVelocity": 6.071385973414196e-60,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Inspect the separated spots in visible light or UV.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          },
+          {
+            "action": "inspect",
+            "time": 66.67439999999914
+          }
+        ]
+      }
+    },
+    {
+      "action": "uv",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/uv-final.png",
+      "state": {
+        "phase": "inspected",
+        "time": 76.55650000000706,
+        "elapsed": 0,
+        "paused": false,
+        "x": 1.4876028155559778e-249,
+        "angle": 2.078547880367884e-249,
+        "velocity": 1.1228872655875395e-249,
+        "angularVelocity": -1.1068290387942847e-248,
+        "slosh": 2.8145163882384182e-62,
+        "sloshVelocity": -3.5039162656983256e-61,
+        "mixing": 0.9882263435670926,
+        "suspension": 0,
+        "tubeVolume": 997.9999999999927,
+        "pipetteVolume": 0,
+        "plateVolume": 2,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 1,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": true,
+        "message": "Inspecting under UV 254 nm.",
+        "history": [
+          {
+            "action": "shake",
+            "time": 2.527899999999995
+          },
+          {
+            "action": "aspirate",
+            "time": 15.38909999999977
+          },
+          {
+            "action": "dispense",
+            "time": 27.29239999999913
+          },
+          {
+            "action": "place",
+            "time": 39.70919999999843
+          },
+          {
+            "action": "develop",
+            "time": 52.81319999999764
+          },
+          {
+            "action": "inspect",
+            "time": 66.67439999999914
+          },
+          {
+            "action": "uv",
+            "time": 76.55650000000706
+          }
+        ]
+      }
+    },
+    {
+      "action": "reset",
+      "label": "final",
+      "path": "docs/chemistry-vl-mockup-rebuild/motion-verification/chromatography/reset-final.png",
+      "state": {
+        "phase": "idle",
+        "time": 0,
+        "elapsed": 0,
+        "paused": false,
+        "x": 0,
+        "angle": 0,
+        "velocity": 0,
+        "angularVelocity": 0,
+        "slosh": 0,
+        "sloshVelocity": 0,
+        "mixing": 0,
+        "suspension": 1,
+        "tubeVolume": 1000,
+        "pipetteVolume": 0,
+        "plateVolume": 0,
+        "targetX": 0,
+        "targetAngle": 0,
+        "front": 0,
+        "ethyl": 30,
+        "viscosity": 1,
+        "plateInChamber": false,
+        "uv": false,
+        "message": "Shake the sample tube, then aspirate 2 µL.",
+        "history": []
+      }
+    }
+  ],
+  "limitations": [
+    "Geometric containment and visual quality require review of the captured frames.",
+    "Column motion and integration with the main experiment are not yet covered."
+  ]
+}

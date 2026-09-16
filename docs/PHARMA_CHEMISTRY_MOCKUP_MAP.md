@@ -1,0 +1,37 @@
+# Pharmaceutical Chemistry mockup-to-route inventory
+
+Inventory date: 2026-09-09. The ten approved 16:9 mockups in `TargetUI/PharmaChemistry` were inspected individually. Status describes the application before this rebuild began.
+
+| # | Mockup filename | Route | Page title | Required scientific visualization | Required instruments | Required controls | Required datasets | Current status | Missing functionality |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | `ChatGPT Image Sep 9, 2026, 04_27_31 PM (1).png` | `#/visuals/pharma` | Pharmaceutical Chemistry Lab Home | Interactive eight-stage journey; rotatable paracetamol structure; compound gallery | Molecular viewer; case-study bench overview | Search/filter, compound selector, 2D/3D and representation controls, resume journey, quick launch, data sources | PubChem compound identities/properties; case-study metadata; saved progress | Rebuilt and browser-verified | None for mapped Page 1 scope; see validation log |
+| 2 | `ChatGPT Image Sep 9, 2026, 04_27_32 PM (2).png` | `#/visuals/pharma/medicinal-chemistry` | Medicinal Chemistry — Target and Lead Optimization | HMG-CoA reductase–atorvastatin protein/ligand pocket; SAR and contact views | Mol* protein–ligand viewer | Surface/cartoon/contact modes, residue labels, measurement, pharmacophore, analogue comparison, docking playback | RCSB PDB 1HWK validation; PubChem descriptors; coordinate-derived contact distances | Rebuilt and browser-verified | Pharmacophore scoring remains a labeled educational heuristic; see limitations |
+| 3 | `ChatGPT Image Sep 9, 2026, 04_27_33 PM (3).png` | `#/visuals/pharma/api-synthesis` | API Synthesis — Paracetamol | Reaction apparatus, reaction-energy profile, TLC, yield and green metrics | Three-neck flask, mantle, condenser, dropping funnel, probe, stirrer, ice bath, Büchner filtration, dryer | Weigh, add, heat, stir, time, sample TLC, crystallize, filter, dry, calculate | Validated molar masses and stoichiometry; labeled representative conversion/TLC/energy data | Rebuilt, tested and browser-verified | Conversion and recovery remain labeled educational models; see limitations |
+| 4 | `ChatGPT Image Sep 9, 2026, 04_27_34 PM (4).png` | `#/visuals/pharma/preformulation` | Preformulation — API Characterization | DVS, DSC, PXRD, microscopy/crystal view, pH-solubility and particle-size charts | DVS analyzer, DSC autosampler, polarized-light microscope, crystal viewer | Identity/solid state/solubility/particle size/compatibility tabs; temperature, pH, polymorph, RH, storage, excipient controls | PubChem identity plus clearly labeled representative DSC/PXRD/DVS/compatibility data | Rebuilt, tested and browser-verified | Characterization traces remain labeled educational simulations; see limitations |
+| 5 | `ChatGPT Image Sep 9, 2026, 04_27_34 PM (5).png` | `#/visuals/pharma/tablet-formulation` | Dosage Form — Tablet Formulation | Granulation-to-compression process and quality charts | Sieve, high-shear granulator, dryer, mill, blender, rotary tablet press, coater/packer | Formula editor, target weight, turret/fill/force controls, start/pause/resume/step/reset/speed | Labeled representative formulation and CQAs; calculated composition and process outputs | Rebuilt, tested and browser-verified | CQAs remain labeled deterministic educational simulations; see limitations |
+| 6 | `ChatGPT Image Sep 9, 2026, 04_27_35 PM (6).png` | `#/visuals/pharma/dissolution` | Dissolution Lab — USP Apparatus II | Six-vessel dissolution animation, profile and kinetic-fit comparison | USP Apparatus II with autosampler/fraction vials | Method parameters, load/start/pause/reset/step/speed, paddles, manual/automatic sampling, medium, model tabs | Representative vessel profiles; configurable acceptance specification; R²/AIC model-fit outputs | Rebuilt, tested and browser-verified | Profiles and acceptance remain labeled configurable educational simulations; see limitations |
+| 7 | `ChatGPT Image Sep 9, 2026, 04_27_35 PM (7).png` | `#/visuals/pharma/hplc` | Analytical Quality Control — HPLC Assay & Impurities | Animated HPLC flow path, chromatograms, calibration and results | Reservoirs, degasser, pump/mixer, autosampler, oven/column, detector, waste/data system | Prime, inject, run, integrate, export; method and integration controls | Labeled representative method/calibration/impurity dataset; calculated regression, assay, RSD and suitability | Rebuilt, tested and browser-verified | Outputs remain labeled representative educational simulations; see limitations |
+| 8 | `ChatGPT Image Sep 9, 2026, 04_27_36 PM (8).png` | `#/visuals/pharma/stability` | Stability & Degradation — ICH Study | Stability chambers, assay/impurity/dissolution/moisture trends, degradation path, Arrhenius plot | Long-term/intermediate/accelerated chambers and photostability chamber | Condition, package, pull time, run HPLC, inspect, model, report, limits | ICH Q1A(R2)/Q1B references and labeled representative stability dataset | Rebuilt, tested and browser-verified | Trends and shelf life remain labeled representative educational calculations |
+| 9 | `ChatGPT Image Sep 9, 2026, 04_27_38 PM (9).png` | `#/visuals/pharma/adme` | ADME & Metabolism — Human Pharmacokinetics | Human absorption/distribution/metabolism/excretion path, Sankey, concentration profiles and mass balance | Physiological/PK simulation viewport | Dose, model, gastric emptying, hepatic/renal function, fed state, dose interval, simulate/compare/reset | Published ranges plus explicitly labeled calculated/simulated human PK parameters | Rebuilt, tested and browser-verified | PK outputs remain labeled educational simulations; no clinical recommendation |
+| 10 | `ChatGPT Image Sep 9, 2026, 04_27_38 PM (10).png` | `#/visuals/pharma/toxicology` | Toxicology & Patient Translation — Paracetamol Safety | NAPQI/GSH/liver-injury progression, dose response and benefit-risk comparison | Non-graphic liver/toxicology simulation viewport | Dose/exposure, weight, repeat exposure, liver/alcohol scenarios, run/compare/reset/export | Published mechanism/ranges plus explicitly labeled simulated risk outputs | Rebuilt, tested and browser-verified | Risk values remain illustrative education with prominent medical disclaimer |
+
+## Existing architecture and route decision
+
+- Framework: React 18 + Vite, hash-based routing in `src/App.jsx`, Tailwind utilities plus page CSS.
+- Existing scientific rendering: Mol* and Three.js; RDKit is already installed. No additional overlapping renderer is required for Page 1.
+- Existing pharma routes are retained as aliases where useful. New routes are created only for mockups without an existing suitable page.
+- Existing routes outside `visuals/pharma/**` remain unchanged.
+- Shared state will use browser-local persistence for case study, progress, recent experiments and saved experiment state; no server persistence is required by the approved mockups.
+
+## Eight-stage journey and ten-screen mapping
+
+1. Target & Discovery → Lab Home
+2. Lead Optimization → Medicinal Chemistry
+3. API Synthesis → API Synthesis
+4. Preformulation → Preformulation
+5. Dosage Form → Tablet Formulation
+6. Quality Control → Dissolution, HPLC, Stability
+7. ADME & Toxicology → ADME, Toxicology
+8. Patient → Toxicology & Patient Translation completion state
+
+The extra screens are detailed laboratory workspaces within journey stages 6 and 7, rather than extra top-level stages.

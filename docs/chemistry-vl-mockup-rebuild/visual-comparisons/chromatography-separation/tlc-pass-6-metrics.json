@@ -1,0 +1,18 @@
+{
+  "metric": "windowed RGB SSIM (11\u00d711 Gaussian, \u03c3=1.5)",
+  "width": 1672,
+  "height": 941,
+  "overallSimilarity": 54.16,
+  "regionScores": {
+    "header-and-breadcrumb": 72.21,
+    "title-and-controls": 66.56,
+    "main-apparatus": 35.29,
+    "instructional-cards": 51.55,
+    "analysis-panel": 61.86,
+    "bottom-navigation": 63.42
+  },
+  "meanAbsoluteChannelError": 26.701,
+  "passesOverall": false,
+  "passesRegions": false,
+  "status": "visual-failed"
+}

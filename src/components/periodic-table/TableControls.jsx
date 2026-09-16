@@ -53,9 +53,9 @@ export const TableControls = ({ compact, onToggleCompact, trendMode, onToggleTre
       value={activeSyllabusTrack}
       onChange={event => onSyllabusTrackChange?.(event.target.value)}
       className="input h-9 w-36 rounded-xl py-1.5 text-xs"
-      aria-label="Syllabus progress overlay"
+      aria-label="Topic highlight overlay"
     >
-      <option value="off">Syllabus off</option>
+      <option value="off">Highlight off</option>
       <option value="class10">Class 10</option>
       <option value="class11">Class 11</option>
       <option value="class12">Class 12</option>

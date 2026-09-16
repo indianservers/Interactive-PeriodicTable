@@ -11,8 +11,22 @@ import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
 import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
 import "./BiochemistryTargetPage.css";
 
-const STRUCTURE_LABS = new Set(["enzyme-kinetics", "km-vmax", "protein-structure", "enzyme-inhibitors", "enzyme-stability", "protein-purification"]);
-const LYSOZYME_SOURCE = { url: "/assets/biochemistry/structures/1HEW.cif", label: "PDB 1HEW local cache" };
+const STRUCTURE_LABS = new Set([
+  "enzyme-kinetics", "km-vmax", "protein-structure", "enzyme-inhibitors",
+  "enzyme-stability", "protein-purification", "dna-extraction", "gel-electrophoresis",
+  "pcr", "restriction-mapping", "carbohydrate-tests", "metabolic-pathways", "atp-energy",
+]);
+const STRUCTURE_SOURCES = {
+  default: { url: "/assets/biochemistry/structures/1HEW.cif", format: "mmcif", label: "Hen egg-white lysozyme · PDB 1HEW", pdbId: "1HEW" },
+  "dna-extraction": { url: "/assets/nucleic-acid/structures/1BNA.cif", format: "mmcif", label: "B-DNA dodecamer · PDB 1BNA", pdbId: "1BNA" },
+  "gel-electrophoresis": { url: "/assets/nucleic-acid/structures/1BNA.cif", format: "mmcif", label: "B-DNA dodecamer · PDB 1BNA", pdbId: "1BNA" },
+  pcr: { url: "/assets/nucleic-acid/structures/1BNA.cif", format: "mmcif", label: "B-DNA dodecamer · PDB 1BNA", pdbId: "1BNA" },
+  "restriction-mapping": { url: "/assets/nucleic-acid/structures/1BNA.cif", format: "mmcif", label: "B-DNA dodecamer · PDB 1BNA", pdbId: "1BNA" },
+  "carbohydrate-tests": { url: "/assets/carbohydrate-studio/structures/d-glucose.sdf", format: "sdf", label: "D-Glucose", pdbId: "" },
+  "metabolic-pathways": { url: "/assets/biochemistry/structures/1C96.cif", format: "mmcif", label: "Aconitase–citrate · PDB 1C96", pdbId: "1C96" },
+  "atp-energy": { url: "/assets/biochemistry/structures/1C96.cif", format: "mmcif", label: "Aconitase–citrate · PDB 1C96", pdbId: "1C96" },
+};
+const LYSOZYME_SOURCE = STRUCTURE_SOURCES.default;
 
 const clamp = (min, max, value) => Math.min(max, Math.max(min, value));
 const format = (value, digits = 2) => Number(value).toLocaleString(undefined, { maximumFractionDigits: digits });
@@ -327,20 +341,22 @@ function StructureLabVisual({ activeId, step, notice }) {
   const viewerRef = useRef(null);
   const [representation, setRepresentation] = useState("Surface");
   const [selectedAtom, setSelectedAtom] = useState(null);
-  const guidedResidue = [null, 35, 52, 35][Math.min(step, 3)];
+  const source = STRUCTURE_SOURCES[activeId] || STRUCTURE_SOURCES.default;
+  const isMacromolecule = source.format === "mmcif";
+  const guidedResidue = isMacromolecule && source.pdbId === "1HEW" ? [null, 35, 52, 35][Math.min(step, 3)] : null;
   const structureRepresentation = useMemo(() => ({
-    Surface: representation === "Surface",
-    Cartoon: representation === "Cartoon",
-    BallAndStick: representation === "Atoms",
-  }), [representation]);
+    Surface: representation === "Surface" && isMacromolecule,
+    Cartoon: representation === "Cartoon" && isMacromolecule,
+    BallAndStick: representation === "Atoms" || !isMacromolecule,
+  }), [representation, isMacromolecule]);
   const lesson = activeId === "protein-structure"
     ? "Inspect the experimental fold; the simulation variables remain an educational stability model."
     : activeId === "enzyme-inhibitors"
       ? "Tri-N-acetylchitotriose is the experimentally bound inhibitor in this structure."
-      : "1HEW is a structural reference; it does not generate the Michaelis–Menten calculation below.";
+      : `${source.label} is a structural reference for this investigation.`;
   return <div className="biovl-structure-stage">
-    <div className="biovl-structure-meta"><div><b>Hen egg-white lysozyme · inhibitor complex</b><span>PDB 1HEW · X-ray diffraction · 1.75 Å · Gallus gallus</span></div><em>Experimental structure</em></div>
-    <div className="biovl-structure-view"><ViewerErrorBoundary><MolstarViewer ref={viewerRef} source={LYSOZYME_SOURCE} sourceType="mmcif" label="Lysozyme inhibitor complex" pdbId="1HEW" representation={structureRepresentation} colorScheme="chain" selectedChain="A" selectedResidue={guidedResidue} highlightedResidues={[35, 52]} focusOnSelection={Number.isFinite(guidedResidue)} focusLigandId="NAG" focusLigandChain="B" showLabels={false} onSelectionChange={setSelectedAtom} onLoadError={(error) => notice(error.message)} /></ViewerErrorBoundary></div>
+    <div className="biovl-structure-meta"><div><b>{source.label}</b><span>{source.pdbId ? `PDB ${source.pdbId} · local experimental cache` : "Local coordinate model"}</span></div><em>Experimental structure</em></div>
+    <div className="biovl-structure-view"><ViewerErrorBoundary><MolstarViewer ref={viewerRef} source={source} sourceType={source.format} label={source.label} pdbId={source.pdbId} representation={structureRepresentation} colorScheme={isMacromolecule ? "chain" : "element"} selectedChain={source.pdbId === "1HEW" ? "A" : undefined} selectedResidue={guidedResidue} highlightedResidues={source.pdbId === "1HEW" ? [35, 52] : []} focusOnSelection={Number.isFinite(guidedResidue)} focusLigandId={source.pdbId === "1HEW" ? "NAG" : undefined} focusLigandChain={source.pdbId === "1HEW" ? "B" : undefined} showLabels={false} onSelectionChange={setSelectedAtom} onLoadError={(error) => notice(error.message)} /></ViewerErrorBoundary></div>
     <div className="biovl-structure-toolbar">{["Surface", "Cartoon", "Atoms"].map((item) => <button key={item} className={representation === item ? "active" : ""} onClick={() => setRepresentation(item)}>{item}</button>)}<button onClick={() => viewerRef.current?.focusLigandId("NAG", "B")}>Focus inhibitor</button><button onClick={() => viewerRef.current?.reset()}><RotateCcw /> Reset</button><button aria-label="Fullscreen molecular structure" onClick={() => viewerRef.current?.fullscreen()}><Maximize2 /></button></div>
     <div className="biovl-structure-inspector"><span>{selectedAtom ? `${selectedAtom.residueName} ${selectedAtom.residue} · chain ${selectedAtom.chain} · ${selectedAtom.atom}` : guidedResidue ? `Protocol focus: catalytic residue ${guidedResidue}` : "Ligand-focused experimental reference"}</span><small>{lesson}</small></div>
   </div>;

@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "checks": [
+    "invalid transition",
+    "independent liquid inertia",
+    "settling",
+    "capacity",
+    "volume conservation every frame",
+    "TLC front",
+    "pause",
+    "UV",
+    "exact reset"
+  ],
+  "results": [
+    {
+      "fps": 30,
+      "early": {
+        "angle": 0.007062295702176142,
+        "slosh": 0.008563951201952656
+      },
+      "final": {
+        "phase": "inspected",
+        "volume": 999.9999999999927,
+        "front": 1
+      }
+    },
+    {
+      "fps": 60,
+      "early": {
+        "angle": 0.007062295702176142,
+        "slosh": 0.008563951201952656
+      },
+      "final": {
+        "phase": "inspected",
+        "volume": 999.9999999999927,
+        "front": 1
+      }
+    },
+    {
+      "fps": 120,
+      "early": {
+        "angle": 0.007062295702176142,
+        "slosh": 0.008563951201952656
+      },
+      "final": {
+        "phase": "inspected",
+        "volume": 999.9999999999927,
+        "front": 1
+      }
+    }
+  ]
+}

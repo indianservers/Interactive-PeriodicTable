@@ -1,0 +1,57 @@
+{
+  "simulator": "molecules-light",
+  "passed": true,
+  "screens": [
+    {
+      "id": "home",
+      "passed": true
+    },
+    {
+      "id": "source",
+      "passed": true
+    },
+    {
+      "id": "response",
+      "passed": true
+    },
+    {
+      "id": "scan",
+      "passed": true
+    },
+    {
+      "id": "compare",
+      "passed": true
+    },
+    {
+      "id": "report",
+      "passed": true
+    }
+  ],
+  "layouts": [
+    {
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "overflow": false
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "scrollWidth": 1024,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "scrollWidth": 768,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "overflow": false
+    }
+  ],
+  "consoleErrors": []
+}

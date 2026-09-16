@@ -842,7 +842,7 @@ export const syllabusConcepts = [
       const r = rows[Math.round(v.cmpd)] || rows[1];
       return { primary: r[0], detail: r[1], observation: r[2], quality: "Match geometry with VSEPR electron groups", chart: titreCurve(v.cmpd * 15, 50) };
     },
-    steps: ["Select a syllabus compound.", "Read bonding and geometry.", "Predict hydrolysis/reactivity."],
+    steps: ["Select a representative compound.", "Read bonding and geometry.", "Predict hydrolysis/reactivity."],
     quiz: [quiz("Diborane contains", "bridge", ["3-centre–2-electron B–H–B bonds", "Only 2c–2e B–B bonds", "Ionic H⁻ only"])],
   }),
   lab({
@@ -853,7 +853,7 @@ export const syllabusConcepts = [
     kind: "sim",
     description: "Toggle reagents to predict addition, elimination and oxidative cleavage products.",
     kicker: "Acyclic hydrocarbons",
-    lead: "See how HX, HOX, KMnO₄, peracids and ozone map onto the syllabus outcomes.",
+    lead: "See how HX, HOX, KMnO₄, peracids and ozone map onto the expected outcomes.",
     equation: "RCH=CH₂ + HX → Markovnikov alkyl halide (no peroxide)",
     hazard: "Teaching predictor only.",
     theory: "Zaitsev: more substituted alkene. Peroxide + HBr: anti-Markovnikov. Ozonolysis locates the double bond.",
@@ -894,7 +894,7 @@ export const syllabusConcepts = [
         5: ["–Cl", "Deactivating yet o/p", "Inductive withdrawal, resonance donation"],
       };
       const r = rows[Math.round(v.g)] || rows[1];
-      return { primary: r[0], detail: r[1], observation: r[2], quality: "o/p vs meta is a syllabus definition item", chart: titreCurve(v.g * 16, 50) };
+      return { primary: r[0], detail: r[1], observation: r[2], quality: "o/p vs meta is a core definition item", chart: titreCurve(v.g * 16, 50) };
     },
     steps: ["Choose G.", "Predict o/p vs meta.", "State activating vs deactivating."],
     quiz: [quiz("Halo substituents are", "deact-op", ["Deactivating but o/p directing", "Activating and meta", "Like nitro groups"])],
@@ -973,7 +973,7 @@ export const syllabusConcepts = [
     lead: "μ_so = √[n(n+2)] BM. Lanthanide contraction makes 4d/5d sizes similar.",
     equation: "μ_s.o. = √[n(n+2)] B.M.",
     hazard: "Teaching calculation.",
-    theory: "Variable oxidation states, catalytic behaviour and complexation are syllabus themes.",
+    theory: "Variable oxidation states, catalytic behaviour and complexation are core themes.",
     controls: [control("unpaired", "Unpaired electrons n", 0, 5, 1, "", 3), control("series", "Series (1=3d,2=4d/5d,3=Ln)", 1, 3, 1, "", 1)],
     compute: (v) => {
       const mu = Math.sqrt(v.unpaired * (v.unpaired + 2));
@@ -993,7 +993,7 @@ export const syllabusConcepts = [
     kicker: "Chemical bonding",
     lead: "Fill MOs, compute bond order = (bonding − antibonding)/2, and predict paramagnetism.",
     equation: "Bond order = (N_b − N_a)/2",
-    hazard: "Teaching MO diagrams (unhybridized as in the syllabus).",
+    hazard: "Teaching MO diagrams (unhybridized as in standard models).",
     theory: "O₂ has two unpaired electrons in π*. CO and NO are heteronuclear with polar MOs.",
     controls: [control("mol", "Species (1=N2,2=O2,3=O2-,4=CO,5=NO)", 1, 5, 1, "", 2)],
     compute: (v) => {
@@ -1005,7 +1005,7 @@ export const syllabusConcepts = [
         5: ["NO", 2.5, "paramagnetic", "odd electron in π*"],
       };
       const r = rows[Math.round(v.mol)] || rows[2];
-      return { primary: `${r[0]} bond order ${r[1]} · ${r[2]}`, detail: r[3], observation: "O₂ is the classic MOT paramagnetism example.", quality: "Count electrons after removing inner KK if the syllabus does", chart: titreCurve(r[1] * 25, 75) };
+      return { primary: `${r[0]} bond order ${r[1]} · ${r[2]}`, detail: r[3], observation: "O₂ is the classic MOT paramagnetism example.", quality: "Count electrons after removing inner KK if the counting convention does", chart: titreCurve(r[1] * 25, 75) };
     },
     steps: ["Select the molecule/ion.", "Read bond order and magnetism.", "Connect CO to metal carbonyls."],
     quiz: [quiz("Which is paramagnetic?", "o2", ["O₂", "N₂", "CO"])],
@@ -1048,7 +1048,7 @@ export const syllabusConcepts = [
     compute: (v) => {
       const rows = {
         1: ["Ni(CO)₄", "18e, tetrahedral", "Ni(0) + 4 CO"],
-        2: ["Fe(CO)₅", "18e, trigonal bipyramidal", "Also Fe₂(CO)₉, Fe₃(CO)₁₂ on the syllabus"],
+        2: ["Fe(CO)₅", "18e, trigonal bipyramidal", "Also Fe₂(CO)₉, Fe₃(CO)₁₂ in the course"],
         3: ["Cr(CO)₆", "18e, octahedral", "Classic hexacarbonyl"],
         4: ["RMgX", "Cδ⁻–Mgδ⁺", "Carbonation → carboxylic acids after work-up"],
       };
@@ -1081,7 +1081,7 @@ export const syllabusConcepts = [
       const r = rows[Math.round(v.het)] || rows[1];
       return { primary: r[0], detail: r[1], observation: r[2], quality: "Compare pyrrole vs pyridine basicity in one sentence", chart: titreCurve(v.het * 20, 50) };
     },
-    steps: ["Select the heterocycle.", "State aromaticity and preferred reaction.", "Name the syllabus synthesis."],
+    steps: ["Select the heterocycle.", "State aromaticity and preferred reaction.", "Name the standard synthesis."],
     quiz: [quiz("Chichibabin reaction is typical of", "py", ["Pyridine", "Pyrrole", "Furan"])],
   }),
   lab({
@@ -1111,7 +1111,7 @@ export const syllabusConcepts = [
     subject: "Organic",
     paper: "BSCH-401",
     kind: "sim",
-    description: "α-Hydrogen acidity, tautomerism and carbon–carbon bond forming syllabus reactions.",
+    description: "α-Hydrogen acidity, tautomerism and carbon–carbon bond forming named reactions.",
     kicker: "Carbanion chemistry",
     lead: "Stabilised carbanions add to carbonyls. Acetoacetic ester is a 1,3-dicarbonyl with highly acidic α-H.",
     equation: "Examples: aldol, Perkin, benzoin, haloform, Mannich, Michael, Knoevenagel",
@@ -1154,7 +1154,7 @@ export const syllabusConcepts = [
         5: ["Ruff", "Glucose → arabinose", "Chain shortening"],
       };
       const r = rows[Math.round(v.topic)] || rows[2];
-      return { primary: r[0], detail: r[1], observation: r[2], quality: "Haworth and chair are both on the syllabus", chart: titreCurve(v.topic * 16, 50) };
+      return { primary: r[0], detail: r[1], observation: r[2], quality: "Haworth and chair are both required views", chart: titreCurve(v.topic * 16, 50) };
     },
     steps: ["Toggle each structural argument.", "Connect osazone to C-1/C-2.", "State one interconversion."],
     quiz: [quiz("Glucose and fructose give the same osazone because", "c12", ["The reaction involves C-1 and C-2, which become identical", "They are identical molecules", "Osazones ignore stereochemistry always"])],
@@ -1228,7 +1228,7 @@ export const syllabusConcepts = [
         2: photo ? "[2+2] photochemical cycloadditions are the teaching contrast" : "Thermal Diels–Alder: diene HOMO + dienophile LUMO",
         3: photo ? "Photo can open other pathways" : "Thermal [1,5]-H shift is suprafacial in the 6e teaching example",
       }[Math.round(v.type)];
-      return { primary: photo ? "Photochemical HOMO" : "Thermal HOMO", detail: msg, observation: "Sketch HOMO/LUMO phases before predicting stereochemistry.", quality: "One example of each type is what the syllabus asks", chart: titreCurve(v.type * 25, 50) };
+      return { primary: photo ? "Photochemical HOMO" : "Thermal HOMO", detail: msg, observation: "Sketch HOMO/LUMO phases before predicting stereochemistry.", quality: "One example of each type is what the assessment asks", chart: titreCurve(v.type * 25, 50) };
     },
     steps: ["Choose reaction class.", "Toggle thermal/photo.", "State the allowed mode."],
     quiz: [quiz("Thermal Diels–Alder is classified as", "cyclo", ["A cycloaddition", "A sigmatropic shift only", "An electrocyclic ring opening only"])],
@@ -1257,7 +1257,7 @@ export const syllabusConcepts = [
       const r = rows[Math.round(v.dye)] || rows[1];
       return { primary: r[0], detail: r[1], observation: r[2], quality: "State chromophore class in the exam answer", chart: titreCurve(v.dye * 16, 50) };
     },
-    steps: ["Select a syllabus dye.", "Name the chromophore class.", "State how it binds to fabric."],
+    steps: ["Select a dye.", "Name the chromophore class.", "State how it binds to fabric."],
     quiz: [quiz("Indigo is applied as a", "vat", ["Vat dye (reduced then oxidised on the fibre)", "Direct azo dye only", "Food pH indicator only"])],
   }),
   lab({
@@ -1266,9 +1266,9 @@ export const syllabusConcepts = [
     subject: "Analytical",
     paper: "BSCH-501A",
     kind: "sim",
-    description: "Assign IR bands, UV transitions, ¹H NMR splitting and mass-spec peaks for syllabus molecules.",
+    description: "Assign IR bands, UV transitions, ¹H NMR splitting and mass-spec peaks for representative molecules.",
     kicker: "Molecular spectroscopy",
-    lead: "Work ethyl bromide, acetaldehyde, ethyl acetate and acetophenone as in the syllabus.",
+    lead: "Work ethyl bromide, acetaldehyde, ethyl acetate and acetophenone as standard examples.",
     equation: "Beer–Lambert for UV; δ and J for NMR; M⁺· and fragments for MS",
     hazard: "Teaching spectra.",
     theory: "Equivalent protons, n+1 splitting, nitrogen rule, fingerprint IR.",
@@ -1283,7 +1283,7 @@ export const syllabusConcepts = [
       const r = rows[Math.round(v.mol)] || rows[2];
       return { primary: r[0], detail: r[1], observation: r[2], quality: "Always combine IR + NMR + MS, not one spectrum", chart: titreCurve(v.mol * 20, 50) };
     },
-    steps: ["Pick the syllabus molecule.", "List key IR, NMR and MS features.", "State one UV transition type if conjugated/carbonyl."],
+    steps: ["Pick the molecule.", "List key IR, NMR and MS features.", "State one UV transition type if conjugated/carbonyl."],
     quiz: [quiz("A 2H quartet + 3H triplet commonly indicates", "ethyl", ["An ethyl group", "A tert-butyl group", "A phenyl ring only"])],
   }),
 ];
