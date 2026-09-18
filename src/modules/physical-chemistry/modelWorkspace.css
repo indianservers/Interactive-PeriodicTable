@@ -11,8 +11,7 @@
 .pcs-equations small { display: block; color: #8fb4d5; line-height: 1.45; }
 .pcs-source { display: block; margin-top: 8px; color: #54c4ff; font-size: 10px; }
 .pcs-model-experiment .pcs-results { grid-template-rows: 1fr 1fr; }
-.pcs-analysis-4 { grid-template-columns: repeat(4,1fr); }
-.pcs-analysis-4 .pcs-plot svg { height: 188px; }
-.pcs-analysis-4 .pcs-plot h3 { font-size: 13px; }
+.pcs-analysis-4 { grid-template-columns: 1fr 1fr; gap: 10px; }
+.pcs-analysis-4 .pcs-plot h3 { font-size: 13px; color: #d7ecff; }
 @media(max-width:1250px) { .pcs-tabs { margin: 0 0 8px; max-width: none; } .pcs-model-experiment { height: auto; } .pcs-analysis-4 { grid-template-columns: 1fr 1fr; } }
 @media(max-width:760px) { .pcs-tabs { overflow-x: auto; } .pcs-tabs button { min-width: 120px; } .pcs-analysis-4 { grid-template-columns: 1fr; } }

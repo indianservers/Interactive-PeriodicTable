@@ -37,54 +37,130 @@ const peaks = [
   },
 ];
 const modeMeta = {
-  "¹H NMR": { title: "¹H NMR · 400 MHz", axis: "δ (ppm)", suffix: "ppm" },
-  "¹³C NMR": { title: "¹³C NMR · 100 MHz", axis: "δ (ppm)", suffix: "ppm" },
-  IR: { title: "IR · ATR", axis: "Wavenumber (cm⁻¹)", suffix: "cm⁻¹" },
-  "Mass Spectrum": { title: "Mass Spectrum · EI", axis: "m/z", suffix: "m/z" },
-  "UV-Vis": { title: "UV–Vis · Absorbance", axis: "Wavelength (nm)", suffix: "nm" },
+  "¹H NMR": { title: "¹H NMR · 400 MHz · CDCl₃", axis: "δ (ppm)", suffix: "ppm", instrument: "400 MHz · 16 scans · TMS" },
+  "¹³C NMR": { title: "¹³C NMR · 100 MHz · CDCl₃", axis: "δ (ppm)", suffix: "ppm", instrument: "100 MHz · ¹H decoupled" },
+  IR: { title: "FT-IR · ATR", axis: "Wavenumber (cm⁻¹)", suffix: "cm⁻¹", instrument: "ATR diamond · 4 cm⁻¹" },
+  "Mass Spectrum": { title: "EI Mass Spectrum", axis: "m/z", suffix: "m/z", instrument: "EI · 70 eV" },
+  "UV-Vis": { title: "UV–Vis · Absorbance", axis: "Wavelength (nm)", suffix: "nm", instrument: "MeOH · 1.00 cm" },
 };
-const assignmentAtoms={"O–CH₂–":[0,2,6,7],"CO–CH₃":[4,5,11,12,13],"–CH₃":[3,8,9,10]};
+const assignmentAtoms={"C=O":[1,4],"O–CH₂–":[0,2,6,7],"CO–CH₃":[4,5,11,12,13],"–CH₃":[3,8,9,10],"C–H stretch":[3,5,8,9,10,11,12,13],"C–O ester":[0,2],"Molecular ion":[0,1,2,3,4,5],"CH₃CO⁺":[4,5,11,12,13],"C₂H₅⁺":[0,2,3,6,7,8,9,10],"Ester π→π*":[1,4],"Carbonyl n→π*":[1,4],"Weak tail":[1]};
 const lorentz = (x, center, width, height) => height * (width * width) / ((x - center) ** 2 + width * width);
-function buildSpectrum(mode, modePeaks) {
+const pascal = { 1: [1], 2: [1, 1], 3: [1, 2, 1], 4: [1, 3, 3, 1] };
+function splitLines(center, n, jppm, height, width) {
+  const weights = pascal[n] || [1];
+  const max = Math.max(...weights);
+  return weights.map((weight, index) => ({
+    center: center - ((n - 1) * jppm) / 2 + index * jppm,
+    height: height * (weight / max),
+    width,
+  }));
+}
+function buildSpectrum(mode, modePeaks, selected, zoom) {
+  const selectedShift = Number(selected?.shift);
   if (mode === "Mass Spectrum") {
+    const ions = [
+      { x: 29, y: 42, label: "29" },
+      { x: 43, y: 100, label: "43" },
+      { x: 61, y: 18, label: "61" },
+      { x: 73, y: 28, label: "73" },
+      { x: 88, y: 62, label: "88" },
+    ];
     return {
-      series: [{ label: "Relative intensity", data: modePeaks.map((peak, index) => ({ x: Number(peak.shift), y: [88, 100, 42][index] || 30 })), color: "#43d7ff", kind: "bar" }],
-      xDomain: [0, 120],
-      yDomain: [0, 110],
+      series: [{
+        label: "Relative intensity",
+        data: ions.flatMap((ion) => [{ x: ion.x, y: 0 }, { x: ion.x, y: ion.y }, { x: ion.x, y: null }]),
+        color: "#7ee8ff",
+        width: 2.4,
+        hover: "m/z %{x:.0f}<br>%{y:.0f} %<extra></extra>",
+      }],
+      xDomain: [10, 110],
+      yDomain: [0, 118],
       reverseX: false,
-      yLabel: "Relative intensity",
+      yLabel: "Relative intensity (%)",
+      annotations: ions.map((ion) => ({ x: ion.x, y: ion.y, text: ion.label, showarrow: false, yshift: 12 })),
+      shapes: selectedShift ? [{ type: "rect", x0: selectedShift - 1.2, x1: selectedShift + 1.2, y0: 0, y1: 1, yref: "paper", fillcolor: "rgba(125,232,255,0.08)", line: { width: 0 } }] : [],
     };
   }
   if (mode === "IR") {
-    const xs = Array.from({ length: 181 }, (_, i) => 400 + i * 20);
+    const xs = Array.from({ length: 721 }, (_, i) => 400 + i * 5);
+    const bands = [
+      { center: 2980, width: 42, height: 28 },
+      { center: 1740, width: 16, height: 74 },
+      { center: 1370, width: 18, height: 22 },
+      { center: 1240, width: 22, height: 48 },
+      { center: 1050, width: 20, height: 36 },
+    ];
     return {
-      series: [{ label: "%T", data: xs.map((x) => ({ x, y: 96 - modePeaks.reduce((sum, peak, index) => sum + lorentz(x, Number(peak.shift), [18, 40, 28][index], [72, 28, 36][index]), 0) })), color: "#43d7ff" }],
+      series: [{
+        label: "%T",
+        data: xs.map((x) => ({ x, y: Math.max(8, 96 - bands.reduce((sum, band) => sum + lorentz(x, band.center, band.width, band.height), 0)) })),
+        color: "#7ee8ff",
+        smooth: true,
+        hover: "%{x:.0f} cm⁻¹<br>%T = %{y:.1f}<extra></extra>",
+      }],
       xDomain: [400, 4000],
-      yDomain: [0, 100],
+      yDomain: [0, 105],
       reverseX: true,
       yLabel: "Transmittance (%)",
+      annotations: modePeaks.map((peak) => ({ x: Number(peak.shift), y: 18, text: peak.assignment, showarrow: false })),
+      shapes: [
+        { type: "rect", x0: 1500, x1: 400, y0: 0, y1: 1, yref: "paper", fillcolor: "rgba(255,210,120,0.05)", line: { width: 0 } },
+        selectedShift ? { type: "line", x0: selectedShift, x1: selectedShift, y0: 0, y1: 1, yref: "paper", line: { color: selected.color, width: 1.4, dash: "dot" } } : null,
+      ].filter(Boolean),
     };
   }
   if (mode === "UV-Vis") {
-    const xs = Array.from({ length: 141 }, (_, i) => 190 + i);
+    const xs = Array.from({ length: 171 }, (_, i) => 190 + i);
     return {
-      series: [{ label: "Absorbance", data: xs.map((x) => ({ x, y: modePeaks.reduce((sum, peak, index) => sum + lorentz(x, Number(peak.shift), [8, 14, 12][index], [0.9, 0.35, 0.18][index]), 0) })), color: "#43d7ff" }],
-      xDomain: [190, 330],
-      yDomain: [0, 1.1],
+      series: [{
+        label: "Absorbance",
+        data: xs.map((x) => ({ x, y: modePeaks.reduce((sum, peak, index) => sum + lorentz(x, Number(peak.shift), [7, 16, 12][index], [0.92, 0.28, 0.16][index]), 0) })),
+        color: "#7ee8ff",
+        fill: true,
+        fillcolor: "rgba(126,232,255,0.16)",
+        smooth: true,
+        hover: "λ = %{x:.0f} nm<br>A = %{y:.3f}<extra></extra>",
+      }],
+      xDomain: [190, 360],
+      yDomain: [0, 1.15],
       reverseX: false,
       yLabel: "Absorbance",
+      annotations: [{ x: 205, y: 0.92, text: "λmax 205 nm", showarrow: true, arrowhead: 0, ay: -22 }],
+      shapes: selectedShift ? [{ type: "line", x0: selectedShift, x1: selectedShift, y0: 0, y1: 1, yref: "paper", line: { color: selected.color, width: 1.4, dash: "dot" } }] : [],
     };
   }
-  const domain = mode === "¹³C NMR" ? [80, 0] : [6, 0];
-  const xs = Array.from({ length: 241 }, (_, i) => domain[0] + (domain[1] - domain[0]) * i / 240);
-  const widths = mode === "¹³C NMR" ? [0.18, 0.18, 0.18] : [0.035, 0.018, 0.03];
-  const heights = mode === "¹³C NMR" ? [1, 1, 1] : [2, 3, 3];
+  const isCarbon = mode === "¹³C NMR";
+  const domain = isCarbon ? [200, 0] : zoom === "full" ? [10, 0] : [6, 0];
+  const xs = Array.from({ length: 701 }, (_, i) => domain[0] + (domain[1] - domain[0]) * i / 700);
+  const lines = isCarbon
+    ? modePeaks.map((peak) => ({ center: Number(peak.shift), height: 1, width: 0.22 }))
+    : modePeaks.flatMap((peak) => {
+        const n = peak.mult === "quartet" ? 4 : peak.mult === "triplet" ? 3 : 1;
+        const height = peak.integration === "2H" ? 2 : 3;
+        return splitLines(Number(peak.shift), n, 7.1 / 400, height, 0.012);
+      });
+  const ymax = isCarbon ? 1.25 : 3.6;
   return {
-    series: [{ label: "Intensity", data: xs.map((x) => ({ x, y: modePeaks.reduce((sum, peak, index) => sum + lorentz(x, Number(peak.shift), widths[index], heights[index]), 0) })), color: "#43d7ff" }],
+    series: [{
+      label: "Intensity",
+      data: xs.map((x) => ({ x, y: lines.reduce((sum, line) => sum + lorentz(x, line.center, line.width, line.height), 0) })),
+      color: "#7ee8ff",
+      hover: "δ = %{x:.2f} ppm<extra></extra>",
+    }],
     xDomain: domain,
-    yDomain: [0, mode === "¹³C NMR" ? 1.2 : 3.4],
+    yDomain: [0, ymax],
     reverseX: true,
     yLabel: "Intensity",
+    annotations: modePeaks.map((peak) => ({
+      x: Number(peak.shift),
+      y: isCarbon ? 1.08 : peak.integration === "2H" ? 2.35 : 3.25,
+      text: `${peak.shift}`,
+      showarrow: false,
+      font: { color: peak.color, size: 11 },
+    })),
+    shapes: selectedShift
+      ? [{ type: "rect", x0: selectedShift - (isCarbon ? 3 : 0.18), x1: selectedShift + (isCarbon ? 3 : 0.18), y0: 0, y1: 1, yref: "paper", fillcolor: `${selected.color}22`, line: { width: 0 } }]
+      : [],
   };
 }
 export default function SpectroscopyTargetPage({ onNavigate }) {
@@ -107,36 +183,33 @@ export default function SpectroscopyTargetPage({ onNavigate }) {
       mode === "¹H NMR"
         ? peaks
         : mode === "¹³C NMR"
-          ? peaks.map((item, i) => ({
-              ...item,
-              shift: [60.2, 20.7, 14.3][i],
-              mult: "singlet",
-              integration: "1C",
-            }))
+          ? [
+              { shift: "171.0", mult: "singlet", integration: "1C", assignment: "C=O", color: "#fb7185" },
+              { shift: "60.4", mult: "singlet", integration: "1C", assignment: "O–CH₂–", color: "#22d3ee" },
+              { shift: "21.0", mult: "singlet", integration: "1C", assignment: "CO–CH₃", color: "#a78bfa" },
+              { shift: "14.2", mult: "singlet", integration: "1C", assignment: "–CH₃", color: "#fbbf24" },
+            ]
           : mode === "IR"
-            ? peaks.map((item, i) => ({
-                ...item,
-                shift: [1740, 2980, 1050][i],
-                mult: "band",
-                integration: "—",
-              }))
+            ? [
+                { shift: "1740", mult: "strong", integration: "C=O", assignment: "C=O", color: "#fb7185" },
+                { shift: "2980", mult: "medium", integration: "C–H", assignment: "C–H stretch", color: "#fbbf24" },
+                { shift: "1240", mult: "strong", integration: "C–O", assignment: "C–O ester", color: "#22d3ee" },
+              ]
             : mode === "Mass Spectrum"
-              ? peaks.map((item, i) => ({
-                  ...item,
-                  shift: [88, 43, 29][i],
-                  mult: "ion",
-                  integration: "m/z",
-                }))
-              : peaks.map((item, i) => ({
-                  ...item,
-                  shift: [205, 260, 280][i],
-                  mult: "band",
-                  integration: "λmax",
-                })),
+              ? [
+                  { shift: "88", mult: "M⁺", integration: "m/z", assignment: "Molecular ion", color: "#7ee8ff" },
+                  { shift: "43", mult: "base", integration: "m/z", assignment: "CH₃CO⁺", color: "#a78bfa" },
+                  { shift: "29", mult: "ion", integration: "m/z", assignment: "C₂H₅⁺", color: "#fbbf24" },
+                ]
+              : [
+                  { shift: "205", mult: "λmax", integration: "π→π*", assignment: "Ester π→π*", color: "#22d3ee" },
+                  { shift: "260", mult: "shoulder", integration: "n→π*", assignment: "Carbonyl n→π*", color: "#a78bfa" },
+                  { shift: "280", mult: "weak", integration: "n→π*", assignment: "Weak tail", color: "#fbbf24" },
+                ],
     [mode],
   );
   const metadata = modeMeta[mode];
-  const plotSpec = useMemo(() => buildSpectrum(mode, modePeaks), [mode, modePeaks]);
+  const plotSpec = useMemo(() => buildSpectrum(mode, modePeaks, peak, zoom), [mode, modePeaks, peak, zoom]);
   useEffect(()=>{setPeak(modePeaks[0]);},[mode,modePeaks]);
   const selectedAtomIndices=assignmentAtoms[peak.assignment]||[];
   const measuredDistance=pickedAtoms.length===2?Math.hypot(...pickedAtoms[0].coordinates.map((value,index)=>value-pickedAtoms[1].coordinates[index])).toFixed(2):null;
@@ -256,40 +329,55 @@ export default function SpectroscopyTargetPage({ onNavigate }) {
           </div>
           <div className="spectro-workspace mt-2 grid grid-cols-[1.35fr_.75fr_1fr] gap-2">
             <section className="rounded border border-white/10 bg-[#0b2135] p-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">{metadata.title}</h3>
-                <div className="text-xs text-slate-400">
-                  Zoom:{" "}
-                  <button
-                    onClick={() => setZoom("1H")}
-                    className={`rounded border px-2 py-1 ${zoom === "1H" ? "border-cyan-300 text-cyan-200" : "border-white/15"}`}
-                  >
-                    1H
-                  </button>{" "}
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-bold">{metadata.title}</h3>
+                  <p className="text-[11px] text-slate-400">{metadata.instrument}</p>
+                </div>
+                <div className="flex flex-wrap justify-end gap-2 text-xs text-slate-400">
+                  {mode.includes("NMR") && (
+                    <>
+                      <button
+                        onClick={() => setZoom("1H")}
+                        className={`rounded border px-2 py-1 ${zoom === "1H" ? "border-cyan-300 text-cyan-200" : "border-white/15"}`}
+                      >
+                        Assigned
+                      </button>
+                      <button
+                        onClick={() => setZoom("full")}
+                        className={`rounded border px-2 py-1 ${zoom === "full" ? "border-cyan-300 text-cyan-200" : "border-white/15"}`}
+                      >
+                        Full
+                      </button>
+                    </>
+                  )}
                   <button
                     onClick={() => {
                       setPeakPicking((value) => !value);
-                      announce(
-                        peakPicking ? "Peak picker off" : "Peak picker on",
-                      );
+                      announce(peakPicking ? "Peak picker off" : "Peak picker on");
                     }}
-                    className={`ml-2 rounded border px-2 py-1 ${peakPicking ? "border-cyan-300 text-cyan-200" : "border-white/15"}`}
+                    className={`rounded border px-2 py-1 ${peakPicking ? "border-cyan-300 text-cyan-200" : "border-white/15"}`}
                   >
                     Peak pick
                   </button>
                 </div>
               </div>
-              <div className="relative mt-3 h-64">
+              <div className="spectro-scope relative mt-3">
+                <div className="spectro-scope-bar">
+                  <span>{peakPicking ? "Click a peak to assign" : "Interactive spectrum"}</span>
+                  <b>{peak.assignment} · {peak.shift} {metadata.suffix}</b>
+                </div>
                 <SciencePlot
-                  title={metadata.title}
                   series={plotSpec.series}
                   xLabel={metadata.axis}
                   yLabel={plotSpec.yLabel}
                   xDomain={plotSpec.xDomain}
                   yDomain={plotSpec.yDomain}
                   reverseX={plotSpec.reverseX}
-                  height={256}
+                  height={320}
                   legend={false}
+                  annotations={plotSpec.annotations}
+                  shapes={plotSpec.shapes}
                   onPointClick={(event) => {
                     const x = event?.points?.[0]?.x;
                     if (x == null) return;
@@ -298,25 +386,22 @@ export default function SpectroscopyTargetPage({ onNavigate }) {
                       return distance < best.distance ? { item, distance } : best;
                     }, { item: modePeaks[0], distance: Infinity });
                     setPeak(nearest.item);
+                    setPeakPicking(true);
                     announce(`Selected ${nearest.item.assignment}`);
                   }}
                 />
-                {peakPicking && (
-                  <span className="absolute right-2 top-2 rounded bg-cyan-300/10 px-2 py-1 text-[10px] text-cyan-200">
-                    Click a peak to inspect assignment
-                  </span>
-                )}
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-2">
+              <div className={`mt-3 grid gap-2 ${modePeaks.length > 3 ? "grid-cols-4" : "grid-cols-3"}`}>
                 {modePeaks.map((x) => (
                   <button
-                    key={x.shift}
+                    key={`${x.assignment}-${x.shift}`}
                     onClick={() => setPeak(x)}
                     className={`rounded border p-2 text-left text-xs ${peak.shift === x.shift ? "border-cyan-300 bg-cyan-300/10" : "border-white/10"}`}
                   >
                     <b style={{ color: x.color }}>{x.shift} {metadata.suffix}</b>
                     <br />
                     {x.mult} · {x.integration}
+                    <span className="mt-1 block text-[10px] text-slate-400">{x.assignment}</span>
                   </button>
                 ))}
               </div>

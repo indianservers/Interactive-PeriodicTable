@@ -3,8 +3,10 @@ import { SciencePlot } from '../../components/science/SciencePlot.jsx';
 export function Plot({ title, series = [], xLabel, yLabel, xDomain, yDomain, legend = true, logX = false, logY = false }) {
   return (
     <article className="pcs-card pcs-plot" aria-label={title}>
+      <header>
+        <h3>{title}</h3>
+      </header>
       <SciencePlot
-        title={title}
         series={series}
         xLabel={xLabel}
         yLabel={yLabel}
@@ -13,7 +15,7 @@ export function Plot({ title, series = [], xLabel, yLabel, xDomain, yDomain, leg
         legend={legend}
         logX={logX}
         logY={logY}
-        height={208}
+        height={248}
       />
     </article>
   );
