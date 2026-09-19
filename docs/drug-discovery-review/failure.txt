@@ -1,7 +1,0 @@
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-
-9 !== 8
-
-    at file:///C:/Indian%20Servers/Chemistry/Periodic%20Table/scripts/verify-drug-discovery-studio.mjs:46:10
-
-Browser errors:

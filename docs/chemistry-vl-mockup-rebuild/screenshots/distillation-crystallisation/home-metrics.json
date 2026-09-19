@@ -1,8 +1,0 @@
-{
-  "width": 1672,
-  "height": 941,
-  "meanAbsoluteChannelError": 60.535316467285156,
-  "rootMeanSquaredChannelError": 93.60710144042969,
-  "luminanceCorrelation": 0.07006658362250226,
-  "note": "Diagnostic metrics only; review the generated overlay and amplified difference image."
-}

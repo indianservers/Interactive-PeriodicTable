@@ -9,3 +9,17 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 Thumbs.db
+*.md
+*.log
+/.codex-*/
+/docs/
+/reports/
+/coverage/
+/playwright-report/
+/test-results/
+**/.cache/
+**/__pycache__/
+*.pyc
+/-difference.png
+/-overlay.png
+/-metrics.json

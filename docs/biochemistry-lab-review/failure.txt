@@ -1,6 +1,0 @@
-AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Higher substrate/. Input:
-
-''
-
-    at file:///C:/Indian%20Servers/Chemistry/Periodic%20Table/scripts/verify-biochemistry-virtual-lab.mjs:76:10
-
