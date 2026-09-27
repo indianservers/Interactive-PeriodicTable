@@ -33,10 +33,11 @@ export function steamRun(elapsedMinutes = 36.33, steamRate = 2.5) {
 export function recrystallisation({ mass = 5, hotSolventMl = 95, coolingRate = 1, seedingTemperature = 30 } = {}) {
   const hotSolubility = 5.5;
   const coldSolubility = 0.53;
-  const theoretical = Math.max(0, mass - coldSolubility * hotSolventMl / 100);
+  const dissolved = Math.min(mass, hotSolubility * hotSolventMl / 100);
+  const theoretical = Math.max(0, dissolved - coldSolubility * hotSolventMl / 100);
   const quality = Math.exp(-Math.abs(coolingRate - 1) * 0.08 - Math.abs(seedingTemperature - 30) * 0.002);
   const recovered = theoretical * (0.94 + 0.033 * quality);
-  const recovery = recovered / theoretical * 100;
+  const recovery = mass > 0 ? recovered / mass * 100 : 0;
   const purity = 96.4 + 2.7 * quality;
   return { minimumHotSolvent: mass / hotSolubility * 100, theoretical, recovered, recovery, purity, meltingLow: 114, meltingHigh: 115 };
 }

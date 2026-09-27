@@ -1,64 +1,64 @@
 import { useEffect, useState, useCallback, Suspense, lazy } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { ExperienceErrorBoundary, ExperienceLoading, ExperienceToolbar } from "./components/discovery/RouteExperience.jsx";
 import { AppShell } from "./components/layout/AppShell.jsx";
 import { DashboardPage } from "./pages/DashboardPage.jsx";
-import { PeriodicTablePage } from "./pages/PeriodicTablePage.jsx";
-import { TrendsPage } from "./pages/TrendsPage.jsx";
-import { ComparePage } from "./pages/ComparePage.jsx";
-import { AtomVisualizerPage } from "./pages/AtomVisualizerPage.jsx";
-import { ChallengeLabTargetPage } from "./pages/ChallengeLabTargetPage.jsx";
-import { FavoritesPage } from "./pages/FavoritesPage.jsx";
-import { SavedChemistryTargetPage } from "./pages/SavedChemistryTargetPage.jsx";
-import { SettingsPage } from "./pages/SettingsPage.jsx";
-import LibraryPage from "./pages/LibraryPage.jsx";
-import { ChemistryLabPage } from "./pages/ChemistryLabPage.jsx";
-import { SyllabusPage } from "./pages/SyllabusPage.jsx";
+const PeriodicTablePage = lazy(() => import("./pages/PeriodicTablePage.jsx").then(module => ({ default: module.PeriodicTablePage })));
+const TrendsPage = lazy(() => import("./pages/TrendsPage.jsx").then(module => ({ default: module.TrendsPage })));
+const ComparePage = lazy(() => import("./pages/ComparePage.jsx").then(module => ({ default: module.ComparePage })));
+const AtomVisualizerPage = lazy(() => import("./pages/AtomVisualizerPage.jsx").then(module => ({ default: module.AtomVisualizerPage })));
+const ChallengeLabTargetPage = lazy(() => import("./pages/ChallengeLabTargetPage.jsx").then(module => ({ default: module.ChallengeLabTargetPage })));
+const FavoritesPage = lazy(() => import("./pages/FavoritesPage.jsx").then(module => ({ default: module.FavoritesPage })));
+const SavedChemistryTargetPage = lazy(() => import("./pages/SavedChemistryTargetPage.jsx").then(module => ({ default: module.SavedChemistryTargetPage })));
+const SettingsPage = lazy(() => import("./pages/SettingsPage.jsx").then(module => ({ default: module.SettingsPage })));
+const LibraryPage = lazy(() => import("./pages/LibraryPage.jsx"));
+const ChemistryLabPage = lazy(() => import("./pages/ChemistryLabPage.jsx").then(module => ({ default: module.ChemistryLabPage })));
+const SyllabusPage = lazy(() => import("./pages/SyllabusPage.jsx").then(module => ({ default: module.SyllabusPage })));
 import { syllabusInteractiveIds } from "./modules/core-simulations/syllabusInteractiveModel.js";
-import { LearningPathTargetPage } from "./pages/LearningPathTargetPage.jsx";
-import { ReactionBalancerTargetPage } from "./pages/ReactionBalancerTargetPage.jsx";
-import { StudyToolkitTargetPage } from "./pages/StudyToolkitTargetPage.jsx";
-import { SubjectModulePage } from "./pages/SubjectModulePage.jsx";
-import { SchoolChemistryMasteryTargetPage } from "./pages/SchoolChemistryMasteryTargetPage.jsx";
-import { SeniorChemistryCorePage } from "./pages/SeniorChemistryCorePage.jsx";
-import { AdvancedVisualChemistryPage } from "./pages/AdvancedVisualChemistryPage.jsx";
-import { PracticeExamTutorPage } from "./pages/PracticeExamTutorPage.jsx";
-import { LearningCommandCenterDashboardPage } from "./pages/LearningCommandCenterDashboardPage.jsx";
-import { CurriculumCoverageDashboardPage } from "./pages/CurriculumCoverageDashboardPage.jsx";
-import OrganicVisualsTargetPage from "./pages/OrganicVisualsTargetPage.jsx";
-import OrganicMechanismTargetPage from "./pages/OrganicMechanismTargetPage.jsx";
-import FunctionalTestsTargetPage from "./pages/FunctionalTestsTargetPage.jsx";
-import NamedReactionsTargetPage from "./pages/NamedReactionsTargetPage.jsx";
-import IsomerismTargetPage from "./pages/IsomerismTargetPage.jsx";
-import PolymerTargetPage from "./pages/PolymerTargetPage.jsx";
-import CoordinationTargetPage from "./pages/CoordinationTargetPage.jsx";
-import CrystalTargetPage from "./pages/CrystalTargetPage.jsx";
-import SaltAnalysisTargetPage from "./pages/SaltAnalysisTargetPage.jsx";
-import MetallurgyTargetPage from "./pages/MetallurgyTargetPage.jsx";
-import PBlockTargetPage from "./pages/PBlockTargetPage.jsx";
-import BioVisualsTargetPage from "./pages/BioVisualsTargetPage.jsx";
-import MetabolismTargetPage from "./pages/MetabolismTargetPage.jsx";
-import PharmaVisualsTargetPage from "./pages/PharmaVisualsTargetPage.jsx";
-import MedicinalChemistryPage from "./modules/pharma-lab/MedicinalChemistryPage.jsx";
-import ApiSynthesisPage from "./modules/pharma-lab/ApiSynthesisPage.jsx";
-import PreformulationPage from "./modules/pharma-lab/PreformulationPage.jsx";
-import TabletFormulationPage from "./modules/pharma-lab/TabletFormulationPage.jsx";
-import DissolutionPage from "./modules/pharma-lab/DissolutionPage.jsx";
-import HplcPage from "./modules/pharma-lab/HplcPage.jsx";
-import StabilityPage from "./modules/pharma-lab/StabilityPage.jsx";
-import AdmeLabPage from "./modules/pharma-lab/AdmeLabPage.jsx";
-import ToxicologyLabPage from "./modules/pharma-lab/ToxicologyLabPage.jsx";
-import DosageTargetPage from "./pages/DosageTargetPage.jsx";
-import QCTargetPage from "./pages/QCTargetPage.jsx";
-import BufferTargetPage from "./pages/BufferTargetPage.jsx";
-import OrganicReactionTargetPage from "./pages/OrganicReactionTargetPage.jsx";
-import SpectroscopyTargetPage from "./pages/SpectroscopyTargetPage.jsx";
-import ModulesHubTargetPage from "./pages/ModulesHubTargetPage.jsx";
-import IupacTargetPage from "./pages/IupacTargetPage.jsx";
-import PhysicalTargetPage from "./pages/PhysicalTargetPage.jsx";
-import InorganicDeepTargetPage from "./pages/InorganicDeepTargetPage.jsx";
-import ChemistrySubjectHomePage from "./pages/ChemistrySubjectHomePage.jsx";
-import VirtualLabsHomePage from "./pages/VirtualLabsHomePage.jsx";
-import RetrosynthesisTargetPage from "./pages/RetrosynthesisTargetPage.jsx";
+const LearningPathTargetPage = lazy(() => import("./pages/LearningPathTargetPage.jsx").then(module => ({ default: module.LearningPathTargetPage })));
+const ReactionBalancerTargetPage = lazy(() => import("./pages/ReactionBalancerTargetPage.jsx").then(module => ({ default: module.ReactionBalancerTargetPage })));
+const StudyToolkitTargetPage = lazy(() => import("./pages/StudyToolkitTargetPage.jsx").then(module => ({ default: module.StudyToolkitTargetPage })));
+const SubjectModulePage = lazy(() => import("./pages/SubjectModulePage.jsx").then(module => ({ default: module.SubjectModulePage })));
+const SchoolChemistryMasteryTargetPage = lazy(() => import("./pages/SchoolChemistryMasteryTargetPage.jsx").then(module => ({ default: module.SchoolChemistryMasteryTargetPage })));
+const SeniorChemistryCorePage = lazy(() => import("./pages/SeniorChemistryCorePage.jsx").then(module => ({ default: module.SeniorChemistryCorePage })));
+const AdvancedVisualChemistryPage = lazy(() => import("./pages/AdvancedVisualChemistryPage.jsx").then(module => ({ default: module.AdvancedVisualChemistryPage })));
+const PracticeExamTutorPage = lazy(() => import("./pages/PracticeExamTutorPage.jsx").then(module => ({ default: module.PracticeExamTutorPage })));
+const LearningCommandCenterDashboardPage = lazy(() => import("./pages/LearningCommandCenterDashboardPage.jsx").then(module => ({ default: module.LearningCommandCenterDashboardPage })));
+const CurriculumCoverageDashboardPage = lazy(() => import("./pages/CurriculumCoverageDashboardPage.jsx").then(module => ({ default: module.CurriculumCoverageDashboardPage })));
+const OrganicVisualsTargetPage = lazy(() => import("./pages/OrganicVisualsTargetPage.jsx"));
+const OrganicMechanismTargetPage = lazy(() => import("./pages/OrganicMechanismTargetPage.jsx"));
+const FunctionalTestsTargetPage = lazy(() => import("./pages/FunctionalTestsTargetPage.jsx"));
+const NamedReactionsTargetPage = lazy(() => import("./pages/NamedReactionsTargetPage.jsx"));
+const IsomerismTargetPage = lazy(() => import("./pages/IsomerismTargetPage.jsx"));
+const PolymerTargetPage = lazy(() => import("./pages/PolymerTargetPage.jsx"));
+const CoordinationTargetPage = lazy(() => import("./pages/CoordinationTargetPage.jsx"));
+const CrystalTargetPage = lazy(() => import("./pages/CrystalTargetPage.jsx"));
+const SaltAnalysisTargetPage = lazy(() => import("./pages/SaltAnalysisTargetPage.jsx"));
+const MetallurgyTargetPage = lazy(() => import("./pages/MetallurgyTargetPage.jsx"));
+const PBlockTargetPage = lazy(() => import("./pages/PBlockTargetPage.jsx"));
+const BioVisualsTargetPage = lazy(() => import("./pages/BioVisualsTargetPage.jsx"));
+const MetabolismTargetPage = lazy(() => import("./pages/MetabolismTargetPage.jsx"));
+const PharmaVisualsTargetPage = lazy(() => import("./pages/PharmaVisualsTargetPage.jsx"));
+const MedicinalChemistryPage = lazy(() => import("./modules/pharma-lab/MedicinalChemistryPage.jsx"));
+const ApiSynthesisPage = lazy(() => import("./modules/pharma-lab/ApiSynthesisPage.jsx"));
+const PreformulationPage = lazy(() => import("./modules/pharma-lab/PreformulationPage.jsx"));
+const TabletFormulationPage = lazy(() => import("./modules/pharma-lab/TabletFormulationPage.jsx"));
+const DissolutionPage = lazy(() => import("./modules/pharma-lab/DissolutionPage.jsx"));
+const HplcPage = lazy(() => import("./modules/pharma-lab/HplcPage.jsx"));
+const StabilityPage = lazy(() => import("./modules/pharma-lab/StabilityPage.jsx"));
+const AdmeLabPage = lazy(() => import("./modules/pharma-lab/AdmeLabPage.jsx"));
+const ToxicologyLabPage = lazy(() => import("./modules/pharma-lab/ToxicologyLabPage.jsx"));
+const DosageTargetPage = lazy(() => import("./pages/DosageTargetPage.jsx"));
+const QCTargetPage = lazy(() => import("./pages/QCTargetPage.jsx"));
+const BufferTargetPage = lazy(() => import("./pages/BufferTargetPage.jsx"));
+const OrganicReactionTargetPage = lazy(() => import("./pages/OrganicReactionTargetPage.jsx"));
+const SpectroscopyTargetPage = lazy(() => import("./pages/SpectroscopyTargetPage.jsx"));
+const ModulesHubTargetPage = lazy(() => import("./pages/ModulesHubTargetPage.jsx"));
+const IupacTargetPage = lazy(() => import("./pages/IupacTargetPage.jsx"));
+const PhysicalTargetPage = lazy(() => import("./pages/PhysicalTargetPage.jsx"));
+const InorganicDeepTargetPage = lazy(() => import("./pages/InorganicDeepTargetPage.jsx"));
+const ChemistrySubjectHomePage = lazy(() => import("./pages/ChemistrySubjectHomePage.jsx"));
+const VirtualLabsHomePage = lazy(() => import("./pages/VirtualLabsHomePage.jsx"));
+const RetrosynthesisTargetPage = lazy(() => import("./pages/RetrosynthesisTargetPage.jsx"));
 import { useTheme } from "./hooks/useTheme.js";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
 
@@ -539,68 +539,12 @@ const getLoadingDetail = (page) => {
   return "Preparing page content and interactive controls...";
 };
 
-function LoadingProgress({
-  title,
-  detail,
-  height = 620,
-  reducedMotion = false,
-}) {
-  const [progress, setProgress] = useState(12);
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setProgress(78);
-      return undefined;
-    }
-
-    const timer = window.setInterval(() => {
-      setProgress((value) => {
-        if (value >= 92) return value;
-        const increment = value < 45 ? 9 : value < 75 ? 5 : 2;
-        return Math.min(92, value + increment);
-      });
-    }, 180);
-
-    return () => window.clearInterval(timer);
-  }, [reducedMotion]);
-
-  return (
-    <div
-      className="page-transition p-4 md:p-6 max-w-7xl mx-auto space-y-3"
-      role="status"
-      aria-live="polite"
-      aria-label={title}
-    >
-      <div className="glass rounded-2xl p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-300">
-              Loading Progress
-            </p>
-            <h2 className="mt-1 text-base font-black text-white">{title}</h2>
-            <p className="mt-1 text-xs text-gray-400">{detail}</p>
-          </div>
-          <div className="text-2xl font-black tabular-nums text-cyan-100">
-            {progress}%
-          </div>
-        </div>
-        <div className="mt-4 h-3 overflow-hidden rounded-full border border-white/10 bg-white/10">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-300 transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-      <div className="skeleton h-12 rounded-2xl" />
-      <div className="skeleton rounded-2xl" style={{ height }} />
-    </div>
-  );
-}
+function LoadingProgress({title,detail}) { return <ExperienceLoading title={title} detail={detail}/>; }
 
 function App() {
   const { theme, toggle: toggleTheme, isDark } = useTheme();
   const resolveLocationPage = () => {
-    const rawHash = window.location.hash.replace(/^#\/?/, "");
+    const rawHash = window.location.hash.replace(/^#\/?/, "").split("?")[0];
     const nestedHash = rawHash.split("#").filter(Boolean);
     const path = window.location.pathname.replace(/^\//, "");
     if (path.startsWith("nucleic-acid-explorer")) return "bio-nucleic-acids";
@@ -631,7 +575,7 @@ function App() {
   const [studyMode, setStudyMode] = useLocalStorage("cu-study-mode", false);
   const [reducedMotion, setReducedMotion] = useLocalStorage(
     "cu-reduced-motion",
-    false,
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false,
   );
   const [highContrast, setHighContrast] = useLocalStorage(
     "cu-high-contrast",
@@ -650,96 +594,30 @@ function App() {
   const [serviceWorkerUpdate, setServiceWorkerUpdate] = useState(null);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
-  const [routeProgress, setRouteProgress] = useState(100);
-  const [routeStatus, setRouteStatus] = useState({
-    visible: false,
-    title: "Ready",
-    detail: "Dashboard ready",
-    ready: true,
-  });
+  const [resetVersion,setResetVersion] = useState(0);
 
   // Cross-page element state
   const [atomViewerElement, setAtomViewerElement] = useState(null);
   const [compareElement, setCompareElement] = useState(null);
 
-  const navigate = useCallback(
-    (page) => {
-      const resolvedPage = String(page).startsWith("modules/physical/")
-        ? "physical-simulators"
-        : page;
-      const label = formatPageStatusLabel(resolvedPage);
-      setRouteProgress(18);
-      setRouteStatus({
-        visible: true,
-        title: `Opening ${label}`,
-        detail: "Syncing route and preparing chemistry tools...",
-        ready: false,
-      });
-      setCurrentPage(resolvedPage);
-      const nextHash = pageHashMap[page] || page;
-      if (window.location.hash.replace(/^#\/?/, "") !== nextHash) {
-        window.location.hash = nextHash;
-      }
-      setRecentPages((prev) =>
-        [page, ...prev.filter((id) => id !== page)].slice(0, 8),
-      );
-    },
-    [setRecentPages],
-  );
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      const nextPage = resolveLocationPage();
-      setRouteProgress(18);
-      setRouteStatus({
-        visible: true,
-        title: `Opening ${formatPageStatusLabel(nextPage)}`,
-        detail: "Reading route and preparing page state...",
-        ready: false,
-      });
-      setCurrentPage((previousPage) => {
-        if (previousPage === nextPage) {
-          setRouteProgress(100);
-          setRouteStatus({
-            visible: false,
-            title: `Ready: ${formatPageStatusLabel(nextPage)}`,
-            detail: "All visible controls loaded.",
-            ready: true,
-          });
-        }
-        return nextPage;
-      });
-    };
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
+  const navigate = useCallback((page) => {
+    const resolvedPage = String(page).startsWith("modules/physical/") ? "physical-simulators" : page;
+    setCurrentPage(resolvedPage);
+    const nextHash = pageHashMap[page] || page;
+    if (window.location.hash.replace(/^#\/?/, "") !== nextHash) window.location.hash = nextHash;
   }, []);
-
   useEffect(() => {
-    const label = formatPageStatusLabel(currentPage);
-    setRouteProgress(64);
-    setRouteStatus({
-      visible: true,
-      title: `Loading ${label}`,
-      detail: getLoadingDetail(currentPage),
-      ready: false,
-    });
-    const done = window.setTimeout(() => {
-      setRouteProgress(100);
-      setRouteStatus({
-        visible: true,
-        title: `Ready: ${label}`,
-        detail: "All visible controls loaded.",
-        ready: true,
-      });
-    }, 320);
-    const hide = window.setTimeout(() => {
-      setRouteStatus((status) => ({ ...status, visible: false }));
-    }, 1200);
-    return () => {
-      window.clearTimeout(done);
-      window.clearTimeout(hide);
-    };
-  }, [currentPage]);
+    const handleHashChange = () => setCurrentPage(resolveLocationPage());
+    window.addEventListener('hashchange',handleHashChange);
+    window.addEventListener('popstate',handleHashChange);
+    return () => { window.removeEventListener('hashchange',handleHashChange);window.removeEventListener('popstate',handleHashChange); };
+  }, []);
+  useEffect(() => {
+    if(currentPage !== 'dashboard' && currentPage !== 'settings') {
+      setRecentPages(previous => [currentPage,...previous.filter(id=>id!==currentPage)].slice(0,12));
+      window.scrollTo({top:0,behavior:'instant'});
+    }
+  }, [currentPage,setRecentPages]);
 
   useEffect(() => {
     const handleInstallPrompt = (event) => {
@@ -872,6 +750,9 @@ function App() {
   };
 
   const renderPage = () => {
+    if (currentPage.startsWith('biochemistry-labs/')) {
+      return <BiochemistryTargetPage key={currentPage} initialLabId={currentPage.split('/')[1]} onNavigate={navigate} />;
+    }
     if (syllabusInteractiveIds.includes(currentPage)) {
       return (
         <Suspense
@@ -892,6 +773,7 @@ function App() {
           <DashboardPage
             onNavigate={navigate}
             onSelectElement={handleSelectElement}
+            onViewAtom={handleViewAtom}
             recentPages={recentPages}
             favoritePages={favoritePages}
           />
@@ -1638,46 +1520,13 @@ function App() {
           <DashboardPage
             onNavigate={navigate}
             onSelectElement={handleSelectElement}
+            onViewAtom={handleViewAtom}
             recentPages={recentPages}
             favoritePages={favoritePages}
           />
         );
     }
   };
-
-  if (currentPage === "bio-nucleic-acids") {
-    return (
-      <Suspense
-        fallback={
-          <LoadingProgress
-            title="Loading DNA & RNA Studio"
-            detail="Preparing Mol* and the local nucleic-acid coordinate samples..."
-            height={620}
-            reducedMotion={reducedMotion}
-          />
-        }
-      >
-        <NucleicAcidExplorer />
-      </Suspense>
-    );
-  }
-
-  if (currentPage === "bio-carbohydrates") {
-    return (
-      <Suspense
-        fallback={
-          <LoadingProgress
-            title="Loading Carbohydrate Structure Studio"
-            detail="Preparing validated structures and interactive laboratory controls..."
-            height={620}
-            reducedMotion={reducedMotion}
-          />
-        }
-      >
-        <CarbohydrateStudio />
-      </Suspense>
-    );
-  }
 
   return (
     <div
@@ -1701,58 +1550,9 @@ function App() {
         motionEnabled={!reducedMotion}
         onMotionToggle={() => setReducedMotion((value) => !value)}
       >
-        {renderPage()}
+        <ExperienceErrorBoundary key={`${currentPage}-${resetVersion}`} onHome={()=>navigate("dashboard")}><Suspense fallback={<ExperienceLoading title={`Loading ${formatPageStatusLabel(currentPage)}`} detail={getLoadingDetail(currentPage)}/>}>{renderPage()}</Suspense></ExperienceErrorBoundary>
       </AppShell>
-      <div className="pointer-events-none fixed left-0 top-0 z-[120] h-1 w-full bg-transparent">
-        <div
-          className="h-full bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-300 shadow-lg shadow-cyan-500/30 transition-all duration-300"
-          style={{
-            width: `${routeProgress}%`,
-            opacity: routeProgress >= 100 ? 0 : 1,
-          }}
-        />
-      </div>
-      {routeStatus.visible && (
-        <div
-          className="pointer-events-none fixed left-1/2 top-16 z-[121] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-cyan-300/25 bg-gray-950/95 p-3 text-cyan-50 shadow-2xl shadow-black/40 backdrop-blur-xl lg:top-4"
-          role="status"
-          aria-live="polite"
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl border ${routeStatus.ready ? "border-emerald-300/30 bg-emerald-400/15 text-emerald-200" : "border-cyan-300/30 bg-cyan-400/15 text-cyan-200"}`}
-            >
-              {routeStatus.ready ? (
-                <CheckCircle2 size={18} />
-              ) : (
-                <Loader2
-                  size={18}
-                  className={reducedMotion ? "" : "animate-spin"}
-                />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-3">
-                <p className="truncate text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
-                  {routeStatus.title}
-                </p>
-                <span className="shrink-0 text-xs font-black tabular-nums text-white">
-                  {routeProgress}%
-                </span>
-              </div>
-              <p className="mt-1 truncate text-[11px] font-semibold text-gray-400">
-                {routeStatus.detail}
-              </p>
-            </div>
-          </div>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-indigo-300 to-emerald-300 transition-all duration-300"
-              style={{ width: `${routeProgress}%` }}
-            />
-          </div>
-        </div>
-      )}
+      {currentPage !== 'dashboard' && <ExperienceToolbar key={currentPage} page={currentPage} onNavigate={navigate} onReset={()=>setResetVersion(value=>value+1)} motionEnabled={!reducedMotion} onMotionToggle={()=>setReducedMotion(value=>!value)} highContrast={highContrast} onContrastToggle={()=>setHighContrast(value=>!value)}/>}
       {serviceWorkerUpdate && (
         <button
           onClick={serviceWorkerUpdate}

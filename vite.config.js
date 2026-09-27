@@ -14,18 +14,12 @@ export default defineConfig({
     include: ['ketcher-core', 'ketcher-react', 'ketcher-standalone', 'plotly.js-dist-min'],
   },
   build: {
+    manifest: true,
     commonjsOptions: {
       include: [/ketcher/, /raphael/, /node_modules/],
       transformMixedEsModules: true,
     },
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('/node_modules/molstar/') || id.includes('\\node_modules\\molstar\\')) return 'molstar';
-          if (id.includes('ketcher')) return 'ketcher';
-          if (id.includes('plotly')) return 'plotly';
-        },
-      },
-    },
+    // Let Rollup keep dependency cycles together. Optional viewers are split at
+    // their lazy route boundaries instead of manually separating vendor internals.
   },
 })

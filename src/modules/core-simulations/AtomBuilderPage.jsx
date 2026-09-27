@@ -1,3 +1,4 @@
+import { stabilityFor } from "../../data/lightNuclides.js";
 import { useMemo, useState } from 'react';
 import {
   Atom, BarChart3, CheckCircle2, ChevronRight, FlaskConical,
@@ -40,12 +41,6 @@ const electronShells = count => {
     return amount;
   });
 };
-const stabilityFor = (protons, neutrons) => {
-  if (!protons) return ['No nucleus', 'unstable'];
-  if (protons === 1 && neutrons <= 2) return ['Stable', 'stable'];
-  const ratio = neutrons / protons;
-  return ratio >= 0.85 && ratio <= 1.3 ? ['Likely stable', 'stable'] : ['Unstable', 'unstable'];
-};
 const elementFor = protonCount => elements.find(item => item.atomicNumber === protonCount);
 const sameCounts = (left, right) => left.p === right.p && left.n === right.n && left.e === right.e;
 
@@ -66,7 +61,7 @@ const chartPoints = Array.from({ length: 18 }, (_, z) => {
 function NuclearChart({ protons, neutrons, onSelect }) {
   const maxNeutrons = 30;
   return <section className="nuclear-chart nuclear-chart-expanded" aria-label="Nuclear Chart (Z vs N)">
-    <div className="nuclear-chart-heading"><div><h2>Nuclear Chart <span>(Z vs N)</span></h2><p>Choose a square to load its proton and neutron balance.</p></div><div className="nuclear-legend"><span><i className="stable" />Likely stable</span><span><i className="radioactive" />Unstable</span></div></div>
+    <div className="nuclear-chart-heading"><div><h2>Nuclear Chart <span>(Z vs N)</span></h2><p>Choose a square to load its proton and neutron balance.</p></div><div className="nuclear-legend"><span><i className="stable" />Stable</span><span><i className="radioactive" />Unstable</span></div></div>
     <div className="nuclear-plot"><div className="nuclear-axis-y">Protons (Z)</div><div className="nuclear-grid-lines" aria-hidden="true" />
       {chartPoints.map(point => <button type="button" key={`${point.z}-${point.n}`} className={`nuclear-point ${point.state === 'stable' ? 'stable' : 'radioactive'} ${point.z === protons && point.n === neutrons ? 'selected' : ''}`} style={{ left: `${(point.n / maxNeutrons) * 100}%`, bottom: `${((point.z - 1) / 17) * 100}%` }} onClick={() => onSelect(point.z, point.n)} aria-label={`Select nuclide with ${point.z} protons and ${point.n} neutrons, ${point.state}`} title={`Z ${point.z} · N ${point.n}`} />)}
       <div className="nuclear-axis-x">Neutrons (N)</div><div className="nuclear-ticks-x">{[0, 5, 10, 15, 20, 25, 30].map(value => <span key={value} style={{ left: `${(value / maxNeutrons) * 100}%` }}>{value}</span>)}</div><div className="nuclear-ticks-y">{[1, 4, 8, 12, 16, 18].map(value => <span key={value} style={{ bottom: `${((value - 1) / 17) * 100}%` }}>{value}</span>)}</div>
@@ -169,8 +164,8 @@ export default function AtomBuilderPage() {
       <aside className={`atom-insight-rail ${mobilePanel === 'info' ? 'mobile-open' : ''}`}><div className="mobile-sheet-handle" /><div className="rail-heading"><div><h2>Live insights</h2><p>Updates as you build</p></div><button type="button" className="mobile-sheet-close" onClick={() => setMobilePanel(null)} aria-label="Close insights"><X size={18} /></button></div>
         <SimPanel className="atom-info-v2"><div className="atom-info-tabs-v2">{['Atom Info', 'Isotope & Decay', 'Properties', 'Notes'].map(tab => <button type="button" key={tab} aria-pressed={infoTab === tab} className={infoTab === tab ? 'active' : ''} onClick={() => setInfoTab(tab)}>{tab}</button>)}</div>
           {infoTab === 'Atom Info' && <div className="atom-info-body-v2"><div className="identity-block"><span>{symbol}</span><div><h2>{element?.name || 'Unknown atom'}</h2><p>{ionText}</p></div></div>{[['Atomic number', counts.p], ['Mass number', mass], ['Net charge', charge], ['Stability', stability]].map(([key, value]) => <div className="info-row" key={key}><span>{key}</span><strong className={key === 'Stability' ? stabilityClass : ''}>{value}</strong></div>)}<div className={`stability-explanation ${stabilityClass}`}><ShieldCheck size={18} /><p>{stabilityHelp}</p></div></div>}
-          {infoTab === 'Isotope & Decay' && <div className="atom-info-body-v2"><h2>{symbol}-{mass} decay pathway</h2><p className="info-copy">A visual learning estimate based on neutron-to-proton balance.</p><div className="decay-timeline"><div className="timeline-node"><span>{symbol}</span><small>Parent<br />{counts.p}p · {counts.n}n</small></div><div className="timeline-path"><ChevronRight /><strong>{decayMode}</strong><small>{stabilityClass === 'stable' ? 'No emission' : ratio > 1.3 ? 'electron + antineutrino' : 'positron + neutrino'}</small></div><div className="timeline-node daughter"><span>{daughter?.symbol || symbol}</span><small>Daughter<br />{stabilityClass === 'stable' ? 'unchanged' : `${daughterProtons}p · ${counts.n + (ratio > 1.3 ? -1 : 1)}n`}</small></div></div><div className="half-life-card"><span>Half-life</span><strong>{stabilityClass === 'stable' ? 'Stable' : 'Varies by isotope'}</strong></div></div>}
-          {infoTab === 'Properties' && <div className="atom-info-body-v2"><h2>Calculated properties</h2>{[['Electron configuration', shells.filter(Boolean).join(' · ') || '—'], ['Valence electrons', shells.filter(Boolean).at(-1) || 0], ['Charge balance', charge === 0 ? 'Neutral' : charge > 0 ? 'Electron deficient' : 'Electron rich'], ['Nucleus particles', counts.p + counts.n], ['N : Z ratio', counts.p ? ratio.toFixed(2) : '—']].map(([key, value]) => <div className="info-row" key={key}><span>{key}</span><strong>{value}</strong></div>)}</div>}
+          {infoTab === 'Isotope & Decay' && <div className="atom-info-body-v2"><h2>{symbol}-{mass} nuclear stability</h2><p className="info-copy">{stabilityClass === 'stable' ? 'This nuclide is stable.' : 'This composition is not a stable isotope. Decay mode and half-life require nuclide-specific nuclear data; neutron-to-proton ratio alone cannot determine them.'}</p><div className="half-life-card"><span>Classification</span><strong>{stability}</strong></div></div>}
+          {infoTab === 'Properties' && <div className="atom-info-body-v2"><h2>Calculated properties</h2>{[['Electron shell populations', shells.filter(Boolean).join(' · ') || '—'], ['Valence electrons', shells.filter(Boolean).at(-1) || 0], ['Charge balance', charge === 0 ? 'Neutral' : charge > 0 ? 'Electron deficient' : 'Electron rich'], ['Nucleus particles', counts.p + counts.n], ['N : Z ratio', counts.p ? ratio.toFixed(2) : '—']].map(([key, value]) => <div className="info-row" key={key}><span>{key}</span><strong>{value}</strong></div>)}</div>}
           {infoTab === 'Notes' && <div className="atom-info-body-v2"><h2>Learning notes</h2><textarea className="atom-notes-v2" value={notes} onChange={event => setNotes(event.target.value)} placeholder="Record an observation about this atom…" /><p className="info-copy">Notes remain available while you experiment.</p></div>}
         </SimPanel>
         <section className="preset-panel"><div className="panel-label"><FlaskConical size={16} /><span>Quick presets</span></div><div className="preset-chips">{presets.map(preset => <button type="button" key={preset.name} className={sameCounts(counts, preset) ? 'active' : ''} onClick={() => selectPreset(preset)}><strong>{preset.short}</strong><span>{preset.name}</span></button>)}</div></section>

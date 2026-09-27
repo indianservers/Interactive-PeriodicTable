@@ -51,7 +51,7 @@ export const syllabusInteractives = [
     hazard: "Avoid inhaling CO₂ evolved near the end-point; swirl in a well-ventilated space.",
     theory: "Bicarbonate is a weak base. Methyl orange detects complete conversion to carbonic acid.",
     apparatus: ["Burette", "Pipette", "Baking soda solution", "Methyl orange"],
-    controls: [control("mass", "Sample mass in 250 mL", 0.8, 3, 0.01, "g", 1.05), control("hcl", "HCl concentration", 0.05, 0.2, 0.001, "M", 0.1), control("volume", "Titre volume", 5, 40, 0.05, "mL", 25.0)],
+    controls: [control("mass", "Sample mass in 250 mL", 0.8, 3, 0.01, "g", 2.10), control("hcl", "HCl concentration", 0.05, 0.2, 0.001, "M", 0.1), control("volume", "Titre volume", 5, 40, 0.05, "mL", 25.0)],
     compute: (v) => {
       const moles = (v.hcl * v.volume) / 1000;
       const percent = (moles / (25 / 250) * 84.01 / v.mass) * 100;
@@ -76,7 +76,7 @@ export const syllabusInteractives = [
     compute: (v) => {
       const nCO3 = v.hcl * v.v1 / 1000;
       const nHCO3 = v.hcl * (v.v2 - 2 * v.v1) / 1000;
-      return { primary: `CO₃²⁻ ${fmt(nCO3 * 1000, 2)} mmol · HCO₃⁻ ${fmt(nHCO3 * 1000, 2)} mmol`, detail: nHCO3 > 0 ? "Mixture contains both ions" : "V₂ < 2V₁: first end-point overshot or no bicarbonate", observation: "Colourless after V₁; orange after V₂.", quality: v.v2 > v.v1 ? "Titres in the expected order" : "V₂ must exceed V₁", chart: titreCurve(v.v2, v.v2) };
+      return { primary: `CO₃²⁻ ${fmt(nCO3 * 1000, 2)} mmol · HCO₃⁻ ${fmt(nHCO3 * 1000, 2)} mmol`, detail: nHCO3 > 1e-12 ? "Mixture contains both ions" : Math.abs(nHCO3) <= 1e-12 ? "Only carbonate: V₂ = 2V₁" : "Invalid carbonate/bicarbonate mixture: V₂ < 2V₁", observation: "Colourless after V₁; orange after V₂.", quality: v.v2 >= 2 * v.v1 ? "Titres consistent with carbonate/bicarbonate" : "V₂ must be at least 2V₁; check titres or other bases", chart: titreCurve(v.v2, v.v2) };
     },
     steps: ["Titrate to phenolphthalein colourless (V₁).", "Add methyl orange to the same flask and continue to orange (V₂).", "Compute both ions from V₁ and V₂."],
     quiz: [quiz("If V₂ = 2V₁, what does the mixture contain?", "only-carb", ["Only carbonate", "Only bicarbonate", "Equal moles of acid"])],
@@ -91,16 +91,16 @@ export const syllabusInteractives = [
     lead: "Dissolve the tablet in excess standard HCl, then titrate unused acid with NaOH to find milliequivalents of alkali.",
     equation: "Antacid + HCl(excess) → salt + leftover HCl; leftover HCl + NaOH → NaCl + H₂O",
     hazard: "Tablets may contain flavourings; this is a chemical assay, not a medical dose calculator.",
-    theory: "n(alkali) = n(HCl added) − n(NaOH titre).",
+    theory: "Acid-neutralising capacity = n(HCl added) − n(NaOH titre), expressed as mmol H⁺ (mEq), not moles of an unspecified antacid.",
     apparatus: ["Tablet", "Excess HCl", "NaOH burette", "Phenolphthalein"],
     controls: [control("hclVol", "HCl added", 20, 50, 0.1, "mL", 50), control("hcl", "HCl molarity", 0.05, 0.2, 0.001, "M", 0.1), control("naoh", "NaOH molarity", 0.05, 0.2, 0.001, "M", 0.1), control("titre", "NaOH titre", 5, 40, 0.05, "mL", 18.4)],
     compute: (v) => {
       const leftover = v.naoh * v.titre / 1000;
       const added = v.hcl * v.hclVol / 1000;
       const alkali = (added - leftover) * 1000;
-      return { primary: `${fmt(alkali, 2)} mmol alkali / tablet`, detail: `Leftover acid ${fmt(leftover * 1000, 2)} mmol`, observation: "First permanent pink of phenolphthalein.", quality: alkali > 0 ? "Excess acid was sufficient" : "Increase HCl volume", chart: titreCurve(v.titre, 18.4) };
+      return { primary: `${fmt(alkali, 2)} mmol H⁺ neutralised / tablet`, detail: `Leftover acid ${fmt(leftover * 1000, 2)} mmol`, observation: "First permanent pink of phenolphthalein.", quality: alkali > 0 ? "Excess acid was sufficient" : "Increase HCl volume", chart: titreCurve(v.titre, 18.4) };
     },
-    steps: ["Crush and dissolve the tablet in a known excess of HCl.", "Back-titrate with NaOH / phenolphthalein.", "Report mmol alkali per tablet."],
+    steps: ["Crush and dissolve the tablet in a known excess of HCl.", "Back-titrate with NaOH / phenolphthalein.", "Report acid-neutralising capacity in mmol H⁺ per tablet."],
     quiz: [quiz("Why is a back titration used?", "insoluble", ["The antacid is not fully soluble/slow in a direct titration", "NaOH cannot be standardised", "Indicators do not work in HCl"])],
   }),
   lab({
@@ -112,7 +112,7 @@ export const syllabusInteractives = [
     kicker: "Redox titration",
     lead: "Dichromate oxidises Fe(II) in acid. Diphenylamine or N-phenylanthranilic acid marks the end-point.",
     equation: "Cr₂O₇²⁻ + 6 Fe²⁺ + 14 H⁺ → 2 Cr³⁺ + 6 Fe³⁺ + 7 H₂O",
-    hazard: "Dichromate is toxic and a suspected carcinogen. Use micro-scale teaching volumes and collect waste.",
+    hazard: "Hexavalent chromium compounds are carcinogenic and toxic. Use micro-scale teaching volumes and collect waste.",
     theory: "1 mol Cr₂O₇²⁻ ≡ 6 mol Fe²⁺. Phosphoric acid complexes Fe(III) and sharpens the end-point.",
     apparatus: ["K₂Cr₂O₇ burette", "Fe(II) flask", "H₂SO₄ / H₃PO₄", "Diphenylamine"],
     controls: [control("cr", "K₂Cr₂O₇ molarity", 0.01, 0.05, 0.0005, "M", 0.0167), control("volume", "Titre volume", 8, 35, 0.05, "mL", 23.8), control("aliquot", "Fe aliquot", 10, 50, 1, "mL", 25)],
@@ -554,7 +554,7 @@ export const syllabusInteractives = [
     description: "Measure γ (stalagmometer), ρ (pyknometer) and η (Ostwald viscometer).",
     kicker: "Physical constants",
     lead: "Compare water and an organic liquid. Viscosity uses flow time and density.",
-    equation: "η₂/η₁ = (t₂ ρ₂) / (t₁ ρ₁);  γ₂/γ₁ = (n₁ ρ₂) / (n₂ ρ₁) (drop-weight form)",
+    equation: "η₂/η₁ = (t₂ ρ₂) / (t₁ ρ₁);  γ₂/γ₁ = (n₁ ρ₂) / (n₂ ρ₁) (drop-count form)",
     hazard: "Organic liquids are flammable. Keep viscometers vertical and dust-free.",
     theory: "Poiseuille flow: t ∝ η/ρ for the same viscometer.",
     apparatus: ["Stalagmometer", "Pyknometer", "Ostwald viscometer", "Water bath"],
@@ -978,7 +978,7 @@ export const syllabusConcepts = [
     compute: (v) => {
       const mu = Math.sqrt(v.unpaired * (v.unpaired + 2));
       const note = { 1: "3d: stronger pairing energy variation; colours often d–d", 2: "4d/5d: more pairing, lower spin common", 3: "Ln: sharp f–f bands; contraction along the series" }[Math.round(v.series)];
-      return { primary: `μ_s.o. = ${fmt(mu, 2)} BM`, detail: note, observation: "Colour needs a partly filled d (or f) set and allowed/partially allowed transitions.", quality: "Spin-only ignores orbital contribution", chart: titreCurve(mu * 15, 50) };
+      return { primary: `μ_s.o. = ${fmt(mu, 2)} BM`, detail: note, observation: "d–d/f–f colour requires suitable electronic transitions; charge-transfer colour can also occur in d⁰ and d¹⁰ compounds.", quality: "Spin-only ignores orbital contribution", chart: titreCurve(mu * 15, 50) };
     },
     steps: ["Set n unpaired.", "Compute μ.", "Compare 3d vs 4d/5d vs Ln."],
     quiz: [quiz("Lanthanide contraction causes", "similar", ["Similar radii of 4d and 5d congeners", "All lanthanides to be +2 only", "No complex formation"])],
@@ -1027,7 +1027,7 @@ export const syllabusConcepts = [
       const low = v.delta < 1.5;
       const ratio = v.job > 0.7 ? "1:3" : v.job > 0.55 ? "1:2" : "1:1";
       const cfse = v.dn === 6 && low ? "−2.4 Δₒ + 2P (low-spin t₂g⁶)" : `high/low spin teaching case for d${v.dn}`;
-      return { primary: `d${v.dn} ${low ? "low" : "high"}-spin · Job ≈ ${ratio}`, detail: cfse, observation: "Colour arises from d–d (and sometimes CT) transitions.", quality: "HSAB: CN⁻ is a strong-field ligand", chart: titreCurve(v.job * 100, 67) };
+      return { primary: `d${v.dn} ${low ? "low" : "high"}-spin · Job ≈ ${ratio}`, detail: cfse, observation: "Colour arises from d–d (and sometimes CT) transitions.", quality: "Spectrochemical series: CN⁻ is a strong-field ligand", chart: titreCurve(v.job * 100, 67) };
     },
     steps: ["Set dⁿ and field strength.", "State geometry/hybridisation (VBT).", "Read Job maximum as composition."],
     quiz: [quiz("A Job’s plot peak at ligand mole fraction 0.67 suggests", "12", ["ML₂ (or 1:2)", "Only ML₆", "No complex"])],

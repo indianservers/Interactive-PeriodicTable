@@ -9,7 +9,7 @@ export const aromaticPrepExperiments = {
     title: "Bromination of Phenol and Aniline",
     kicker: "Electrophilic aromatic substitution",
     lead: "Compare how strongly activated rings brominate in water, and why aniline is often protected first.",
-    equation: "Ar–H + 3 Br₂ → 2,4,6-tribromo-Ar + 3 HBr",
+    equation: "Phenol/aniline: ArH₃ + 3 Br₂ → ArBr₃ + 3 HBr; acetanilide: ArH + Br₂ → ArBr + HBr",
     hazard: "Bromine water is corrosive and toxic. Use a fume hood, gloves and eye protection.",
     substrates: {
       phenol: {
@@ -123,9 +123,10 @@ export function aromaticPrepYield({ experiment, substrate, equivalents, temperat
   const tempScore = experiment === "bromination"
     ? (substrate === "acetanilide" ? (t >= 15 && t <= 40 ? 1 : 0.72) : (t <= 35 ? 1 : 0.8))
     : (t >= 5 && t <= 25 ? 1 : 0.75);
-  const timeScore = time >= 8 ? Math.min(1, time / 12) : 0.45;
+  const timeScore = Math.min(1, time / 12);
   const alkaliScore = experiment === "benzoylation" ? (base >= 4 && base <= 12 ? 1 : 0.55) : 1;
-  const conversion = clamp(100 * eqScore * tempScore * timeScore * alkaliScore, 8, 98);
+  const stoichiometricEq = experiment === "bromination" && substrate !== "acetanilide" ? 3 : 1;
+  const conversion = Math.min(100 * eq / stoichiometricEq, clamp(100 * eqScore * tempScore * timeScore * alkaliScore, 0, 98));
 
   const chargeG = 2.0;
   const moles = chargeG / (substrate === "phenol" ? 94.11 : substrate === "aniline" ? 93.13 : 135.16);
@@ -149,7 +150,7 @@ export function aromaticPrepYield({ experiment, substrate, equivalents, temperat
           ? "Bromine is consumed and solid 2,4,6-tribromoaniline separates."
           : "Bromine is consumed; p-bromoacetanilide separates from acetic acid.")
       : (substrate === "aniline"
-        ? "The odour of benzoyl chloride fades as benzanilide precipitates."
+        ? "Benzanilide precipitates during mixing; do not smell the reaction mixture."
         : "Phenyl benzoate separates after shaking with alkali."),
   };
 }

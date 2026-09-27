@@ -2,12 +2,16 @@ import { useState } from "react";
 import { Atom, BarChart3, BookOpen, Clock3, FlaskConical, Play, Search, Sparkles } from "lucide-react";
 import HomeLibrary from "./HomeLibrary.jsx";
 import HomeStatistics from "./HomeStatistics.jsx";
+import { useLocalStorage } from "../hooks/useLocalStorage.js";
+import { findExperience } from "../data/discoveryCatalog.js";
 import "./homeLibrary.css";
 
 export default function LibraryPage({ onNavigate }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [subgroup, setSubgroup] = useState("all");
+  const [recentPages] = useLocalStorage('cu-recent-pages', []);
+  const recent = recentPages.map(findExperience).find(Boolean);
 
   return (
     <div className="library-page">
@@ -55,11 +59,10 @@ export default function LibraryPage({ onNavigate }) {
           <span><Sparkles size={15} /> QUICK LAUNCH</span>
           {[['Periodic Table','table'],['Molecular Viewer','molecule'],['Reaction Lab','lab'],['Spectroscopy','spectroscopy-interpreter']].map(([label,id]) => <button key={id} onClick={() => onNavigate?.(id)}><span>{label}</span><Play size={13} /></button>)}
         </section>
-        <section className="library-progress-strip" aria-label="Learning progress">
-          <div className="library-progress-copy"><BarChart3 size={18} /><span><b>Continue learning</b><small>Organic Chemistry · Aromatic compounds · Lesson 6 of 8</small></span></div>
-          <div className="library-progress-meter"><i /><strong>72%</strong></div>
-          <button onClick={() => onNavigate?.("organic-visuals")}>Resume lesson <Play size={13} /></button>
-        </section>
+        {recent && <section className="library-progress-strip" aria-label="Continue learning">
+          <div className="library-progress-copy"><BarChart3 size={18} /><span><b>Continue learning</b><small>Recently visited · {recent.title}</small></span></div>
+          <button onClick={() => onNavigate?.(recent.id)}>Open again <Play size={13} /></button>
+        </section>}
         <div className="library-section-label"><span>YOUR CHEMISTRY UNIVERSE</span><b>Choose a path</b><small>Every card opens a focused workspace</small></div>
         <HomeLibrary
           query={query}

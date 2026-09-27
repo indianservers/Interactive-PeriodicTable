@@ -160,11 +160,9 @@ function Home({ go }) {
             Higher pH = more alkaline
           </p>
           <p>
-            EC &lt; 0.2 non-saline
+            EC depends on extraction method. This lab uses a 1:2.5 soil–water extract.
             <br />
-            0.8–2.0 moderately saline
-            <br />
-            &gt; 2.0 highly saline
+            Standard soil salinity classes require saturated-paste ECe; do not apply them directly to this extract.
           </p>
           <button className="soil-primary" onClick={() => go(1)}>
             <FlaskConical />
@@ -511,7 +509,7 @@ function Measurements({ go }) {
               </tbody>
             </table>
             <p>
-              TDS: <b>{r.tds.toFixed(0)} mg/L</b>
+              Estimated extract TDS: <b>{r.tds.toFixed(0)} mg/L</b>
             </p>
           </Card>
           <Card title="Interpretation">

@@ -73,17 +73,12 @@ export function phClass(ph) {
           ? "Slightly alkaline"
           : "Alkaline";
 }
+// This lab measures a 1:2.5 extract, not saturated-paste ECe.
+// Do not assign USDA ECe salinity classes to a different extraction method.
 export function salinityClass(ec) {
-  return ec < 0.2
-    ? "Non-saline"
-    : ec < 0.8
-      ? "Slightly saline"
-      : ec <= 1.6
-        ? "Moderately saline"
-        : ec <= 3.2
-          ? "Saline"
-          : "Strongly saline";
+  return `Extract EC ${Number(ec).toFixed(2)} dS/m; ECe class not determined`;
 }
+
 export function sampleResult(ph = [6.42, 6.45, 6.43], ec = [1.18, 1.16, 1.17]) {
   const p = stats(ph),
     e = stats(ec);

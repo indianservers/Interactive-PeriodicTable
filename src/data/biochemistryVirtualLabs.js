@@ -110,8 +110,8 @@ export const BIOCHEMISTRY_VIRTUAL_LABS = [
   {
     id: "buffer-preparation", category: "Analytical biochemistry", title: "Buffer Preparation Experiment",
     objective: "Design a conjugate acid/base buffer and test its response to acid or base addition.",
-    model: "Henderson–Hasselbalch: pH = pKa + log10([base]/[acid]); most reliable near pKa.",
-    controls: [range("pka", "Acid pKa", 2, 10, 0.1, 4.76), range("acid", "Acid concentration", 0.01, 1, 0.01, 0.1, "M"), range("base", "Base concentration", 0.01, 1, 0.01, 0.1, "M"), range("addition", "Strong base added", -20, 20, 1, 0, "mmol L⁻¹")],
+    model: "Ideal monoprotic acid charge balance with water autoionisation; approaches Henderson–Hasselbalch near pKa.",
+    controls: [range("pka", "Acid pKa", 2, 10, 0.1, 4.76), range("acid", "Acid concentration", 0.01, 1, 0.01, 0.1, "M"), range("base", "Base concentration", 0.01, 1, 0.01, 0.1, "M"), range("addition", "Base added (+) / acid added (−)", -20, 20, 1, 0, "mmol L⁻¹")],
     protocol: ["Choose a weak acid with pKa near the target pH.", "Calculate the base-to-acid ratio.", "Prepare both components to volume.", "Verify pH with a calibrated meter."],
     safety: "Add concentrated acid or base slowly while mixing and wearing eye protection.",
     quiz: { prompt: "A buffer has equal conjugate base and acid concentrations. Its pH equals:", choices: ["7", "pKa", "pKa/2", "14−pKa"], answer: 1, explanation: "log10(1) = 0, so pH = pKa." },
@@ -218,7 +218,7 @@ export const BIOCHEMISTRY_VIRTUAL_LABS = [
   {
     id: "pipetting-dilution", category: "Laboratory skills", title: "Virtual Pipetting and Dilution",
     objective: "Select a suitable micropipette and apply C₁V₁ = C₂V₂ to serial dilutions.",
-    model: "Conservation of solute with a user-controlled random pipetting error.",
+    model: "Conservation of solute with a user-controlled relative pipetting error.",
     controls: [range("c1", "Stock concentration C₁", 0.1, 10, 0.1, 2, "mM"), range("v1", "Stock volume V₁", 1, 1000, 1, 100, "µL"), range("v2", "Final volume V₂", 10, 2000, 10, 1000, "µL"), select("pipette", "Micropipette", ["P20", "P200", "P1000"], "P200"), range("error", "Pipetting error", -10, 10, 0.5, 0, "%")],
     protocol: ["Choose the smallest pipette that covers the volume.", "Pre-wet a fresh tip.", "Aspirate vertically without exceeding the first stop.", "Dispense against the vessel wall and mix."],
     safety: "Never mouth-pipette; change tips between samples to prevent contamination.",

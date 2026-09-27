@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "test:drug-data": "node scripts/verify-drug-discovery-data.mjs",
     "test:drug-browser": "node scripts/verify-drug-discovery-studio.mjs",
-    "test:physical": "node scripts/verify-physical-chemistry.mjs"
+    "test:physical": "node scripts/verify-physical-chemistry.mjs",
+    "test:chemistry": "node scripts/verify-chemical-accuracy.mjs",
+    "test:discovery": "node scripts/verify-discovery.mjs"
   },
   "dependencies": {
     "@rdkit/rdkit": "^2025.3.4-1.0.0",

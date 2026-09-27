@@ -177,53 +177,6 @@ export const AppShell = ({
       <div className={isDark ? "dark" : "light"}>
         <main className="min-h-screen overflow-x-hidden">
           {children}
-          {currentPage !== "dashboard" &&
-            !isSyllabusLab &&
-            currentPage !== "states-matter" &&
-            currentPage !== "acid-base-solutions" &&
-            currentPage !== "beer-lambert-law" &&
-            currentPage !== "structure-draw" &&
-            currentPage !== "chromatography-separation" &&
-            currentPage !== "distillation-crystallisation" &&
-            currentPage !== "bromination-phenol-aniline" &&
-            currentPage !== "benzoylation-aniline-phenol" &&
-            currentPage !== "flame-photometry" &&
-            currentPage !== "gravimetric-precipitation" &&
-            currentPage !== "molecular-dynamics" &&
-            currentPage !== "organic-visuals" &&
-            currentPage !== "bio-proteins" &&
-            currentPage !== "inorganic-visuals" &&
-            currentPage !== "inorganic-deep-module" &&
-            currentPage !== "inorganic-crystals" && (
-              <>
-                <button
-                  type="button"
-                  aria-label="Home"
-                  onClick={() => onNavigate?.("dashboard")}
-                  className="fixed bottom-4 left-4 z-[140] inline-flex items-center gap-2 rounded-xl border border-cyan-300/35 bg-[#071a2c]/95 px-3 py-2 text-xs font-bold text-cyan-100 shadow-xl shadow-black/30 backdrop-blur transition hover:border-cyan-200 hover:bg-[#0c2b45]"
-                >
-                  <Home size={16} /> Home
-                </button>
-                {currentPage !== "atom-builder" && (
-                  <button
-                    type="button"
-                    aria-label={
-                      motionEnabled ? "Pause animations" : "Play animations"
-                    }
-                    aria-pressed={!motionEnabled}
-                    onClick={onMotionToggle}
-                    className={`fixed bottom-4 right-4 z-[140] inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold shadow-xl shadow-black/30 backdrop-blur transition ${motionEnabled ? "border-cyan-300/35 bg-[#071a2c]/95 text-cyan-100 hover:border-cyan-200" : "border-amber-300/40 bg-amber-500/15 text-amber-100"}`}
-                  >
-                    {motionEnabled ? (
-                      <PauseCircle size={16} />
-                    ) : (
-                      <PlayCircle size={16} />
-                    )}
-                    {motionEnabled ? "Pause motion" : "Play motion"}
-                  </button>
-                )}
-              </>
-            )}
         </main>
       </div>
     );

@@ -1,3 +1,4 @@
+import { BIOCHEMISTRY_VIRTUAL_LABS, BIOCHEMISTRY_LAB_CATEGORIES } from "./biochemistryVirtualLabs.js";
 import { upcomingExperiences } from "./upcomingExperiences.js";
 import { syllabusInteractives, syllabusConcepts } from "../modules/core-simulations/syllabusInteractiveModel.js";
 
@@ -48,6 +49,7 @@ const baseChemistryCategories = [
     color: "#45d8ff",
     description: "Change a variable. See chemistry happen.",
     groups: [
+      group("All virtual laboratories", [["virtual-labs", "Virtual Laboratories", "Browse every virtual lab collection and launch individual experiments"]]),
       group("Physical chemistry", [
         [
           "physical-simulators",
@@ -357,6 +359,12 @@ const baseChemistryCategories = [
     color: "#61e2b3",
     description: "Explore the molecules and processes of life.",
     groups: [
+      ...BIOCHEMISTRY_LAB_CATEGORIES.map(category => group(category,
+        BIOCHEMISTRY_VIRTUAL_LABS.filter(lab => lab.category === category).map(lab => [
+          `biochemistry-labs/${lab.id}`, lab.title, lab.objective, `biochemistry-labs/${lab.id}`,
+          { kind: 'Virtual Lab', aliases: ['biochemistry', 'virtual lab', lab.category] },
+        ]),
+      )),
       group("Biomolecules", [
         [
           "biochemistry-module",

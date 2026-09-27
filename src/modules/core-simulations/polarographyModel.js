@@ -58,10 +58,8 @@ export function unknownResult(
       currents.reduce((s, x) => s + (x - mean) ** 2, 0) / (currents.length - 1),
     ),
     rsd = (sd / mean) * 100,
-    { r2 } = linearRegression(),
-    slope = DEFAULT.slope,
-    intercept = DEFAULT.intercept,
-    diluted = Number(((mean - intercept) / slope).toFixed(2));
+    { r2, slope, intercept } = linearRegression(),
+    diluted = (mean - intercept) / slope;
   return {
     mean,
     sd,

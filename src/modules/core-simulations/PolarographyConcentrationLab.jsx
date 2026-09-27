@@ -726,10 +726,10 @@ function Report({ reset }) {
               ["Working electrode", "Mercury-film RDE (simulated)"],
               ["Supporting electrolyte", "0.10 M KCl"],
               ["Half-wave potential", "−0.742 V vs Ag/AgCl"],
-              ["Calibration equation", "iᵈ = 2.97C + 0.08 μA"],
-              ["Correlation coefficient", "0.9999"],
-              ["Diluted unknown", "4.89 ± 0.06 mg/L"],
-              ["Original sample", "24.45 ± 0.30 mg/L"],
+              ["Calibration equation", `iᵈ = ${u.slope.toFixed(3)}C + ${u.intercept.toFixed(3)} μA`],
+              ["Coefficient of determination R²", u.r2.toFixed(5)],
+              ["Diluted unknown", `${u.diluted.toFixed(3)} mg/L`],
+              ["Original sample", `${u.original.toFixed(3)} mg/L`],
             ].map(([a, b]) => (
               <tr key={a}>
                 <td>{a}</td>
@@ -747,9 +747,7 @@ function Report({ reset }) {
           </Panel>
         </div>
         <p>
-          <b>Validated conclusion:</b> The original sample contains 24.45 ± 0.30
-          mg/L Cd²⁺, supported by a linear calibration (R² = 0.9999) and the
-          characteristic half-wave potential.
+          <b>Model result:</b> The original sample concentration is {u.original.toFixed(3)} mg/L Cd²⁺ at a dilution factor of 5 (R² = {u.r2.toFixed(5)}). No measurement uncertainty has been established.
         </p>
       </Panel>
       <Panel title="Knowledge Check" className="quiz">
@@ -757,7 +755,7 @@ function Report({ reset }) {
           Deaeration prevents an interfering reduction wave
         </button>
         <button onClick={() => setAnswers({ ...answers, identity: true })}>
-          E½ identifies the electroactive species
+          E½ supports identification under specified electrolyte and reference conditions
         </button>
         <button onClick={() => setAnswers({ ...answers, proportional: true })}>
           Diffusion current is proportional to concentration
