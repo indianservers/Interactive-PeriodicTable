@@ -6,16 +6,30 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#020617",
   "theme_color": "#4f46e5",
   "orientation": "any",
-  "categories": ["education", "productivity", "utilities"],
+  "categories": [
+    "education",
+    "productivity",
+    "utilities"
+  ],
   "icons": [
     {
-      "src": "/periodic-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/chemistry-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/chemistry-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
@@ -24,19 +38,49 @@
       "name": "Periodic Table",
       "short_name": "Table",
       "url": "/#/table",
-      "icons": [{ "src": "/periodic-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [
+        {
+          "src": "/icons/chemistry-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Virtual Laboratories",
+      "short_name": "Labs",
+      "url": "/#/virtual-labs",
+      "icons": [
+        {
+          "src": "/icons/chemistry-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Molecular Symmetry",
       "short_name": "Symmetry",
       "url": "/#/molecular-symmetry",
-      "icons": [{ "src": "/periodic-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [
+        {
+          "src": "/icons/chemistry-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Chemistry Solver",
       "short_name": "Solver",
       "url": "/#/chemistry-solver",
-      "icons": [{ "src": "/periodic-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [
+        {
+          "src": "/icons/chemistry-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

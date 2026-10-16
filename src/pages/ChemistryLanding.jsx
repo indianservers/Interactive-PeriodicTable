@@ -1,3 +1,4 @@
+import MobileInstall from '../components/MobileInstall.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, ArrowUpRight, Atom, BookOpen, Boxes, ChevronLeft, ChevronRight, Dna, FlaskConical, GraduationCap, Microscope, Orbit, Pause, Pill, Play, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { chemistryCategories } from '../data/homeLibrary.js';
@@ -9,6 +10,8 @@ import SearchBox from '../components/discovery/SearchBox.jsx';
 import ExperienceCard from '../components/discovery/ExperienceCard.jsx';
 import ExperiencePreview from '../components/discovery/ExperiencePreview.jsx';
 import LearningHub from '../components/discovery/LearningHub.jsx';
+import LabCollections from '../components/LabCollections.jsx';
+import ScienceIcon from '../components/ScienceIcon.jsx';
 import { elements } from '../data/elements.js';
 import '../components/discovery/discovery.css';
 import './chemistryLanding.css';
@@ -17,7 +20,7 @@ const subjectOrder = ['elements', 'simulators', 'organic', 'inorganic', 'biochem
 const subjects = subjectOrder.map(id => chemistryCategories.find(category => category.id === id)).filter(Boolean);
 const icons = { elements: Atom, simulators: FlaskConical, organic: Orbit, inorganic: Boxes, biochemistry: Dna, analytical: Microscope, pharma: Pill, explore: Sparkles, learn: BookOpen, 'bsc-cbcs': GraduationCap };
 const featured = [
-  { id: 'table', label: 'THE BUILDING BLOCKS', title: 'Meet the elements.', description: 'Discover the patterns behind all 118 elements.', className: 'elements', action: 'Explore the periodic table' },
+  { id: 'table', label: 'THE BUILDING BLOCKS', title: 'Periodic Table', description: 'Discover the patterns behind all 118 elements.', className: 'elements', action: 'Explore the periodic table' },
   { id: 'atom-builder', label: 'LEARN BY MAKING', title: 'Small particles. Big ideas.', description: 'Build an atom, one proton, neutron and electron at a time.', className: 'atom', action: 'Build your first atom' },
   { id: 'molecule', label: 'A NEW PERSPECTIVE', title: 'Chemistry, in every dimension.', description: 'Get closer to the structures that shape our world.', className: 'molecule', action: 'Open the 3D explorer' },
 ];
@@ -56,7 +59,7 @@ function AtomArtwork({ paused, onToggle, onExplore }) {
   </div>;
 }
 
-export function ChemistryLanding({ onNavigate, onViewAtom, recentPages=[] }) {
+export function ChemistryLanding({ onNavigate, onViewAtom, recentPages=[], canInstall=false, onInstallApp }) {
   const {state,setField,reset}=useDiscoveryState();
   const {query,category,subgroup,availability,expanded,browsing,page,type,level,saved,sort}=state;
   const setQuery=value=>setField('query',value),setCategory=value=>setField('category',value),setSubgroup=value=>setField('subgroup',value),setAvailability=value=>setField('availability',value),setExpanded=value=>setField('expanded',value),setBrowsing=value=>setField('browsing',value),setPage=value=>setField('page',value);
@@ -109,16 +112,17 @@ export function ChemistryLanding({ onNavigate, onViewAtom, recentPages=[] }) {
     }
   };
 
-  return <div className={`chemistry-landing ${contrast?'dx-high-contrast':''}`}>
+  return <div className={`chemistry-landing ${contrast?'dx-high-contrast':''} ${motion?'no-motion':''}`}>
     <a className="cl-skip" href="#cl-discover" onClick={event => { event.preventDefault(); document.getElementById('cl-discover-title')?.focus(); }}>Skip to chemistry experiences</a>
     <header className="cl-header">
-      <a className="cl-brand" href="#/dashboard" aria-label="Chemistry Universe home" onClick={event => { event.preventDefault(); clearFilters(); setBrowsing(false); requestAnimationFrame(()=>window.scrollTo({top:0})); }}><span><Atom size={25}/></span><b>chemistry<span>universe</span></b></a>
+      <a className="cl-brand" href="#/dashboard" aria-label="Chemistry Universe home" onClick={event => { event.preventDefault(); clearFilters(); setBrowsing(false); requestAnimationFrame(()=>window.scrollTo({top:0})); }}><span><ScienceIcon kind="elements"/></span><b>chemistry<span>universe</span></b></a>
       <nav aria-label="Main navigation"><button onClick={() => {reset();setBrowsing(false);requestAnimationFrame(()=>scrollTo('cl-discover'));}}>Explore subjects</button><button onClick={() => onNavigate('virtual-labs')}>Virtual labs</button><button onClick={() => browse('learn')}>Learn & practice</button></nav>
       <button className="cl-header-cta" onClick={() => browse()}>Find your next discovery <ArrowUpRight size={16}/></button>
     </header>
     {sticky&&<div className="dx-sticky-search"><SearchBox query={query} onChange={updateSearch} onSubmit={submitSearch} onCategory={choose} inputRef={stickySearch} label="Sticky chemistry search"/><button onClick={()=>{reset();setBrowsing(false);window.scrollTo({top:0});}}>Home</button></div>}
 
     <div className="cl-main">
+      {!selected && !searching && <MobileInstall canInstall={canInstall} onInstall={onInstallApp}/>}
       {!selected&&<section className="cl-hero" aria-labelledby="cl-title">
         <div className="cl-hero-copy"><div className="cl-eyebrow"><span/> THE INTERACTIVE CHEMISTRY UNIVERSE</div>
           <h1 id="cl-title">Less memorizing.<br/>More <em>discovering.</em></h1>
@@ -136,11 +140,12 @@ export function ChemistryLanding({ onNavigate, onViewAtom, recentPages=[] }) {
         <div className="cl-featured-grid">{featured.map((item, index) => {
           const entry = libraryEntries.find(entry => entry.id === item.id);
           return <a className={`cl-feature-card cl-feature-${item.className}`} key={item.id} href={`#/${entry.path}`} onClick={event => openEntry(event, entry)}>
-            <div className="cl-feature-art" aria-hidden="true">{index === 0 ? <div className="cl-element-tiles">{[['1','H','Hydrogen'],['6','C','Carbon'],['8','O','Oxygen']].map(([n,s,name]) => <div key={n}><small>{n}</small><b>{s}</b><span>{name}</span></div>)}</div> : index === 1 ? <div className="cl-mini-atom"><Atom strokeWidth={.65}/><i/></div> : <div className="cl-molecule-art"><i/><i/><i/><i/><i/><span/><span/><span/></div>}<span className="cl-feature-number">0{index + 1} / EXPLORE</span></div>
+            <div className="cl-feature-art" aria-hidden="true">{index === 0 ? <div className="cl-element-tiles">{[['1','H','Hydrogen'],['6','C','Carbon'],['8','O','Oxygen']].map(([n,s,name]) => <div key={n}><small>{n}</small><b>{s}</b><span>{name}</span></div>)}</div> : index === 1 ? <div className="cl-mini-atom"><ScienceIcon kind="elements"/><i/></div> : <div className="cl-molecule-art"><i/><i/><i/><i/><i/><span/><span/><span/></div>}<span className="cl-feature-number">0{index + 1} / EXPLORE</span></div>
             <div className="cl-feature-copy"><span className="cl-eyebrow">{item.label}</span><h3>{item.title}</h3><p>{item.description}</p><span className="cl-feature-action">{item.action}<ArrowUpRight size={18}/></span></div>
           </a>;
         })}</div>
       </section>}
+      {!searching&&!selected&&<LabCollections onNavigate={onNavigate}/>}
       {!searching&&!selected&&<LearningHub recentPages={recentPages} favorites={favorites} onLaunch={launch} onBrowse={()=>{reset();setField('saved',true);requestAnimationFrame(()=>scrollTo('cl-discover'));}}/>}
 
       <section className="cl-discover" id="cl-discover" aria-labelledby="cl-discover-title">
@@ -148,9 +153,8 @@ export function ChemistryLanding({ onNavigate, onViewAtom, recentPages=[] }) {
         {!searching && !selected && <>
           <p className="cl-section-description">Choose a subject, then find your corner of chemistry.</p>
           <div className="cl-subjects">{(expanded ? subjects : subjects.slice(0, 6)).map(subject => {
-            const Icon = icons[subject.id];
             const count = libraryEntries.filter(entry => entry.category === subject.id && !entry.upcoming).length;
-            return <button key={subject.id} className={`cl-subject ${category === subject.id ? 'is-selected' : ''}`} style={{ '--subject-color': subject.color }} aria-pressed={category === subject.id} onClick={() => { choose(subject.id); requestAnimationFrame(() => document.querySelector('.dx-subject-hero')?.scrollIntoView()); }}><span className="cl-subject-icon"><Icon size={25} strokeWidth={1.4}/></span><span><b>{subject.title}</b><small>{subject.description}</small><em>{subject.groups.length} {subject.groups.length === 1 ? 'collection' : 'collections'} · {count} experiences</em></span><ArrowUpRight size={19}/></button>;
+            return <button key={subject.id} className={`cl-subject ${category === subject.id ? 'is-selected' : ''}`} style={{ '--subject-color': subject.color }} aria-pressed={category === subject.id} onClick={() => { choose(subject.id); requestAnimationFrame(() => document.querySelector('.dx-subject-hero')?.scrollIntoView()); }}><span className="cl-subject-icon"><ScienceIcon kind={subject.id}/></span><span><b>{subject.title}</b><small>{subject.description}</small><em>{subject.groups.length} {subject.groups.length === 1 ? 'collection' : 'collections'} · {count} experiences</em></span><ArrowUpRight size={19}/></button>;
           })}</div>
           <button className="cl-more-subjects" aria-expanded={expanded} onClick={() => setExpanded(value => !value)}>{expanded ? 'Show fewer subjects' : 'More to explore: pharma, research, study & college practicals'}<ChevronRight size={16} className={expanded ? 'is-expanded' : ''}/></button>
         </>}
@@ -169,10 +173,10 @@ export function ChemistryLanding({ onNavigate, onViewAtom, recentPages=[] }) {
         </div>}
       </section>
 
-      {!searching && <section className="cl-learning"><div className="cl-learning-symbol" aria-hidden="true"><FlaskConical size={70} strokeWidth={.8}/><Sparkles size={28}/></div><div><span className="cl-eyebrow">YOUR NEXT “AHA!” MOMENT</span><h2>Don't just read about it.<br/>See what happens.</h2><p>Change the conditions. Test an idea. Turn a concept into something you understand.</p></div><button onClick={() => browse('simulators')}>Find an experiment <ArrowUpRight size={18}/></button></section>}
+      {!searching && <section className="cl-learning"><div className="cl-learning-symbol" aria-hidden="true"><ScienceIcon kind="simulators"/><Sparkles size={28}/></div><div><span className="cl-eyebrow">YOUR NEXT “AHA!” MOMENT</span><h2>Don't just read about it.<br/>See what happens.</h2><p>Change the conditions. Test an idea. Turn a concept into something you understand.</p></div><button onClick={() => browse('simulators')}>Find an experiment <ArrowUpRight size={18}/></button></section>}
     </div>
     {preview&&<ExperiencePreview entry={preview} onClose={()=>setPreview(null)} onLaunch={launch}/>}
     <section className="dx-accessibility" aria-label="Accessibility preferences"><button aria-pressed={motion} onClick={()=>setMotion(value=>!value)}>{motion?'Enable motion':'Reduce motion'}</button><button aria-pressed={contrast} onClick={()=>setContrast(value=>!value)}>{contrast?'Standard contrast':'High contrast'}</button><span>Keyboard: Ctrl/Cmd K to search · ↑ ↓ to select · Enter to explore</span></section>
-    <footer className="cl-footer"><div><Atom size={20}/><b>Chemistry Universe</b><span>Made for curious minds.</span></div><span>Explore. Experiment. Understand.</span><button onClick={() => onNavigate('settings')}>Preferences <ArrowUpRight size={13}/></button></footer>
+    <footer className="cl-footer"><div><ScienceIcon kind="elements"/><b>Chemistry Universe</b><span>Made for curious minds.</span></div><span>Explore. Experiment. Understand.</span><button onClick={() => onNavigate('settings')}>Preferences <ArrowUpRight size={13}/></button></footer>
   </div>;
 }

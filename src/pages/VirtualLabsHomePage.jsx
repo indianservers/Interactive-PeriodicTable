@@ -1,3 +1,4 @@
+import LabCollections from '../components/LabCollections.jsx';
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, BookOpen, CheckCircle2, Clock3, FlaskConical, Home, Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { BIOCHEMISTRY_VIRTUAL_LABS } from "../data/biochemistryVirtualLabs.js";
@@ -70,6 +71,7 @@ export default function VirtualLabsHomePage({ onNavigate }) {
           <button onClick={() => onNavigate("biochemistry-module")} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-4 py-3 text-sm font-black text-slate-950">Open Biochemistry VL <ArrowUpRight size={16} /></button>
         </section>
 
+        {!query && subject === "All" && status === "all" && <LabCollections onNavigate={onNavigate}/>}
         <section className="mt-6 rounded-2xl border border-white/10 bg-[#0b2034] p-4">
           <div className="flex flex-col gap-3 lg:flex-row">
             <label className="flex flex-1 items-center gap-2 rounded-xl border border-white/10 bg-black/15 px-3 text-sm text-slate-400"><Search size={16} /><input aria-label="Search virtual labs" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search experiments, subjects or techniques…" className="w-full bg-transparent py-3 text-white outline-none" /></label>

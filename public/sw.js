@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const APP_SHELL_CACHE = `chemistry-universe-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `chemistry-universe-runtime-${CACHE_VERSION}`;
 const CORE_ASSETS = [
@@ -6,6 +6,9 @@ const CORE_ASSETS = [
   '/index.html',
   '/manifest.webmanifest',
   '/periodic-icon.svg',
+  '/icons/chemistry-180.png',
+  '/icons/chemistry-192.png',
+  '/icons/chemistry-512.png',
 ];
 
 const isCacheableRequest = request => (

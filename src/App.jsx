@@ -720,9 +720,10 @@ function App() {
 
   const handleInstallApp = useCallback(async () => {
     if (!installPrompt) return;
-    installPrompt.prompt();
-    await installPrompt.userChoice.catch(() => null);
+    const prompt = installPrompt;
     setInstallPrompt(null);
+    await prompt.prompt();
+    return await prompt.userChoice;
   }, [installPrompt]);
 
   const toggleThemeWithReveal = useCallback(
@@ -774,6 +775,8 @@ function App() {
             onNavigate={navigate}
             onSelectElement={handleSelectElement}
             onViewAtom={handleViewAtom}
+            canInstall={Boolean(installPrompt)}
+            onInstallApp={handleInstallApp}
             recentPages={recentPages}
             favoritePages={favoritePages}
           />
@@ -1521,6 +1524,8 @@ function App() {
             onNavigate={navigate}
             onSelectElement={handleSelectElement}
             onViewAtom={handleViewAtom}
+            canInstall={Boolean(installPrompt)}
+            onInstallApp={handleInstallApp}
             recentPages={recentPages}
             favoritePages={favoritePages}
           />
