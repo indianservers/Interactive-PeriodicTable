@@ -232,7 +232,7 @@ export const hplcAssay = ({
 }) => {
   const stdArea = finite(standardArea, "standard area"),
     sampleConc = finite(sampleConcentration, "sample concentration");
-  if (stdArea <= 0 || sampleConc <= 0)
+  if (stdArea <= 0 || sampleConc <= 0 || finite(standardConcentration,"standard concentration") <= 0)
     throw new RangeError(
       "standard area and sample concentration must be greater than zero",
     );

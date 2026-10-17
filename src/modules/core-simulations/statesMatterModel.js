@@ -46,4 +46,4 @@ export function meanKineticEnergy(temperatureC) {
   return 1.5 * k * (Number(temperatureC) + 273.15) * 1e21;
 }
 
-export const RANKING = ["ethanol", "water", "carbonDioxide", "argon"];
+export const RANKING = ["water", "ethanol", "carbonDioxide", "argon"];

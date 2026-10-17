@@ -1,0 +1,45 @@
+{
+  "verifiedOn": "2026-10-17",
+  "compounds": [
+    {
+      "name": "paracetamol",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/1983",
+      "CID": 1983,
+      "MolecularFormula": "C8H9NO2",
+      "MolecularWeight": "151.16",
+      "ConnectivitySMILES": "CC(=O)NC1=CC=C(C=C1)O"
+    },
+    {
+      "name": "ibuprofen",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/3672",
+      "CID": 3672,
+      "MolecularFormula": "C13H18O2",
+      "MolecularWeight": "206.28",
+      "ConnectivitySMILES": "CC(C)CC1=CC=C(C=C1)C(C)C(=O)O"
+    },
+    {
+      "name": "metformin",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/4091",
+      "CID": 4091,
+      "MolecularFormula": "C4H11N5",
+      "MolecularWeight": "129.16",
+      "ConnectivitySMILES": "CN(C)C(=N)N=C(N)N"
+    },
+    {
+      "name": "amoxicillin",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/33613",
+      "CID": 33613,
+      "MolecularFormula": "C16H19N3O5S",
+      "MolecularWeight": "365.4",
+      "ConnectivitySMILES": "CC1(C(N2C(S1)C(C2=O)NC(=O)C(C3=CC=C(C=C3)O)N)C(=O)O)C"
+    },
+    {
+      "name": "atorvastatin",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/60823",
+      "CID": 60823,
+      "MolecularFormula": "C33H35FN2O5",
+      "MolecularWeight": "558.6",
+      "ConnectivitySMILES": "CC(C)C1=C(C(=C(N1CCC(CC(CC(=O)O)O)O)C2=CC=C(C=C2)F)C3=CC=CC=C3)C(=O)NC4=CC=CC=C4"
+    }
+  ]
+}

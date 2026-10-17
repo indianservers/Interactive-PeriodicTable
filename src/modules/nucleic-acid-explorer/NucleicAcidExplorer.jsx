@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import MolecularViewer from "./MolecularViewer.jsx";
+import { navigateStudio, studioSection } from '../../utils/studioRouting.js';
 import "./nucleicAcidExplorer.css";
 
 const WorkspaceRouter = lazy(() => import("./WorkspacePages.jsx"));
@@ -93,11 +94,8 @@ const angle = (a, b, c) => {
 };
 
 function routeFromPath() {
-  const marker = "/nucleic-acid-explorer";
-  const path = window.location.pathname;
-  return path.startsWith(marker)
-    ? path.slice(marker.length).replace(/^\//, "")
-    : "";
+  const section = studioSection(window.location, 'bio-nucleic-acids');
+  return routes.some(([id]) => id === section) ? section : '';
 }
 
 export default function NucleicAcidExplorer() {
@@ -158,14 +156,12 @@ export default function NucleicAcidExplorer() {
   useEffect(() => {
     const onPop = () => setRoute(routeFromPath());
     window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
+    window.addEventListener("hashchange", onPop);
+    return () => {window.removeEventListener("popstate", onPop);window.removeEventListener("hashchange", onPop);};
   }, []);
 
   const go = (next, params) => {
-    const queryString = params ? `?${new URLSearchParams(params)}` : "";
-    const path = `/nucleic-acid-explorer${next ? `/${next}` : ""}${queryString}`;
-    window.history.pushState({}, "", path);
-    setRoute(next);
+    navigateStudio('bio-nucleic-acids', next, params);
     setMobileNav(false);
     setSettingsOpen(false);
     window.requestAnimationFrame(() =>

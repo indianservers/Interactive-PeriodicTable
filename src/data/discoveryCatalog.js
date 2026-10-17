@@ -30,7 +30,7 @@ const prerequisites = { 'beer-lambert-law':['reaction-leftovers'], 'chromatograp
 export const discoveryEntries = libraryEntries.map(entry => {
   const level = foundationIds.has(entry.id) ? 'Beginner' : advancedIds.has(entry.id) ? 'Advanced' : 'Intermediate';
   const type = referenceIds.has(entry.id) ? 'Reference' : practiceIds.has(entry.id) ? 'Practice' : /simulations\/|physical-chemistry\/|lab|simulator/i.test(`${entry.path} ${entry.title} ${entry.kind || ''}`) ? 'Simulation' : 'Visualization';
-  return { ...entry, level, type, aliases: [...(entry.aliases || []), ...(aliases[entry.id] || [])], objective: entry.description.replace(/\.$/, '') + '.', prerequisites: level === 'Beginner' ? [] : (prerequisites[entry.id] || categoryPrerequisites[entry.category] || ['table']).filter(id => id !== entry.id), addedAt: catalogDates[entry.id] || null };
+  return { ...entry, level, type, aliases: [...(entry.aliases || []), ...(aliases[entry.id] || [])], objective: entry.description.replace(/\.$/, '') + '.', prerequisites: level === 'Beginner' ? [] : (prerequisites[entry.id] || categoryPrerequisites[entry.category] || ['table']).filter(id => id !== entry.id), addedAt: catalogDates[entry.id] || entry.addedAt || null };
 });
 export const findExperience = id => discoveryEntries.find(entry => entry.id === id);
 export const subjectGuides = Object.fromEntries(chemistryCategories.map(subject => [subject.id, {

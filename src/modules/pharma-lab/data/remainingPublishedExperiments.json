@@ -1,0 +1,808 @@
+{
+  "adme": {
+    "pmcid": "PMC11536717",
+    "title": "Pharmacokinetic profile of novel multi-layer stable effervescent tablet: a cross-over study with an established European brand in healthy young male adults",
+    "doi": "10.1186/s40360-024-00808-9",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11536717/#Tab2",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11536717/fullTextXML",
+    "tableId": "Tab2",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "0a29263e5376784c788818e9fbd4deb1d6eb7b7cb121d3b0a6f1e2e1ab7a91ff",
+    "authors": [
+      "Dani Danish Hassan",
+      "Shyum Naqvi Syed Baqir",
+      "Akram Muhammad",
+      "Ullah Matti",
+      "Khaliq Sheikh Abdul",
+      "Akhtar Muhammad Masoom",
+      "Abdullah Orva",
+      "Badshah Syed Faisal",
+      "Bourhia Mohammed",
+      "Shazly Gamal A",
+      "Bin Jardan Yousef A",
+      "Fazil Srosh"
+    ],
+    "year": "2024",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured human pharmacokinetics",
+    "formulation": "Paracetamol effervescent test product and Efferalgan reference product",
+    "conditions": "Randomized, single-dose, two-way crossover in 12 healthy male adults; fasted overnight; 7-day washout. Reference: 500 mg paracetamol. Blood sampled through 480 minutes. Table 2 summaries retain reported mean ± SD and standard error.",
+    "limitations": "These are study-specific pharmacokinetic summaries, not a measured concentration-time series or individual patient data. Table 2 gives reference Tmax 0.83 ± 0.25 h; the narrative also prints 0.93, so the table value is retained and the inconsistency disclosed. No bioequivalence conclusion or food/organ-function effects are inferred here.",
+    "transcriptionMethod": "Extracted from archived JATS table cells; rowspans expanded without inventing observations.",
+    "groups": [
+      {
+        "title": "Measured human pharmacokinetics",
+        "headers": [
+          "Parameter (source units)",
+          "Product",
+          "N",
+          "Mean ± SD",
+          "Standard error"
+        ],
+        "rows": [
+          [
+            "AUC(µg.h/ml)",
+            "Test",
+            "12",
+            "27.12 ± 6.02",
+            "1.74"
+          ],
+          [
+            "AUC(µg.h/ml)",
+            "Reference",
+            "12",
+            "27.29 ± 2.64",
+            "0.76"
+          ],
+          [
+            "Cmax(µg/ml)",
+            "Test",
+            "12",
+            "7.42 ± 1.06",
+            "0.31"
+          ],
+          [
+            "Cmax(µg/ml)",
+            "Reference",
+            "12",
+            "7.83 ± 1.19",
+            "0.34"
+          ],
+          [
+            "Tmax(hr)",
+            "Test",
+            "12",
+            "0.85 ± 0.22",
+            "0.06"
+          ],
+          [
+            "Tmax(hr)",
+            "Reference",
+            "12",
+            "0.83 ± 0.25",
+            "0.07"
+          ]
+        ]
+      }
+    ]
+  },
+  "dosage": {
+    "pmcid": "PMC11536717",
+    "title": "Pharmacokinetic profile of novel multi-layer stable effervescent tablet: a cross-over study with an established European brand in healthy young male adults",
+    "doi": "10.1186/s40360-024-00808-9",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11536717/#Tab1",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11536717/fullTextXML",
+    "tableId": "Tab1",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "0a29263e5376784c788818e9fbd4deb1d6eb7b7cb121d3b0a6f1e2e1ab7a91ff",
+    "authors": [
+      "Dani Danish Hassan",
+      "Shyum Naqvi Syed Baqir",
+      "Akram Muhammad",
+      "Ullah Matti",
+      "Khaliq Sheikh Abdul",
+      "Akhtar Muhammad Masoom",
+      "Abdullah Orva",
+      "Badshah Syed Faisal",
+      "Bourhia Mohammed",
+      "Shazly Gamal A",
+      "Bin Jardan Yousef A",
+      "Fazil Srosh"
+    ],
+    "year": "2024",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured effervescent tablet properties",
+    "formulation": "Published in-house paracetamol effervescent test product",
+    "conditions": "Study Table 1 reports in-vitro characterization of the test dosage form. Solution pH was measured after effervescing in 200 mL purified water. Specifications are the authors’ study specifications.",
+    "limitations": "This dataset characterizes one effervescent product, not all dosage forms in the designer. Units including hardness Kg/cm2 are retained as printed. “Comply” is the authors’ report, not a new release certification. No replicate count or variability is added where absent.",
+    "transcriptionMethod": "Extracted from archived JATS table cells; rowspans expanded without inventing observations.",
+    "groups": [
+      {
+        "title": "Measured effervescent tablet properties",
+        "headers": [
+          "Test",
+          "Study specification",
+          "Reported result"
+        ],
+        "rows": [
+          [
+            "Appearance",
+            "Off-white to Orange, round tablet",
+            "Comply"
+          ],
+          [
+            "Identification (Paracetamol)",
+            "Positive",
+            "Comply"
+          ],
+          [
+            "Assay",
+            "90–110%",
+            "100.07"
+          ],
+          [
+            "Weight variation",
+            "1805 mg– 1995 mg",
+            "1909.40 mg"
+          ],
+          [
+            "Hardness",
+            "NLT 5 Kg/cm2",
+            "6.02 Kg/cm2"
+          ],
+          [
+            "Effervescent time",
+            "< 300 s",
+            "120.33 s"
+          ],
+          [
+            "Carbon dioxide content",
+            "Report results",
+            "280.67 mg"
+          ],
+          [
+            "Solution pH(After effervescing in 200 ml purified water)",
+            "5.0–6.0",
+            "5.50"
+          ]
+        ]
+      }
+    ]
+  },
+  "tablet-formulation": {
+    "pmcid": "PMC10567489",
+    "title": "Comparative Direct Compression Property of a Novel Pregelatinized Starch in Paracetamol Tablets",
+    "doi": "10.1155/2023/5573176",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10567489/#tab4",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10567489/fullTextXML",
+    "tableId": "tab4",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "d377bf7a3c52933bae76a23ee0dad9ef6b5537047c21c3f8518f0e2b1889c918",
+    "authors": [
+      "Balcha Balla Tamrat",
+      "Mary Joseph Nisha",
+      "Belete Anteneh"
+    ],
+    "year": "2023",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured tablet compression outcomes",
+    "formulation": "Paracetamol tablets with pregelatinized Tacca involucrata starch (PGTBIS) or Starch 1500",
+    "conditions": "Direct compression at 17 kN, paracetamol loadings of 20, 30, 40 and 50%. TBF: tablet breaking force; TS: tensile strength; DT: disintegration time. Original summary values and “Friable” entries are retained.",
+    "limitations": "A different formulation from the teaching line. This table does not validate its model coefficients. Replicate counts and uncertainty should be interpreted using the source methods; no missing individual-tablet records are generated.",
+    "transcriptionMethod": "Extracted from archived JATS table cells; rowspans expanded without inventing observations.",
+    "groups": [
+      {
+        "title": "Measured tablet compression outcomes",
+        "headers": [
+          "Drug (%)",
+          "Starch",
+          "Weight (mg)",
+          "Breaking force (N)",
+          "Tensile strength (MPa)",
+          "Friability (%)",
+          "Disintegration (min)"
+        ],
+        "rows": [
+          [
+            "20",
+            "PGTBIS",
+            "302 ± 3",
+            "77.4 ± 6.1",
+            "1.34 ± 0.09",
+            "0.61 ± 0.01",
+            "2.0 ± 0.1"
+          ],
+          [
+            "20",
+            "Starch 1500®",
+            "300 ± 3",
+            "64.7 ± 3.1",
+            "1.10 ± 0.07",
+            "0.79 ± 0.02",
+            "5.7 ± 0.1"
+          ],
+          [
+            "30",
+            "PGTBIS",
+            "300 ± 3",
+            "69.9 ± 4.2",
+            "1.19 ± 0.07",
+            "0.80 ± 0.02",
+            "1.0 ± 0.1"
+          ],
+          [
+            "30",
+            "Starch 1500®",
+            "302 ± 3",
+            "51.5 ± 1.8",
+            "0.87 ± 0.04",
+            "1.11 ± 0.05",
+            "4.3 ± 0.2"
+          ],
+          [
+            "40",
+            "PGTBIS",
+            "303 ± 4",
+            "56.6 ± 4.2",
+            "0.95 ± 0.07",
+            "1.60 ± 0.06",
+            "0.8 ± 0.0"
+          ],
+          [
+            "40",
+            "Starch 1500®",
+            "301 ± 5",
+            "43.4 ± 1.7",
+            "0.73 ± 0.04",
+            "3.00 ± 0.09",
+            "3.5 ± 0.1"
+          ],
+          [
+            "50",
+            "PGTBIS",
+            "301 ± 6",
+            "16.1 ± 3.2",
+            "0.26 ± 0.04",
+            "Friable",
+            "0.5 ± 0.0"
+          ],
+          [
+            "50",
+            "Starch 1500®",
+            "301 ± 6",
+            "15.1 ± 1.2",
+            "0.25 ± 0.03",
+            "Friable",
+            "3.0 ± 0.0"
+          ]
+        ]
+      }
+    ]
+  },
+  "preformulation": {
+    "pmcid": "PMC8531771",
+    "title": "Physicochemical Characterization and Evaluation of the Binding Effect of Acacia etbaica Schweinf Gum in Granule and Tablet Formulations",
+    "doi": "10.1155/2021/5571507",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8531771/#tab7",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8531771/fullTextXML",
+    "tableId": "tab7",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "9c5f26d7fa84c3b32265e6c434ddd73e3f8aba8d558cd0b3360f67718316dd1e",
+    "authors": [
+      "Desta Kidan Haily",
+      "Tadese Ebisa",
+      "Molla Fantahun"
+    ],
+    "year": "2021",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured pre-compression granule flow",
+    "formulation": "Paracetamol granules made with Acacia etbaica gum (AET), PVP K-30 or Acacia BP (ABP)",
+    "conditions": "Published Table 7; n = 3, mean ± SD. Within each binder family the source labels 1–4 denote binder concentrations of 2, 4, 6 and 8% w/w. Flow rate and angle of repose characterize the prepared granules.",
+    "limitations": "These are pre-compression flow measurements, not pure-drug DSC/PXRD traces, polymorph data or universal excipient compatibility results. Study formulation codes remain unchanged.",
+    "transcriptionMethod": "Extracted from archived JATS table cells; rowspans expanded without inventing observations.",
+    "groups": [
+      {
+        "title": "Measured pre-compression granule flow",
+        "headers": [
+          "Study formulation",
+          "Flow rate (g/s), mean ± SD",
+          "Angle of repose (degrees), mean ± SD"
+        ],
+        "rows": [
+          [
+            "AET1",
+            "16.6 ± 0.21",
+            "27.8 ± 0.74"
+          ],
+          [
+            "AET 2",
+            "17.6 ± 0.46",
+            "27.2 ± 0.51"
+          ],
+          [
+            "AET 3",
+            "19.35 ± 0.73",
+            "26.8 ± 1.02"
+          ],
+          [
+            "AET 4",
+            "21.4 ± 0.54",
+            "26.6 ± 1.04"
+          ],
+          [
+            "PVP1",
+            "17.6 ± 0.61",
+            "27.5 ± 0.83"
+          ],
+          [
+            "PVP 2",
+            "18.75 ± 0.42",
+            "26.3 ± 0.68"
+          ],
+          [
+            "PVP 3",
+            "20 ± 0.33",
+            "26.5 ± 1.03"
+          ],
+          [
+            "PVP 4",
+            "21.07 ± 0.52",
+            "25.4 ± 0.57"
+          ],
+          [
+            "ABP 1",
+            "17.1 ± 0.66",
+            "26.9 ± 1.06"
+          ],
+          [
+            "ABP 2",
+            "18.75 ± 0.35",
+            "26.5 ± 0.92"
+          ],
+          [
+            "ABP 3",
+            "20 ± 0.12",
+            "26.1 ± 0.63"
+          ],
+          [
+            "ABP 4",
+            "20.6 ± 0.06",
+            "25.6 ± 0.71"
+          ]
+        ]
+      }
+    ]
+  },
+  "qc": {
+    "pmcid": "PMC10865243",
+    "title": "Physicochemical quality assessment of various brands of paracetamol tablets sold in Freetown Municipality",
+    "doi": "10.1016/j.heliyon.2024.e25502",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10865243/#tbl2",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10865243/fullTextXML",
+    "tableId": "tbl2",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "3427a38de236cb6dc1c6867fb708df569979c4328a391971c22b5b99585ec5ec",
+    "authors": [
+      "Vandy Ahmed",
+      "Conteh Eugene",
+      "Lahai Michael",
+      "Kolipha-Kamara Marie",
+      "Marah Mohamed",
+      "Marah Foday",
+      "Suma Kadiatu M",
+      "Mattia Sia C",
+      "Tucker Kenneth DS",
+      "Wray Victor SE",
+      "Koroma Abass",
+      "Lebbie Aiah U"
+    ],
+    "year": "2024",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured pharmaceutical assay results",
+    "formulation": "15 coded marketed paracetamol tablet samples from Freetown",
+    "conditions": "Table 2: measured assay content and reported dosage-unit acceptance values. The study used UV spectrophotometry for assay. The original percentage scale, ± SD and published specifications are retained.",
+    "limitations": "Published batch-specific results, not current market surveillance or certification of a product entered in the calculator. Acceptance values are reported statistics, not raw individual-unit data. Source specifications are not silently applied to another batch.",
+    "transcriptionMethod": "Extracted from archived JATS table cells; rowspans expanded without inventing observations.",
+    "groups": [
+      {
+        "title": "Measured pharmaceutical assay results",
+        "headers": [
+          "Study sample",
+          "Assay (%), mean ± SD",
+          "Study assay limits (%)",
+          "Reported AV ± SD",
+          "Study AV criterion"
+        ],
+        "rows": [
+          [
+            "P001",
+            "100.49 ± 0.20",
+            "95.00–105.00",
+            "1.98 ± 0.83",
+            "≤15"
+          ],
+          [
+            "P002",
+            "98.44 ± 0.13",
+            "95.00–105.00",
+            "3.06 ± 1.25",
+            "≤15"
+          ],
+          [
+            "P003",
+            "101.97 ± 0.02",
+            "95.00–105.00",
+            "3.45 ± 1.24",
+            "≤15"
+          ],
+          [
+            "P004",
+            "101.33 ± 0.80",
+            "95.00–105.00",
+            "5.43 ± 2.26",
+            "≤15"
+          ],
+          [
+            "P005",
+            "100.35 ± 0.16",
+            "95.00–105.00",
+            "3.59 ± 1.49",
+            "≤15"
+          ],
+          [
+            "P006",
+            "99.37 ± 0.06",
+            "95.00–105.00",
+            "4.99 ± 2.08",
+            "≤15"
+          ],
+          [
+            "P007",
+            "97.27 ± 0.06",
+            "95.00–105.00",
+            "3.95 ± 1.14",
+            "≤15"
+          ],
+          [
+            "P008",
+            "96.17 ± 0.15",
+            "95.00–105.00",
+            "7.12 ± 1.20",
+            "≤15"
+          ],
+          [
+            "P009",
+            "98.94 ± 0.55",
+            "95.00–105.00",
+            "7.43 ± 3.10",
+            "≤15"
+          ],
+          [
+            "P010",
+            "100.55 ± 1.28",
+            "95.00–105.00",
+            "1.89 ± 0.78",
+            "≤15"
+          ],
+          [
+            "P011",
+            "97.78 ± 0.90",
+            "95.00–105.00",
+            "3.78 ± 1.28",
+            "≤15"
+          ],
+          [
+            "P012",
+            "98.81 ± 0.02",
+            "95.00–105.00",
+            "1.51 ± 0.63",
+            "≤15"
+          ],
+          [
+            "P013",
+            "100.53 ± 0.59",
+            "95.00–105.00",
+            "7.64 ± 3.18",
+            "≤15"
+          ],
+          [
+            "P014",
+            "97.55 ± 3.59",
+            "95.00–105.00",
+            "5.16 ± 1.75",
+            "≤15"
+          ],
+          [
+            "P015",
+            "101.16 ± 1.22",
+            "95.00–105.00",
+            "5.00 ± 2.08",
+            "≤15"
+          ]
+        ]
+      }
+    ]
+  },
+  "buffers": {
+    "pmcid": "PMC11487416",
+    "title": "Monitoring the Dilution of Buffer Solutions with Different pH Values above and below Physiological pH in Very Small Volumes",
+    "doi": "10.3390/s24175751",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11487416/#sensors-24-05751-t001",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11487416/fullTextXML",
+    "tableId": "sensors-24-05751-t001",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "37faa0cd153b2980f23c2cf66539528958a5bf89da8a31d9602df0f68a779962",
+    "authors": [
+      "Bhat Vinayak J",
+      "Blaschke Daniel",
+      "Vegesna Sahitya V",
+      "Burgold-Voigt Sindy",
+      "Müller Elke",
+      "Ehricht Ralf",
+      "Schmidt Heidemarie",
+      "Wagner Patrick"
+    ],
+    "year": "2024",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured biological buffer pH",
+    "formulation": "Six buffer test solutions from a published dilution-monitoring experiment",
+    "conditions": "Undiluted solutions measured using a Schott CG 842 pH tester at 22 °C. PBS: phosphate-buffered saline; LB: Luria–Bertani culture medium. Filter and NAP-5 treatments and the source’s PBS s.f. label are retained.",
+    "limitations": "These are experimental pH readings for the listed biological buffers, not measurements of the acetate calculator. No measured buffer capacities or titration curves are supplied by this table; pH precision and replicates are not invented.",
+    "transcriptionMethod": "Extracted from archived JATS table cells; rowspans expanded without inventing observations.",
+    "groups": [
+      {
+        "title": "Measured biological buffer pH",
+        "headers": [
+          "Study solution",
+          "Source solution name / treatment",
+          "Measured pH"
+        ],
+        "rows": [
+          [
+            "1",
+            "PBS s.f.",
+            "7.12"
+          ],
+          [
+            "2",
+            "LB",
+            "6.89"
+          ],
+          [
+            "3",
+            "LB filtered/0.2 µm CA filter",
+            "6.77"
+          ],
+          [
+            "4",
+            "0.1 M NaHCO3 + NAP-5",
+            "8.96"
+          ],
+          [
+            "5",
+            "0.1 M NaHCO3",
+            "8.98"
+          ],
+          [
+            "6",
+            "LB filtered/0.2 µm CA filter + NAP-5 + 0.1 M NaHCO3",
+            "8.97"
+          ]
+        ]
+      }
+    ]
+  },
+  "toxicology": {
+    "pmcid": "PMC11018404",
+    "title": "Effect of the long-term use of a NOAEL dose of acetaminophen (paracetamol) on hepatic, renal, and neural tissues of aged albino rats",
+    "doi": "10.5455/OVJ.2024.v14.i1.28",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11018404/#tab1",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11018404/fullTextXML",
+    "tableId": "tab1",
+    "license": "CC BY-NC 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "8f0541bca62fe7ae618c740ebdbebb91252370c33ea984895798a6e3cf3991b4",
+    "authors": [
+      "Aboshama Mirna",
+      "Abdo Walied",
+      "Elsawak Ahmed",
+      "Khater Abdelrahman"
+    ],
+    "year": "2024",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured animal toxicology endpoints",
+    "formulation": "Aged male Wistar rats exposed to acetaminophen (APAP)",
+    "conditions": "Rats were 24 months old; APAP-treated animals received 500 mg/kg body weight daily. Five treated and five control animals were sacrificed at 4, 6, 8, 10 and 12 weeks. The source reports one control row and means with SD. Letter suffixes a/b/c are the source’s statistical grouping annotations.",
+    "limitations": "Animal research only. These observations are not human dose limits, safety probabilities or treatment guidance. No human risk prediction, interpolation between time points or unreported control series is created. Units, statistical letters and the single published control row are retained.",
+    "transcriptionMethod": "Extracted from archived JATS table cells; rowspans expanded without inventing observations.",
+    "groups": [
+      {
+        "title": "Measured animal toxicology endpoints",
+        "headers": [
+          "Study group",
+          "ALT (U/L)",
+          "AST (U/L)",
+          "ALP (U/L)",
+          "Urea (mg/dL)",
+          "Creatinine (mg/dL)",
+          "Total protein (mg/dL), source unit"
+        ],
+        "rows": [
+          [
+            "Control group",
+            "26.67 ± 5.03a",
+            "77 ± 6a",
+            "64.33 ± 5.86a",
+            "31.81 ± 1.57a",
+            "0.89 ± 0.03a",
+            "8.27 ± 0.31a"
+          ],
+          [
+            "APAP group 4 weeks",
+            "28.67 ± 6.51a",
+            "99.67 ± 6.43a",
+            "95.33 ± 10.60a",
+            "47 ± 3b",
+            "1.24 ± 0.06b",
+            "7.23 ± 0.55b"
+          ],
+          [
+            "APAP group 6 weeks",
+            "33.33 ± 7.64a",
+            "110 ± 8.19b",
+            "138.33 ± 8.33b",
+            "49.22 ± 3.63b",
+            "1.29 ± 0.03b",
+            "7.07 ± 0.25b"
+          ],
+          [
+            "APAP-group 8 weeks",
+            "37 ± 7.94a",
+            "136.33 ± 7.64bc",
+            "155.67 ± 12.50b",
+            "51.08 ± 5.25b",
+            "1.32 ± 0.05b",
+            "6.80 ± 0.46bc"
+          ],
+          [
+            "APAP-group 10 weeks",
+            "46.67 ± 6.43b",
+            "146.33 ± 9.07c",
+            "166.33 ± 26.03b",
+            "56.51 ± 3.52b",
+            "1.35 ± 0.06b",
+            "6.33 ± 0.32bc"
+          ],
+          [
+            "APAP-group 12 weeks",
+            "55.67 ± 7.2b",
+            "161.67 ± 19.86c",
+            "307.67 ± 27.65c",
+            "67.84 ± 5.41c",
+            "1.82 ± 0.24c",
+            "6.07 ± 0.15c"
+          ]
+        ]
+      }
+    ]
+  },
+  "api-synthesis": {
+    "pmcid": "PMC6321105",
+    "title": "Mechanochemical Catalytic Transfer Hydrogenation of Aromatic Nitro Derivatives",
+    "doi": "10.3390/molecules23123163",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6321105/#sec2-molecules-23-03163",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6321105/fullTextXML",
+    "tableId": "sec2-molecules-23-03163",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "40ad4bcbc7e23a7e8ab44aae19ee01fad9c7bec827cde0431eac6755437f52fb",
+    "authors": [
+      "Portada Tomislav",
+      "Margetić Davor",
+      "Štrukil Vjekoslav"
+    ],
+    "year": "2018",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Reported gram-scale synthesis yields",
+    "formulation": "Mechanochemical preparation of 4-aminophenol and paracetamol",
+    "conditions": "Primary research, Results section and Scheme 2b. The acetylation used equimolar 4-aminophenol and acetic anhydride, milling for 30 minutes with silica in Teflon equipment. The authors report isolated products on a gram scale.",
+    "limitations": "This published solid-state route differs from the solution-phase teaching reactor. Yield, amount and mass are quoted as reported; no replicate uncertainty, reaction time-course or TLC observations are invented. The two yields are individual steps, not an asserted overall route yield.",
+    "transcriptionMethod": "Amounts, isolated masses and step yields extracted from the archived Results paragraph mentioning 0.99 g; not calculated from simulator parameters.",
+    "groups": [
+      {
+        "title": "Published isolated products",
+        "headers": [
+          "Product",
+          "Reported amount (mmol)",
+          "Isolated mass (g)",
+          "Reported isolated yield (%)"
+        ],
+        "rows": [
+          [
+            "4-Aminophenol (p-2c)",
+            "10",
+            "1.09",
+            "99"
+          ],
+          [
+            "Paracetamol (6)",
+            "6.6",
+            "0.99",
+            "99"
+          ]
+        ]
+      }
+    ]
+  },
+  "medicinal-chemistry": {
+    "sourceId": "PMID34045219",
+    "title": "Comparative Hepatic and Intestinal Metabolism and Pharmacodynamics of Statins",
+    "doi": "10.1124/dmd.121.000406",
+    "sourceUrl": "https://dmd.aspetjournals.org/article/S0090-9556%2824%2907982-0/fulltext#tbl2",
+    "tableId": "Table 2",
+    "authors": [
+      "Filppula AM",
+      "Hirvensalo P",
+      "Parviainen H",
+      "Ivaska VE",
+      "Lönnberg KI",
+      "Deng F",
+      "Viinamäki J",
+      "Kurkela M",
+      "Neuvonen M",
+      "Niemi M"
+    ],
+    "year": "2021",
+    "retrievedOn": "2026-10-17",
+    "license": "Factual numerical transcription; original article rights retained by publisher",
+    "licenseUrl": "https://doi.org/10.1124/dmd.121.000406",
+    "transcriptionMethod": "Four numerical rows manually transcribed from the primary publisher's Table 2; not extracted from a PMC XML record. No interpolation or new potency estimates.",
+    "groups": [
+      {
+        "title": "Measured HMG-CoA reductase inhibition",
+        "headers": [
+          "Compound (acid form)",
+          "IC50 (nM), mean ± SD"
+        ],
+        "rows": [
+          [
+            "Atorvastatin",
+            "13.1 ± 3.2"
+          ],
+          [
+            "Pravastatin",
+            "12.6 ± 3.7"
+          ],
+          [
+            "Rosuvastatin",
+            "4.37 ± 1.13"
+          ],
+          [
+            "Simvastatin acid",
+            "19.7 ± 2.0"
+          ]
+        ]
+      }
+    ],
+    "sourceSha256": "75314f98a577724cb8771d6ca41d31f3d7ef80fb5f0c8052ac87536883abff28",
+    "kind": "Published experimental summaries",
+    "displayTitle": "Measured statin enzyme inhibition",
+    "formulation": "Acid forms of four statins in a cell-free HMG-CoA reductase assay",
+    "conditions": "Primary study Table 2. Eight compound concentrations incubated with HMG-CoA (20 µM) and HMG-CoA reductase (0.9 µg/mL) for 3 minutes. Selected compounds: triplicate incubations; IC50 mean ± SD in nM.",
+    "limitations": "Assay-specific in-vitro IC50 values, not docking scores or clinical efficacy. Simvastatin acid is distinguished from simvastatin lactone. No dose-response points, raw inhibition traces or new potency estimates are reconstructed."
+  }
+}

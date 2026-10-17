@@ -1,3 +1,4 @@
+import ExperienceDirectory from '../components/ExperienceDirectory.jsx';
 import MobileInstall from '../components/MobileInstall.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, ArrowUpRight, Atom, BookOpen, Boxes, ChevronLeft, ChevronRight, Dna, FlaskConical, GraduationCap, Microscope, Orbit, Pause, Pill, Play, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
@@ -34,26 +35,33 @@ function AtomArtwork({ paused, onToggle, onExplore }) {
     <span className="cl-art-label"><i /> A WORLD BEYOND THE VISIBLE</span>
     <svg viewBox="0 0 520 440" role="img" aria-label={`Simplified electron shells for ${element.name}: ${number} electrons`}>
       <defs>
-        <radialGradient id="cl-core"><stop stopColor="#eaffc8"/><stop offset=".35" stopColor="#a9f0a3"/><stop offset="1" stopColor="#367b60"/></radialGradient>
-        <radialGradient id="cl-halo"><stop stopColor="#a9f0a3" stopOpacity=".16"/><stop offset="1" stopColor="#a9f0a3" stopOpacity="0"/></radialGradient>
+        <radialGradient id="cl-core" cx="30%" cy="25%" r="75%"><stop stopColor="#ffe8d5"/><stop offset=".22" stopColor="#ffb28b"/><stop offset=".55" stopColor="#df604d"/><stop offset="1" stopColor="#702b35"/></radialGradient>
+        <radialGradient id="cl-neutron" cx="30%" cy="25%" r="75%"><stop stopColor="#f1f7ff"/><stop offset=".24" stopColor="#c1d6ed"/><stop offset=".6" stopColor="#738eae"/><stop offset="1" stopColor="#293e59"/></radialGradient>
+        <radialGradient id="cl-electron-surface" cx="30%" cy="25%" r="75%"><stop stopColor="#ffffff"/><stop offset=".25" stopColor="#d1f4ff"/><stop offset=".6" stopColor="#68c9f1"/><stop offset="1" stopColor="#236592"/></radialGradient>
+        <radialGradient id="cl-halo"><stop stopColor="#7fb9dc" stopOpacity=".13"/><stop offset=".6" stopColor="#5294b6" stopOpacity=".05"/><stop offset="1" stopColor="#5294b6" stopOpacity="0"/></radialGradient>
+        <radialGradient id="cl-nucleus-halo"><stop stopColor="#ee9371" stopOpacity=".2"/><stop offset="1" stopColor="#ee9371" stopOpacity="0"/></radialGradient>
+        <linearGradient id="cl-orbit-light" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#d6ecf7" stopOpacity=".65"/><stop offset=".45" stopColor="#76abcf" stopOpacity=".12"/><stop offset="1" stopColor="#aacde0" stopOpacity=".45"/></linearGradient>
         <filter id="cl-glow"><feGaussianBlur stdDeviation="4"/></filter>
+        <filter id="cl-nucleus-shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="2" dy="4" stdDeviation="3" floodColor="#050c16" floodOpacity=".65"/></filter>
       </defs>
       <circle cx="260" cy="220" r="195" fill="url(#cl-halo)"/>
-      <g fill="none" stroke="#a9f0a3" strokeOpacity=".12"><circle cx="260" cy="220" r="188" strokeDasharray="2 10"/><path d="M30 220h460M260 15v410"/></g>
+      <g fill="none" stroke="#96b7c9" strokeOpacity=".1"><circle cx="260" cy="220" r="188" strokeDasharray="1 11"/><path d="M30 220h460M260 15v410"/></g>
+      <circle cx="260" cy="220" r="85" fill="url(#cl-nucleus-halo)"/>
       {element.shells.map((count, shell) => {
-        const rx = 108 + shell * 38, ry = 48 + shell * 18;
+        const rx = 126 + shell * 36, ry = 57 + shell * 22;
         return <g key={shell} transform={`rotate(${shell * 55 - 25} 260 220)`}>
-          <ellipse cx="260" cy="220" rx={rx} ry={ry} fill="none" stroke="#a9ccb7" strokeWidth="1.2" strokeOpacity=".6"/>
-          {Array.from({length:count},(_,electron)=><g key={electron} className="cl-electron" style={{'--electron-position':`${electron/count*100}%`,offsetPath:`path('M ${260+rx} 220 A ${rx} ${ry} 0 1 1 ${260-rx} 220 A ${rx} ${ry} 0 1 1 ${260+rx} 220')`,animationDelay:`${-(electron/count)*(10+shell*3)}s`,animationDuration:`${10+shell*3}s`}}><circle r="9" fill="#d0ffb8" opacity=".45" filter="url(#cl-glow)"/><circle r="4" fill="#e6ffcf"/></g>)}
+          <ellipse cx="260" cy="220" rx={rx} ry={ry} fill="none" stroke="url(#cl-orbit-light)" strokeWidth="1.3"/>
+          {Array.from({length:count},(_,electron)=><g key={electron} className="cl-electron" style={{'--electron-position':`${electron/count*100}%`,offsetPath:`path('M ${260+rx} 220 A ${rx} ${ry} 0 1 1 ${260-rx} 220 A ${rx} ${ry} 0 1 1 ${260+rx} 220')`,animationDelay:`${-(electron/count)*(14+shell*5)}s`,animationDuration:`${14+shell*5}s`}}><path d="M-26 0H-5" stroke="#83d4f5" strokeWidth="2" strokeLinecap="round" opacity=".18"/><circle r="11" fill="#77cef4" opacity=".3" filter="url(#cl-glow)"/><circle r="5.5" fill="url(#cl-electron-surface)"/></g>)}
         </g>;
       })}
-      <g className="cl-nucleus">{Array.from({length:Math.round(element.atomicMass)},(_,index)=>{
-        const angle=index*2.4, radius=number===1?0:Math.sqrt(index)*6;
-        return <circle key={index} cx={260+Math.cos(angle)*radius} cy={220+Math.sin(angle)*radius} r={number===1?16:11} fill={index<number?'url(#cl-core)':'#62987b'} stroke="#c9f5b0" strokeOpacity=".25"/>;
+      <g className="cl-nucleus" filter="url(#cl-nucleus-shadow)">{Array.from({length:Math.round(element.atomicMass)},(_,index)=>{
+        const angle=index*2.39996, radius=number===1?0:Math.sqrt(index)*5.8;
+        const proton=(index*7)%Math.round(element.atomicMass)<number;
+        return <circle key={index} cx={260+Math.cos(angle)*radius} cy={220+Math.sin(angle)*radius} r={number===1?16:10.5} fill={proton?'url(#cl-core)':'url(#cl-neutron)'} stroke={proton?'#ffbf9f':'#d2e3f5'} strokeWidth=".6" strokeOpacity=".3"/>;
       })}</g>
-      <g fill="#b5c4b8" fontSize="10" fontFamily="monospace"><text x="397" y="106">e⁻</text><text x="87" y="322">e⁻</text><text x="283" y="262">THE ATOM</text></g>
+      <g fill="#91aec0" fontSize="10" fontFamily="monospace"><text x="397" y="106">e⁻</text><text x="87" y="322">e⁻</text></g>
     </svg>
-    <div className="cl-art-bottom"><span>Everything starts with a little curiosity.<small>Simplified shell model · not to scale</small></span><button type="button" onClick={onToggle} aria-label={paused ? 'Play atom animation' : 'Pause atom animation'}>{paused ? <Play size={16}/> : <Pause size={16}/>}</button></div>
+    <div className="cl-art-bottom"><span>Everything starts with a little curiosity.<small>Simplified shell model · illustrative colors · not to scale</small><span className="cl-particle-key"><i /> Proton <i /> Neutron <i /> Electron</span></span><button type="button" onClick={onToggle} aria-label={paused ? 'Play atom animation' : 'Pause atom animation'}>{paused ? <Play size={16}/> : <Pause size={16}/>}</button></div>
     <div className="cl-floating-element"><small>{number}</small><strong>{element.symbol}</strong><span>{element.name}</span></div>
     <div className="dx-atom-controls"><label>Explore an element<select aria-label="Hero element" value={number} onChange={event=>setNumber(Number(event.target.value))}>{[1,6,8,11].map(n=><option key={n} value={n}>{elements.find(item=>item.atomicNumber===n).name}</option>)}</select></label><p>{number} protons · {number} electrons in a neutral atom<br/>Electron shells: {element.shells.join(' · ')}</p><button onClick={()=>onExplore(element)}>Open {element.name} explorer <ArrowUpRight size={15}/></button></div>
   </div>;
@@ -145,6 +153,7 @@ export function ChemistryLanding({ onNavigate, onViewAtom, recentPages=[], canIn
           </a>;
         })}</div>
       </section>}
+      {!searching&&!selected&&<ExperienceDirectory onNavigate={onNavigate}/>}
       {!searching&&!selected&&<LabCollections onNavigate={onNavigate}/>}
       {!searching&&!selected&&<LearningHub recentPages={recentPages} favorites={favorites} onLaunch={launch} onBrowse={()=>{reset();setField('saved',true);requestAnimationFrame(()=>scrollTo('cl-discover'));}}/>}
 

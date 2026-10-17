@@ -1,3 +1,5 @@
+import ApparatusIllustration from './ApparatusIllustration.jsx';
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { useMemo, useState } from "react";
 import {
   Beaker,
@@ -180,15 +182,7 @@ function Home({ go }) {
             <FieldMap />
           </Card>
         </div>
-        <div className="soil-hero">
-          <div className="soil-labbench">
-            <div className="soil-sieve">2 mm sieve</div>
-            <div className="soil-bottles">pH 4.00　pH 7.00　pH 10.00</div>
-            <Meter kind="ph" value="6.72" unit="pH" />
-            <Meter kind="ec" value="0.48" unit="dS/m" />
-          </div>
-        </div>
-      </div>
+        <div className="soil-hero"><ApparatusIllustration kind="soil-analysis-bench" alt="Soil suspensions, pH and conductivity electrodes and soil sample dish"/></div></div>
       <div className="soil-modes">
         {[
           ["Soil Sampling", "Collect and composite soil samples."],
@@ -748,26 +742,7 @@ function Report({ go }) {
           </div>
         </div>
         <div>
-          <Card title={`Knowledge Check　${score} / 3`}>
-            {qs.map((q, i) => (
-              <fieldset key={q[0]}>
-                <legend>
-                  {i + 1}. {q[0]}
-                </legend>
-                <button
-                  className={answers[i] === q[1] ? "active" : ""}
-                  onClick={() => setAnswers({ ...answers, [i]: q[1] })}
-                >
-                  {q[1]}
-                </button>
-                <button
-                  onClick={() => setAnswers({ ...answers, [i]: "wrong" })}
-                >
-                  Other
-                </button>
-              </fieldset>
-            ))}
-          </Card>
+          <Card title={`Knowledge Check　${score} / 3`}><KnowledgeCheck questions={qs.map(([prompt,label],i)=>({prompt,correct:label,options:[{id:label,label},{id:"wrong",label:"The stated relationship does not apply to this model"}]}))} onChecked={setAnswers}/></Card>
           <Card title="Safety & Good Practice">
             <p>
               <Check /> Electrodes rinsed and stored correctly.

@@ -1,3 +1,5 @@
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
+import { completeLab } from "../../utils/labNavigation.js";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, ChevronRight, Download, FlaskConical, HelpCircle, Pause, Play, RefreshCw, ShieldCheck, Trophy } from "lucide-react";
 import { syllabusInteractiveById } from "./syllabusInteractiveModel.js";
@@ -33,20 +35,24 @@ function Chart({ points }) {
   );
 }
 
-export default function SyllabusInteractiveLab({ experimentId }) {
+export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
   const spec = syllabusInteractiveById[experimentId] || Object.values(syllabusInteractiveById)[0];
   const defaults = Object.fromEntries((spec.controls || []).map((c) => [c.key, c.value]));
   const [step, setStep] = useState(initialStep);
   const [values, setValues] = useState(defaults);
   const [running, setRunning] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [picked, setPicked] = useState({});
+  const [hasRun, setHasRun] = useState(false);
+  const [action, setAction] = useState(-1);
+  const [recorded, setRecorded] = useState(false);
+  const questions = useMemo(() => (spec.quiz || []).map(q => ({...q, correct: 0, options: q.options.map((label,id) => ({id,label}))})), [spec]);
   const result = useMemo(() => spec.compute(values), [spec, values]);
   const bench = benchKindFor(spec.id, spec.subject);
   const structure = INTERACTIVE_STRUCTURES[spec.id];
   const fill = running ? "#2f7de1" : "#8ec8ef";
 
   const go = (n) => {
+    if (n > 5) { completeLab(); return; }
     n = Math.max(0, Math.min(5, n));
     setStep(n);
     const u = new URL(location.href);
@@ -57,11 +63,11 @@ export default function SyllabusInteractiveLab({ experimentId }) {
   const reset = () => {
     setValues(defaults);
     setRunning(false);
-    setValidated(false);
-    setPicked({});
+    setValidated(false);setHasRun(false);setRecorded(false);setAction(-1);
+
     go(0);
   };
-  const score = (spec.quiz || []).filter((q, i) => picked[i] === 0).length;
+
   const csv = () => {
     const text = `experiment,metric,value\n${spec.id},primary,${result.primary}\n${spec.id},detail,${result.detail}`;
     const a = document.createElement("a");
@@ -83,6 +89,7 @@ export default function SyllabusInteractiveLab({ experimentId }) {
         <button onClick={reset}><RefreshCw /> Reset</button>
       </header>
 
+      <nav className="ap-stages" aria-label="Experiment stages">{STEPS.map(([id,label],i) => <button key={id} aria-current={step===i?"step":undefined} onClick={() => go(i)}>{i+1}. {label}</button>)}</nav>
       {step === 0 && (
         <main className="ap-home">
           <section className="ap-panel intro">
@@ -94,7 +101,7 @@ export default function SyllabusInteractiveLab({ experimentId }) {
             <button className="primary" onClick={() => go(1)}><FlaskConical /> Start <ChevronRight /></button>
           </section>
           <section className="ap-hero">
-            {structure ? <LabMoleculeStage structureId={spec.id} label={structure.label} /> : <LabBenchVisual kind={bench} label={spec.kicker} fill="#8ec8ef" />}
+            {structure ? <LabMoleculeStage structureId={spec.id} label={structure.label} /> : <LabBenchVisual apparatus={spec.apparatus} kind={bench} label={spec.kicker} fill="#8ec8ef" />}
             <div className="ap-danger" style={{ position: "absolute", right: 20, top: 24, maxWidth: 240 }}><ShieldCheck /> {spec.hazard}</div>
           </section>
         </main>
@@ -127,7 +134,7 @@ export default function SyllabusInteractiveLab({ experimentId }) {
       {step === 3 && (
         <main className="ap-three">
           <section className="ap-panel">
-            <h2>Controls</h2>
+            <h2>Controls</h2><div className="lab-action-controls">{spec.steps.map((item,i)=><button key={item} aria-pressed={action===i} onClick={()=>{setAction(i);setRunning(true);setHasRun(true)}}>{i+1}. {item}</button>)}</div>
             {(spec.controls || []).map((c) => (
               <label key={c.key}>
                 {c.label}
@@ -143,11 +150,12 @@ export default function SyllabusInteractiveLab({ experimentId }) {
                 <b>{Number(values[c.key]).toFixed(c.step < 1 ? 3 : 1)} {c.unit}</b>
               </label>
             ))}
-            <button className={running ? "primary" : ""} onClick={() => setRunning((x) => !x)}>{running ? <Pause /> : <Play />}{running ? "Pause" : "Run"}</button>
+            <button className={running ? "primary" : ""} onClick={() => {setRunning((x) => !x);setHasRun(true);}}>{running ? <Pause /> : <Play />}{running ? "Pause" : "Run"}</button>
           </section>
           <section className="ap-panel">
-            <h2>Live experiment</h2>
-            {structure ? <LabMoleculeStage structureId={spec.id} label={structure.label} /> : <LabBenchVisual kind={bench} running={running} fill={fill} label={result.primary} />}
+            <h2>Live experiment</h2><ol className="lab-procedure">{spec.steps.map((item,i)=><li key={item}>{i+1}. {item}</li>)}</ol>
+            {structure ? <LabMoleculeStage structureId={spec.id} label={structure.label} /> : <LabBenchVisual apparatus={spec.apparatus} kind={bench} running={running} fill={fill} label={action >= 0 ? spec.steps[action] : result.primary} />}
+            {action>=0&&<p className="ap-valid" role="status">Current operation: {spec.steps[action]}</p>}
             <Chart points={result.chart} />
             <p className={running ? "ap-valid" : "ap-notice"}>{running ? result.observation : "Press Run to lock in the live observation."}</p>
           </section>
@@ -162,7 +170,7 @@ export default function SyllabusInteractiveLab({ experimentId }) {
       {step === 4 && (
         <main className="ap-three">
           <section className="ap-panel">
-            <h2>Analysis</h2>
+            <h2>Analysis</h2><button onClick={()=>setRecorded(true)}>{recorded?"Result recorded":"Record result"}</button>
             <div className="ap-metric"><span>Primary result</span><b className="good">{result.primary}</b></div>
             <p>{result.detail}</p>
             <p className="ap-valid">{result.quality}</p>
@@ -176,7 +184,7 @@ export default function SyllabusInteractiveLab({ experimentId }) {
         <main className="ap-report">
           <section className="ap-panel">
             <h2>Completion</h2>
-            {["Theory read", "Setup validated", "Experiment run", "Result recorded"].map((x) => <p className="ap-check" key={x}><Check /> {x}</p>)}
+            {[["Setup validated",validated],["Experiment run",hasRun],["Result recorded",recorded]].map(([label,done]) => <p className="ap-check" key={label}>{done?<Check/>:"○"} {label}: {done?"Done":"Pending"}</p>)}
           </section>
           <section className="ap-panel">
             <h2>Notebook</h2>
@@ -186,22 +194,14 @@ export default function SyllabusInteractiveLab({ experimentId }) {
           </section>
           <section className="ap-panel">
             <h2>Knowledge check</h2>
-            {(spec.quiz || []).map((q, qi) => (
-              <div key={q.prompt}>
-                <p>{q.prompt}</p>
-                {q.options.map((opt, oi) => (
-                  <label key={opt}><input type="radio" checked={picked[qi] === oi} onChange={() => setPicked((a) => ({ ...a, [qi]: oi }))} />{opt}</label>
-                ))}
-              </div>
-            ))}
-            <div className={score === (spec.quiz || []).length ? "ap-valid" : "ap-notice"}><Trophy /> Score: {score}/{(spec.quiz || []).length}</div>
+            <KnowledgeCheck key={spec.id} questions={questions} />
           </section>
         </main>
       )}
 
       <footer className="ap-foot">
         <button onClick={() => go(step - 1)} disabled={!step}><ArrowLeft /> Previous</button>
-        <button className="primary" onClick={() => go(step + 1)}>{step === 5 ? "Complete" : "Continue"} <ChevronRight /></button>
+        <button className="primary" onClick={() => step === 5 ? completeLab(onNavigate) : go(step + 1)}>{step === 5 ? "Complete" : "Continue"} <ChevronRight /></button>
       </footer>
     </div>
   );

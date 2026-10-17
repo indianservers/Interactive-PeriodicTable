@@ -1,3 +1,7 @@
+import ApparatusIllustration from './ApparatusIllustration.jsx';
+import { completeLab } from "../../utils/labNavigation.js";
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
+const assessmentQuestions = [{"prompt": "Why remove dissolved oxygen?", "correct": 0, "options": [{"id": 0, "label": "Prevent an interfering reduction wave"}, {"id": 1, "label": "Increase oxygen interference"}]}, {"prompt": "What does half-wave potential help identify?", "correct": 0, "options": [{"id": 0, "label": "Analyte under specified electrolyte and reference conditions"}, {"id": 1, "label": "Concentration independent of current"}]}, {"prompt": "How does diffusion current vary in the calibrated range?", "correct": 0, "options": [{"id": 0, "label": "Proportional to concentration"}, {"id": 1, "label": "Independent of concentration"}]}];
 import { useMemo, useState } from "react";
 import {
   Activity,
@@ -239,7 +243,7 @@ function Home({ go }) {
         <Polarogram />
       </Panel>
       <Panel title="Electrode cell" className="hero-cell">
-        <Cell bubbles />
+        <ApparatusIllustration kind="polarography-bench" alt="Three-electrode polarographic cell with nitrogen purge and potentiostat"/>
         <p className="mercury">
           <ShieldCheck /> Mercury-film electrode is simulated and
           instructor-controlled. No real mercury handling occurs.
@@ -750,24 +754,7 @@ function Report({ reset }) {
           <b>Model result:</b> The original sample concentration is {u.original.toFixed(3)} mg/L Cd²⁺ at a dilution factor of 5 (R² = {u.r2.toFixed(5)}). No measurement uncertainty has been established.
         </p>
       </Panel>
-      <Panel title="Knowledge Check" className="quiz">
-        <button onClick={() => setAnswers({ ...answers, oxygen: true })}>
-          Deaeration prevents an interfering reduction wave
-        </button>
-        <button onClick={() => setAnswers({ ...answers, identity: true })}>
-          E½ supports identification under specified electrolyte and reference conditions
-        </button>
-        <button onClick={() => setAnswers({ ...answers, proportional: true })}>
-          Diffusion current is proportional to concentration
-        </button>
-        <p className={score === 3 ? "success" : "notice"}>
-          <Trophy /> Score: {score}/3
-        </p>
-        <p>
-          <ShieldCheck /> Safety confirmed: simulated mercury-film procedures
-          only.
-        </p>
-      </Panel>
+      <Panel title="Knowledge Check" className="quiz"><KnowledgeCheck questions={assessmentQuestions}/></Panel>
       <section className="report-actions">
         <button onClick={exportCsv}>
           <Download /> Download CSV
@@ -794,6 +781,7 @@ export default function PolarographyConcentrationLab() {
     [dilution, setDilution] = useState(5),
     [accepted, setAccepted] = useState(false);
   const go = (n) => {
+    if (n > 5) { completeLab(); return; }
       n = Math.max(0, Math.min(5, n));
       setStep(n);
       const u = new URL(location.href);

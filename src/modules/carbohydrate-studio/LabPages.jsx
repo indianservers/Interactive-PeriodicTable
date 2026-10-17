@@ -43,6 +43,7 @@ const water = {
   classification: "Small molecule",
   cid: 962,
   source: "/assets/carbohydrate-studio/structures/water.sdf",
+  sourceType: "sdf",
 };
 const solubilityTemperatures = [0, 25, 40, 60, 80, 100];
 const solubilityAt = (name, temperature) => {

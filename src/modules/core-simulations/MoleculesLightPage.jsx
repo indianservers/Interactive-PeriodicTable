@@ -1,3 +1,5 @@
+import { completeLab } from "../../utils/labNavigation.js";
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { useMemo, useState } from "react";
 import {
   Activity,
@@ -228,6 +230,7 @@ function Source({
   setFired,
   go,
 }) {
+  const [shots,setShots] = useState(0);
   const p = photonFromMicrometers(wavelength),
     target = MOLECULES[molecule],
     near = target.bands.some((b) => Math.abs(b.wn - p.wavenumber) < 60);
@@ -240,7 +243,7 @@ function Source({
       <Panel title="Light Source" className="source-controls">
         <label>
           Electromagnetic region
-          <select>
+          <select onChange={e => setWavelength(({Infrared:4.26,Microwave:10000,Visible:.5,Ultraviolet:.254})[e.target.value])}>
             <option>Infrared</option>
             <option>Microwave</option>
             <option>Visible</option>
@@ -277,7 +280,7 @@ function Source({
         </div>
         <Wave />
         <div className="chamber">
-          <Molecule id={molecule} active={fired && near} />
+          <Molecule key={shots} id={molecule} active={fired && near} /><span className="ml2-fired-photon" key={`photon-${shots}`}>{shots > 0 ? "Photon →" : ""}</span>
           <b>
             {fired
               ? near
@@ -320,9 +323,9 @@ function Source({
             onChange={(e) => setIntensity(+e.target.value)}
           />
         </label>
-        <button className="primary" onClick={() => setFired(true)}>
+        <button className="primary" onClick={() => {setShots(n=>n+1);setFired(true);}}>
           <Play /> Fire Photon
-        </button>
+        </button><p role="status">{shots} photons fired · {shots ? near ? "Absorbed: molecular vibration excited" : "Transmitted: no resonant transition" : "Ready"}</p>
         <button onClick={() => go(3)}>
           <Activity /> Scan Wavelength
         </button>
@@ -344,6 +347,7 @@ function Response({
   recorded,
   setRecorded,
 }) {
+  const [shots,setShots] = useState(0);
   const p = photonFromMicrometers(wavelength),
     co2 = Math.abs(p.wavenumber - 2349) < 70;
   return (
@@ -377,8 +381,8 @@ function Response({
           </label>
         ))}
       </Panel>
-      <Panel title="Molecular Chamber (Side View)" className="response-chamber">
-        <div className="photon">4.26 μm IR photons　~~~➜</div>
+      <Panel title="Molecular Chamber (Side View)" className={`response-chamber ${played ? "beam-running" : "beam-paused"} ${!played && shots > 0 ? "single-photon" : ""}`}>
+        <div className="photon">{wavelength.toFixed(2)} μm photons　~~~➜</div>
         {[
           ["CO2", "Asymmetric stretch"],
           ["H2O", "Bending mode"],
@@ -386,7 +390,7 @@ function Response({
           ["O2", "No IR activity"],
         ].map(([id, x]) => (
           <article key={id}>
-            <Molecule id={id} active={played && id === "CO2" && co2} />
+            <Molecule id={id} key={shots} active={(played || shots > 0) && id === "CO2" && co2} />
             <b>{id}</b>
             <span>{x}</span>
           </article>
@@ -431,13 +435,14 @@ function Response({
         </div>
       </Panel>
       <Panel title="Simulation Controls">
-        <button onClick={() => setPlayed(true)}>Step One Photon</button>
-        <button className="primary" onClick={() => setPlayed(!played)}>
+        <button onClick={() => {setShots(n=>n+1);setPlayed(false);}}>Step One Photon</button>
+        <button className="primary" onClick={() => {setShots(0);setPlayed(!played);}}>
           {played ? <Pause /> : <Play />} {played ? "Pause Beam" : "Play Beam"}
         </button>
         <button onClick={() => setRecorded(true)}>
           <Save /> Record Observation
         </button>
+        <p role="status">Beam {played ? "running" : "paused"} · {shots} single photons · {co2 ? "CO₂ absorbs at this wavelength" : "CO₂ transmits at this wavelength"}</p>
         {recorded && (
           <p className="success">
             <Check /> Observation recorded
@@ -594,6 +599,9 @@ function Compare({ animated, setAnimated }) {
         <p>
           Same photon flux, different energies, different molecular responses.
         </p>
+      <button className="primary" onClick={() => setAnimated(v => !v)}>
+        <Play /> {animated ? "Pause Comparison" : "Compare Animation"}
+      </button>
       </section>
       <section className="radiation-cards">
         {Object.entries(TRANSITIONS).map(([id, t]) => (
@@ -680,12 +688,11 @@ function Compare({ animated, setAnimated }) {
           <b>Remote sensing:</b> spectral signatures identify atmospheric gases.
         </p>
       </Panel>
-      <button className="primary animate" onClick={() => setAnimated(true)}>
-        <Play /> Compare Animation
-      </button>
+
     </main>
   );
 }
+const lightQuestions = [["What is the energy of a 500 nm photon?","2.48 eV","500 eV"],["When is a vibration IR active?","When it changes the molecular dipole moment","Whenever a molecule contains oxygen"],["What can UV absorption cause?","Electronic excitation or dissociation","Only molecular rotation"]].map(([prompt,a,b]) => ({prompt,correct:0,options:[{id:0,label:a},{id:1,label:b}]}));
 function Report({ reset }) {
   const [answers, setAnswers] = useState({}),
     score = [answers.energy, answers.ir, answers.uv].filter(Boolean).length,
@@ -720,7 +727,7 @@ function Report({ reset }) {
         <Metric label="Scans Collected" value="4" />
         <Metric label="Molecules Investigated" value="5" />
         <Metric label="Peaks Identified" value="6" />
-        <Metric label="Accuracy" value={score === 3 ? "95%" : "In progress"} />
+        <Metric label="Assessment" value={`${score}/3 correct`} />
       </section>
       <Panel title="IR Spectrum: CO₂">
         <SpectrumPlot />
@@ -782,18 +789,7 @@ function Report({ reset }) {
         </p>
       </Panel>
       <Panel title="Knowledge Check" className="knowledge">
-        <button onClick={() => setAnswers({ ...answers, energy: true })}>
-          500 nm photon: 2.48 eV
-        </button>
-        <button onClick={() => setAnswers({ ...answers, ir: true })}>
-          IR active: changing dipole moment
-        </button>
-        <button onClick={() => setAnswers({ ...answers, uv: true })}>
-          UV can reach dissociative states
-        </button>
-        <b>
-          <Check /> {score} / 3 correct
-        </b>
+        <KnowledgeCheck questions={lightQuestions} onChecked={a=>setAnswers({energy:a[0]===0,ir:a[1]===0,uv:a[2]===0})} />
       </Panel>
       <section className="report-actions">
         <button onClick={() => print()}>
@@ -823,6 +819,7 @@ export default function MoleculesLightPage() {
     [overlays, setOverlays] = useState(true),
     [animated, setAnimated] = useState(false);
   const go = (n) => {
+    if (n > 5) { completeLab(); return; }
       n = Math.max(0, Math.min(5, n));
       setStep(n);
       const u = new URL(location.href);

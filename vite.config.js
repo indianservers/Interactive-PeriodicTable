@@ -11,15 +11,16 @@ export default defineConfig({
     }),
   },
   optimizeDeps: {
-    include: ['ketcher-core', 'ketcher-react', 'ketcher-standalone', 'plotly.js-dist-min'],
+    include: ['plotly.js-dist-min'],
   },
   build: {
     manifest: true,
+    rollupOptions: {output: {onlyExplicitManualChunks: true, manualChunks(id) {if (id.includes("node_modules/molstar/")) return "molstar";}}},
     commonjsOptions: {
       include: [/ketcher/, /raphael/, /node_modules/],
       transformMixedEsModules: true,
     },
-    // Let Rollup keep dependency cycles together. Optional viewers are split at
-    // their lazy route boundaries instead of manually separating vendor internals.
+    // Keep Mol* internals together without pulling shared dependencies into
+    // that chunk, so viewers remain lazy and circular reexports stay safe.
   },
 })

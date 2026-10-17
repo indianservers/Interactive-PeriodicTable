@@ -1,3 +1,6 @@
+import AromaticApparatus from './AromaticApparatus.jsx';
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
+import { completeLab } from "../../utils/labNavigation.js";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, ChevronRight, Download, FlaskConical, HelpCircle, Pause, Play, RefreshCw, ShieldCheck, Trophy } from "lucide-react";
 import { aromaticPrepExperiments, aromaticPrepYield } from "./aromaticPrepModel.js";
@@ -27,11 +30,11 @@ function Header({ title, step, go, reset }) {
   );
 }
 
-function Footer({ step, go }) {
+function Footer({ step, go, onNavigate }) {
   return (
     <footer className="ap-foot">
       <button onClick={() => go(step - 1)} disabled={!step}><ArrowLeft /> Previous</button>
-      <button className="primary" onClick={() => go(step + 1)}>{step === 5 ? "Complete Lab" : "Continue"} <ChevronRight /></button>
+      <button className="primary" onClick={() => step === 5 ? completeLab(onNavigate) : go(step + 1)}>{step === 5 ? "Complete Lab" : "Continue"} <ChevronRight /></button>
     </footer>
   );
 }
@@ -39,18 +42,12 @@ function Footer({ step, go }) {
 function Bench({ running, fill, label, ice }) {
   return (
     <div className="ap-bench" role="img" aria-label="Preparation bench">
-      <div className="ap-stand" />
-      <div className="ap-flask" style={{ "--fill": fill }}>
-        {running && <i className="ap-ppt" />}
-        <span>{label}</span>
-      </div>
-      {running && <div className="ap-dropper"><i /></div>}
-      {ice && <div className="ap-ice" />}
+      <AromaticApparatus running={running} fill={fill} ice={ice}/><div className="ap-apparatus-labels"><span>Support stand</span><span>Reaction flask</span><span>Reagent addition funnel</span>{ice&&<span>Ice bath</span>}</div><span className="ap-apparatus-status">{label}</span>
     </div>
   );
 }
 
-export default function OrganicAromaticPrepLab({ experiment = "bromination" }) {
+export default function OrganicAromaticPrepLab({ experiment = "bromination", onNavigate }) {
   const spec = aromaticPrepExperiments[experiment];
   const substrateIds = Object.keys(spec.substrates);
   const [step, setStep] = useState(initialStep);
@@ -62,7 +59,7 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination" }) {
   const [validated, setValidated] = useState(false);
   const [running, setRunning] = useState(false);
   const [ice, setIce] = useState(false);
-  const [answers, setAnswers] = useState({});
+  const questions = useMemo(() => Object.values(spec.quiz).map(q => ({...q,prompt:q.q || q.prompt})), [spec]);
   const sub = spec.substrates[substrate];
   const run = useMemo(
     () => aromaticPrepYield({ experiment, substrate, equivalents, temperature, minutes, alkali }),
@@ -70,6 +67,7 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination" }) {
   );
 
   const go = (n) => {
+    if (n > 5) { completeLab(); return; }
     n = Math.max(0, Math.min(5, n));
     setStep(n);
     const u = new URL(location.href);
@@ -86,10 +84,10 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination" }) {
     setValidated(false);
     setRunning(false);
     setIce(false);
-    setAnswers({});
+
     go(0);
   };
-  const score = Object.entries(spec.quiz).filter(([key, q]) => answers[key] === q.correct).length;
+
   const csv = () => {
     const text = `experiment,substrate,product,conversion_percent,recovered_g,yield_percent\n${spec.id},${sub.label},${sub.product},${run.conversion.toFixed(1)},${run.recovered.toFixed(3)},${run.yieldPct.toFixed(1)}`;
     const a = document.createElement("a");
@@ -103,6 +101,7 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination" }) {
   return (
     <div className="ap-app">
       <Header title={spec.title} step={step} go={go} reset={reset} />
+      <nav className="ap-stages" aria-label="Experiment stages">{STEPS.map(([id,label],i) => <button key={id} aria-current={step===i?"step":undefined} onClick={() => go(i)}>{i+1}. {label}</button>)}</nav>
       {step === 0 && (
         <main className="ap-home">
           <section className="ap-panel intro">
@@ -254,19 +253,11 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination" }) {
           </section>
           <section className="ap-panel">
             <h2>Knowledge check</h2>
-            {Object.entries(spec.quiz).map(([key, q]) => (
-              <div key={key}>
-                <p>{q.prompt}</p>
-                {q.options.map((opt) => (
-                  <label key={opt.id}><input type="radio" checked={answers[key] === opt.id} onChange={() => setAnswers((a) => ({ ...a, [key]: opt.id }))} />{opt.label}</label>
-                ))}
-              </div>
-            ))}
-            <div className={score === 3 ? "ap-valid" : "ap-notice"}><Trophy /> Score: {score}/3</div>
+            <KnowledgeCheck questions={questions} />
           </section>
         </main>
       )}
-      <Footer step={step} go={go} />
+      <Footer step={step} go={go} onNavigate={onNavigate} />
     </div>
   );
 }

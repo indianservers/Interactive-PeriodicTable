@@ -1,4 +1,5 @@
 import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
+import "./experimentControls.css";
 
 export default function ExperimentControls({ running, started, onToggle, onStep, onReset, speed, onSpeedChange, disabled = false }) {
   return <div className="plab-experiment-controls" aria-label="Experiment playback controls">

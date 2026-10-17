@@ -31,6 +31,6 @@ export function simulateTabletBatch({targetWeight=650,turretSpeed=35,force=12.5,
   const friability=Math.max(.16,.76-force*.035+turretSpeed*.0012);
   const disintegration=Math.max(2.1,7.6+force*.16-(formula.find(item=>item.id==="ccs")?.mg||0)*.46);
   const thickness=3.25+fillDepth*.14;
-  return{weights,hardness,blend,weightMean:weights.reduce((a,b)=>a+b,0)/weights.length,weightRsd:percentRsd(weights),hardnessMean,hardnessRsd:percentRsd(hardness),assay,friability,disintegration,thickness,passes:{weight:percentRsd(weights)<=5,hardness:hardnessMean>=80&&hardnessMean<=110,blend:percentRsd(blend)<=5,friability:friability<=1,disintegration:disintegration<=15,thickness:thickness>=4&&thickness<=4.8}};
+  return{weights,hardness,blend,blendRsd:percentRsd(blend),weightMean:weights.reduce((a,b)=>a+b,0)/weights.length,weightRsd:percentRsd(weights),hardnessMean,hardnessRsd:percentRsd(hardness),assay,friability,disintegration,thickness,passes:{weight:percentRsd(weights)<=5,hardness:hardnessMean>=80&&hardnessMean<=110,blend:percentRsd(blend)<=5,friability:friability<=1,disintegration:disintegration<=15,thickness:thickness>=4&&thickness<=4.8}};
 }
 

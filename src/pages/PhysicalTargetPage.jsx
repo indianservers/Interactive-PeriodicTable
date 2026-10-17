@@ -5,10 +5,10 @@ import './physicalTargetLinks.css';
 export default function PhysicalTargetPage({ onNavigate }) {
   const labs = completedVirtualLabs.filter(lab => lab.subject === 'Physical');
   return <div className="physical-target-page">
-    <nav className="physical-target-links" aria-label="Interactive physical chemistry laboratories">
+    <details className="physical-target-lab-menu"><summary>More labs</summary><nav className="physical-target-links" aria-label="Interactive physical chemistry laboratories">
       <button className="all-labs" onClick={() => onNavigate?.('virtual-labs')}>Interactive labs</button>
       {labs.map(lab => <button key={lab.id} onClick={() => onNavigate?.(lab.route)}>{lab.title}</button>)}
-    </nav>
+    </nav></details>
     <PhysicalChemistryStudio onNavigate={onNavigate} />
   </div>;
 }

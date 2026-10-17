@@ -38,6 +38,7 @@ const PBlockTargetPage = lazy(() => import("./pages/PBlockTargetPage.jsx"));
 const BioVisualsTargetPage = lazy(() => import("./pages/BioVisualsTargetPage.jsx"));
 const MetabolismTargetPage = lazy(() => import("./pages/MetabolismTargetPage.jsx"));
 const PharmaVisualsTargetPage = lazy(() => import("./pages/PharmaVisualsTargetPage.jsx"));
+const PharmaStudioHomePage = lazy(() => import("./modules/pharma-lab/PharmaStudioHomePage.jsx"));
 const MedicinalChemistryPage = lazy(() => import("./modules/pharma-lab/MedicinalChemistryPage.jsx"));
 const ApiSynthesisPage = lazy(() => import("./modules/pharma-lab/ApiSynthesisPage.jsx"));
 const PreformulationPage = lazy(() => import("./modules/pharma-lab/PreformulationPage.jsx"));
@@ -60,6 +61,7 @@ const ChemistrySubjectHomePage = lazy(() => import("./pages/ChemistrySubjectHome
 const VirtualLabsHomePage = lazy(() => import("./pages/VirtualLabsHomePage.jsx"));
 const RetrosynthesisTargetPage = lazy(() => import("./pages/RetrosynthesisTargetPage.jsx"));
 import { useTheme } from "./hooks/useTheme.js";
+import { resolveAppRoute, appRouteUrl } from "./utils/studioRouting.js";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
 
 const MoleculeScenePage = lazy(() => import("./pages/MoleculeScenePage.jsx"));
@@ -76,6 +78,7 @@ const VirtualLabTargetPage = lazy(
 const MolecularSymmetryModule = lazy(
   () => import("./modules/molecular-symmetry/MolecularSymmetryModule.jsx"),
 );
+const SymmetryOperationsTarget = lazy(()=>import('./modules/molecular-symmetry/SymmetryOperationsTarget.jsx'));
 const ChemistrySolverModule = lazy(
   () => import("./modules/chemistry-solver/ChemistrySolverTargetPage.jsx"),
 );
@@ -93,7 +96,7 @@ const BiochemistryTargetPage = lazy(
 );
 const MembraneTargetPage = lazy(() => import("./pages/MembraneTargetPage.jsx"));
 const ARVRMRModule = lazy(
-  () => import("./modules/ar-vr-mr/ImmersiveChemistryTargetPage.jsx"),
+  () => import("./modules/ar-vr-mr/ARVRMRModule.jsx"),
 );
 const AtomBuilderPage = lazy(
   () => import("./modules/core-simulations/AtomBuilderPage.jsx"),
@@ -230,6 +233,10 @@ const pageHashMap = {
   "bio-nucleic-acids": "visuals/bio/nucleic-acids",
   "bio-metabolism": "visuals/bio/metabolism",
   "pharma-visuals": "visuals/pharma",
+  "pharma-studio": "visuals/pharma/lab",
+  "pharma-medicinal": "visuals/pharma/medicinal-chemistry",
+  "pharma-api-synthesis": "visuals/pharma/api-synthesis",
+  "titration-lab": "lab/titration",
   "pharma-preformulation": "visuals/pharma/preformulation",
   "pharma-tablet-formulation": "visuals/pharma/tablet-formulation",
   "pharma-dissolution": "visuals/pharma/dissolution",
@@ -324,6 +331,8 @@ const hashPageMap = {
   "visuals/bio/nucleic-acids": "bio-nucleic-acids",
   "visuals/bio/metabolism": "bio-metabolism",
   "visuals/pharma": "pharma-visuals",
+  "visuals/pharma/lab": "pharma-studio",
+  "lab/titration": "titration-lab",
   "visuals/pharma/medicinal-chemistry": "pharma-medicinal",
   "visuals/pharma/api-synthesis": "pharma-api-synthesis",
   "visuals/pharma/preformulation": "pharma-preformulation",
@@ -443,7 +452,8 @@ const pageStatusLabels = {
   "symmetry-point-groups": "Point Group Finder",
   "symmetry-practice": "Self Learning Predictor",
   "symmetry-teaching": "Symmetry Teaching Resources",
-  lab: "Chemistry Lab",
+  lab: "All Laboratories",
+  "titration-lab": "Acid–Base Titration Bench",
   syllabus: "Learning Path",
   quiz: "Quiz Mode",
   favorites: "Favorites",
@@ -484,7 +494,14 @@ const pageStatusLabels = {
   "bio-carbohydrates": "Carbohydrate Visuals",
   "bio-nucleic-acids": "DNA and RNA Visuals",
   "bio-metabolism": "Metabolism and ATP Visuals",
-  "pharma-visuals": "Pharma Chemistry Visuals",
+  "pharma-visuals": "Pharmaceutical Chemistry Lab",
+  "pharma-medicinal": "Medicinal Chemistry",
+  "pharma-api-synthesis": "API Synthesis",
+  "pharma-preformulation": "Preformulation",
+  "pharma-tablet-formulation": "Tablet Formulation",
+  "pharma-dissolution": "Dissolution Laboratory",
+  "pharma-hplc": "Pharmaceutical HPLC",
+  "pharma-stability": "Stability Laboratory",
   "pharma-adme": "ADME and Ionization Visuals",
   "pharma-dosage": "Dosage Form Visuals",
   "pharma-qc": "Pharmaceutical Assay and QC",
@@ -544,28 +561,7 @@ function LoadingProgress({title,detail}) { return <ExperienceLoading title={titl
 function App() {
   const { theme, toggle: toggleTheme, isDark } = useTheme();
   const resolveLocationPage = () => {
-    const rawHash = window.location.hash.replace(/^#\/?/, "").split("?")[0];
-    const nestedHash = rawHash.split("#").filter(Boolean);
-    const path = window.location.pathname.replace(/^\//, "");
-    if (path.startsWith("nucleic-acid-explorer")) return "bio-nucleic-acids";
-    if (path.startsWith("carbohydrate-structure-studio"))
-      return "bio-carbohydrates";
-    if (path.startsWith("drug-discovery")) return "drug-discovery";
-    if (rawHash.startsWith("drug-discovery")) return "drug-discovery";
-    if (nestedHash.length > 1 && nestedHash.at(-1) === "molecule")
-      return "molecule";
-    if (
-      path.endsWith("/simulations/acid-base-solutions") &&
-      rawHash === "molecule"
-    )
-      return "molecule";
-    if (rawHash.startsWith("modules/physical/")) return "physical-simulators";
-    return (
-      hashPageMap[rawHash] ||
-      hashPageMap[nestedHash[0]] ||
-      rawHash ||
-      "dashboard"
-    );
+    return resolveAppRoute(window.location, hashPageMap);
   };
   const [currentPage, setCurrentPage] = useState(() => {
     return resolveLocationPage();
@@ -601,10 +597,11 @@ function App() {
   const [compareElement, setCompareElement] = useState(null);
 
   const navigate = useCallback((page) => {
-    const resolvedPage = String(page).startsWith("modules/physical/") ? "physical-simulators" : page;
-    setCurrentPage(resolvedPage);
     const nextHash = pageHashMap[page] || page;
-    if (window.location.hash.replace(/^#\/?/, "") !== nextHash) window.location.hash = nextHash;
+    const url = appRouteUrl(window.location, nextHash);
+    if (url.href !== window.location.href) window.history.pushState({}, '', url);
+    setCurrentPage(resolveAppRoute(url, hashPageMap));
+    window.dispatchEvent(new PopStateEvent('popstate'));
   }, []);
   useEffect(() => {
     const handleHashChange = () => setCurrentPage(resolveLocationPage());
@@ -763,7 +760,7 @@ function App() {
             </div>
           }
         >
-          <SyllabusInteractiveLab experimentId={currentPage} />
+          <SyllabusInteractiveLab key={currentPage} experimentId={currentPage} onNavigate={navigate} />
         </Suspense>
       );
     }
@@ -789,6 +786,7 @@ function App() {
           <ChemistrySubjectHomePage page={currentPage} onNavigate={navigate} />
         );
       case "virtual-labs":
+      case "lab":
         return <VirtualLabsHomePage onNavigate={navigate} />;
       case "table":
         return <PeriodicTablePage {...commonProps} />;
@@ -920,7 +918,7 @@ function App() {
               />
             }
           >
-            <OrganicAromaticPrepLab experiment="bromination" />
+            <OrganicAromaticPrepLab experiment="bromination" onNavigate={navigate} />
           </Suspense>
         );
       case "benzoylation-aniline-phenol":
@@ -935,7 +933,7 @@ function App() {
               />
             }
           >
-            <OrganicAromaticPrepLab experiment="benzoylation" />
+            <OrganicAromaticPrepLab experiment="benzoylation" onNavigate={navigate} />
           </Suspense>
         );
       case "flame-photometry":
@@ -1168,8 +1166,9 @@ function App() {
         );
       case "library":
         return <LibraryPage onNavigate={navigate} />;
-      case "symmetry":
       case "symmetry-operations":
+        return <SymmetryOperationsTarget onNavigate={navigate}/>;
+      case "symmetry":
       case "symmetry-point-groups":
       case "symmetry-practice":
       case "symmetry-teaching":
@@ -1210,6 +1209,7 @@ function App() {
               key={currentPage}
               initialPage={
                 {
+                  "chemistry-solver-questions": "Solved Questions",
                   "chemistry-solver-bookmarks": "Saved Solutions",
                   "chemistry-solver-practice": "Simulations",
                 }[currentPage] || "New Problem"
@@ -1238,7 +1238,7 @@ function App() {
             fallback={
               <LoadingProgress
                 title="Loading Structure Draw"
-                detail="Preparing the Ketcher editor and Indigo chemistry engine..."
+                detail="Preparing drawing tools, templates and molecular validation..."
                 height={640}
                 reducedMotion={reducedMotion}
               />
@@ -1328,7 +1328,7 @@ function App() {
       case "retrosynthesis-planner":
         return <RetrosynthesisTargetPage onNavigate={navigate} />;
       case "subject-modules":
-        return <ModulesHubTargetPage />;
+        return <ModulesHubTargetPage onNavigate={navigate} />;
       case "subject-modules-legacy":
         return (
           <SubjectModulePage
@@ -1441,6 +1441,8 @@ function App() {
         return <MetabolismTargetPage />;
       case "pharma-visuals":
         return <PharmaVisualsTargetPage onNavigate={navigate} />;
+      case "pharma-studio":
+        return <PharmaStudioHomePage />;
       case "pharma-medicinal":
         return <MedicinalChemistryPage />;
       case "pharma-api-synthesis":
@@ -1476,7 +1478,7 @@ function App() {
           />
         );
       }
-      case "lab":
+      case "titration-lab":
         return (
           <Suspense
             fallback={
@@ -1536,6 +1538,7 @@ function App() {
   return (
     <div
       className={`${reducedMotion ? "no-motion motion-paused" : ""} ${highContrast ? "high-contrast" : ""} ${compact ? "app-compact" : ""} ${studyMode ? "study-mode" : ""} theme-${colorTheme}`}
+      data-app-page={currentPage}
     >
       <AppShell
         currentPage={currentPage}
@@ -1557,7 +1560,7 @@ function App() {
       >
         <ExperienceErrorBoundary key={`${currentPage}-${resetVersion}`} onHome={()=>navigate("dashboard")}><Suspense fallback={<ExperienceLoading title={`Loading ${formatPageStatusLabel(currentPage)}`} detail={getLoadingDetail(currentPage)}/>}>{renderPage()}</Suspense></ExperienceErrorBoundary>
       </AppShell>
-      {currentPage !== 'dashboard' && <ExperienceToolbar key={currentPage} page={currentPage} onNavigate={navigate} onReset={()=>setResetVersion(value=>value+1)} motionEnabled={!reducedMotion} onMotionToggle={()=>setReducedMotion(value=>!value)} highContrast={highContrast} onContrastToggle={()=>setHighContrast(value=>!value)}/>}
+      {currentPage !== 'dashboard' && currentPage !== 'pharma-visuals' && <ExperienceToolbar key={currentPage} page={currentPage} onNavigate={navigate} onReset={()=>setResetVersion(value=>value+1)} motionEnabled={!reducedMotion} onMotionToggle={()=>setReducedMotion(value=>!value)} highContrast={highContrast} onContrastToggle={()=>setHighContrast(value=>!value)}/>}
       {serviceWorkerUpdate && (
         <button
           onClick={serviceWorkerUpdate}

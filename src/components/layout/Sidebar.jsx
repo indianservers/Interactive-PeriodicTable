@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { globalPageEntries } from '../../data/globalSearch.js';
 import {
   Activity, Atom, BadgeCheck, BarChart3, BookOpen, Box, Brain, Calculator, ChevronDown, CircleDot, Clock, Droplets, PenTool,
   FileQuestion, FlaskConical, FlaskRound, GitCompare, GraduationCap, Heart,
@@ -13,6 +14,9 @@ export const navGroups = [
     icon: Route,
     items: [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { id: 'library', label: 'Chemistry Library', icon: Search },
+      { id: 'virtual-labs', label: 'All Laboratories', icon: FlaskConical },
+      { id: 'subject-modules', label: 'All Studios & Tools', icon: Microscope },
       { id: 'table', label: 'Periodic Table', icon: Table2 },
       { id: 'trends', label: 'Trends', icon: TrendingUp },
       { id: 'compare', label: 'Compare', icon: GitCompare },
@@ -188,6 +192,7 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
   const [openGroups, setOpenGroups] = useState(() => Object.fromEntries(navGroups.map(group => [group.label, true])));
   const [openSubmenus, setOpenSubmenus] = useState({ 'chemistry-visuals': true, symmetry: true });
   const query = menuSearch.trim().toLowerCase();
+  const catalogueMatches = query ? globalPageEntries.filter(item => query.split(/\s+/).every(word=>`${item.label} ${item.detail} ${item.keywords || ''}`.toLowerCase().includes(word))) : [];
   const itemMatchesQuery = (item) => {
     if (!query) return true;
     const childText = flattenNavItems(item.subItems || []).map(subItem => `${subItem.label} ${subItem.id}`).join(' ');
@@ -307,12 +312,14 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
               value={menuSearch}
               onChange={event => setMenuSearch(event.target.value)}
               className="input h-9 rounded-xl pl-8 pr-3 text-xs"
-              placeholder="Search menu"
+              aria-label="Search app navigation"
+              placeholder="Search all pages and labs"
             />
           </div>
         </div>
 
         <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-3">
+          {query && catalogueMatches.length>0 && <div aria-label="Matching app destinations"><p className="px-3 text-xs text-cyan-300">{catalogueMatches.length} destinations</p>{catalogueMatches.map(item=><button key={item.id} className="sidebar-item w-full text-left" onClick={()=>goTo(item.id)}><span className="text-sm">{item.label}</span></button>)}</div>}
           {!query && recentItems.length > 0 && (
             <div>
               <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-600">Recently Opened</p>
@@ -378,7 +385,7 @@ export const Sidebar = ({ currentPage, onNavigate, isOpen, onClose, favoritePage
               </div>
             );
           })}
-          {filteredGroups.length === 0 && (
+          {filteredGroups.length === 0 && catalogueMatches.length === 0 && (
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4 text-center">
               <p className="text-sm font-semibold text-gray-300">No tools found</p>
               <p className="mt-1 text-xs text-gray-500">Try table, lab, quiz, or molecule.</p>

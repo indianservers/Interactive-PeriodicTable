@@ -1,3 +1,6 @@
+import ExperimentComparison from './components/ExperimentComparison.jsx';
+import PublishedExperiment, { ExperimentDataMode } from './components/PublishedExperiment.jsx';
+import { savePharmaReport } from './labReports.js';
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   CheckCircle2,
@@ -28,6 +31,8 @@ const workflow = [
   "Generate Report",
 ];
 export default function HplcPage() {
+  const [dataView, setDataView] = useState("simulation");
+  const [evidenceKey, setEvidenceKey] = useState(0);
   const timer = useRef(null);
   const [query, setQuery] = useState("");
   const [organic, setOrganic] = useState(30);
@@ -42,13 +47,15 @@ export default function HplcPage() {
   const [running, setRunning] = useState(false);
   const [started, setStarted] = useState(false);
   const [primed, setPrimed] = useState(false);
+  const [standardInjected,setStandardInjected]=useState(false);
+  const [workflowStep,setWorkflowStep]=useState(0);
   const [integrated, setIntegrated] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [motion, setMotion] = useState(false);
   const [sources, setSources] = useState(false);
   const [mode, setMode] = useState("guided");
   const [audit, setAudit] = useState([
-    { time: "14:01", action: "Method loaded", detail: "QC-HPLC-001" },
+    { time: new Date().toLocaleTimeString(), action: "Method loaded", detail: "QC-HPLC-001" },
   ]);
   const [message, setMessage] = useState(
     "Prime the flow path before injecting a standard or sample.",
@@ -56,7 +63,7 @@ export default function HplcPage() {
   const result = useMemo(
     () =>
       simulateHplcMethod({
-        organicPercent: organic,
+        runTime,        organicPercent: organic,
         flow,
         temperature,
         injectionVolume: injection,
@@ -71,9 +78,10 @@ export default function HplcPage() {
       injection,
       wavelength,
       concentration,
-      threshold,
+      threshold,runTime,
     ],
   );
+  useEffect(()=>{setRunning(false);setProgress(0);setIntegrated(false);setStandardInjected(false)},[organic,flow,temperature,injection,wavelength,runTime,concentration,threshold]);
   const chromatogram = useMemo(
     () => chromatogramPoints(result.peaks, runTime),
     [result.peaks, runTime],
@@ -96,7 +104,7 @@ export default function HplcPage() {
       setAudit((a) => [
         ...a,
         {
-          time: "14:21",
+          time: new Date().toLocaleTimeString(),
           action: "Run completed",
           detail: `${runTime.toFixed(1)} min`,
         },
@@ -116,15 +124,18 @@ export default function HplcPage() {
     setRunning(false);
     setStarted(false);
     setPrimed(false);
+    setStandardInjected(false);
     setIntegrated(false);
     setAudit([
-      { time: "14:01", action: "Method loaded", detail: "QC-HPLC-001" },
+      { time: new Date().toLocaleTimeString(), action: "Method loaded", detail: "QC-HPLC-001" },
     ]);
     setMessage("Default representative HPLC method restored.");
   };
   const toggle = () => {
     if (!primed)
       return setMessage("Prime the solvent path before running the sequence.");
+    if(!standardInjected)return setMessage("Inject a calibration standard before running a sample.");
+    if(progress>=100){setProgress(0);setIntegrated(false)}
     setStarted(true);
     setRunning((v) => !v);
     setMessage(
@@ -144,13 +155,14 @@ export default function HplcPage() {
       query={query}
       setQuery={setQuery}
       activeStage={5}
-      onReset={reset}
+      onReset={() => { reset(); setEvidenceKey(value => value + 1); }}
       onSave={() => setMessage("HPLC experiment state saved locally.")}
-      onSources={() => setSources(true)}
+      onSources={() => dataView !== "simulation" ? document.querySelector(".published-source")?.scrollIntoView({ behavior: "smooth", block: "start" }) : setSources(true)}
       reducedMotion={motion}
       setReducedMotion={setMotion}
     >
-      <main className="plab-hplc">
+      <ExperimentDataMode value={dataView} onChange={value => { setRunning(false); setDataView(value); }}/ >
+      {dataView === "comparison" ? <ExperimentComparison key={evidenceKey} lab="hplc"/> : dataView === "published" ? <PublishedExperiment key={evidenceKey} lab="hplc"/> : <main className="plab-hplc">
         <header className="plab-page-title">
           <div>
             <span className="plab-panel-kicker">
@@ -162,13 +174,13 @@ export default function HplcPage() {
           <div className="plab-mode">
             <button
               className={mode === "guided" ? "active" : ""}
-              onClick={() => setMode("guided")}
+              onClick={() => {setMode("guided");setMessage("Guided mode: follow workflow prerequisites.")}}
             >
               Guided
             </button>
             <button
               className={mode === "free" ? "active" : ""}
-              onClick={() => setMode("free")}
+              onClick={() => {setMode("free");setMessage("Free experiment: vary method assumptions and observe calculated effects.")}}
             >
               Free experiment
             </button>
@@ -178,7 +190,7 @@ export default function HplcPage() {
           <aside className="plab-hplc-left">
             <h2>Analysis Workflow</h2>
             {workflow.map((name, i) => (
-              <button key={name} className={progress / 20 >= i ? "done" : ""}>
+              <button key={name} onClick={()=>{setWorkflowStep(i);setMessage(["Prepare a known calibration standard; the teaching concentrations are listed below.","Set the sample concentration and dilution assumptions.","Set run time, injection volume and detector wavelength.","Prime, inject the standard and run the sequence.","Finish acquisition before integrating peaks.","Integrate results, then export the report."][i])}} aria-pressed={workflowStep===i} className={progress / 20 >= i ? "done" : ""}>
                 <span>{i + 1}</span>
                 <b>{name}</b>
               </button>
@@ -294,7 +306,7 @@ export default function HplcPage() {
                 setAudit((a) => [
                   ...a,
                   {
-                    time: "14:05",
+                    time: new Date().toLocaleTimeString(),
                     action: "System primed",
                     detail: `${flow.toFixed(2)} mL/min`,
                   },
@@ -305,13 +317,7 @@ export default function HplcPage() {
               Prime System
             </button>
             <button
-              onClick={() =>
-                setMessage(
-                  primed
-                    ? "Standard injected; calibration response confirmed."
-                    : "Prime the system before injection.",
-                )
-              }
+              onClick={() => {if(!primed)return setMessage("Prime the system before injection.");setStandardInjected(true);setMessage("Calibration standard injected into the simulated method.");setAudit(a=>[...a,{time:new Date().toLocaleTimeString(),action:"Standard injected",detail:"Model calibration; not measured reference material"}])}}
             >
               <FlaskConical />
               Inject Standard
@@ -330,7 +336,7 @@ export default function HplcPage() {
                 setAudit((a) => [
                   ...a,
                   {
-                    time: "14:22",
+                    time: new Date().toLocaleTimeString(),
                     action: "Data integrated",
                     detail: `${result.peaks.length} peaks`,
                   },
@@ -345,7 +351,7 @@ export default function HplcPage() {
             </button>
             <button
               onClick={() =>
-                setMessage("Representative report prepared for local export.")
+                (integrated ? (savePharmaReport(), setMessage("Report saved and downloaded.")) : setMessage("Integrate acquired peaks before exporting a report."))
               }
             >
               <FileDown />
@@ -356,11 +362,11 @@ export default function HplcPage() {
               started={started}
               onToggle={toggle}
               onStep={() => {
-                if (!primed) return setMessage("Prime before stepping.");
+                if (!primed || !standardInjected) return setMessage("Prime and inject the standard before stepping.");
                 setStarted(true);
                 setProgress((v) => Math.min(100, v + 10));
               }}
-              onReset={reset}
+              onReset={() => { reset(); setEvidenceKey(value => value + 1); }}
               speed={speed}
               onSpeedChange={setSpeed}
             />
@@ -369,7 +375,7 @@ export default function HplcPage() {
                 Pressure <b>{result.pressure.toFixed(1)} MPa</b>
               </span>
               <span>
-                Solvent <b>{result.solventMl.toFixed(1)} mL</b>
+                Solvent <b>{(flow*runTime*progress/100).toFixed(1)} mL</b>
               </span>
               <span>
                 Resolution <b>{result.resolution.toFixed(2)}</b>
@@ -423,7 +429,7 @@ export default function HplcPage() {
             ))}
           </article>
           <article className="plab-sample-results">
-            <h3>Sample Results</h3>
+            <h3>{integrated?"Integrated simulated results":"Predicted model results (not acquired)"}</h3>
             {result.peaks.map((peak) => (
               <span key={peak.name}>
                 <b>{peak.name}</b>
@@ -463,8 +469,8 @@ export default function HplcPage() {
             <CheckCircle2 />
             <b>
               {pass && integrated
-                ? "OVERALL RESULT · PASS"
-                : "INTEGRATION PENDING"}
+                ? "SIMULATED CHECK · PASS"
+                : "SIMULATED CHECK · NOT PASSED / PENDING"}
             </b>
             <span>Representative educational assessment</span>
           </article>
@@ -473,7 +479,7 @@ export default function HplcPage() {
           Representative method and data · not a compendial claim or release
           result.
         </footer>
-      </main>
+      </main>}
       {sources && (
         <div className="plab-drawer-backdrop" onClick={() => setSources(false)}>
           <aside className="plab-drawer" onClick={(e) => e.stopPropagation()}>

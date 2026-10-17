@@ -1,3 +1,4 @@
+import { downloadBlob } from "../utils/labExports.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -33,6 +34,8 @@ import {
 import "./moleculeStudioTarget.css";
 import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
 import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
+import { ALL_MOLECULES } from '../data/molecules.js';
+import { moleculeModel, requestedMolecule } from '../utils/moleculeSearch.js';
 
 function modelToMol(model, label = "Molecule Studio snapshot") {
   const atomLines = model.atoms.map(([symbol,x=0,y=0,z=0]) => `${Number(x).toFixed(4).padStart(10)}${Number(y).toFixed(4).padStart(10)}${Number(z).toFixed(4).padStart(10)} ${String(symbol).padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join("\n");
@@ -559,6 +562,14 @@ const presets = [
   ["Hydrogen peroxide", "H₂O₂"],
   ["Sulfuric acid", "H₂SO₄"],
 ];
+for (const molecule of ALL_MOLECULES) {
+  if (!PRESET_MODELS[molecule.name]) {
+    PRESET_MODELS[molecule.name]=moleculeModel(molecule);
+    PRESET_INFO[molecule.name]=[molecule.formula,'—'];
+    presets.push([molecule.name,molecule.formula]);
+  }
+}
+const initialPreset=()=>requestedMolecule(window.location,ALL_MOLECULES)?.name || 'Ethanol';
 export const MoleculeScenePage = ({ onNavigate }) => {
   const inspectViewerRef = useRef(null);
   const [selected, setSelected] = useState({ index: 0, symbol: "C" }),
@@ -568,12 +579,14 @@ export const MoleculeScenePage = ({ onNavigate }) => {
     [surface, setSurface] = useState(false),
     [vibrate, setVibrate] = useState(false),
     [resetSignal, setResetSignal] = useState(0),
-    [activePreset, setActivePreset] = useState("Ethanol"),
+    [activePreset, setActivePreset] = useState(initialPreset),
     [dragMode, setDragMode] = useState(false),
     [bondMode, setBondMode] = useState(false),
     [bondSource, setBondSource] = useState(null),
     [inspectorTab, setInspectorTab] = useState("Inspector"),
     [notice, setNotice] = useState("");
+  const [notes,setNotes] = useState("");
+  const [moreOpen,setMoreOpen] = useState(false);
   const [workspaceMode, setWorkspaceMode] = useState("edit");
   const [inspectStyle, setInspectStyle] = useState("Ball & stick");
   const [inspectSource, setInspectSource] = useState(null);
@@ -583,6 +596,11 @@ export const MoleculeScenePage = ({ onNavigate }) => {
     atoms: [["C", 0, 0, 0]],
     bonds: [],
   });
+  useEffect(()=>{
+    const sync=()=>{const molecule=requestedMolecule(window.location,ALL_MOLECULES);setActivePreset(molecule?.name || 'Ethanol');setSelected({index:0,symbol:molecule?.atoms[0]?.element || 'C'});setInspectSource(null);setWorkspaceMode('edit');};
+    window.addEventListener('hashchange',sync);window.addEventListener('popstate',sync);
+    return()=>{window.removeEventListener('hashchange',sync);window.removeEventListener('popstate',sync);};
+  },[]);
   const select = useCallback(
     (atom) => {
       setSelected(atom);
@@ -704,7 +722,7 @@ export const MoleculeScenePage = ({ onNavigate }) => {
   const saveProject = () => {
     localStorage.setItem(
       "molecule-studio-project",
-      JSON.stringify({ activePreset, selected, customModel }),
+      JSON.stringify({ activePreset, selected, customModel, autoRotate, spacefill, surface, vibrate, notes }),
     );
     announce("Molecule saved locally");
   };
@@ -717,7 +735,8 @@ export const MoleculeScenePage = ({ onNavigate }) => {
       if (validPreset) {
         if (saved.activePreset === "Custom molecule" && saved.customModel)
           setCustomModel(saved.customModel);
-        setActivePreset(saved.activePreset);
+        setActivePreset(saved.activePreset);setNotes(saved.notes || "");
+        setAutoRotate(saved.autoRotate ?? true);setSpacefill(saved.spacefill ?? false);setSurface(saved.surface ?? false);setVibrate(saved.vibrate ?? false);setWorkspaceMode("edit");
         const model =
           saved.activePreset === "Custom molecule"
             ? saved.customModel || customModel
@@ -905,15 +924,8 @@ export const MoleculeScenePage = ({ onNavigate }) => {
               <FolderOpen />
               Load
             </button>
-            <button
-              onClick={() =>
-                announce(
-                  "More molecule actions are available in Properties and Notes",
-                )
-              }
-            >
-              <MoreHorizontal />
-            </button>
+            <button aria-label="More molecule options" aria-expanded={moreOpen} onClick={()=>setMoreOpen(v=>!v)}><MoreHorizontal /></button>
+            {moreOpen && <div className="ms-more-options"><button onClick={()=>{setInspectorTab("Notes");setMoreOpen(false)}}>Open notes</button><button onClick={()=>{setInspectorTab("Properties");setMoreOpen(false)}}>Molecule properties</button><button onClick={()=>downloadBlob(new Blob([JSON.stringify({activePreset,model:currentModel},null,2)],{type:"application/json"}),"molecule-project.json")}>Export molecule JSON</button></div>}
           </div>
         </div>
         {workspaceMode === "edit" ? <Ethanol3D
@@ -954,7 +966,7 @@ export const MoleculeScenePage = ({ onNavigate }) => {
           <div className="ms-notes">
             <h3>Notes</h3>
             <textarea
-              aria-label="Molecule notes"
+              aria-label="Molecule notes" value={notes} onChange={e=>setNotes(e.target.value)}
               placeholder="Add an observation about this molecule…"
             />
           </div>

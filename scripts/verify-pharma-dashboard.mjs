@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {homeFormula,tabletWeight,releaseAt,releaseTime,dashboardJourney,dashboardModules} from '../src/modules/pharma-lab/homeDashboardModel.js';
+assert.equal(tabletWeight,1000);
+assert.equal(homeFormula.reduce((sum,item)=>sum+item.mg/tabletWeight*100,0),100);
+assert.equal(homeFormula.find(item=>item.name==='Paracetamol (API)').mg,500);
+assert.equal(dashboardJourney.length,8);
+assert.equal(dashboardModules.length,5);
+assert.equal(releaseAt(-5),0);
+assert.equal(releaseAt(0),0);
+for(let t=0;t<60;t++)assert(releaseAt(t)<=releaseAt(t+1));
+assert(releaseAt(10000)<=100);
+for(const p of [50,90])assert(Math.abs(releaseAt(releaseTime(p))-p)<1e-8);
+console.log('PASS: home formulation mass balance, bounded dissolution, inverse release times, eight journey stages and five module cards.');

@@ -220,6 +220,7 @@ function StructureViewer({
           pdbId="5IKR"
           representation={representationConfig}
           colorScheme="chain"
+          surfaceOpacity={0.7}
           selectedChain="A"
           selectedResidue={selectedResidue}
           focusOnSelection={Boolean(selectedResidue)}
@@ -1714,9 +1715,7 @@ function BodyJourney({ active, time }) {
   return (
     <div className="dds-body-journey">
       <div className="dds-body-silhouette">
-        <HeartPulse />
-        <span className="head" />
-        <span className="torso" />
+        <img className="dds-anatomy" src="/assets/pharma/anatomy/adme-torso.png" alt="Anatomical illustration of digestive organs, liver and circulatory system"/>
         <span className="liver">Liver</span>
         <span className="gut">Intestine</span>
         <span className="kidney">Kidney</span>
@@ -1793,7 +1792,7 @@ export function SafetyPage({ onProvenance }) {
           className="dds-risk-map"
         >
           <div className="dds-risk-body">
-            <HeartPulse />
+            <img className="dds-anatomy" src="/assets/pharma/anatomy/adme-torso.png" alt="Anatomical reference for the organ-system evidence map"/>
             <span className="brain">CNS · not assessed</span>
             <span className="heart">Cardiac · not assessed</span>
             <span className="hepatic">

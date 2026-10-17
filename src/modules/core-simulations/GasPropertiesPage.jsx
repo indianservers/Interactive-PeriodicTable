@@ -123,7 +123,7 @@ function GasIcon({ gas }) {
     </span>
   );
 }
-function Sparkline({ type, temp, volume, pressure }) {
+function Sparkline({ type, temp, volume, pressure, speed }) {
   const pv = useMemo(
     () =>
       Array.from({ length: 7 }, (_, i) => {
@@ -190,7 +190,7 @@ function Sparkline({ type, temp, volume, pressure }) {
         Average speed
       </text>
       <text x={135 + t / 3} y="46">
-        {Math.round(952 * Math.sqrt(t / 320))} m/s
+        {speed} m/s
       </text>
     </svg>
   );
@@ -199,6 +199,8 @@ function Sparkline({ type, temp, volume, pressure }) {
 export default function GasPropertiesPage() {
   const [s, setS] = useState(initial);
   const [section, setSection] = useState("Lab");
+  const [light, setLight] = useState(false);
+  const [note, setNote] = useState(() => localStorage.getItem("gas-lab-notes") || "");
   const [advanced, setAdvanced] = useState(false);
   const [history, setHistory] = useState([]);
   const canvasRef = useRef();
@@ -232,7 +234,7 @@ export default function GasPropertiesPage() {
       return next;
     });
   return (
-    <div className="gp-app">
+    <div className={`gp-app gas-properties-app ${light ? "gp-light" : ""}`}>
       <header className="gp-head">
         <FlaskConical />
         <div>
@@ -255,7 +257,7 @@ export default function GasPropertiesPage() {
             <Settings />
             Settings
           </button>
-          <button>
+          <button aria-label="Toggle gas lab theme" onClick={() => setLight(v => !v)}>
             <Sun />
           </button>
           <span>
@@ -286,8 +288,12 @@ export default function GasPropertiesPage() {
           Tomorrow
         </p>
       </aside>
-      <main className="gp-main">
-        <section className="gp-apparatus">
+      <main className={`gp-main gp-section-${section.toLowerCase()}`}>
+        {section !== "Lab" && <section className="gp-section-heading"><h2>{section}</h2><p>{({Graphs:"Pressure–volume and molecular speed distributions update with your lab settings.",Molecules:`${gases[s.gas].label || s.gas} particles at ${s.temp} K. Mean speed: ${speed} m/s.`,Data:"Record states and export your measurements.",Notebook:"Save your observations on this device.",Theory:"Connect particle motion with macroscopic gas laws.",Experiments:"Choose a controlled experiment, then vary one quantity at a time.",Settings:"Adjust playback and the equation of state."})[section]}</p></section>}
+        {section === "Theory" && <section className="gp-section-panel"><h2>Gas laws</h2><p>Ideal gas: PV = nRT. At constant temperature and amount, P is inversely proportional to V (Boyle’s law). At constant pressure and amount, V is proportional to absolute T (Charles’s law).</p><p>Mean molecular kinetic energy = 3kT/2; RMS speed = √(3RT/M), with M in kg/mol. The van der Waals model includes molecular attraction and excluded volume.</p></section>}
+        {section === "Notebook" && <section className="gp-section-panel"><label>Observations<textarea value={note} onChange={e => {setNote(e.target.value);localStorage.setItem("gas-lab-notes",e.target.value);}} rows={10}/></label><p>Notes are saved automatically on this device.</p><button onClick={recordPoint}>Record current state</button></section>}
+        {section === "Experiments" && <section className="gp-section-panel">{[["Boyle’s law",{...initial,temp:320,holdPressure:false}],["Charles’s law",{...initial,holdPressure:true}],["Real gas comparison",{...initial,ideal:false}]].map(([label,preset]) => <button key={label} onClick={() => {setS(preset);setSection("Lab");}}>{label}</button>)}</section>}
+        <section className="gp-apparatus" hidden={!["Lab", "Molecules"].includes(section)}>
           <div className="gp-volume">
             <b>Volume (L)</b>
             {[6, 5, 4, 3, 2, 1].map((n) => (
@@ -324,7 +330,7 @@ export default function GasPropertiesPage() {
             <i />
           </div>
         </section>
-        <section className="gp-readouts">
+        <section className="gp-readouts" hidden={!["Lab", "Molecules", "Graphs"].includes(section)}>
           {[
             ["P", "Pressure", pressure.toFixed(2) + " atm", "blue"],
             ["V", "Volume", s.volume.toFixed(2) + " L", "purple"],
@@ -338,7 +344,7 @@ export default function GasPropertiesPage() {
             </div>
           ))}
         </section>
-        <section className="gp-graphs">
+        <section className="gp-graphs" hidden={!["Lab", "Graphs"].includes(section)}>
           <article>
             <h2>P–V Graph (Isothermal Highlighted)</h2>
             <Sparkline
@@ -350,10 +356,10 @@ export default function GasPropertiesPage() {
           </article>
           <article>
             <h2>Maxwell–Boltzmann Distribution</h2>
-            <Sparkline type="dist" temp={s.temp} />
+            <Sparkline type="dist" temp={s.temp} speed={speed} />
           </article>
         </section>
-        <section className="gp-controls">
+        <section className="gp-controls" hidden={!["Lab", "Molecules", "Settings"].includes(section)}>
           <article className="gp-types">
             <h3>Molecule type</h3>
             <div>
@@ -486,7 +492,7 @@ export default function GasPropertiesPage() {
             {advanced && <div className="gp-advanced-panel">Collision model: {s.ideal ? "Ideal gas" : "van der Waals"}. Constants: R = {R_L_ATM} L·atm·mol⁻¹·K⁻¹ · a = {gases[s.gas].a} · b = {gases[s.gas].b} L·mol⁻¹.</div>}
           </article>
         </section>
-        <section className="gp-stats">
+        <section className="gp-stats" hidden={!["Lab", "Graphs", "Molecules"].includes(section)}>
           <div>
             <small>Collisions (total)</small>
             <b>{(18429 + s.count * 3).toLocaleString()}</b>
@@ -515,7 +521,7 @@ export default function GasPropertiesPage() {
             Real gases deviate at high pressure and low temperature
           </p>
         </section>
-        <section className="gp-history-panel">
+        <section className="gp-history-panel" hidden={!["Lab", "Data", "Notebook"].includes(section)}>
           <div className="gp-history-head"><div><h2><History /> Measurement history</h2><p>Capture states to compare Boyle’s, Charles’s and ideal-gas behaviour.</p></div><div><button onClick={recordPoint}><Plus /> Record point</button><button onClick={exportHistory} disabled={!history.length}><Download /> Export CSV</button></div></div>
           <div className="gp-history-metrics"><span>Density <b>{density.toFixed(3)} g/L</b></span><span>Mean kinetic energy <b>{kineticEnergy.toFixed(2)} J</b></span><span>Model <b>{s.ideal ? "Ideal gas" : "van der Waals"}</b></span></div>
           {history.length ? <div className="gp-history-table"><span>Point</span><span>Gas</span><span>T</span><span>V</span><span>P</span>{history.map((item) => <><b key={`${item.time}-n`}>{item.time}</b><span key={`${item.time}-g`}>{item.gas}</span><span key={`${item.time}-t`}>{item.temp} K</span><span key={`${item.time}-v`}>{item.volume.toFixed(2)} L</span><span key={`${item.time}-p`}>{item.pressure.toFixed(3)} atm</span></>)}</div> : <p className="gp-history-empty">No saved states yet. Adjust the seek bar or temperature, then record a point.</p>}

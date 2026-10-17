@@ -1,3 +1,6 @@
+import ExperimentComparison from './components/ExperimentComparison.jsx';
+import PublishedExperiment, { ExperimentDataMode } from './components/PublishedExperiment.jsx';
+import { savePharmaReport } from './labReports.js';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BarChart3, Eye, FileText, Play, TestTube2 } from "lucide-react";
 import PharmaLabShell from "./components/PharmaLabShell.jsx";
@@ -15,6 +18,8 @@ import "./pharmaLab.css";
 import "./stability.css";
 
 export default function StabilityPage() {
+  const [dataView, setDataView] = useState("simulation");
+  const [evidenceKey, setEvidenceKey] = useState(0);
   const timer = useRef(null);
   const [query, setQuery] = useState("");
   const [condition, setCondition] = useState("accelerated");
@@ -32,7 +37,7 @@ export default function StabilityPage() {
     "Pull the selected scheduled samples before HPLC analysis.",
   );
   const [audit, setAudit] = useState([
-    { time: "14:02", action: "Study opened", detail: "PT-24-001" },
+    { time: new Date().toLocaleTimeString(), action: "Study opened", detail: "PT-24-001" },
   ]);
   const result = useMemo(
     () => simulateStability({ condition, packageType, months: month }),
@@ -54,13 +59,14 @@ export default function StabilityPage() {
       setAudit((a) => [
         ...a,
         {
-          time: "14:08",
+          time: new Date().toLocaleTimeString(),
           action: "Pulled samples",
           detail: `${month}M, ${conditions[condition].label}`,
         },
       ]);
     }
   }, [progress, running, month, condition]);
+  useEffect(()=>{setRunning(false);setProgress(0);setStarted(false);setAnalyzed(false);setModeled(false)},[condition,packageType,month]);
   const reset = () => {
     setCondition("accelerated");
     setPackageType("pvc");
@@ -70,7 +76,7 @@ export default function StabilityPage() {
     setStarted(false);
     setAnalyzed(false);
     setModeled(false);
-    setAudit([{ time: "14:02", action: "Study opened", detail: "PT-24-001" }]);
+    setAudit([{ time: new Date().toLocaleTimeString(), action: "Study opened", detail: "PT-24-001" }]);
     setMessage("Default ICH teaching study restored.");
   };
   const toggle = () => {
@@ -91,7 +97,7 @@ export default function StabilityPage() {
     setAudit((a) => [
       ...a,
       {
-        time: "14:18",
+        time: new Date().toLocaleTimeString(),
         action: "Ran HPLC",
         detail: `Assay ${result.current.assay.toFixed(1)}%`,
       },
@@ -105,18 +111,19 @@ export default function StabilityPage() {
       query={query}
       setQuery={setQuery}
       activeStage={6}
-      onReset={reset}
+      onReset={() => { reset(); setEvidenceKey(value => value + 1); }}
       onSave={() => setMessage("Stability study state saved locally.")}
-      onSources={() => setSources(true)}
+      onSources={() => dataView !== "simulation" ? document.querySelector(".published-source")?.scrollIntoView({ behavior: "smooth", block: "start" }) : setSources(true)}
       reducedMotion={motion}
       setReducedMotion={setMotion}
     >
-      <main className="plab-stability">
+      <ExperimentDataMode value={dataView} onChange={value => { setRunning(false); setDataView(value); }}/ >
+      {dataView === "comparison" ? <ExperimentComparison key={evidenceKey} lab="stability"/> : dataView === "published" ? <PublishedExperiment key={evidenceKey} lab="stability"/> : <main className="plab-stability">
         <header className="plab-stability-title">
           <div>
             <h1>Stability & Degradation — ICH Study</h1>
             <p>
-              Real stability data. Reliable medicines.{" "}
+              Calculated stability trends. Traceable assumptions.{" "}
               <span>Representative data for educational use only.</span>
             </p>
           </div>
@@ -211,7 +218,7 @@ export default function StabilityPage() {
                 C₈H₉NO₂
               </b>
               <strong>HO⌬—NH—COCH₃</strong>
-              <span>Oxidation / Hydrolysis →</span>
+              <span>Hydrolysis (schematic) →</span>
               <b>
                 p-Aminophenol
                 <br />
@@ -309,7 +316,7 @@ export default function StabilityPage() {
             <button
               onClick={() =>
                 setMessage(
-                  "Appearance inspection: no visible change in the selected representative sample.",
+                  "No experimental appearance observations are loaded. Appearance cannot be inferred from an assay calculation.",
                 )
               }
             >
@@ -324,7 +331,7 @@ export default function StabilityPage() {
                 setAudit((a) => [
                   ...a,
                   {
-                    time: "14:45",
+                    time: new Date().toLocaleTimeString(),
                     action: "Modeled shelf life",
                     detail: `${Math.round(result.shelfLifeMonths)} months`,
                   },
@@ -336,9 +343,7 @@ export default function StabilityPage() {
             </button>
             <button
               onClick={() =>
-                setMessage(
-                  "Representative stability report prepared for export.",
-                )
+                (savePharmaReport(), setMessage("Stability report saved and downloaded."))
               }
             >
               <FileText />
@@ -352,7 +357,7 @@ export default function StabilityPage() {
                 setStarted(true);
                 setProgress((p) => Math.min(100, p + 20));
               }}
-              onReset={reset}
+              onReset={() => { reset(); setEvidenceKey(value => value + 1); }}
               speed={speed}
               onSpeedChange={setSpeed}
             />
@@ -387,7 +392,7 @@ export default function StabilityPage() {
           Analytical science supports quality medicines. · Educational use only;
           representative data, not a compendial claim.
         </footer>
-      </main>
+      </main>}
       {sources && (
         <div className="plab-drawer-backdrop" onClick={() => setSources(false)}>
           <aside className="plab-drawer" onClick={(e) => e.stopPropagation()}>

@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import $3Dmol from "3dmol";
+import * as $3Dmol from "3dmol";
 
 const SmallMoleculeViewer = forwardRef(function SmallMoleculeViewer(
   { compound, style = "stick", className = "" },
@@ -20,7 +20,11 @@ const SmallMoleculeViewer = forwardRef(function SmallMoleculeViewer(
     if (!viewer) return;
     viewer.setStyle(
       {},
-      style === "sphere"
+      style === "spacefill"
+        ? { sphere: { scale: 1, colorscheme: "Jmol" } }
+        : style === "wireframe"
+        ? { line: { linewidth: 2, colorscheme: "Jmol" } }
+        : style === "sphere"
         ? {
             sphere: { scale: 0.32, colorscheme: "Jmol" },
             stick: { radius: 0.12, colorscheme: "Jmol" },

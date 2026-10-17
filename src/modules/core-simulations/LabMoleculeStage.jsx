@@ -1,3 +1,4 @@
+import "./LabMoleculeStage.css";
 import { useMemo, useRef, useState } from "react";
 import { Maximize2, RotateCcw } from "lucide-react";
 import MolstarViewer from "../../components/molecular-viewer/MolstarViewer.jsx";
@@ -24,7 +25,7 @@ export default function LabMoleculeStage({
   if (!resolved) return null;
   return (
     <div className="lab-mol-stage">
-      <ViewerErrorBoundary label={label || resolved.label}>
+      <div className="lab-mol-viewport"><ViewerErrorBoundary label={label || resolved.label}>
         <MolstarViewer
           ref={viewerRef}
           source={resolved}
@@ -35,7 +36,7 @@ export default function LabMoleculeStage({
           showLabels={false}
           showHydrogens
         />
-      </ViewerErrorBoundary>
+      </ViewerErrorBoundary></div>
       <div className="lab-mol-tools">
         {["BallAndStick", "Sticks", "Spacefill"].map((item) => (
           <button key={item} className={style === item ? "active" : ""} onClick={() => setStyle(item)}>

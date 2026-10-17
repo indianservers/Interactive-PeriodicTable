@@ -1,0 +1,267 @@
+{
+  "verifiedOn": "2026-10-17",
+  "statins": [
+    {
+      "name": "Atorvastatin",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/60823",
+      "apiUrl": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/60823/property/MolecularFormula,MolecularWeight,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount,RotatableBondCount/JSON",
+      "CID": 60823,
+      "MolecularFormula": "C33H35FN2O5",
+      "MolecularWeight": "558.6",
+      "XLogP": 5,
+      "TPSA": 112,
+      "HBondDonorCount": 4,
+      "HBondAcceptorCount": 6,
+      "RotatableBondCount": 12
+    },
+    {
+      "name": "Rosuvastatin",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/446157",
+      "apiUrl": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/446157/property/MolecularFormula,MolecularWeight,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount,RotatableBondCount/JSON",
+      "CID": 446157,
+      "MolecularFormula": "C22H28FN3O6S",
+      "MolecularWeight": "481.5",
+      "XLogP": 1.6,
+      "TPSA": 149,
+      "HBondDonorCount": 3,
+      "HBondAcceptorCount": 10,
+      "RotatableBondCount": 10
+    },
+    {
+      "name": "Simvastatin",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/54454",
+      "apiUrl": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/54454/property/MolecularFormula,MolecularWeight,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount,RotatableBondCount/JSON",
+      "CID": 54454,
+      "MolecularFormula": "C25H38O5",
+      "MolecularWeight": "418.6",
+      "XLogP": 4.7,
+      "TPSA": 72.8,
+      "HBondDonorCount": 1,
+      "HBondAcceptorCount": 5,
+      "RotatableBondCount": 7
+    },
+    {
+      "name": "Pravastatin",
+      "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/54687",
+      "apiUrl": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/54687/property/MolecularFormula,MolecularWeight,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount,RotatableBondCount/JSON",
+      "CID": 54687,
+      "MolecularFormula": "C23H36O7",
+      "MolecularWeight": "424.5",
+      "XLogP": 1.6,
+      "TPSA": 124,
+      "HBondDonorCount": 4,
+      "HBondAcceptorCount": 7,
+      "RotatableBondCount": 11
+    }
+  ],
+  "pdb": {
+    "id": "1HWK",
+    "source": "https://www.rcsb.org/structure/1HWK",
+    "sha256": "1bb6fca0b4aa0e94016bfdcb89250e15e63d083948133e5f5933eaa1294a7eb2",
+    "ligandChain": "A",
+    "ligandId": "117",
+    "cutoffAngstrom": 4.5,
+    "contacts": [
+      {
+        "chain": "A",
+        "number": 684,
+        "residue": "SER",
+        "proteinAtom": "OG",
+        "ligandAtom": "O1A",
+        "distance": 2.654
+      },
+      {
+        "chain": "B",
+        "number": 559,
+        "residue": "GLU",
+        "proteinAtom": "OE2",
+        "ligandAtom": "O5",
+        "distance": 2.689
+      },
+      {
+        "chain": "B",
+        "number": 735,
+        "residue": "LYS",
+        "proteinAtom": "NZ",
+        "ligandAtom": "O1B",
+        "distance": 2.755
+      },
+      {
+        "chain": "A",
+        "number": 590,
+        "residue": "ARG",
+        "proteinAtom": "NE",
+        "ligandAtom": "F1",
+        "distance": 2.766
+      },
+      {
+        "chain": "A",
+        "number": 690,
+        "residue": "ASP",
+        "proteinAtom": "OD2",
+        "ligandAtom": "O3",
+        "distance": 2.793
+      },
+      {
+        "chain": "A",
+        "number": 691,
+        "residue": "LYS",
+        "proteinAtom": "NZ",
+        "ligandAtom": "O5",
+        "distance": 2.843
+      },
+      {
+        "chain": "B",
+        "number": 565,
+        "residue": "SER",
+        "proteinAtom": "OG",
+        "ligandAtom": "O18",
+        "distance": 2.861
+      },
+      {
+        "chain": "B",
+        "number": 755,
+        "residue": "ASN",
+        "proteinAtom": "ND2",
+        "ligandAtom": "O5",
+        "distance": 3.019
+      },
+      {
+        "chain": "B",
+        "number": 856,
+        "residue": "ALA",
+        "proteinAtom": "O",
+        "ligandAtom": "C15",
+        "distance": 3.173
+      },
+      {
+        "chain": "B",
+        "number": 751,
+        "residue": "ALA",
+        "proteinAtom": "O",
+        "ligandAtom": "C2",
+        "distance": 3.269
+      },
+      {
+        "chain": "A",
+        "number": 661,
+        "residue": "SER",
+        "proteinAtom": "OG",
+        "ligandAtom": "F1",
+        "distance": 3.273
+      },
+      {
+        "chain": "A",
+        "number": 683,
+        "residue": "VAL",
+        "proteinAtom": "CG1",
+        "ligandAtom": "F1",
+        "distance": 3.286
+      },
+      {
+        "chain": "A",
+        "number": 692,
+        "residue": "LYS",
+        "proteinAtom": "NZ",
+        "ligandAtom": "O1A",
+        "distance": 3.392
+      },
+      {
+        "chain": "B",
+        "number": 561,
+        "residue": "CYS",
+        "proteinAtom": "C",
+        "ligandAtom": "C93",
+        "distance": 3.483
+      },
+      {
+        "chain": "B",
+        "number": 853,
+        "residue": "LEU",
+        "proteinAtom": "CD1",
+        "ligandAtom": "C10",
+        "distance": 3.506
+      },
+      {
+        "chain": "B",
+        "number": 568,
+        "residue": "ARG",
+        "proteinAtom": "NE",
+        "ligandAtom": "C23",
+        "distance": 3.59
+      },
+      {
+        "chain": "B",
+        "number": 857,
+        "residue": "LEU",
+        "proteinAtom": "CD2",
+        "ligandAtom": "C17",
+        "distance": 3.656
+      },
+      {
+        "chain": "B",
+        "number": 560,
+        "residue": "GLY",
+        "proteinAtom": "O",
+        "ligandAtom": "C93",
+        "distance": 3.687
+      },
+      {
+        "chain": "B",
+        "number": 562,
+        "residue": "LEU",
+        "proteinAtom": "N",
+        "ligandAtom": "C93",
+        "distance": 3.732
+      },
+      {
+        "chain": "A",
+        "number": 686,
+        "residue": "ASN",
+        "proteinAtom": "OD1",
+        "ligandAtom": "O1A",
+        "distance": 3.788
+      },
+      {
+        "chain": "B",
+        "number": 852,
+        "residue": "SER",
+        "proteinAtom": "OG",
+        "ligandAtom": "C23",
+        "distance": 3.824
+      },
+      {
+        "chain": "B",
+        "number": 752,
+        "residue": "HIS",
+        "proteinAtom": "NE2",
+        "ligandAtom": "C92",
+        "distance": 3.838
+      },
+      {
+        "chain": "B",
+        "number": 860,
+        "residue": "GLY",
+        "proteinAtom": "C",
+        "ligandAtom": "C15",
+        "distance": 4.031
+      },
+      {
+        "chain": "A",
+        "number": 688,
+        "residue": "CYS",
+        "proteinAtom": "SG",
+        "ligandAtom": "O1A",
+        "distance": 4.203
+      },
+      {
+        "chain": "B",
+        "number": 564,
+        "residue": "ALA",
+        "proteinAtom": "CB",
+        "ligandAtom": "C21",
+        "distance": 4.359
+      }
+    ]
+  }
+}

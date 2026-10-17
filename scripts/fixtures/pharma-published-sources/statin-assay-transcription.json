@@ -1,0 +1,18 @@
+{
+  "sourceId": "PMID34045219",
+  "title": "Comparative Hepatic and Intestinal Metabolism and Pharmacodynamics of Statins",
+  "doi": "10.1124/dmd.121.000406",
+  "sourceUrl": "https://dmd.aspetjournals.org/article/S0090-9556%2824%2907982-0/fulltext#tbl2",
+  "tableId": "Table 2",
+  "authors": ["Filppula AM", "Hirvensalo P", "Parviainen H", "Ivaska VE", "Lönnberg KI", "Deng F", "Viinamäki J", "Kurkela M", "Neuvonen M", "Niemi M"],
+  "year": "2021",
+  "retrievedOn": "2026-10-17",
+  "license": "Factual numerical transcription; original article rights retained by publisher",
+  "licenseUrl": "https://doi.org/10.1124/dmd.121.000406",
+  "transcriptionMethod": "Four numerical rows manually transcribed from the primary publisher's Table 2; not extracted from a PMC XML record. No interpolation or new potency estimates.",
+  "groups": [{
+    "title": "Measured HMG-CoA reductase inhibition",
+    "headers": ["Compound (acid form)", "IC50 (nM), mean ± SD"],
+    "rows": [["Atorvastatin", "13.1 ± 3.2"], ["Pravastatin", "12.6 ± 3.7"], ["Rosuvastatin", "4.37 ± 1.13"], ["Simvastatin acid", "19.7 ± 2.0"]]
+  }]
+}

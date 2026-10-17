@@ -32,7 +32,7 @@ export const pharmaCompounds = [
     className: "Biguanide · antidiabetic",
     formula: "C₄H₁₁N₅",
     mass: "129.16 g/mol",
-    smiles: "CN(C)C(=N)NC(=N)N",
+    smiles: "CN(C)C(=N)N=C(N)N",
     sdf: "/assets/pharma/metformin.sdf",
     cid: "4091",
     color: "#34d399",
@@ -58,7 +58,7 @@ export const pharmaCompounds = [
     className: "HMG-CoA reductase inhibitor",
     formula: "C₃₃H₃₅FN₂O₅",
     mass: "558.64 g/mol",
-    smiles: "CC(C)C1=C(C(=C(N1CCC(CC(CC(=O)O)O)O)C2=CC=CC=C2)C3=CC=C(C=C3)F)C(=O)NC4=CC=CC=C4",
+    smiles: "CC(C)C1=C(C(=C(N1CCC(CC(CC(=O)O)O)O)C2=CC=C(C=C2)F)C3=CC=CC=C3)C(=O)NC4=CC=CC=C4",
     sdf: "/assets/pharma/atorvastatin.sdf",
     cid: "60823",
     color: "#fb7185",
@@ -67,7 +67,7 @@ export const pharmaCompounds = [
 ];
 
 export const medicineJourney = [
-  { id: "target", label: "Target & Discovery", short: "Discover", route: "visuals/pharma" },
+  { id: "target", label: "Target & Discovery", short: "Discover", route: "visuals/pharma/lab" },
   { id: "lead", label: "Lead Optimization", short: "Optimize", route: "visuals/pharma/medicinal-chemistry" },
   { id: "synthesis", label: "API Synthesis", short: "Synthesize", route: "visuals/pharma/api-synthesis" },
   { id: "preform", label: "Preformulation", short: "Characterize", route: "visuals/pharma/preformulation" },
@@ -78,9 +78,9 @@ export const medicineJourney = [
 ];
 
 export const recentExperiments = [
-  { id: "dose-response", title: "Dose–response screen", compound: "Paracetamol", time: "18 min", progress: 68, route: "visuals/pharma/medicinal-chemistry" },
-  { id: "dissolution", title: "USP II dissolution", compound: "Ibuprofen", time: "11 min", progress: 42, route: "visuals/pharma/dissolution" },
-  { id: "hplc", title: "HPLC assay", compound: "Metformin", time: "24 min", progress: 83, route: "visuals/pharma/hplc" },
+  { id: "structure-contacts", title: "Experimental structure contacts", compound: "Atorvastatin · PDB 1HWK", route: "visuals/pharma/medicinal-chemistry" },
+  { id: "dissolution", title: "USP II dissolution model", compound: "Paracetamol", route: "visuals/pharma/dissolution" },
+  { id: "hplc", title: "HPLC assay model", compound: "Paracetamol", route: "visuals/pharma/hplc" },
 ];
 
 export const pharmaSources = [

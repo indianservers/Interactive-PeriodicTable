@@ -1,3 +1,4 @@
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { useMemo, useState } from "react";
 import {
   Activity,
@@ -799,22 +800,7 @@ function Report({ go }) {
             <textarea defaultValue="Peng–Robinson gives the best overall description; CO₂ cools during throttling at 300 K." />
           </label>
         </Card>
-        <Card title={`Knowledge Check ${score} / 3`}>
-          {qs.map((q, i) => (
-            <fieldset key={q[0]}>
-              <legend>{q[0]}</legend>
-              <button
-                className={answers[i] === q[1] ? "active" : ""}
-                onClick={() => setAnswers({ ...answers, [i]: q[1] })}
-              >
-                {q[1]}
-              </button>
-              <button onClick={() => setAnswers({ ...answers, [i]: "wrong" })}>
-                None of these
-              </button>
-            </fieldset>
-          ))}
-        </Card>
+        <Card title={`Knowledge Check ${score} / 3`}><KnowledgeCheck questions={qs.map(([prompt,label],i)=>({prompt,correct:label,options:[{id:label,label},{id:"wrong",label:"The stated relationship does not apply to this model"}]}))} onChecked={setAnswers}/></Card>
         <Card title="Achievements">
           <Trophy />
           <h2>EOS Analyst</h2>

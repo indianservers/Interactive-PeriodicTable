@@ -1,3 +1,5 @@
+import ExperimentComparison from './components/ExperimentComparison.jsx';
+import PublishedExperiment, { ExperimentDataMode } from './components/PublishedExperiment.jsx';
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Beaker,
@@ -24,6 +26,8 @@ import "./pharmaLab.css";
 import "./dissolution.css";
 
 export default function DissolutionPage() {
+  const [dataView, setDataView] = useState("simulation");
+  const [evidenceKey, setEvidenceKey] = useState(0);
   const timer = useRef(null);
   const [query, setQuery] = useState("");
   const [rpm, setRpm] = useState(50);
@@ -64,10 +68,11 @@ export default function DissolutionPage() {
       }),
     [rpm, temperature, pH, medium, formulation, sink],
   );
-  const atTime = (profile) =>
-    profile.reduce((best, point) =>
-      Math.abs(point.x - elapsed) < Math.abs(best.x - elapsed) ? point : best,
-    ).y;
+  const atTime = profile => {
+    const before=[...profile].reverse().find(p=>p.x<=elapsed)||profile[0];
+    const after=profile.find(p=>p.x>=elapsed)||profile.at(-1);
+    return after.x===before.x?before.y:before.y+(after.y-before.y)*(elapsed-before.x)/(after.x-before.x);
+  };
   const values = profiles.map(atTime);
   const acceptance = dissolutionAcceptance(values, { q, stage });
   const rsd = acceptance.mean ? percentRsd(values) : 0;
@@ -94,6 +99,7 @@ export default function DissolutionPage() {
       );
     }
   }, [elapsed, running]);
+  useEffect(()=>{setRunning(false);setStarted(false);setElapsed(0);setSamples([])},[rpm,temperature,pH,volume,medium,formulation,sink]);
   const reset = () => {
     setRpm(50);
     setTemperature(37);
@@ -130,7 +136,7 @@ export default function DissolutionPage() {
     if (!loaded || elapsed === 0)
       return setMessage("Begin the run before collecting a sample.");
     const sample = sampleWithReplacement({
-      concentrationMgPerMl: values.reduce((a, b) => a + b, 0) / 600,
+      concentrationMgPerMl: (values.reduce((a, b) => a + b, 0) / 6 / 100) * 500 / volume,
       sampleVolumeMl: 10,
       mediumVolumeMl: volume,
       replacement: true,
@@ -150,7 +156,7 @@ export default function DissolutionPage() {
     );
     if (due == null) return;
     const sample = sampleWithReplacement({
-      concentrationMgPerMl: values.reduce((a, b) => a + b, 0) / 600,
+      concentrationMgPerMl: (values.reduce((a, b) => a + b, 0) / 6 / 100) * 500 / volume,
       sampleVolumeMl: 10,
       mediumVolumeMl: volume,
       replacement: true,
@@ -163,13 +169,14 @@ export default function DissolutionPage() {
       query={query}
       setQuery={setQuery}
       activeStage={5}
-      onReset={reset}
+      onReset={() => { reset(); setEvidenceKey(value => value + 1); }}
       onSave={() => setMessage("Dissolution method report saved locally.")}
-      onSources={() => setSources(true)}
+      onSources={() => dataView !== "simulation" ? document.querySelector(".published-source")?.scrollIntoView({ behavior: "smooth", block: "start" }) : setSources(true)}
       reducedMotion={motion}
       setReducedMotion={setMotion}
     >
-      <main className="plab-dissolve">
+      <ExperimentDataMode value={dataView} onChange={value => { setRunning(false); setDataView(value); }}/ >
+      {dataView === "comparison" ? <ExperimentComparison key={evidenceKey} lab="dissolution"/> : dataView === "published" ? <PublishedExperiment key={evidenceKey} lab="dissolution"/> : <main className="plab-dissolve">
         <header className="plab-page-title">
           <div>
             <span className="plab-panel-kicker">
@@ -179,8 +186,8 @@ export default function DissolutionPage() {
             <p>Immediate-release paracetamol · six-vessel teaching method</p>
           </div>
           <div className="plab-mode">
-            <button className={mode === "guided" ? "active" : ""} onClick={() => setMode("guided")}>Guided</button>
-            <button className={mode === "free" ? "active" : ""} onClick={() => setMode("free")}>Free experiment</button>
+            <button className={mode === "guided" ? "active" : ""} onClick={() => {setMode("guided");setMessage("Guided mode: follow workflow prerequisites.")}}>Guided</button>
+            <button className={mode === "free" ? "active" : ""} onClick={() => {setMode("free");setMessage("Free experiment: vary method assumptions and observe calculated effects.")}}>Free experiment</button>
           </div>
         </header>
         <div className="plab-diss-grid">
@@ -225,6 +232,7 @@ export default function DissolutionPage() {
               temperature={temperature}
               loaded={loaded}
               paddlesRaised={raised}
+              volume={volume}
             />
             <div className="plab-profile">
               <h2>Dissolution Profile</h2>
@@ -268,7 +276,7 @@ export default function DissolutionPage() {
                 </tbody>
               </table>
               <b>
-                Best fit: {selected.name} · R² {selected.r2.toFixed(3)}
+                Selected fit: {selected.name} · R² {selected.r2.toFixed(3)}
               </b>
             </div>
           </section>
@@ -302,7 +310,7 @@ export default function DissolutionPage() {
               <h2>Run Controls</h2>
               <button
                 onClick={() => {
-                  setLoaded(true);
+                  setRunning(false);setElapsed(0);setSamples([]);setLoaded(true);
                   setMessage(
                     "Six tablets loaded. Verify method conditions, then start.",
                   );
@@ -398,7 +406,7 @@ export default function DissolutionPage() {
                 onChange={(e) => setStage(e.target.value)}
               >
                 <option>S1</option>
-                <option>S2</option>
+
               </select>
               <label>
                 Volume
@@ -422,11 +430,11 @@ export default function DissolutionPage() {
               started={started}
               onToggle={toggle}
               onStep={() => {
-                if (!loaded) return setMessage("Load tablets before stepping.");
+                if (!loaded || raised || Math.abs(temperature-37)>.5) return setMessage("Load tablets, lower paddles and equilibrate to 37 ± 0.5 °C before stepping.");
                 setStarted(true);
                 setElapsed((value) => Math.min(45, value + 5));
               }}
-              onReset={reset}
+              onReset={() => { reset(); setEvidenceKey(value => value + 1); }}
               speed={speed}
               onSpeedChange={setSpeed}
             />
@@ -451,15 +459,14 @@ export default function DissolutionPage() {
           Configurable educational acceptance check · not a release decision or
           clinical claim.
         </footer>
-      </main>
+      </main>}
       {sources && (
         <div className="plab-drawer-backdrop" onClick={() => setSources(false)}>
           <aside className="plab-drawer" onClick={(e) => e.stopPropagation()}>
             <span className="plab-panel-kicker">PAGE 6 PROVENANCE</span>
             <h2>Dissolution model</h2>
             <p>
-              The six vessel profiles and kinetic-fit scores are deterministic
-              representative teaching simulations. The acceptance threshold is
+              The six vessel profiles and vessel profiles are model-generated. Kinetic-fit scores are computed from those profiles using least-squares regression. The acceptance threshold is
               learner-configurable and must not be interpreted as a product
               claim.
             </p>

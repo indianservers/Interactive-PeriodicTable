@@ -7,6 +7,6 @@ assert.equal(medicineJourney.length, 8, "Medicine journey must have eight stages
 assert.equal(new Set(medicineJourney.map(({ route }) => route)).size, 8, "Every journey stage must have a unique route");
 assert.ok(pharmaCompounds.every(({ sdf, cid, smiles }) => sdf && cid && smiles), "Each compound needs coordinates, provenance, and a 2D graph source");
 assert.ok(pharmaSources.length >= pharmaCompounds.length, "Each compound must be covered by the source register");
-assert.ok(recentExperiments.every(({ progress }) => progress >= 0 && progress <= 100), "Experiment progress must be a percentage");
+assert.ok(recentExperiments.every(item => item.route && !("progress" in item) && !("time" in item)), "Available experiments must not claim fabricated user history");
 
 console.log("Pharmaceutical Lab Home data checks passed.");

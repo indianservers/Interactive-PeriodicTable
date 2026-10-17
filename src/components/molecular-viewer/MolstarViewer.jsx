@@ -31,15 +31,15 @@ const REPRESENTATION_KEYS = ['Cartoon', 'Backbone', 'Surface', 'Sticks', 'BallAn
 async function ensureRepresentation(plugin, runtime, key) {
   if (!runtime?.components || !runtime?.representations) return null;
   if (runtime.representations[key]) return runtime.representations[key];
-  const component = ['Cartoon', 'Backbone', 'Surface'].includes(key)
+  const component = key==='Surface'&&runtime.surfaceProteinOnly ? runtime.components?.protein : ['Cartoon', 'Backbone', 'Surface'].includes(key)
     ? runtime.components?.polymer
-    : runtime.components?.all;
+    : runtime.polymerOnly ? runtime.components?.polymer || runtime.components?.all : runtime.components?.all;
   if (!component) return null;
   const carbonColor = { name: runtime.color, params: {} };
   const params = {
     Cartoon: { type: 'cartoon', color: runtime.color },
     Backbone: { type: 'backbone', color: runtime.color },
-    Surface: { type: 'molecular-surface', typeParams: { alpha: 0.24, probeRadius: 1.4, quality: 'custom', resolution: 1.2 }, color: 'uniform', colorParams: { value: 0x2d668a } },
+    Surface: { type: 'gaussian-surface', typeParams: { alpha: runtime.surfaceOpacity ?? 0.24, quality: 'low', resolution: 2 }, color: 'uniform', colorParams: { value: runtime.surfaceColor ?? 0x2d668a } },
     Sticks: { type: 'ball-and-stick', typeParams: { sizeFactor: 0.18, ignoreHydrogens: runtime.ignoreHydrogens }, color: 'element-symbol', colorParams: { carbonColor } },
     BallAndStick: { type: 'ball-and-stick', typeParams: { sizeFactor: 0.34, ignoreHydrogens: runtime.ignoreHydrogens }, color: 'element-symbol', colorParams: { carbonColor } },
     Licorice: { type: 'ball-and-stick', typeParams: { sizeFactor: 0.12, ignoreHydrogens: runtime.ignoreHydrogens }, color: 'element-symbol', colorParams: { carbonColor } },
@@ -99,6 +99,11 @@ export default forwardRef(function MolstarViewer({
   focusLigandId,
   focusLigandChain,
   backgroundColor = 0x06131f,
+  transparentBackground = false,
+  polymerOnly = false,
+  surfaceOpacity = 0.24,
+  surfaceColor = 0x2d668a,
+  surfaceProteinOnly = false,
   showUnitCell = false,
   showHydrogens = true,
   showControls = false,
@@ -163,7 +168,7 @@ export default forwardRef(function MolstarViewer({
         if (disposed) { plugin.dispose(); unmountUi(); return; }
         pluginRef.current = plugin;
         runtimeRef.current = { Structure, StructureElement, StructureProperties, representations: {}, structure: null };
-        plugin.canvas3d?.setProps({ renderer: { backgroundColor }, transparentBackground: false });
+        plugin.canvas3d?.setProps({ renderer: { backgroundColor }, transparentBackground });
         clickSubscription = plugin.behaviors.interaction.click.subscribe(({ current }) => {
           const loci = current?.loci;
           if (!loci || !StructureElement.Loci.is(loci)) return;
@@ -217,14 +222,17 @@ export default forwardRef(function MolstarViewer({
         if (cancelled) return;
         const unitCell = showUnitCell ? await plugin.builders.structure.tryCreateUnitcell(loaded.model, undefined, { isHidden: false }) : null;
         const polymer = await plugin.builders.structure.tryCreateComponentStatic(loaded.structure, 'polymer');
+        const protein=surfaceProteinOnly?await plugin.builders.structure.tryCreateComponentStatic(loaded.structure,'protein'):null;
+        const nucleic=surfaceProteinOnly?await plugin.builders.structure.tryCreateComponentStatic(loaded.structure,'nucleic'):null;
         const all = await plugin.builders.structure.tryCreateComponentStatic(loaded.structure, 'all');
         const ligand = await plugin.builders.structure.tryCreateComponentStatic(loaded.structure, 'ligand');
         const branched = await plugin.builders.structure.tryCreateComponentStatic(loaded.structure, 'branched');
         const ion = await plugin.builders.structure.tryCreateComponentStatic(loaded.structure, 'ion');
         const color = resolveColorScheme(colorScheme);
-        const runtime = { ...runtimeRef.current, ...loaded, unitCell, structure: loaded.structure, components: { polymer, all, ligand, branched, ion }, representations: {}, color, ignoreHydrogens: !showHydrogens };
+        const runtime = { ...runtimeRef.current, ...loaded, unitCell, structure: loaded.structure, components: { polymer, protein, nucleic, all, ligand, branched, ion }, representations: {}, color, ignoreHydrogens: !showHydrogens, polymerOnly, surfaceOpacity, surfaceColor, surfaceProteinOnly };
         runtimeRef.current = runtime;
         for (const key of REPRESENTATION_KEYS) if (representation[key]) await ensureRepresentation(plugin, runtime, key);
+        if(nucleic)runtime.representations.Nucleic=await plugin.builders.structure.representation.addRepresentation(nucleic,{type:'ball-and-stick',typeParams:{sizeFactor:.3},color:'element-symbol'});
         if (ligand) runtime.representations.Ligand = await plugin.builders.structure.representation.addRepresentation(ligand, { type: 'ball-and-stick', typeParams: { sizeFactor: 0.32 }, color: 'element-symbol', colorParams: { carbonColor: { name: 'element-symbol', params: {} } } });
         if (branched) runtime.representations.Branched = await plugin.builders.structure.representation.addRepresentation(branched, { type: 'ball-and-stick', typeParams: { sizeFactor: 0.3 }, color: 'element-symbol', colorParams: { carbonColor: { name: 'element-symbol', params: {} } } });
         if (ion) runtime.representations.Ion = await plugin.builders.structure.representation.addRepresentation(ion, { type: 'spacefill', typeParams: { sizeFactor: 0.8 }, color: 'element-symbol' });
@@ -239,12 +247,12 @@ export default forwardRef(function MolstarViewer({
         } else if (focusLigandOnLoad && ligand?.obj?.data) {
           plugin.managers.camera.focusLoci(runtime.Structure.toStructureElementLoci(ligand.obj.data), { minRadius: 8, extraRadius: 7, durationMs: 0 });
         }
-        callbacksRef.current.onReady?.(plugin, loaded);
         cameraTimer = window.setTimeout(() => {
           if (!cancelled) {
             if (focusLigandId) focusResidueName(plugin, runtime, focusLigandId, focusLigandChain, 0);
             else if (focusLigandOnLoad && ligand?.obj?.data) plugin.managers.camera.focusLoci(runtime.Structure.toStructureElementLoci(ligand.obj.data), { minRadius: 8, extraRadius: 7, durationMs: 0 });
             else if (!(focusOnSelection && Number.isFinite(selectedResidue))) plugin.managers.camera.reset(undefined, 0);
+            callbacksRef.current.onReady?.(plugin, loaded);
           }
         }, 350);
       } catch (error) {
@@ -255,7 +263,7 @@ export default forwardRef(function MolstarViewer({
       }
     })();
     return () => { cancelled = true; window.clearTimeout(cameraTimer); };
-  }, [pluginReady, sourceKey, colorScheme, focusLigandOnLoad, focusLigandId, focusLigandChain, showUnitCell, showHydrogens, retry]);
+  }, [pluginReady, sourceKey, colorScheme, focusLigandOnLoad, focusLigandId, focusLigandChain, showUnitCell, showHydrogens, polymerOnly, surfaceOpacity, surfaceColor, surfaceProteinOnly, retry]);
 
   useEffect(() => {
     const plugin = pluginRef.current, runtimeAtStart = runtimeRef.current, reps = runtimeAtStart?.representations;
@@ -354,7 +362,7 @@ export default forwardRef(function MolstarViewer({
     plugin: () => pluginRef.current,
   }), []);
 
-  return <div className="molstar-viewer" data-ready={status === 'ready'} data-engine="Mol*" data-selected={selectedAtomIndices.length ? selectedAtomIndices.join(',') : Number.isFinite(selectedAtomIndex) ? selectedAtomIndex : selectedResidue || ''} data-representations={Object.keys(representation).filter(key => representation[key]).join(',')}>
+  return <div className="molstar-viewer" data-transparent={transparentBackground} data-ready={status === 'ready'} data-engine="Mol*" data-selected={selectedAtomIndices.length ? selectedAtomIndices.join(',') : Number.isFinite(selectedAtomIndex) ? selectedAtomIndex : selectedResidue || ''} data-representations={Object.keys(representation).filter(key => representation[key]).join(',')}>
     <div ref={hostRef} className="molstar-viewer-host" aria-label={`Mol* scientific structure viewer${pdbId ? ` for PDB ${pdbId}` : ''}`} />
     <ViewerLoadingState status={status} message={message} onRetry={() => setRetry(value => value + 1)} />
     {status === 'ready' && <div className="molstar-viewer-badge">MOL* · {pdbId ? `PDB ${pdbId}` : label.toUpperCase()}</div>}

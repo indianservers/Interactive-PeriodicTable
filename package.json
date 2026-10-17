@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "test:target-ui": "node scripts/verify-target-presentation.mjs",
+    "test:catalog": "node scripts/verify-catalog-completeness.mjs && node scripts/verify-global-search.mjs && node scripts/verify-experience-directory.mjs && node scripts/verify-directory-render.mjs",
+    "test:catalog-browser": "node scripts/verify-catalog-browser.mjs",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -11,7 +14,14 @@
     "test:drug-browser": "node scripts/verify-drug-discovery-studio.mjs",
     "test:physical": "node scripts/verify-physical-chemistry.mjs",
     "test:chemistry": "node scripts/verify-chemical-accuracy.mjs",
-    "test:discovery": "node scripts/verify-discovery.mjs"
+    "test:discovery": "node scripts/verify-discovery.mjs",
+    "test:studio-routing": "node scripts/verify-studio-routing.mjs",
+    "test:md-controls": "node scripts/verify-md-controls.mjs",
+    "test:hydrogen": "node scripts/verify-hydrogen-model.mjs",
+    "test:carbohydrate-projections": "node scripts/verify-carbohydrate-projections.mjs",
+    "test:titration-bench": "node scripts/verify-titration-bench.mjs",
+    "test:draw-library": "node scripts/verify-draw-library.mjs",
+    "test:draw": "node scripts/verify-structure-draw.mjs && node scripts/verify-draw-research.mjs"
   },
   "dependencies": {
     "@rdkit/rdkit": "^2025.3.4-1.0.0",

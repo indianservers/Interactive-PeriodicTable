@@ -5,6 +5,8 @@ import {
   Shapes, X, ZoomIn,
 } from 'lucide-react';
 import CarbohydrateViewer from './CarbohydrateViewer.jsx';
+import { GLYCOSIDES, haworthModel } from './projectionModels.js';
+import { navigateStudio, studioSection } from '../../utils/studioRouting.js';
 import { BUILT_DISACCHARIDES, CARBOHYDRATES, CARBOHYDRATE_GROUPS, COMPOUND_NAMES, STUDIO_ROUTES } from './carbohydrateData.js';
 import { BiologyPage, PropertiesPage, QuizPage, ReactionPage } from './LabPages.jsx';
 import './carbohydrateStudio.css';
@@ -42,7 +44,11 @@ function CompoundLibrary({ selected, onSelect, open, onClose }) {
 }
 
 function FischerProjection({ compound, selectedCarbon, onSelectCarbon, progress, mode }) {
-  const mono = compound.name.startsWith('D-') ? compound : CARBOHYDRATES['D-Glucose'];
+  if (!compound.name.startsWith('D-')) {
+    const constituents = compound.name === 'Sucrose' ? ['D-Glucose', 'D-Fructose'] : compound.name === 'Lactose' ? ['D-Galactose', 'D-Glucose'] : compound.name === 'Chitin' ? [] : ['D-Glucose'];
+    return <div className="cs-constituent-projections"><p>Constituent stereochemistry after hydrolysis</p><div>{constituents.map(name => <section key={name}><strong>{name}</strong><FischerProjection compound={CARBOHYDRATES[name]} selectedCarbon={null} onSelectCarbon={() => {}} mode="Open chain" progress={0}/></section>)}</div><small>{compound.name === 'Chitin' ? 'Chitin contains N-acetyl-D-glucosamine residues.' : `${compound.name} retains its glycosidic structure until hydrolysis. These are constituent projections, not an open-chain form of the intact carbohydrate.`}</small></div>;
+  }
+  const mono = compound;
   const sides = mono.fischer || ['right', 'left', 'right', 'right'];
   const rows = sides.length;
   const topLabel = sides[0] === 'carbonyl' ? 'CH₂OH' : 'CHO';
@@ -67,15 +73,22 @@ function FischerProjection({ compound, selectedCarbon, onSelectCarbon, progress,
   </svg>;
 }
 
-function HaworthProjection({ compound, selectedCarbon, onSelectCarbon, anomer = 'α', second = false }) {
-  const six = compound.ringSize !== 5;
-  const points = six ? [[55,145],[91,75],[171,75],[213,145],[172,214],[91,214]] : [[66,150],[112,80],[190,112],[183,202],[92,212]];
-  return <svg viewBox="0 0 270 280" className="cs-projection cs-haworth" aria-label={`Interactive Haworth projection for ${compound.name}`}>
-    <polyline points={points.map(p => p.join(',')).join(' ')} />
-    <text x={six ? 132 : 151} y={six ? 68 : 86} className="cs-proj-main">O</text>
-    {points.map(([x,y], i) => { const carbon = i + 1; const active = selectedCarbon === carbon; return <g key={carbon}><circle cx={x} cy={y} r="20" className={active ? 'is-active' : ''} onMouseEnter={() => onSelectCarbon(carbon)} onClick={() => onSelectCarbon(carbon)} /><text x={x} y={y + 5} textAnchor="middle" className="cs-carbon-number">{carbon}</text>{i < points.length - 1 && <text x={x + (i % 2 ? 20 : -28)} y={y + (i % 2 ? 38 : -24)} className={second ? 'cs-proj-pink' : 'cs-proj-oh'}>{i % 2 ? 'OH' : 'HO'}</text>}</g>; })}
-    <text x="45" y="64" className="cs-proj-main">CH₂OH</text>
-    <text x="208" y="166" className={anomer === 'α' ? 'cs-proj-yellow' : 'cs-proj-oh'}>{anomer}-OH</text>
+function HaworthProjection({ compound, selectedCarbon, onSelectCarbon, anomer = 'α', second = false, linkedCarbon }) {
+  const glycoside=GLYCOSIDES[compound.name];
+  const mono=glycoside?CARBOHYDRATES[glycoside.donor]:compound.name.startsWith('D-')?compound:CARBOHYDRATES['D-Glucose'];
+  const effectiveAnomer=glycoside?.donorAnomer||anomer;
+  const model=haworthModel(mono,effectiveAnomer,glycoside?.from||linkedCarbon);
+  const points=model.vertices;
+  return <svg viewBox="0 0 270 280" className="cs-projection cs-haworth" aria-label={`Haworth projection of ${mono.name}, ${effectiveAnomer} anomer${linkedCarbon||glycoside ? ', glycosidic residue' : ''}`}>
+    <polyline points={[...points,points[0]].map(p=>p.join(',')).join(' ')} fill="none" />
+    <circle cx={points[model.oxygen][0]} cy={points[model.oxygen][1]} r="12" fill="#071d2d"/>
+    <text x={points[model.oxygen][0]} y={points[model.oxygen][1]+5} textAnchor="middle" className="cs-proj-main">O</text>
+    {model.carbons.map(({carbon,x,y,up,label})=><g key={carbon}>
+      <circle cx={x} cy={y} r="15" className={selectedCarbon===carbon?'is-active':''} onClick={()=>onSelectCarbon(carbon)} />
+      <text x={x+9} y={y+4} className="cs-carbon-number">{carbon}</text>
+      {label!=='H'&&<><line x1={x} y1={y} x2={x} y2={y+(up?-31:31)} stroke="currentColor"/><text x={x} y={y+(up?-39:47)} textAnchor="middle" className={second?'cs-proj-pink':'cs-proj-oh'} style={{fontSize:label.length>5?11:14}}>{label}</text></>}
+    </g>)}
+    {model.ketose&&<text x="235" y={model.anomer==='β'?184:92} textAnchor="middle" className="cs-proj-main" style={{fontSize:10}}>CH₂OH (C1)</text>}
   </svg>;
 }
 
@@ -125,11 +138,11 @@ function StructurePage({ selectedName, setSelectedName, inspectorOpen, setInspec
     <div className="cs-structure-title"><div><p className="cs-breadcrumb">{compound.classification.split(' · ')[0]} <ChevronRight /> <b>{compound.name}</b></p><h2>{compound.name}</h2><p>{compound.formula} · {compound.ring}</p></div><span className={`cs-reducing-pill ${compound.reducing ? '' : 'is-non'}`}>{compound.reducing ? 'Reducing carbohydrate' : 'Non-reducing disaccharide'}</span></div>
     <div className="cs-mode-row"><div className="cs-tabs">{modes.map(item => <button key={item} className={mode === item ? 'is-active' : ''} onClick={() => setMode(item)}>{item === 'Open chain' ? <MousePointer2 /> : item === 'Glycosidic bond' ? <Link2 /> : <Shapes />}{item}</button>)}</div><div className="cs-stage-steps">{['Fischer','Haworth','3D Model','Complete'].map((s,i) => <span key={s} className={progress >= i * 30 ? 'is-active' : ''}><b>{i+1}</b>{s}</span>)}</div></div>
     <div className="cs-representations">
-      <RepresentationCard title="Fischer" subtitle="Open-chain representation"><FischerProjection compound={compound} selectedCarbon={selectedCarbon} onSelectCarbon={setSelectedCarbon} progress={progress} mode={mode} /><strong className="cs-rep-caption">{compound.name}</strong></RepresentationCard>
-      <RepresentationCard title="Haworth" subtitle="Cyclic form and glycosidic linkage"><div className={compound.classification === 'Disaccharide' ? 'cs-double-haworth' : ''}><HaworthProjection compound={compound} selectedCarbon={selectedCarbon} onSelectCarbon={setSelectedCarbon} anomer={anomer} />{compound.classification === 'Disaccharide' && <><div className="cs-glyco-link">{compound.linkage}</div><HaworthProjection compound={CARBOHYDRATES['D-Fructose']} selectedCarbon={selectedCarbon} onSelectCarbon={setSelectedCarbon} anomer="β" second /></>}</div><strong className="cs-rep-caption">{anomer}-{compound.ring}</strong></RepresentationCard>
+      <RepresentationCard title="Fischer" subtitle={compound.name.startsWith('D-')?'Open-chain representation':'Constituent stereochemistry'}><FischerProjection compound={compound} selectedCarbon={selectedCarbon} onSelectCarbon={setSelectedCarbon} progress={progress} mode={mode} /><strong className="cs-rep-caption">{compound.name}</strong></RepresentationCard>
+      <RepresentationCard title="Haworth" subtitle="Cyclic form and glycosidic linkage"><div className={compound.classification === 'Disaccharide' ? 'cs-double-haworth' : ''}><HaworthProjection compound={compound} selectedCarbon={selectedCarbon} onSelectCarbon={setSelectedCarbon} anomer={anomer} />{compound.classification === 'Disaccharide' && <><div className="cs-glyco-link">{compound.linkage}</div><HaworthProjection compound={CARBOHYDRATES[GLYCOSIDES[compound.name]?.acceptor || 'D-Glucose']} selectedCarbon={selectedCarbon} onSelectCarbon={setSelectedCarbon} anomer={GLYCOSIDES[compound.name]?.acceptorAnomer || anomer} linkedCarbon={GLYCOSIDES[compound.name]?.to} second /></>}</div><strong className="cs-rep-caption">{compound.ring}</strong></RepresentationCard>
       <RepresentationCard title="3D Conformation" subtitle="Interactive validated ball-and-stick model"><CarbohydrateViewer ref={viewerRef} compound={compound} representation={representation} hydrogens={hydrogens} labels={labels} carbonLabels={carbonLabels} selectedCarbon={selectedCarbon} onSelectCarbon={setSelectedCarbon} /><div className="cs-view-controls"><button onClick={() => viewerRef.current?.rotate()}><MousePointer2 /> Rotate</button><button onClick={() => viewerRef.current?.zoom(1.2)}><ZoomIn /> Zoom</button><button onClick={() => viewerRef.current?.reset()}><RotateCcw /> Reset</button><button onClick={() => viewerRef.current?.fullscreen()}><Maximize2 /></button></div><div className="cs-segmented"><button className={representation === 'Ball & stick' ? 'is-active' : ''} onClick={() => setRepresentation('Ball & stick')}>Ball & stick</button><button className={representation === 'Space filling' ? 'is-active' : ''} onClick={() => setRepresentation('Space filling')}>Space filling</button></div><div className="cs-toggle-row"><label><input type="checkbox" checked={hydrogens} onChange={e => setHydrogens(e.target.checked)} /> H atoms</label><label><input type="checkbox" checked={labels} onChange={e => setLabels(e.target.checked)} /> Atom labels</label><label><input type="checkbox" checked={carbonLabels} onChange={e => setCarbonLabels(e.target.checked)} /> Carbon labels</label></div></RepresentationCard>
     </div>
-    <div className="cs-animation-bar"><IconButton label={playing ? 'Pause ring animation' : 'Play ring animation'} onClick={() => setPlaying(v => !v)} className="cs-play">{playing ? <Pause /> : <Play />}</IconButton><input type="range" min="0" max="100" value={progress} onChange={e => setProgress(+e.target.value)} aria-label="Ring closure animation progress" /><span>{progress}%</span><button onClick={() => { setProgress(0); setPlaying(false); }}><RotateCcw /> Restart</button><div className="cs-anomer-select"><button className={anomer === 'α' ? 'is-active' : ''} onClick={() => setAnomer('α')}>α</button><button className={anomer === 'β' ? 'is-active' : ''} onClick={() => setAnomer('β')}>β</button></div></div>
+    <div className="cs-animation-bar"><IconButton label={playing ? 'Pause ring animation' : 'Play ring animation'} onClick={() => setPlaying(v => !v)} className="cs-play">{playing ? <Pause /> : <Play />}</IconButton><input type="range" min="0" max="100" value={progress} onChange={e => setProgress(+e.target.value)} aria-label="Ring closure animation progress" /><span>{progress}%</span><button onClick={() => { setProgress(0); setPlaying(false); }}><RotateCcw /> Restart</button><div className="cs-anomer-select"><button disabled={!compound.reducing} className={anomer === 'α' ? 'is-active' : ''} onClick={() => setAnomer('α')}>α</button><button disabled={!compound.reducing} className={anomer === 'β' ? 'is-active' : ''} onClick={() => setAnomer('β')}>β</button></div></div>
     <section className="cs-comparison"><div className="cs-comparison-heading"><BookOpen /><div><h3>Starch vs Cellulose <span>— same building block, different linkage</span></h3><p>Linkage geometry changes three-dimensional shape and biological function.</p></div></div><div className="cs-comparison-grid"><article><h4>Starch <b>α(1→4)</b></h4><div className="cs-polymer-line is-alpha">α α α α</div><p>Curved, helical chains compact into plant energy stores. Human amylases can hydrolyse the α linkage.</p></article><article><h4>Cellulose <b>β(1→4)</b></h4><div className="cs-polymer-line is-beta">β  β  β  β</div><p>Straight chains hydrogen-bond into strong fibres. Humans lack cellulase, so cellulose acts as dietary fibre.</p></article></div></section>
   </main><StructureInspector compound={compound} builder={builder} setBuilder={setBuilder} onBuild={buildBond} buildResult={buildResult} open={inspectorOpen} onClose={() => setInspectorOpen(false)} /></>;
 }
@@ -138,15 +151,16 @@ function ComingPage({ name }) { return <main className="cs-main cs-coming"><Flas
 
 export default function CarbohydrateStudio() {
   const routeFromLocation = () => {
-    const path = window.location.pathname.replace(/\/$/, '');
+    const section = studioSection(window.location, 'bio-carbohydrates');
+    const path = `/carbohydrate-structure-studio${section ? `/${section}` : ''}`;
     return STUDIO_ROUTES.some(([, route]) => route === path) ? path || STUDIO_ROUTES[0][1] : STUDIO_ROUTES[0][1];
   };
   const [route, setRoute] = useState(routeFromLocation);
   const [selectedName, setSelectedName] = useState('Sucrose');
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  useEffect(() => { const fn = () => setRoute(routeFromLocation()); window.addEventListener('popstate', fn); return () => window.removeEventListener('popstate', fn); }, []);
-  const navigate = path => { window.history.pushState({}, '', path); setRoute(path); window.scrollTo(0, 0); };
+  useEffect(() => { const fn = () => setRoute(routeFromLocation()); window.addEventListener('popstate', fn); window.addEventListener('hashchange', fn); return () => {window.removeEventListener('popstate', fn);window.removeEventListener('hashchange', fn);}; }, []);
+  const navigate = path => { navigateStudio('bio-carbohydrates', path.replace('/carbohydrate-structure-studio', '').replace(/^\//, '')); window.scrollTo(0, 0); };
   const pageName = STUDIO_ROUTES.find(([,path]) => path === route)?.[0] || 'Structure';
   useEffect(() => {
     if (pageName === 'Biology') setSelectedName('Starch');

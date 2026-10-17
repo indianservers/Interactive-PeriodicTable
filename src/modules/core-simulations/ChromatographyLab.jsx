@@ -1,3 +1,6 @@
+import { completeLab } from "../../utils/labNavigation.js";
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
+const assessmentQuestions = [{"prompt": "What does a more polar solvent do on silica?", "correct": 0, "options": [{"id": 0, "label": "Increases elution strength"}, {"id": 1, "label": "Always decreases elution strength"}]}, {"prompt": "What does a narrow loading band improve?", "correct": 0, "options": [{"id": 0, "label": "Resolution"}, {"id": 1, "label": "The atomic mass of the sample"}]}, {"prompt": "When should fractions be pooled?", "correct": 0, "options": [{"id": 0, "label": "When they contain the same sufficiently pure component"}, {"id": 1, "label": "Whenever their volumes are equal"}]}];
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -686,38 +689,7 @@ function Report({ reset }) {
           <Download /> Export PDF
         </button>
       </Panel>
-      <Panel title="Knowledge Check">
-        <p>More polar solvent on silica:</p>
-        <label>
-          <input
-            type="radio"
-            checked={answers.q1 === "increase"}
-            onChange={() => setAnswers((a) => ({ ...a, q1: "increase" }))}
-          />{" "}
-          Increases elution strength
-        </label>
-        <p>A narrow loading band:</p>
-        <label>
-          <input
-            type="radio"
-            checked={answers.q2 === "improve"}
-            onChange={() => setAnswers((a) => ({ ...a, q2: "improve" }))}
-          />{" "}
-          Improves resolution
-        </label>
-        <p>Pool fractions when:</p>
-        <label>
-          <input
-            type="radio"
-            checked={answers.q3 === "pure"}
-            onChange={() => setAnswers((a) => ({ ...a, q3: "pure" }))}
-          />{" "}
-          Same pure component and acceptable boundaries
-        </label>
-        <div className={score === 3 ? "valid" : "notice"}>
-          <Trophy /> Score: {score}/3
-        </div>
-        <h3>Safety</h3>
+      <Panel title="Knowledge Check"><KnowledgeCheck questions={assessmentQuestions}/><h3>Safety</h3>
         <p>
           <ShieldCheck /> Flammable solvents contained
         </p>
@@ -744,6 +716,7 @@ function ChromatographyLab({preparation,clearPreparation}) {
     [accepted, setAccepted] = useState(false);
   useEffect(()=>{if(preparation){setEthyl(preparation.ethyl);setSaved(preparation.phase==='inspected');}},[preparation]);
   const go = (n) => {
+    if (n > 5) { completeLab(); return; }
     n = Math.max(0, Math.min(5, n));
     setStep(n);
     const u = new URL(location.href);

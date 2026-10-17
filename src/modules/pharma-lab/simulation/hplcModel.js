@@ -7,7 +7,7 @@ import {
 
 export const calibrationPoints = [25, 50, 75, 100, 125, 150].map((x, i) => ({
   x,
-  y: 42851 * x + 12940 + (i % 2 ? 6200 : -4800),
+  y: 179640 * x + (i % 2 ? 6200 : -4800),
 }));
 
 export function simulateHplcMethod({
@@ -18,7 +18,9 @@ export function simulateHplcMethod({
   wavelength = 243,
   sampleConcentration = 100,
   threshold = 0.015,
+  runTime = 10,
 } = {}) {
+  if([flow,organicPercent,temperature,injectionVolume,sampleConcentration,runTime].some(value=>!Number.isFinite(value)||value<=0))throw new RangeError("Method parameters must be finite and positive");
   const retentionScale =
     ((30 / organicPercent) ** 1.25 / flow) *
     Math.exp(-0.012 * (temperature - 30));
@@ -45,17 +47,17 @@ export function simulateHplcMethod({
       height: 30 * response,
       area: 7432 * response,
     },
-  ].filter((peak) => peak.height / 205 >= threshold);
+  ].filter((peak) => peak.height >= threshold * 1000 && peak.rt <= runTime);
   const pressure =
     25.1 *
     flow *
     (30 / Math.max(10, temperature)) *
     (1 + (30 - organicPercent) * 0.012);
-  const solventMl = flow * 10;
+  const solventMl = flow * runTime;
   const totalArea = peaks.reduce((sum, peak) => sum + peak.area, 0);
   const assay = hplcAssay({
     sampleArea: peaks.find((p) => p.name === "Paracetamol")?.area || 0,
-    standardArea: 17964000,
+    standardArea: 17964000 * (injectionVolume/20) * (1-Math.min(0.3,Math.abs(wavelength-243)*0.012)),
     sampleConcentration,
     standardConcentration: 100,
   });

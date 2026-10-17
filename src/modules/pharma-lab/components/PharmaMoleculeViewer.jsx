@@ -2,31 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { Box, Maximize2, Pause, Play, Rotate3D, SkipForward, ZoomIn, ZoomOut } from "lucide-react";
 import MolstarViewer from "../../../components/molecular-viewer/MolstarViewer.jsx";
 import ViewerErrorBoundary from "../../../components/molecular-viewer/ViewerErrorBoundary.jsx";
-import { getRDKit } from "../../drug-discovery/rdkitService.js";
 
-function Molecule2D({ compound }) {
-  const hostRef = useRef(null);
-  const [error, setError] = useState("");
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const rdkit = await getRDKit();
-        const mol = rdkit.get_mol(compound.smiles);
-        const svg = mol.get_svg_with_highlights(JSON.stringify({ width: 520, height: 360, bondLineWidth: 2.1, legend: compound.name }));
-        mol.delete();
-        if (!cancelled && hostRef.current) hostRef.current.innerHTML = svg;
-      } catch (cause) { if (!cancelled) setError(cause.message); }
-    })();
-    return () => { cancelled = true; };
-  }, [compound]);
-  return <div className="plab-2d" ref={hostRef}>{error && <span>{error}</span>}</div>;
+function Molecule2D({compound}) {
+ return <div className="plab-2d"><img src={`/assets/pharma/${compound.id}-2d.png`} alt={`${compound.name}: PubChem CID ${compound.cid} molecular connectivity`} style={{maxWidth:'95%',maxHeight:'100%',background:'white',borderRadius:8}}/></div>;
 }
 
-export default function PharmaMoleculeViewer({ compound, reducedMotion }) {
+export default function PharmaMoleculeViewer({ compound, reducedMotion, initialMode = "3D" }) {
   const viewerRef = useRef(null);
   const timerRef = useRef(null);
-  const [mode, setMode] = useState("3D");
+  const [mode, setMode] = useState(initialMode);
   const [style, setStyle] = useState("BallAndStick");
   const [running, setRunning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
@@ -45,7 +29,7 @@ export default function PharmaMoleculeViewer({ compound, reducedMotion }) {
       <div className="plab-view-tabs"><button className={mode === "3D" ? "active" : ""} onClick={() => setMode("3D")}><Box size={14}/> 3D</button><button className={mode === "2D" ? "active" : ""} onClick={() => setMode("2D")}>2D structure</button></div>
       <div className="plab-molecule-canvas">
         {mode === "3D" ? <ViewerErrorBoundary label={`${compound.name} molecular structure`}><MolstarViewer ref={viewerRef} source={{ url: compound.sdf, format: "sdf" }} sourceType="sdf" label={`${compound.name} · PubChem CID ${compound.cid}`} representation={representation} colorScheme="element" showLabels={false} onReady={() => { setReady(true); requestAnimationFrame(() => viewerRef.current?.zoom(1.45)); }} onSelectionChange={setSelection} /></ViewerErrorBoundary> : <Molecule2D compound={compound} />}
-        <div className="plab-molecule-name"><span style={{ background: compound.color }} /> <strong>{compound.name}</strong><small>{ready || mode === "2D" ? "coordinate model ready" : "loading coordinates…"}</small></div>
+        <div className="plab-molecule-name"><span style={{ background: compound.color }} /> <strong>{compound.name}</strong><small>{mode === "2D" ? "PubChem 2D depiction" : ready ? "coordinate model ready" : "loading coordinates…"}</small></div>
         {selection && <div className="plab-atom-readout"><b>{selection.element} · {selection.atom}</b><span>{selection.coordinates.map((value) => value.toFixed(2)).join(", ")} Å</span></div>}
       </div>
       <div className="plab-view-controls">

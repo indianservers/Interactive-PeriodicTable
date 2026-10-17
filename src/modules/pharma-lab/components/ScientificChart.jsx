@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { SciencePlot } from "../../../components/science/SciencePlot.jsx";
 
-export default function ScientificChart({
+function ScientificChart({
   data = [],
   xLabel,
   yLabel,
@@ -8,9 +9,10 @@ export default function ScientificChart({
   secondary,
   label = "Scientific chart",
   limits = [],
+  points = false,
 }) {
   const series = [
-    { label, data, color, points: true },
+    { label, data, color, points },
     secondary ? { label: "Secondary", data: secondary, color: "#fbbf24", dash: "dash" } : null,
   ].filter(Boolean);
   const yValues = [...data, ...(secondary || [])].map((point) => point.y).filter(Number.isFinite);
@@ -35,3 +37,5 @@ export default function ScientificChart({
     />
   );
 }
+
+export default memo(ScientificChart,(previous,next)=>JSON.stringify(previous)===JSON.stringify(next));

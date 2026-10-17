@@ -2062,3 +2062,5 @@
     display: none;
   }
 }
+/* Target composition: the mechanism is a molecular scene, with independent controls above it. */
+.nae-molecular-fork{position:absolute;inset:0;background:radial-gradient(ellipse,#0d2840,#06131e 72%)}.nae-molecular-fork canvas{width:100%;height:100%;display:block}.nae-fork>.strand{visibility:hidden}.nae-fork>.enzyme,.nae-fork>.label{z-index:3}.nae-fork>.enzyme{background:#0a203ab3;border-color:#4f758f;border-radius:5px;box-shadow:0 0 8px #0008;font-size:10px;min-width:0}.nae-fork>.enzyme.selected{border-color:#48cbf2;background:#154a61}.nae-view-title>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:75%}.nae-structure-list td{vertical-align:middle}.nae-structure-list td:first-child{max-width:210px;overflow:hidden;text-overflow:ellipsis}

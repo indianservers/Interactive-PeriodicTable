@@ -17,6 +17,9 @@ const molFile = (name, atoms, bonds) => {
 };
 
 export const POLARITY_STRUCTURES = {
+  SF6: {data:molFile("Sulfur hexafluoride",[[0,0,0,"S"],[1.56,0,0,"F"],[-1.56,0,0,"F"],[0,1.56,0,"F"],[0,-1.56,0,"F"],[0,0,1.56,"F"],[0,0,-1.56,"F"]],[[1,2],[1,3],[1,4],[1,5],[1,6],[1,7]]),format:"mol",label:"Sulfur hexafluoride"},
+  ClF3: {data:molFile("Chlorine trifluoride",[[0,0,0,"Cl"],[1.7,0,0,"F"],[0,1.7,0,"F"],[0,-1.7,0,"F"]],[[1,2],[1,3],[1,4]]),format:"mol",label:"Chlorine trifluoride"},
+  XeF4: {data:molFile("Xenon tetrafluoride",[[0,0,0,"Xe"],[1.95,0,0,"F"],[-1.95,0,0,"F"],[0,1.95,0,"F"],[0,-1.95,0,"F"]],[[1,2],[1,3],[1,4],[1,5]]),format:"mol",label:"Xenon tetrafluoride"},
   H2O: { url: "/assets/carbohydrate-studio/structures/water.sdf", format: "sdf", label: "Water · PubChem CID 962" },
   CO2: { data: molFile("Carbon dioxide", [[-1.16, 0, 0, "O"], [0, 0, 0, "C"], [1.16, 0, 0, "O"]], [[1, 2, 2], [2, 3, 2]]), format: "mol", label: "Carbon dioxide" },
   BF3: { data: molFile("Boron trifluoride", [[0, 0, 0, "B"], [1.30, 0, 0, "F"], [-0.65, 1.126, 0, "F"], [-0.65, -1.126, 0, "F"]], [[1, 2], [1, 3], [1, 4]]), format: "mol", label: "Boron trifluoride" },
@@ -37,6 +40,7 @@ export const INTERACTIVE_STRUCTURES = {
 
 export function benchKindFor(id = "", subject = "") {
   if (INTERACTIVE_STRUCTURES[id]) return "structure";
+  if (id === "aspirin-acetylation") return "water-bath";
   if (/conduct|ph-metry|potentiom|ka-acetic|ksp-baso4|electrograv/.test(id)) return "electrodes";
   if (/colorim|flame|polarog/.test(id)) return "cuvette";
   if (/kinetics|saponif|h2o2|persulfate|distribution|solvent-extraction/.test(id)) return "flask";

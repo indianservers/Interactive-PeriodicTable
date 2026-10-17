@@ -1,0 +1,1511 @@
+{
+  "preformulation": [
+    {
+      "id": "preformulation-1",
+      "name": "AET granule flow",
+      "model": "linear",
+      "xLabel": "Binder (% w/w)",
+      "yLabel": "Flow rate (g/s)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 16.6,
+          "reported": "16.6 ± 0.21",
+          "sd": 0.21,
+          "label": "AET1"
+        },
+        {
+          "x": 4.0,
+          "y": 17.6,
+          "reported": "17.6 ± 0.46",
+          "sd": 0.46,
+          "label": "AET 2"
+        },
+        {
+          "x": 6.0,
+          "y": 19.35,
+          "reported": "19.35 ± 0.73",
+          "sd": 0.73,
+          "label": "AET 3"
+        },
+        {
+          "x": 8.0,
+          "y": 21.4,
+          "reported": "21.4 ± 0.54",
+          "sd": 0.54,
+          "label": "AET 4"
+        }
+      ],
+      "protocol": "Published Table 7; n = 3, mean ± SD. Within each binder family the source labels 1–4 denote binder concentrations of 2, 4, 6 and 8% w/w. Flow rate and angle of repose characterize the prepared granules. Binder levels 2, 4, 6, 8% (Table 1: 8, 16, 24, 32 mg per 400 mg tablet).",
+      "sources": [
+        {
+          "title": "Physicochemical Characterization and Evaluation of the Binding Effect of Acacia etbaica Schweinf Gum in Granule and Tablet Formulations",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8531771/#tab7",
+          "doi": "10.1155/2021/5571507",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "sourceSha256": "9c5f26d7fa84c3b32265e6c434ddd73e3f8aba8d558cd0b3360f67718316dd1e"
+        }
+      ],
+      "limitations": "Four formulation means per binder; empirical interpolation only, not a general powder-flow law.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "preformulation-2",
+      "name": "PVP granule flow",
+      "model": "linear",
+      "xLabel": "Binder (% w/w)",
+      "yLabel": "Flow rate (g/s)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 17.6,
+          "reported": "17.6 ± 0.61",
+          "sd": 0.61,
+          "label": "PVP1"
+        },
+        {
+          "x": 4.0,
+          "y": 18.75,
+          "reported": "18.75 ± 0.42",
+          "sd": 0.42,
+          "label": "PVP 2"
+        },
+        {
+          "x": 6.0,
+          "y": 20.0,
+          "reported": "20 ± 0.33",
+          "sd": 0.33,
+          "label": "PVP 3"
+        },
+        {
+          "x": 8.0,
+          "y": 21.07,
+          "reported": "21.07 ± 0.52",
+          "sd": 0.52,
+          "label": "PVP 4"
+        }
+      ],
+      "protocol": "Published Table 7; n = 3, mean ± SD. Within each binder family the source labels 1–4 denote binder concentrations of 2, 4, 6 and 8% w/w. Flow rate and angle of repose characterize the prepared granules. Binder levels 2, 4, 6, 8% (Table 1: 8, 16, 24, 32 mg per 400 mg tablet).",
+      "sources": [
+        {
+          "title": "Physicochemical Characterization and Evaluation of the Binding Effect of Acacia etbaica Schweinf Gum in Granule and Tablet Formulations",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8531771/#tab7",
+          "doi": "10.1155/2021/5571507",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "sourceSha256": "9c5f26d7fa84c3b32265e6c434ddd73e3f8aba8d558cd0b3360f67718316dd1e"
+        }
+      ],
+      "limitations": "Four formulation means per binder; empirical interpolation only, not a general powder-flow law.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "preformulation-3",
+      "name": "ABP granule flow",
+      "model": "linear",
+      "xLabel": "Binder (% w/w)",
+      "yLabel": "Flow rate (g/s)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 17.1,
+          "reported": "17.1 ± 0.66",
+          "sd": 0.66,
+          "label": "ABP 1"
+        },
+        {
+          "x": 4.0,
+          "y": 18.75,
+          "reported": "18.75 ± 0.35",
+          "sd": 0.35,
+          "label": "ABP 2"
+        },
+        {
+          "x": 6.0,
+          "y": 20.0,
+          "reported": "20 ± 0.12",
+          "sd": 0.12,
+          "label": "ABP 3"
+        },
+        {
+          "x": 8.0,
+          "y": 20.6,
+          "reported": "20.6 ± 0.06",
+          "sd": 0.06,
+          "label": "ABP 4"
+        }
+      ],
+      "protocol": "Published Table 7; n = 3, mean ± SD. Within each binder family the source labels 1–4 denote binder concentrations of 2, 4, 6 and 8% w/w. Flow rate and angle of repose characterize the prepared granules. Binder levels 2, 4, 6, 8% (Table 1: 8, 16, 24, 32 mg per 400 mg tablet).",
+      "sources": [
+        {
+          "title": "Physicochemical Characterization and Evaluation of the Binding Effect of Acacia etbaica Schweinf Gum in Granule and Tablet Formulations",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8531771/#tab7",
+          "doi": "10.1155/2021/5571507",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "sourceSha256": "9c5f26d7fa84c3b32265e6c434ddd73e3f8aba8d558cd0b3360f67718316dd1e"
+        }
+      ],
+      "limitations": "Four formulation means per binder; empirical interpolation only, not a general powder-flow law.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    }
+  ],
+  "tablet-formulation": [
+    {
+      "id": "tablet-formulation-1",
+      "name": "PGTBIS breaking force",
+      "model": "linear",
+      "xLabel": "Drug loading (%)",
+      "yLabel": "Breaking force (N)",
+      "observations": [
+        {
+          "x": 20.0,
+          "y": 77.4,
+          "reported": "77.4 ± 6.1",
+          "sd": 6.1,
+          "label": "20% PGTBIS"
+        },
+        {
+          "x": 30.0,
+          "y": 69.9,
+          "reported": "69.9 ± 4.2",
+          "sd": 4.2,
+          "label": "30% PGTBIS"
+        },
+        {
+          "x": 40.0,
+          "y": 56.6,
+          "reported": "56.6 ± 4.2",
+          "sd": 4.2,
+          "label": "40% PGTBIS"
+        },
+        {
+          "x": 50.0,
+          "y": 16.1,
+          "reported": "16.1 ± 3.2",
+          "sd": 3.2,
+          "label": "50% PGTBIS"
+        }
+      ],
+      "protocol": "Direct compression at 17 kN, paracetamol loadings of 20, 30, 40 and 50%. TBF: tablet breaking force; TS: tensile strength; DT: disintegration time. Original summary values and “Friable” entries are retained. Compression force fixed at 17 kN.",
+      "sources": [
+        {
+          "title": "Comparative Direct Compression Property of a Novel Pregelatinized Starch in Paracetamol Tablets",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10567489/#tab4",
+          "doi": "10.1155/2023/5573176",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "sourceSha256": "d377bf7a3c52933bae76a23ee0dad9ef6b5537047c21c3f8518f0e2b1889c918"
+        }
+      ],
+      "limitations": "Four published formulation means; linear empirical fit may poorly describe loss of compactibility. No force or excipient substitution is supported.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "tablet-formulation-2",
+      "name": "Starch 1500® breaking force",
+      "model": "linear",
+      "xLabel": "Drug loading (%)",
+      "yLabel": "Breaking force (N)",
+      "observations": [
+        {
+          "x": 20.0,
+          "y": 64.7,
+          "reported": "64.7 ± 3.1",
+          "sd": 3.1,
+          "label": "20% Starch 1500®"
+        },
+        {
+          "x": 30.0,
+          "y": 51.5,
+          "reported": "51.5 ± 1.8",
+          "sd": 1.8,
+          "label": "30% Starch 1500®"
+        },
+        {
+          "x": 40.0,
+          "y": 43.4,
+          "reported": "43.4 ± 1.7",
+          "sd": 1.7,
+          "label": "40% Starch 1500®"
+        },
+        {
+          "x": 50.0,
+          "y": 15.1,
+          "reported": "15.1 ± 1.2",
+          "sd": 1.2,
+          "label": "50% Starch 1500®"
+        }
+      ],
+      "protocol": "Direct compression at 17 kN, paracetamol loadings of 20, 30, 40 and 50%. TBF: tablet breaking force; TS: tensile strength; DT: disintegration time. Original summary values and “Friable” entries are retained. Compression force fixed at 17 kN.",
+      "sources": [
+        {
+          "title": "Comparative Direct Compression Property of a Novel Pregelatinized Starch in Paracetamol Tablets",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10567489/#tab4",
+          "doi": "10.1155/2023/5573176",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "sourceSha256": "d377bf7a3c52933bae76a23ee0dad9ef6b5537047c21c3f8518f0e2b1889c918"
+        }
+      ],
+      "limitations": "Four published formulation means; linear empirical fit may poorly describe loss of compactibility. No force or excipient substitution is supported.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    }
+  ],
+  "toxicology": [
+    {
+      "id": "toxicology-1",
+      "name": "Repeated-dose rat ALT",
+      "model": "linear",
+      "xLabel": "Exposure duration (weeks)",
+      "yLabel": "ALT (U/L)",
+      "observations": [
+        {
+          "x": 4.0,
+          "y": 28.67,
+          "reported": "28.67 ± 6.51a",
+          "sd": 6.51,
+          "label": "APAP group 4 weeks"
+        },
+        {
+          "x": 6.0,
+          "y": 33.33,
+          "reported": "33.33 ± 7.64a",
+          "sd": 7.64,
+          "label": "APAP group 6 weeks"
+        },
+        {
+          "x": 8.0,
+          "y": 37.0,
+          "reported": "37 ± 7.94a",
+          "sd": 7.94,
+          "label": "APAP-group 8 weeks"
+        },
+        {
+          "x": 10.0,
+          "y": 46.67,
+          "reported": "46.67 ± 6.43b",
+          "sd": 6.43,
+          "label": "APAP-group 10 weeks"
+        },
+        {
+          "x": 12.0,
+          "y": 55.67,
+          "reported": "55.67 ± 7.2b",
+          "sd": 7.2,
+          "label": "APAP-group 12 weeks"
+        }
+      ],
+      "protocol": "Rats were 24 months old; APAP-treated animals received 500 mg/kg body weight daily. Five treated and five control animals were sacrificed at 4, 6, 8, 10 and 12 weeks. The source reports one control row and means with SD. Letter suffixes a/b/c are the source’s statistical grouping annotations.",
+      "sources": [
+        {
+          "title": "Effect of the long-term use of a NOAEL dose of acetaminophen (paracetamol) on hepatic, renal, and neural tissues of aged albino rats",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11018404/#tab1",
+          "doi": "10.5455/OVJ.2024.v14.i1.28",
+          "license": "CC BY-NC 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+          "sourceSha256": "8f0541bca62fe7ae618c740ebdbebb91252370c33ea984895798a6e3cf3991b4"
+        }
+      ],
+      "limitations": "Animal group means, not longitudinal individual trajectories or human risk predictions. Significance letters remain in reported cells; they are not model uncertainty.",
+      "excluded": [
+        {
+          "label": "Control group",
+          "reported": "26.67 ± 5.03a",
+          "reason": "Control is not a treated week-zero observation."
+        }
+      ],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    }
+  ],
+  "medicinal-chemistry": [
+    {
+      "id": "medicinal-chemistry-1",
+      "name": "Four statin acids · exploratory descriptor association",
+      "model": "log-linear",
+      "xLabel": "TPSA (Å²)",
+      "yLabel": "HMG-CoA reductase IC50 (nM)",
+      "observations": [
+        {
+          "x": 112.0,
+          "y": 13.1,
+          "reported": "13.1 ± 3.2",
+          "sd": 3.2,
+          "label": "Atorvastatin",
+          "CID": 60823
+        },
+        {
+          "x": 124.0,
+          "y": 12.6,
+          "reported": "12.6 ± 3.7",
+          "sd": 3.7,
+          "label": "Pravastatin",
+          "CID": 54687
+        },
+        {
+          "x": 149.0,
+          "y": 4.37,
+          "reported": "4.37 ± 1.13",
+          "sd": 1.13,
+          "label": "Rosuvastatin",
+          "CID": 446157
+        },
+        {
+          "x": 104.0,
+          "y": 19.7,
+          "reported": "19.7 ± 2.0",
+          "sd": 2.0,
+          "label": "Simvastatin acid",
+          "CID": 64718
+        }
+      ],
+      "protocol": "Primary study Table 2. Eight compound concentrations incubated with HMG-CoA (20 µM) and HMG-CoA reductase (0.9 µg/mL) for 3 minutes. Selected compounds: triplicate incubations; IC50 mean ± SD in nM.",
+      "sources": [
+        {
+          "title": "Comparative Hepatic and Intestinal Metabolism and Pharmacodynamics of Statins",
+          "sourceUrl": "https://dmd.aspetjournals.org/article/S0090-9556%2824%2907982-0/fulltext#tbl2",
+          "doi": "10.1124/dmd.121.000406",
+          "license": "Factual numerical transcription; original article rights retained by publisher",
+          "licenseUrl": "https://doi.org/10.1124/dmd.121.000406",
+          "sourceSha256": "75314f98a577724cb8771d6ca41d31f3d7ef80fb5f0c8052ac87536883abff28"
+        },
+        {
+          "title": "Atorvastatin acid-form descriptor · PubChem CID 60823",
+          "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/60823"
+        },
+        {
+          "title": "Pravastatin acid-form descriptor · PubChem CID 54687",
+          "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/54687"
+        },
+        {
+          "title": "Rosuvastatin acid-form descriptor · PubChem CID 446157",
+          "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/446157"
+        },
+        {
+          "title": "Simvastatin acid acid-form descriptor · PubChem CID 64718",
+          "sourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/64718"
+        }
+      ],
+      "limitations": "Only four chemically different statin acids. Exploratory log(IC50)-TPSA association, not a validated QSAR, docking score or dose-response curve. Simvastatin acid CID 64718 is used, not lactone CID 54454.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    }
+  ],
+  "dissolution": [
+    {
+      "id": "dissolution-1",
+      "name": "PMC8076289 · PCT",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 46.86,
+          "reported": "46.86 ± 2.89",
+          "sd": 2.89,
+          "label": "PCT · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 63.61,
+          "reported": "63.61 ± 0.71",
+          "sd": 0.71,
+          "label": "PCT · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 74.47,
+          "reported": "74.47 ± 1.64",
+          "sd": 1.64,
+          "label": "PCT · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 89.04,
+          "reported": "89.04 ± 1.61",
+          "sd": 1.61,
+          "label": "PCT · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 101.14,
+          "reported": "101.14 ± 0.54",
+          "sd": 0.54,
+          "label": "PCT · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Pure paracetamol (no polymer).",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    }
+  ],
+  "dosage": [
+    {
+      "id": "dosage-1",
+      "name": "PMC8076289 · T1",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 51.81,
+          "reported": "51.81 ± 5.58",
+          "sd": 5.58,
+          "label": "T1 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 67.31,
+          "reported": "67.31 ± 2.93",
+          "sd": 2.93,
+          "label": "T1 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 78.17,
+          "reported": "78.17 ± 1.96",
+          "sd": 1.96,
+          "label": "T1 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 83.97,
+          "reported": "83.97 ± 6.83",
+          "sd": 6.83,
+          "label": "T1 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 91.27,
+          "reported": "91.27 ± 6.29",
+          "sd": 6.29,
+          "label": "T1 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. T1: paracetamol 1.25 g, EuE 1.2 g, no SLS or PEG.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-2",
+      "name": "PMC8076289 · TS1",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 92.93,
+          "reported": "92.93 ± 2.76",
+          "sd": 2.76,
+          "label": "TS1 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 98.68,
+          "reported": "98.68 ± 0.50",
+          "sd": 0.5,
+          "label": "TS1 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 99.7,
+          "reported": "99.70 ± 0.63",
+          "sd": 0.63,
+          "label": "TS1 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 99.71,
+          "reported": "99.71 ± 1.38",
+          "sd": 1.38,
+          "label": "TS1 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 100.21,
+          "reported": "100.21 ± 1.01",
+          "sd": 1.01,
+          "label": "TS1 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 1.25 g, EuE 1.2 g, SLS 2.5 g, no PEG.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-3",
+      "name": "PMC8076289 · TS2",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 93.12,
+          "reported": "93.12 ± 3.17",
+          "sd": 3.17,
+          "label": "TS2 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 98.52,
+          "reported": "98.52 ± 3.36",
+          "sd": 3.36,
+          "label": "TS2 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 100.21,
+          "reported": "100.21 ± 1.38",
+          "sd": 1.38,
+          "label": "TS2 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 100.25,
+          "reported": "100.25 ± 0.10",
+          "sd": 0.1,
+          "label": "TS2 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 100.34,
+          "reported": "100.34 ± 0.48",
+          "sd": 0.48,
+          "label": "TS2 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 2.5 g, EuE 1.2 g, SLS 2.5 g, no PEG.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-4",
+      "name": "PMC8076289 · TS3",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 88.82,
+          "reported": "88.82 ± 6.30",
+          "sd": 6.3,
+          "label": "TS3 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 92.85,
+          "reported": "92.85 ± 5.89",
+          "sd": 5.89,
+          "label": "TS3 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 95.66,
+          "reported": "95.66 ± 2.78",
+          "sd": 2.78,
+          "label": "TS3 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 99.12,
+          "reported": "99.12 ± 0.59",
+          "sd": 0.59,
+          "label": "TS3 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 101.1,
+          "reported": "101.10 ± 0.74",
+          "sd": 0.74,
+          "label": "TS3 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 3.0 g, EuE 1.2 g, SLS 2.5 g, no PEG.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-5",
+      "name": "PMC8076289 · TS4",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 67.7,
+          "reported": "67.70 ± 6.00",
+          "sd": 6.0,
+          "label": "TS4 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 77.29,
+          "reported": "77.29 ± 5.60",
+          "sd": 5.6,
+          "label": "TS4 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 87.05,
+          "reported": "87.05 ± 5.20",
+          "sd": 5.2,
+          "label": "TS4 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 97.03,
+          "reported": "97.03 ± 5.40",
+          "sd": 5.4,
+          "label": "TS4 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 102.1,
+          "reported": "102.10 ± 3.30",
+          "sd": 3.3,
+          "label": "TS4 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 4.0 g, EuE 1.2 g, SLS 2.5 g, no PEG.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-6",
+      "name": "PMC8076289 · TP1",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 96.28,
+          "reported": "96.28 ± 2.89",
+          "sd": 2.89,
+          "label": "TP1 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 99.26,
+          "reported": "99.26 ± 0.71",
+          "sd": 0.71,
+          "label": "TP1 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 100.02,
+          "reported": "100.02 ± 1.64",
+          "sd": 1.64,
+          "label": "TP1 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 99.95,
+          "reported": "99.95 ± 1.61",
+          "sd": 1.61,
+          "label": "TP1 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 100.2,
+          "reported": "100.20 ± 0.54",
+          "sd": 0.54,
+          "label": "TP1 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 1.25 g, EuE 1.2 g, PEG 400 4.0 g, no SLS.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-7",
+      "name": "PMC8076289 · TP2",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 95.36,
+          "reported": "95.36 ± 4.51",
+          "sd": 4.51,
+          "label": "TP2 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 98.36,
+          "reported": "98.36 ± 2.47",
+          "sd": 2.47,
+          "label": "TP2 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 100.11,
+          "reported": "100.11 ± 1.32",
+          "sd": 1.32,
+          "label": "TP2 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 100.21,
+          "reported": "100.21 ± 0.58",
+          "sd": 0.58,
+          "label": "TP2 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 99.98,
+          "reported": "99.98 ± 1.46",
+          "sd": 1.46,
+          "label": "TP2 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 2.5 g, EuE 1.2 g, PEG 400 4.0 g, no SLS.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-8",
+      "name": "PMC8076289 · TP3",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 90.73,
+          "reported": "90.73 ± 5.34",
+          "sd": 5.34,
+          "label": "TP3 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 94.75,
+          "reported": "94.75 ± 4.68",
+          "sd": 4.68,
+          "label": "TP3 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 97.87,
+          "reported": "97.87 ± 2.05",
+          "sd": 2.05,
+          "label": "TP3 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 99.7,
+          "reported": "99.70 ± 1.14",
+          "sd": 1.14,
+          "label": "TP3 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 101.2,
+          "reported": "101.20 ± 0.78",
+          "sd": 0.78,
+          "label": "TP3 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 3.0 g, EuE 1.2 g, PEG 400 4.0 g, no SLS.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    },
+    {
+      "id": "dosage-9",
+      "name": "PMC8076289 · TP4",
+      "model": "release",
+      "xLabel": "Time (min)",
+      "yLabel": "Paracetamol released (%)",
+      "observations": [
+        {
+          "x": 2.0,
+          "y": 67.45,
+          "reported": "67.45 ± 6.36",
+          "sd": 6.36,
+          "label": "TP4 · 2 min"
+        },
+        {
+          "x": 5.0,
+          "y": 86.63,
+          "reported": "86.63 ± 4.85",
+          "sd": 4.85,
+          "label": "TP4 · 5 min"
+        },
+        {
+          "x": 10.0,
+          "y": 93.82,
+          "reported": "93.82 ± 6.79",
+          "sd": 6.79,
+          "label": "TP4 · 10 min"
+        },
+        {
+          "x": 20.0,
+          "y": 98.5,
+          "reported": "98.50 ± 4.13",
+          "sd": 4.13,
+          "label": "TP4 · 20 min"
+        },
+        {
+          "x": 30.0,
+          "y": 100.5,
+          "reported": "100.50 ± 1.50",
+          "sd": 1.5,
+          "label": "TP4 · 30 min"
+        }
+      ],
+      "protocol": "Paracetamol / Eudragit E100 study; 500 mg paracetamol equivalent; 500 mL 0.1 N HCl; paddle 50 rpm; 37 °C; 2, 5, 10, 20, 30 min; triplicate mean ± SD. Table 1 fixes each trial composition; Table 3 contains release measurements. Preparation trial: paracetamol 4.0 g, EuE 1.2 g, PEG 400 4.0 g, no SLS.",
+      "sources": [
+        {
+          "pmcid": "PMC8076289",
+          "title": "Aqueous and pH dependent coacervation method for taste masking of paracetamol via amorphous solid dispersion formation",
+          "doi": "10.1038/s41598-021-88312-6",
+          "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8076289/#Tab3",
+          "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8076289/fullTextXML",
+          "tableId": "Tab3",
+          "license": "CC BY 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "retrievedOn": "2026-10-17",
+          "sourceSha256": "398e7ff7c1494523c2cd01099a35ee17e8971cbc498a49dbd9cd13e12ecffdd0",
+          "authors": [
+            "Al-kasmi Basheer",
+            "Alsirawan M H D Bashir",
+            "Paradkar Anant",
+            "Nattouf Abdul-Hakim",
+            "El-Zein Hind"
+          ],
+          "year": "2021",
+          "kind": "Published experimental summaries"
+        }
+      ],
+      "limitations": "Bounded first-order fit Q=100(1−exp(−kt)), no burst term. Observations above 100% remain unchanged. Poor fit is retained; SD describes the triplicate experiment, not prediction uncertainty.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    }
+  ],
+  "hplc": [
+    {
+      "id": "hplc-1",
+      "name": "Patel et al. (2013) · paracetamol calibration Table 1",
+      "model": "linear",
+      "xLabel": "Paracetamol concentration (µg/mL)",
+      "yLabel": "Mean peak area (source area units)",
+      "observations": [
+        {
+          "x": 10.0,
+          "y": 1471361.4,
+          "reported": "1471361.4 ± 9630.94",
+          "sd": 9630.94,
+          "label": "10"
+        },
+        {
+          "x": 30.0,
+          "y": 3646275.0,
+          "reported": "3646275.0 ± 31715.63",
+          "sd": 31715.63,
+          "label": "30"
+        },
+        {
+          "x": 50.0,
+          "y": 5850892.4,
+          "reported": "5850892.4 ± 39151.97",
+          "sd": 39151.97,
+          "label": "50"
+        },
+        {
+          "x": 70.0,
+          "y": 8146941.6,
+          "reported": "8146941.6 ± 89537.72",
+          "sd": 89537.72,
+          "label": "70"
+        },
+        {
+          "x": 90.0,
+          "y": 10531325.0,
+          "reported": "10531325.0 ± 90639.27",
+          "sd": 90639.27,
+          "label": "90"
+        }
+      ],
+      "protocol": "Patel MG, Shah RR, Shah KH, Malik BM; PharmaTutor, 24 February 2013, Table 1, paracetamol, n=5. Licrosphere C18 250 × 4.6 mm, 5 µm; methanol:THF 90:10, pH 8.2 with 0.1% triethylamine; 254 nm; 1 mL/min. Unweighted regression of published mean peak areas.",
+      "sources": [
+        {
+          "title": "Development and validation of RP-HPLC method for Tolperisone hydrochloride and Paracetamol in Pharmaceutical Formulation · Table 1",
+          "sourceUrl": "https://www.pharmatutor.org/articles/development-validation-rp-hplc-method-tolperisone-hydrochloride-paracetamol-pharmaceutical-formulation",
+          "license": "Publisher terms apply; numerical facts transcribed, no article text reproduced"
+        }
+      ],
+      "limitations": "Five concentration-level means, not individual injections. No chromatogram is reconstructed. Published SD remains experimental SD; fitted coefficients are recomputed from rounded means.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Factual numerical transcription from primary publisher HTML tables read 2026-10-17. Publisher pages were readable through web search; local HTML requests returned 403. This file is not a raw publisher archive.",
+      "transcriptionSha256": "85e6391e2fc6983a6399c7e0cd2deb93e8a480bb0dc7ad23000a94a97cad2155"
+    }
+  ],
+  "qc": [
+    {
+      "id": "qc-1",
+      "name": "Patel et al. (2013) · paracetamol recovery Table 5",
+      "model": "linear",
+      "xLabel": "Nominal total paracetamol (mg)",
+      "yLabel": "Total paracetamol found (mg)",
+      "observations": [
+        {
+          "x": 500.0,
+          "y": 500.72,
+          "reported": "500.72 ± 1.11509",
+          "sd": 1.11509,
+          "label": "500"
+        },
+        {
+          "x": 750.0,
+          "y": 748.72,
+          "reported": "748.72 ± 0.80033",
+          "sd": 0.80033,
+          "label": "750"
+        },
+        {
+          "x": 1000.0,
+          "y": 1004.93,
+          "reported": "1004.93 ± 1.59919",
+          "sd": 1.59919,
+          "label": "1000"
+        },
+        {
+          "x": 1250.0,
+          "y": 1246.63,
+          "reported": "1246.63 ± 1.85595",
+          "sd": 1.85595,
+          "label": "1250"
+        }
+      ],
+      "protocol": "Same Patel et al. RP-HPLC method as the calibration preset. Table 5 paracetamol standard addition, n=3; original 500 mg plus 0, 250, 500, 750 mg added. Fit measured total found against nominal total, not percentage recovery against amount added.",
+      "sources": [
+        {
+          "title": "Patel et al. · Table 5 accuracy / recovery",
+          "sourceUrl": "https://www.pharmatutor.org/articles/development-validation-rp-hplc-method-tolperisone-hydrochloride-paracetamol-pharmaceutical-formulation",
+          "license": "Publisher terms apply; numerical facts transcribed"
+        }
+      ],
+      "limitations": "Four rounded recovery means; empirical response fit, not batch release certification or an independent validation of this model. No raw peak areas inferred.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Factual numerical transcription from primary publisher HTML tables read 2026-10-17. Publisher pages were readable through web search; local HTML requests returned 403. This file is not a raw publisher archive.",
+      "transcriptionSha256": "85e6391e2fc6983a6399c7e0cd2deb93e8a480bb0dc7ad23000a94a97cad2155"
+    }
+  ],
+  "adme": [
+    {
+      "id": "adme-1",
+      "name": "Shiea et al. (2020) · one volunteer LC/MS/MS profile",
+      "model": "bateman",
+      "xLabel": "Time after dose (h)",
+      "yLabel": "Plasma acetaminophen (ng/mL)",
+      "observations": [
+        {
+          "x": 0.167,
+          "y": 1300.0,
+          "reported": "1300",
+          "sd": null,
+          "label": "0.167"
+        },
+        {
+          "x": 0.333,
+          "y": 3840.0,
+          "reported": "3840",
+          "sd": null,
+          "label": "0.333"
+        },
+        {
+          "x": 0.5,
+          "y": 4620.0,
+          "reported": "4620",
+          "sd": null,
+          "label": "0.5"
+        },
+        {
+          "x": 0.75,
+          "y": 3590.0,
+          "reported": "3590",
+          "sd": null,
+          "label": "0.75"
+        },
+        {
+          "x": 1.0,
+          "y": 3780.0,
+          "reported": "3780",
+          "sd": null,
+          "label": "1"
+        },
+        {
+          "x": 1.5,
+          "y": 3250.0,
+          "reported": "3250",
+          "sd": null,
+          "label": "1.5"
+        },
+        {
+          "x": 2.0,
+          "y": 2730.0,
+          "reported": "2730",
+          "sd": null,
+          "label": "2"
+        },
+        {
+          "x": 2.5,
+          "y": 2370.0,
+          "reported": "2370",
+          "sd": null,
+          "label": "2.5"
+        },
+        {
+          "x": 4.0,
+          "y": 2110.0,
+          "reported": "2110",
+          "sd": null,
+          "label": "Source row 10: 4 h"
+        },
+        {
+          "x": 3.0,
+          "y": 1520.0,
+          "reported": "1520",
+          "sd": null,
+          "label": "Source row 11: 3 h"
+        },
+        {
+          "x": 6.0,
+          "y": 808.0,
+          "reported": "808",
+          "sd": null,
+          "label": "6"
+        },
+        {
+          "x": 8.0,
+          "y": 521.0,
+          "reported": "521",
+          "sd": null,
+          "label": "8"
+        },
+        {
+          "x": 12.0,
+          "y": 258.0,
+          "reported": "258",
+          "sd": null,
+          "label": "12"
+        }
+      ],
+      "protocol": "Rapid quantification of acetaminophen in plasma using solid-phase microextraction coupled with thermal desorption electrospray ionization mass spectrometry, Table 1, LC/MS/MS column. Single healthy volunteer from a 31-volunteer study; fasted oral Ultracet containing 325 mg acetaminophen; each sample tested once. Source rows 10 and 11 list 4 h before 3 h; times retained as printed, sorted only for display.",
+      "sources": [
+        {
+          "title": "Shiea et al. · primary Table 1 (LC/MS/MS)",
+          "sourceUrl": "https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/rcm.8564",
+          "doi": "10.1002/rcm.8564",
+          "license": "Publisher terms apply; numerical facts transcribed"
+        }
+      ],
+      "limitations": "One participant, no reported replicate SD. Fit S(exp(−ke t)−exp(−ka t)); S is a fitted concentration scale, not an identified volume or bioavailability. No dose scaling or clinical dosing advice. Internal leave-one-time-point-out assessment is not participant-level validation.",
+      "excluded": [
+        {
+          "label": "Predose",
+          "reported": "Below quantification limit",
+          "reason": "Censored; not zero and not fitted"
+        },
+        {
+          "label": "24 h",
+          "reported": "Below quantification limit",
+          "reason": "Censored; not zero and not fitted"
+        }
+      ],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Factual numerical transcription from primary publisher HTML tables read 2026-10-17. Publisher pages were readable through web search; local HTML requests returned 403. This file is not a raw publisher archive.",
+      "transcriptionSha256": "85e6391e2fc6983a6399c7e0cd2deb93e8a480bb0dc7ad23000a94a97cad2155"
+    }
+  ],
+  "buffers": [
+    {
+      "id": "buffers-1",
+      "name": "Citrate / HCl · experimental pH calibration",
+      "model": "linear",
+      "xLabel": "Published theoretical target pH",
+      "yLabel": "Measured pH",
+      "observations": [
+        {
+          "x": 3.0,
+          "y": 3.02,
+          "reported": "3.020",
+          "sd": null,
+          "label": "3.0",
+          "mixtureVolumesMl": {
+            "hcl": 41.3,
+            "citrate": 46.809,
+            "water": 11.891
+          }
+        },
+        {
+          "x": 3.8,
+          "y": 3.807,
+          "reported": "3.807",
+          "sd": null,
+          "label": "3.8",
+          "mixtureVolumesMl": {
+            "hcl": 31.243,
+            "citrate": 45.225,
+            "water": 23.532
+          }
+        },
+        {
+          "x": 4.2,
+          "y": 4.205,
+          "reported": "4.205",
+          "sd": null,
+          "label": "4.2",
+          "mixtureVolumesMl": {
+            "hcl": 25.524,
+            "citrate": 42.71,
+            "water": 31.766
+          }
+        },
+        {
+          "x": 4.6,
+          "y": 4.595,
+          "reported": "4.595",
+          "sd": null,
+          "label": "4.6",
+          "mixtureVolumesMl": {
+            "hcl": 19.551,
+            "citrate": 39.433,
+            "water": 41.016
+          }
+        },
+        {
+          "x": 5.0,
+          "y": 4.982,
+          "reported": "4.982",
+          "sd": null,
+          "label": "5.0",
+          "mixtureVolumesMl": {
+            "hcl": 14.353,
+            "citrate": 36.136,
+            "water": 49.511
+          }
+        },
+        {
+          "x": 5.4,
+          "y": 5.367,
+          "reported": "5.367",
+          "sd": null,
+          "label": "5.4",
+          "mixtureVolumesMl": {
+            "hcl": 10.047,
+            "citrate": 32.898,
+            "water": 57.055
+          }
+        },
+        {
+          "x": 6.0,
+          "y": 5.984,
+          "reported": "5.984",
+          "sd": null,
+          "label": "6.0",
+          "mixtureVolumesMl": {
+            "hcl": 4.655,
+            "citrate": 28.177,
+            "water": 67.168
+          }
+        },
+        {
+          "x": 6.8,
+          "y": 6.788,
+          "reported": "6.788",
+          "sd": null,
+          "label": "6.8",
+          "mixtureVolumesMl": {
+            "hcl": 1.007,
+            "citrate": 24.766,
+            "water": 74.227
+          }
+        }
+      ],
+      "protocol": "Cerdà & Phansi (2023), Table 2; 100 mL citrate/HCl mixtures; ionic strength 0.1 M; 0.2 M HCl and 0.07 M trisodium citrate stocks. Input is the published theoretical target pH, not a newly computed speciation result.",
+      "sources": [
+        {
+          "title": "Buffer Solutions of known Ionic Strength · Table 2",
+          "sourceUrl": "https://www.advancechemjournal.com/journals/aac/aac-aid1043.php",
+          "doi": "10.29328/journal.aac.1001043",
+          "license": "CC BY",
+          "sourceSha256": "a581731fcbab70190775efceca8018283436a226b9c27ec3c9ba0b761e3e12e9"
+        }
+      ],
+      "limitations": "Empirical target-to-measured pH calibration only. No SD is reported; none is generated. Not a validation of the acetate-buffer teaching calculator. Published mixture volumes are retained in JSON.",
+      "excluded": [],
+      "independentValidation": false,
+      "retrievedOn": "2026-10-17",
+      "transcriptionMethod": "Reported table values; no imputation or curve digitization. Source archive hashes are supplied where available."
+    }
+  ]
+}

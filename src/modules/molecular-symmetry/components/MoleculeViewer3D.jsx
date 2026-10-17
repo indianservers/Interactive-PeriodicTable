@@ -48,7 +48,7 @@ function addMolecule(group, molecule, atoms, options = {}) {
 
   atoms.forEach(atom => {
     const mappingColor = options.mappingColors?.get(atom.id);
-    const radius = (atom.radius || 0.32) * (options.spaceFill ? 1.75 : 1);
+    const radius = (atom.radius || 0.32) * (options.spaceFill ? 1.75 : options.stage ? 1.3 : 1);
     const geometry = new THREE.SphereGeometry(radius, 32, 32);
     const material = new THREE.MeshStandardMaterial({
       color: new THREE.Color(options.atomColor || atom.color || '#94a3b8'),
@@ -71,8 +71,9 @@ function addMolecule(group, molecule, atoms, options = {}) {
       const label = document.createElement('div');
       label.textContent = atom.id;
       label.className = 'pointer-events-none select-none rounded-full border border-white/15 bg-slate-950/85 px-2 py-0.5 text-[10px] font-bold text-slate-100 shadow-lg';
+      if(options.stage)label.style.cssText='font:600 17px Segoe UI,sans-serif;color:#e5f2ff;background:transparent;border:0;box-shadow:none;padding:0;text-shadow:0 1px 4px #000';
       const cssLabel = new CSS2DObject(label);
-      cssLabel.position.set(0, radius + 0.18, 0);
+      cssLabel.position.set(0, options.stage?0:radius + 0.18, options.stage?radius:0);
       mesh.add(cssLabel);
     }
 
@@ -166,6 +167,7 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
   onAtomSelect,
   onElementSelect,
   className = '',
+  presentation = 'default',
 }, ref) {
   const mountRef = useRef(null);
   const rendererRef = useRef(null);
@@ -213,7 +215,7 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
     const container = mountRef.current;
     if (!container) return undefined;
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x07111f);
+    scene.background = new THREE.Color(presentation==='stage'?0x091b29:0x07111f);
     scene.fog = new THREE.Fog(0x07111f, 18, 38);
     sceneRef.current = scene;
 
@@ -256,7 +258,14 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
     grid.position.y = -2.15;
     grid.material.transparent = true;
     grid.material.opacity = 0.35;
-    scene.add(grid);
+    if(presentation!=='stage')scene.add(grid);
+    const stage=new THREE.Group();
+    if(presentation==='stage') {
+      for(const [radius,depth,y,color] of [[1.85,.18,-1.22,0x172838],[1.78,.08,-1.10,0x253849]]){
+        const disc=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,depth,96),new THREE.MeshStandardMaterial({color,metalness:.75,roughness:.32}));disc.position.y=y;stage.add(disc);
+      }
+      const ring=new THREE.Mesh(new THREE.TorusGeometry(1.82,.015,8,100),new THREE.MeshBasicMaterial({color:0x65cfff}));ring.rotation.x=Math.PI/2;ring.position.y=-1.24;stage.add(ring);scene.add(stage);
+    }
 
     moleculeGroupRef.current = new THREE.Group();
     overlayGroupRef.current = new THREE.Group();
@@ -287,6 +296,7 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
       resizeObserver.disconnect();
       clearGroup(moleculeGroupRef.current);
       clearGroup(overlayGroupRef.current);
+      clearGroup(stage);
       renderer.dispose();
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
       if (container.contains(labelRenderer.domElement)) container.removeChild(labelRenderer.domElement);
@@ -316,9 +326,10 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
       opacity: 1,
       spaceFill: bondStyle === 'space-fill',
       wireframe: bondStyle === 'wireframe',
-      highlightIds: changedIds,
+      highlightIds: presentation==='stage'?new Set():changedIds,
       fixedIds,
-      mappingColors: mappingColorMap,
+      mappingColors: presentation==='stage'?new Map():mappingColorMap,
+      stage: presentation==='stage',
     });
   }, [molecule, displayedAtoms, operationResult, showGhost, showLabels, bondStyle]);
 
@@ -333,8 +344,8 @@ export const MoleculeViewer3D = forwardRef(function MoleculeViewer3D({
   }, [selectedElement, showElements]);
 
   useEffect(() => {
-    if (cameraRef.current && controlsRef.current) fitCamera(cameraRef.current, controlsRef.current, molecule.atoms);
-  }, [molecule]);
+    if (cameraRef.current && controlsRef.current) {fitCamera(cameraRef.current, controlsRef.current, molecule.atoms);if(presentation==='stage'){cameraRef.current.position.set(3.3,1.7,5.8);controlsRef.current.target.set(0,-.45,0);controlsRef.current.update();}}
+  }, [molecule,presentation]);
 
   const handlePointerDown = (event) => {
     if ((!onAtomSelect && !onElementSelect) || !rendererRef.current || !cameraRef.current || !sceneRef.current) return;

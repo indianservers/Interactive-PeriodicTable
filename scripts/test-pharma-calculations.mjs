@@ -51,7 +51,6 @@ import {
   simulateOralPk,
 } from "../src/modules/pharma-lab/simulation/admeModel.js";
 import {
-  doseResponse,
   simulateToxicology,
 } from "../src/modules/pharma-lab/simulation/toxicologyModel.js";
 
@@ -246,7 +245,7 @@ test("dissolution kinetics, six-vessel rules, and sampling are bounded", () => {
     false,
   );
   assert.equal(
-    dissolutionAcceptance([68, 82, 84, 85, 83, 82], { q: 80, stage: "S2" })
+    dissolutionAcceptance([68, 82, 84, 85, 83, 82, 85, 84, 86, 90, 89, 88], { q: 80, stage: "S2" })
       .pass,
     true,
   );
@@ -258,7 +257,7 @@ test("dissolution kinetics, six-vessel rules, and sampling are bounded", () => {
     }).remainingVolumeMl,
     900,
   );
-  assert.throws(() => dissolutionAcceptance([90, 90], { q: 80 }), /six vessel/);
+  assert.throws(() => dissolutionAcceptance([90, 90], { q: 80 }), /6 vessel/);
   assert.throws(
     () =>
       sampleWithReplacement({
@@ -272,7 +271,7 @@ test("dissolution kinetics, six-vessel rules, and sampling are bounded", () => {
 
 test("HPLC regression, assay, impurity, and method effects are coupled", () => {
   const regression = linearRegression(calibrationPoints);
-  assert.ok(regression.slope > 42000 && regression.slope < 44000);
+  assert.ok(regression.slope > 179000 && regression.slope < 180000);
   assert.ok(regression.rSquared > 0.9999);
   assert.ok(
     Math.abs(
@@ -356,21 +355,12 @@ test("oral PK exposure responds to dose, food, and organ function", () => {
   assert.throws(() => simulateOralPk({ doseMg: 0 }), /greater than zero/);
 });
 
-test("toxicology risk rises with exposure and vulnerable patient factors", () => {
-  const therapeutic = simulateToxicology();
-  const overdose = simulateToxicology({ doseMg: 8000 });
-  const vulnerable = simulateToxicology({
-    doseMg: 8000,
-    liver: "impaired",
-    alcohol: "chronic",
-    repeated: true,
-  });
-  assert.equal(therapeutic.risk, "Low");
-  assert.ok(overdose.napqiBurden > therapeutic.napqiBurden);
-  assert.ok(overdose.gshReserve < therapeutic.gshReserve);
-  assert.ok(vulnerable.injuryProbability > overdose.injuryProbability);
-  assert.ok(vulnerable.alt > therapeutic.alt);
-  assert.equal(doseResponse.length, 20);
-  assert.ok(doseResponse.at(-1).injury > doseResponse[0].injury);
-  assert.throws(() => simulateToxicology({ weightKg: 0 }), /greater than zero/);
+test("toxicology uses exposure arithmetic without fabricated clinical predictions", () => {
+ const nominal=simulateToxicology({doseMg:500,weightKg:50});
+ assert.equal(nominal.mgPerKg,10);
+ assert.equal(nominal.grams,.5);
+ assert(!('injuryProbability' in nominal));
+ assert(!('alt' in nominal));
+ assert(simulateToxicology({liver:'impaired',repeated:true}).context.length===2);
+ assert.throws(()=>simulateToxicology({weightKg:0}),/greater than zero/);
 });

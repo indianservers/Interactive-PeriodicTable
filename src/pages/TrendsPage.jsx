@@ -19,7 +19,7 @@ export const TrendsPage = ({ favorites, onFavoriteToggle, onViewAtom, onCompare,
 
       <div className="glass rounded-2xl p-4 space-y-3">
         <VisualizationToolbar
-          targetSelector="main svg"
+          targetSelector="#trend-table" fullscreenSelector="#trend-table"
           title={`trend-${activeTrend}`}
           extra={
             <>
@@ -37,6 +37,7 @@ export const TrendsPage = ({ favorites, onFavoriteToggle, onViewAtom, onCompare,
         <TrendExplanationCard activeTrend={activeTrend} />
       </div>
 
+      <div id="trend-table" className="trend-fullscreen">
       {elements.length > 0 ? (
         <PeriodicTable
           filteredElements={elements}
@@ -53,6 +54,7 @@ export const TrendsPage = ({ favorites, onFavoriteToggle, onViewAtom, onCompare,
         </div>
       )}
 
+      </div>
       {selectedElement && (
         <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center p-0 lg:p-4">
           <div className="absolute inset-0 bg-black/60" onClick={() => setSelectedElement(null)} />

@@ -5,6 +5,7 @@ import ScientificChart from "./components/ScientificChart.jsx";
 import { massBalanceAt, simulateOralPk } from "./simulation/admeModel.js";
 import "./pharmaLab.css";
 import "./admeLab.css";
+import {MetabolicPathwayDiagram,MassBalanceDiagram} from './components/PharmacokineticDiagrams.jsx';
 
 const stages = [
   [
@@ -75,7 +76,6 @@ export default function AdmeLabPage() {
     () => simulateOralPk({ doseMg: dose, weightKg: weight, hepatic: 0.55 }),
     [dose, weight],
   );
-  const mass = massBalanceAt(24, result);
   const reset = () => {
     setDose(500);
     setWeight(70);
@@ -102,13 +102,13 @@ export default function AdmeLabPage() {
       <main className="plab-adme">
         <header>
           <div>
-            <h1>ADME & Metabolism — Human Pharmacokinetics</h1>
+            <h1>ADME & Metabolism — Compartment-Model Pharmacokinetics</h1>
             <p>
               Paracetamol (Acetaminophen) · Oral {dose} mg (Immediate Release)
             </p>
             <small>
               From absorption to elimination — linking chemistry, biology and
-              patient response.
+              explicit parameter assumptions.
             </small>
           </div>
           <aside>
@@ -174,8 +174,7 @@ export default function AdmeLabPage() {
             <div
               className={`plab-human ${simulated && !motion ? "active" : ""}`}
             >
-              <i className="head" />
-              <i className="torso" />
+              <img className="plab-anatomy" src="/assets/pharma/anatomy/adme-torso.png" alt="Illustrative cutaway of the digestive organs and circulation"/>
               <b className="stomach">Stomach</b>
               <b className="liver">Liver</b>
               <b className="gut">Small intestine</b>
@@ -196,15 +195,13 @@ export default function AdmeLabPage() {
               <article>
                 <h3>Liver lobule (metabolism)</h3>
                 <div className="lobule">
-                  ⬡⬡⬡
-                  <br />
-                  🟢 🔴 🔵
+                  <img src="/assets/pharma/anatomy/liver-lobule.png" alt="Illustrative hepatic lobule with radial hepatocytes and a central vein"/>
                 </div>
                 <span>Hepatocytes · portal triad · central vein</span>
               </article>
               <article>
                 <h3>Nephron (excretion)</h3>
-                <div className="nephron">◉〰〰〰↘</div>
+                <div className="nephron"><img src="/assets/pharma/anatomy/nephron.png" alt="Illustrative nephron with glomerulus, convoluted tubules, loop of Henle and collecting duct"/></div>
                 <span>Filtration · secretion · urine</span>
               </article>
             </div>
@@ -212,17 +209,7 @@ export default function AdmeLabPage() {
           <aside className="plab-adme-right">
             <article className="plab-sankey">
               <h2>Metabolic Pathway of Paracetamol</h2>
-              <div>
-                <b>
-                  Paracetamol
-                  <br />
-                  C₈H₉NO₂
-                </b>
-                <span className="s1">55% → Glucuronidation</span>
-                <span className="s2">30% → Sulfation</span>
-                <span className="s3">5% → Unchanged urine</span>
-                <span className="s4">5–10% → CYP oxidation / NAPQI</span>
-              </div>
+              <MetabolicPathwayDiagram/>
             </article>
             <div className="plab-adme-right-lower">
               <article className="plab-pk-controls">
@@ -287,7 +274,7 @@ export default function AdmeLabPage() {
                   onChange={(e) => setModel(e.target.value)}
                 >
                   <option value="one">One-compartment</option>
-                  <option value="two">Two-compartment</option>
+                  <option value="two">Two-compartment (exploratory transfer rates)</option>
                 </select>
                 <button
                   onClick={() => {
@@ -342,16 +329,7 @@ export default function AdmeLabPage() {
           </article>
           <article>
             <h2>Mass Balance — 0 to 24 h</h2>
-            <div className="plab-mass-bars">
-              {Object.entries(mass).map(([key, value]) => (
-                <span key={key}>
-                  <i style={{ width: `${value}%` }} />
-                  <b>
-                    {key} {value.toFixed(1)}%
-                  </b>
-                </span>
-              ))}
-            </div>
+            <MassBalanceDiagram result={result}/>
           </article>
           <article>
             <h2>Key Takeaways</h2>
@@ -364,7 +342,7 @@ export default function AdmeLabPage() {
               <li>A small CYP fraction forms reactive NAPQI.</li>
               <li>Hepatic or renal impairment prolongs exposure.</li>
               <li>
-                Accumulation ratio at {interval} h:{" "}
+                Terminal-mode accumulation approximation at {interval} h:{" "}
                 {result.accumulation.toFixed(2)}.
               </li>
             </ul>
@@ -388,7 +366,7 @@ export default function AdmeLabPage() {
               Paracetamol · PubChem CID 1983
             </a>
             <p>
-              Published ranges are shown separately from calculated
+              The preset F=0.8, ka=2.8 h⁻¹, V=0.9 L/kg and t½=2.3 h are exploratory assumptions, not a fitted patient dataset. The two-compartment extension uses k12=0.35 h⁻¹ and k21=0.20 h⁻¹. Organ and food multipliers are sensitivity assumptions. Calculated
               one/two-compartment teaching outputs.
             </p>
             <button className="plab-export" onClick={() => setSources(false)}>

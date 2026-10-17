@@ -1,0 +1,28 @@
+{
+  "transcriptionMethod": "Factual numerical transcription from primary publisher HTML tables read 2026-10-17. Publisher pages were readable through web search; local HTML requests returned 403. This file is not a raw publisher archive.",
+  "hplc": {
+    "name": "Patel et al. (2013) · paracetamol calibration Table 1",
+    "model": "linear", "xLabel": "Paracetamol concentration (µg/mL)", "yLabel": "Mean peak area (source area units)",
+    "rows": [[10,"1471361.4 ± 9630.94"],[30,"3646275.0 ± 31715.63"],[50,"5850892.4 ± 39151.97"],[70,"8146941.6 ± 89537.72"],[90,"10531325.0 ± 90639.27"]],
+    "protocol": "Patel MG, Shah RR, Shah KH, Malik BM; PharmaTutor, 24 February 2013, Table 1, paracetamol, n=5. Licrosphere C18 250 × 4.6 mm, 5 µm; methanol:THF 90:10, pH 8.2 with 0.1% triethylamine; 254 nm; 1 mL/min. Unweighted regression of published mean peak areas.",
+    "sources": [{"title":"Development and validation of RP-HPLC method for Tolperisone hydrochloride and Paracetamol in Pharmaceutical Formulation · Table 1","sourceUrl":"https://www.pharmatutor.org/articles/development-validation-rp-hplc-method-tolperisone-hydrochloride-paracetamol-pharmaceutical-formulation","license":"Publisher terms apply; numerical facts transcribed, no article text reproduced"}],
+    "limitations":"Five concentration-level means, not individual injections. No chromatogram is reconstructed. Published SD remains experimental SD; fitted coefficients are recomputed from rounded means."
+  },
+  "qc": {
+    "name":"Patel et al. (2013) · paracetamol recovery Table 5",
+    "model":"linear", "xLabel":"Nominal total paracetamol (mg)","yLabel":"Total paracetamol found (mg)",
+    "rows":[[500,"500.72 ± 1.11509"],[750,"748.72 ± 0.80033"],[1000,"1004.93 ± 1.59919"],[1250,"1246.63 ± 1.85595"]],
+    "protocol":"Same Patel et al. RP-HPLC method as the calibration preset. Table 5 paracetamol standard addition, n=3; original 500 mg plus 0, 250, 500, 750 mg added. Fit measured total found against nominal total, not percentage recovery against amount added.",
+    "sources":[{"title":"Patel et al. · Table 5 accuracy / recovery","sourceUrl":"https://www.pharmatutor.org/articles/development-validation-rp-hplc-method-tolperisone-hydrochloride-paracetamol-pharmaceutical-formulation","license":"Publisher terms apply; numerical facts transcribed"}],
+    "limitations":"Four rounded recovery means; empirical response fit, not batch release certification or an independent validation of this model. No raw peak areas inferred."
+  },
+  "adme": {
+    "name":"Shiea et al. (2020) · one volunteer LC/MS/MS profile",
+    "model":"bateman", "xLabel":"Time after dose (h)", "yLabel":"Plasma acetaminophen (ng/mL)",
+    "rows":[[0.167,"1300"],[0.333,"3840"],[0.5,"4620"],[0.75,"3590"],[1,"3780"],[1.5,"3250"],[2,"2730"],[2.5,"2370"],[4,"2110","Source row 10: 4 h"],[3,"1520","Source row 11: 3 h"],[6,"808"],[8,"521"],[12,"258"]],
+    "excluded":[{"label":"Predose","reported":"Below quantification limit","reason":"Censored; not zero and not fitted"},{"label":"24 h","reported":"Below quantification limit","reason":"Censored; not zero and not fitted"}],
+    "protocol":"Rapid quantification of acetaminophen in plasma using solid-phase microextraction coupled with thermal desorption electrospray ionization mass spectrometry, Table 1, LC/MS/MS column. Single healthy volunteer from a 31-volunteer study; fasted oral Ultracet containing 325 mg acetaminophen; each sample tested once. Source rows 10 and 11 list 4 h before 3 h; times retained as printed, sorted only for display.",
+    "sources":[{"title":"Shiea et al. · primary Table 1 (LC/MS/MS)","sourceUrl":"https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/rcm.8564","doi":"10.1002/rcm.8564","license":"Publisher terms apply; numerical facts transcribed"}],
+    "limitations":"One participant, no reported replicate SD. Fit S(exp(−ke t)−exp(−ka t)); S is a fitted concentration scale, not an identified volume or bioavailability. No dose scaling or clinical dosing advice. Internal leave-one-time-point-out assessment is not participant-level validation."
+  }
+}

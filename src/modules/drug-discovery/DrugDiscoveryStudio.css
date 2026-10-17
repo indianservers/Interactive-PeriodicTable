@@ -2682,3 +2682,5 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+.dds-body-silhouette .dds-anatomy,.dds-risk-body .dds-anatomy{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:screen}.dds-body-silhouette .liver,.dds-body-silhouette .gut,.dds-body-silhouette .kidney{background:#051e30a0;border:0;border-radius:3px;font-size:11px;color:#c8ecff;width:auto;height:auto;padding:3px}.dds-body-silhouette .liver{top:39%;left:21%}.dds-body-silhouette .gut{top:59%;left:35%}.dds-body-silhouette .kidney{top:48%;left:15%}.dds-risk-body{position:relative;min-height:320px}

@@ -3,6 +3,7 @@ import { Home, PauseCircle, PlayCircle } from "lucide-react";
 import { Sidebar } from "./Sidebar.jsx";
 import { Topbar } from "./Topbar.jsx";
 import { MobileNav } from "./MobileNav.jsx";
+import GlobalSearch from '../GlobalSearch.jsx';
 import { syllabusInteractiveIds } from "../../modules/core-simulations/syllabusInteractiveModel.js";
 
 export const AppShell = ({
@@ -79,10 +80,12 @@ export const AppShell = ({
   // isolated here prevents its layout from affecting protected tool routes.
   if (
     isSyllabusLab ||
+    currentPage === "symmetry-operations" ||
     currentPage === "dashboard" ||
     currentPage === "library" ||
     currentPage === "molecule" ||
     currentPage === "lab" ||
+    currentPage === "titration-lab" ||
     currentPage === "syllabus" ||
     currentPage === "balancer" ||
     currentPage === "study-tools" ||
@@ -147,6 +150,7 @@ export const AppShell = ({
     currentPage === "bio-nucleic-acids" ||
     currentPage === "bio-metabolism" ||
     currentPage === "pharma-visuals" ||
+    currentPage === "pharma-studio" ||
     currentPage === "pharma-medicinal" ||
     currentPage === "pharma-api-synthesis" ||
     currentPage === "pharma-preformulation" ||
@@ -175,6 +179,7 @@ export const AppShell = ({
   ) {
     return (
       <div className={isDark ? "dark" : "light"}>
+        <GlobalSearch onNavigate={onNavigate} onSelectElement={onSelectElement}/>
         <main className="min-h-screen overflow-x-hidden">
           {children}
         </main>
@@ -243,6 +248,7 @@ export const AppShell = ({
         </main>
       </div>
       <MobileNav currentPage={currentPage} onNavigate={onNavigate} />
+      <GlobalSearch onNavigate={onNavigate} onSelectElement={onSelectElement}/>
     </div>
   );
 };

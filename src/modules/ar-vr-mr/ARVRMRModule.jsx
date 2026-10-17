@@ -1,3 +1,4 @@
+import "./xrStudioFixes.css";
 import { useEffect, useMemo, useState } from 'react';
 import {
   BadgeCheck, Box, Eye, EyeOff, FlaskConical, GraduationCap, Info, Orbit, Pause, Play,
@@ -317,21 +318,20 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
                 <Sparkles size={14} /> New Module
               </span>
               <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-100">
-                15 wow XR concepts
+                15 chemistry concepts
               </span>
               <span className="rounded-full border border-violet-400/25 bg-violet-400/10 px-3 py-1 text-xs font-bold text-violet-100">
-                Mastery polish
+                Learning progress
               </span>
             </div>
             <h2 className="mt-4 text-3xl font-black leading-tight text-white md:text-4xl">Immersive Chemistry XR Studio</h2>
             <p className="mt-3 max-w-4xl text-sm leading-relaxed text-gray-300">
-              A focused AR/VR/MR module for world-class chemistry moments. The base now separates concept data, WebXR support,
-              reusable Three.js scene primitives, desktop preview, and immersive launch controls.
+              Explore chemistry in an interactive desktop preview, or enter AR/VR on a compatible device. Choose a concept below and adjust the scene controls.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <MetricCard label="Concepts" value={xrConceptStats.total} detail="Curated immersive lessons" />
-              <MetricCard label="Playable base" value={xrConceptStats.playable} detail="Scene seeds already interactive" />
-              <MetricCard label="Foundation specs" value={xrConceptStats.foundation + xrConceptStats.designSpec} detail="Ready for guided lessons" />
+              <MetricCard label="Interactive concepts" value={xrConceptStats.playable} detail="Interactive models and controls" />
+              <MetricCard label="Guided concepts" value={xrConceptStats.foundation + xrConceptStats.designSpec} detail="Ready for guided lessons" />
             </div>
           </div>
           <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
@@ -380,7 +380,7 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
         })}
       </section>
 
-      <XRARExperiencePanel
+      <details className="xr-detail-panel"><summary>AR placement controls</summary><XRARExperiencePanel
         support={support}
         activeExperience={activeExperience}
         experiences={xrExperiences}
@@ -390,9 +390,9 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
           setActiveExperienceId(id);
           setActiveFilter('AR');
         }}
-      />
+      /></details>
 
-      <XRConceptInfographics
+      <details className="xr-detail-panel"><summary>Concept guides</summary><XRConceptInfographics
         experiences={xrExperiences}
         activeExperienceId={activeExperience.id}
         onSelectExperience={(id) => {
@@ -400,9 +400,9 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
           const nextExperience = xrExperiences.find(item => item.id === id);
           if (nextExperience) setActiveFilter(nextExperience.mode);
         }}
-      />
+      /></details>
 
-      <XRMasteryDashboard
+      <details className="xr-detail-panel"><summary>Learning progress</summary><XRMasteryDashboard
         experiences={xrExperiences}
         progress={{
           ...masteryProgress,
@@ -412,13 +412,13 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
           },
         }}
         activeExperienceId={activeExperience.id}
-      />
+      /></details>
 
       <section className="grid gap-4 xl:grid-cols-[350px_1fr]">
         <aside className="space-y-4">
           <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Concept registry</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Choose a concept</p>
               <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] font-bold text-cyan-200">
                 {filteredExperiences.length} shown
               </span>
@@ -506,13 +506,13 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
         </aside>
 
         <main className="min-w-0 space-y-4">
-          <XRInteractionWorkbench
+          <details className="xr-detail-panel"><summary>Experiment controls</summary><XRInteractionWorkbench
             experience={activeExperience}
             simulation={simulation}
             onSimulationChange={setSimulation}
             flagshipExperiences={flagshipExperiences}
             onSelectFlagship={setActiveExperienceId}
-          />
+          /></details>
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
             <div className="mb-4 grid gap-3 lg:grid-cols-[1fr_310px]">
@@ -593,7 +593,7 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
                 <p className="mt-1 text-xs text-gray-400">{selectedMode.description}</p>
               </div>
               <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Interaction seed</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Scene objects</p>
                 <p className="mt-2 text-lg font-black text-white">{activeExperience.atoms.length} objects</p>
                 <p className="mt-1 text-xs text-gray-400">{activeExperience.effects.join(', ')}</p>
               </div>
@@ -634,14 +634,14 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
             <XRTeacherPrompt experience={activeExperience} />
           </div>
 
-          <XRMiniAssessment
+          <details className="xr-detail-panel"><summary>Knowledge assessment</summary><XRMiniAssessment
             experience={activeExperience}
             selectedAnswers={activeAnswers}
             onAnswer={handleAssessmentAnswer}
             quizResult={activeQuizResult}
             onSubmit={handleSubmitAssessment}
             onReset={handleResetAssessment}
-          />
+          /></details>
 
           <XRExportPanel
             experience={activeExperience}
@@ -651,43 +651,12 @@ export const ARVRMRModule = ({ reducedMotion = false }) => {
             copied={copiedSummary}
           />
 
-          <XRWorldClassTooling
+          <details className="xr-detail-panel"><summary>Advanced learning tools</summary><XRWorldClassTooling
             state={worldClassState}
             onStateChange={setWorldClassState}
-          />
+          /></details>
 
-          <section className="grid gap-3 md:grid-cols-3">
-            {foundationPrinciples.map(([title, detail, Icon]) => (
-              <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-                <Icon size={18} className="text-cyan-300" />
-                <h3 className="mt-3 text-base font-black text-white">{title}</h3>
-                <p className="mt-1 text-xs leading-relaxed text-gray-400">{detail}</p>
-              </div>
-            ))}
-          </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Build order</p>
-                <h3 className="mt-1 text-lg font-black text-white">Foundation before spectacle</h3>
-              </div>
-              <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-100">
-                New module only
-              </span>
-            </div>
-            <div className="mt-4 grid gap-2 md:grid-cols-5">
-              {['Concept registry', 'Scene base', 'Selection model', 'XR launch', 'Custom effects'].map((stepName, index) => (
-                <div key={stepName} className="rounded-xl border border-white/10 bg-black/20 p-3">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-cyan-400/25 bg-cyan-400/10 text-xs font-black text-cyan-100">
-                    {index + 1}
-                  </span>
-                  <p className="mt-3 text-sm font-black text-white">{stepName}</p>
-                  <p className="mt-1 text-xs text-gray-500">{index < 4 ? 'Base ready' : 'Next layer'}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </main>
       </section>
     </div>

@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { ALL_PROVENANCE, ROUTES, SEARCH_INDEX } from "./drugDiscoveryData.js";
+import { navigateStudio, studioSection } from '../../utils/studioRouting.js';
 import {
   AdmePage,
   AnalyticsPage,
@@ -58,9 +59,8 @@ const pages = {
 };
 
 const routeFromLocation = () => {
-  const hash = window.location.hash.replace(/^#\/?/, "");
-  const nested = hash.match(/^drug-discovery\/?(.*)$/)?.[1] || "";
-  return nested || "workspace";
+  const nested = studioSection(window.location, 'drug-discovery');
+  return ROUTES.some(([id]) => id === nested) ? nested : 'workspace';
 };
 
 export default function DrugDiscoveryStudio() {
@@ -73,12 +73,11 @@ export default function DrugDiscoveryStudio() {
   useEffect(() => {
     const sync = () => setRoute(routeFromLocation());
     window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
+    window.addEventListener("popstate", sync);
+    return () => {window.removeEventListener("hashchange", sync);window.removeEventListener("popstate", sync);};
   }, []);
   const navigate = (next) => {
-    window.location.hash =
-      next === "workspace" ? "/drug-discovery" : `/drug-discovery/${next}`;
-    setRoute(next);
+    navigateStudio('drug-discovery', next === 'workspace' ? '' : next);
     setSidebarOpen(false);
   };
   const results = useMemo(

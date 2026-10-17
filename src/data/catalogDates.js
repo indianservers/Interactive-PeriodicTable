@@ -1,5 +1,12 @@
 // First catalog appearance recorded in Git. Regenerate with scripts/update-catalog-dates.mjs.
 export const catalogDates = {
+  "pharma-medicinal": "2026-10-17",
+  "pharma-api-synthesis": "2026-10-17",
+  "pharma-preformulation": "2026-10-17",
+  "pharma-tablet-formulation": "2026-10-17",
+  "pharma-dissolution": "2026-10-17",
+  "pharma-hplc": "2026-10-17",
+  "pharma-stability": "2026-10-17",
   "washing-soda-carbonate": "2026-09-14",
   "baking-soda-bicarbonate": "2026-09-14",
   "carbonate-bicarbonate-mixture": "2026-09-14",

@@ -24,149 +24,11 @@ import {
   Upload,
 } from "lucide-react";
 import MolecularViewer from "./MolecularViewer.jsx";
+import ReplicationForkScene from './ReplicationForkScene.jsx';
 
-export const STRUCTURES = [
-  {
-    id: "1BNA",
-    name: "B-DNA dodecamer",
-    type: "DNA",
-    organism: "Synthetic construct",
-    method: "X-ray diffraction",
-    resolution: "1.90 Å",
-    chains: 2,
-    count: "24 nt",
-    category: "DNA",
-    cached: true,
-  },
-  {
-    id: "4OCB",
-    name: "Z-DNA dodecamer d(CGCGCGCGCGCG)₂",
-    type: "DNA",
-    organism: "Synthetic construct",
-    method: "X-ray diffraction",
-    resolution: "0.75 Å",
-    chains: 1,
-    count: "12 nt",
-    category: "DNA",
-    cached: true,
-  },
-  {
-    id: "1ANA",
-    name: "A-DNA tetramer d(CCGG)",
-    type: "DNA",
-    organism: "Synthetic construct",
-    method: "X-ray diffraction",
-    resolution: "2.00 Å",
-    chains: 2,
-    count: "8 nt",
-    category: "DNA",
-    cached: true,
-  },
-  {
-    id: "2KOC",
-    name: "14-mer hairpin RNA with cUUCGg tetraloop",
-    type: "RNA",
-    organism: "Synthetic construct",
-    method: "Solution NMR",
-    resolution: "N/A",
-    chains: 1,
-    count: "14 nt",
-    category: "RNA",
-    cached: true,
-  },
-  {
-    id: "1EHZ",
-    name: "Yeast phenylalanine tRNA",
-    type: "tRNA",
-    organism: "Saccharomyces cerevisiae",
-    method: "X-ray diffraction",
-    resolution: "1.93 Å",
-    chains: 1,
-    count: "76 nt",
-    category: "RNA",
-    cached: true,
-  },
-  {
-    id: "1KX5",
-    name: "Nucleosome core particle NCP147",
-    type: "DNA–protein",
-    organism: "Xenopus laevis",
-    method: "X-ray diffraction",
-    resolution: "1.94 Å",
-    chains: 10,
-    count: "1,274 polymer residues",
-    category: "Nucleosome",
-  },
-  {
-    id: "2HNH",
-    name: "DNA polymerase III catalytic α subunit",
-    type: "Protein",
-    organism: "Escherichia coli",
-    method: "X-ray diffraction",
-    resolution: "2.30 Å",
-    chains: 1,
-    count: "910 polymer residues",
-    category: "Polymerase",
-    cached: true,
-  },
-  {
-    id: "1LMB",
-    name: "Lambda repressor–operator DNA complex",
-    type: "DNA–protein",
-    organism: "Lambdavirus lambda",
-    method: "X-ray diffraction",
-    resolution: "1.80 Å",
-    chains: 4,
-    count: "219 polymer residues",
-    category: "DNA-binding protein",
-    cached: true,
-  },
-  {
-    id: "6ALH",
-    name: "RNA polymerase elongation complex",
-    type: "DNA–RNA–protein",
-    organism: "Escherichia coli",
-    method: "Electron microscopy",
-    resolution: "4.40 Å",
-    chains: 8,
-    count: "3,385 polymer residues",
-    category: "Polymerase",
-    cached: true,
-  },
-  {
-    id: "4OO8",
-    name: "SpCas9–guide RNA–target DNA complex",
-    type: "RNP complex",
-    organism: "Streptococcus pyogenes",
-    method: "X-ray diffraction",
-    resolution: "2.50 Å",
-    chains: 6,
-    count: "2,986 polymer residues",
-    category: "CRISPR",
-  },
-  {
-    id: "2OEU",
-    name: "Full-length hammerhead ribozyme with Mn(II)",
-    type: "Ribozyme",
-    organism: "Schistosoma mansoni",
-    method: "X-ray diffraction",
-    resolution: "2.00 Å",
-    chains: 2,
-    count: "63 nt",
-    category: "Ribozyme",
-  },
-  {
-    id: "7K00",
-    name: "Bacterial ribosome at 2 Å",
-    type: "Ribosome",
-    organism: "Escherichia coli",
-    method: "Electron microscopy",
-    resolution: "1.98 Å",
-    chains: 56,
-    count: "10,661 polymer residues",
-    category: "Ribosome",
-  },
-];
+import structureCatalog from "./structureCatalog.json";
+import { navigateStudio } from "../../utils/studioRouting.js";
+export const STRUCTURES = structureCatalog;
 
 const localSource = (s) =>
   s.cached ? undefined : `https://files.rcsb.org/download/${s.id}.cif`;
@@ -207,11 +69,7 @@ const downloadAsset = async (filename, url) => {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 500);
 };
-const openWorkspace = (route, params) => {
-  const query = params ? `?${new URLSearchParams(params)}` : "";
-  window.history.pushState({}, "", `/nucleic-acid-explorer/${route}${query}`);
-  window.dispatchEvent(new PopStateEvent("popstate"));
-};
+const openWorkspace = (route, params) => navigateStudio('bio-nucleic-acids', route, params);
 
 function StructureInspector({ structure }) {
   const [tab, setTab] = useState("Structure");
@@ -1140,6 +998,7 @@ export function ReplicationPage() {
             className="nae-fork"
             style={{ "--progress": `${sim.position}%` }}
           >
+            <ReplicationForkScene position={sim.position} playing={sim.playing}/>
             <div className="strand parent top">
               <b>3′</b>
               {bases.split("").map((b, i) => (
@@ -1742,10 +1601,10 @@ export function GalleryPage() {
   const list = STRUCTURES.filter(
     (s) =>
       (filter === "All" || s.category === filter) &&
-      `${s.id} ${s.name}`.toLowerCase().includes(query.toLowerCase()),
+      `${s.id} ${s.name} ${s.organism} ${s.category} ${s.type}`.toLowerCase().includes(query.toLowerCase()),
   ).sort((a, b) =>
     sort === "Resolution"
-      ? parseFloat(a.resolution) - parseFloat(b.resolution)
+      ? (parseFloat(a.resolution) || Infinity) - (parseFloat(b.resolution) || Infinity)
       : a.id.localeCompare(b.id),
   );
   const save = () => {
@@ -1759,7 +1618,7 @@ export function GalleryPage() {
     <div className="nae-page gallery-page">
       <Header
         title="3D Gallery"
-        description="PDB-backed nucleic-acid structures and molecular complexes."
+        description={`${STRUCTURES.length} experimental structures with metadata verified against RCSB PDB.`}
       />
       <Panel className="nae-filterbar">
         <label>
@@ -1771,17 +1630,7 @@ export function GalleryPage() {
           />
         </label>
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          {[
-            "All",
-            "DNA",
-            "RNA",
-            "Polymerase",
-            "Nucleosome",
-            "CRISPR",
-            "Ribozyme",
-            "Ribosome",
-            "DNA-binding protein",
-          ].map((x) => (
+          {["All", ...new Set(STRUCTURES.map((s) => s.category))].map((x) => (
             <option key={x}>{x}</option>
           ))}
         </select>
@@ -1841,6 +1690,8 @@ export function GalleryPage() {
               <dd>{selected.resolution}</dd>
               <dt>Model content</dt>
               <dd>{selected.count}</dd>
+              <dt>Metadata verified</dt><dd>{selected.verifiedOn}</dd>
+              <dt>Coordinates</dt><dd>{selected.cached ? "Local file" : "RCSB download; network required"}</dd>
             </dl>
             <Button
               primary
@@ -1848,6 +1699,8 @@ export function GalleryPage() {
             >
               <ExternalLink /> Open in viewer
             </Button>
+            <a href={selected.sourceUrl} target="_blank" rel="noreferrer">Experimental entry at RCSB PDB ↗</a>
+            <a href={localSource(selected) || `/assets/nucleic-acid/structures/${selected.id}.cif`} download>Download mmCIF coordinates</a>
             <Button onClick={save}>
               {saved.includes(selected.id)
                 ? "Remove from collection"

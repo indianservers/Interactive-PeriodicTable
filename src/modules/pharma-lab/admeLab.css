@@ -24,15 +24,15 @@
 }
 .plab-adme > header p {
   margin: 2px 0;
-  font-size: 9px;
+  font-size: 11px;
 }
 .plab-adme > header small {
   color: #4fddf4;
-  font-size: 7px;
+  font-size: 10px;
 }
 .plab-adme > header aside {
   color: #87a4b5;
-  font-size: 7px;
+  font-size: 10px;
 }
 .plab-adme-grid {
   display: grid;
@@ -58,7 +58,7 @@
 .plab-adme-bottom h2 {
   padding: 7px 9px;
   border-bottom: 1px solid var(--plab-line);
-  font-size: 10px;
+  font-size: 12px;
 }
 .plab-pk-left article:first-child > span {
   display: grid;
@@ -66,7 +66,7 @@
   align-items: center;
   padding: 5px 9px;
   border-bottom: 1px solid rgba(125, 190, 214, 0.13);
-  font-size: 7px;
+  font-size: 10px;
 }
 .plab-pk-left span em {
   color: #8da9b7;
@@ -96,7 +96,7 @@
   border: 1px solid var(--plab-cyan);
   border-radius: 50%;
   color: #77e9fa;
-  font-size: 9px;
+  font-size: 11px;
   box-shadow: 0 0 10px #0cb6d766;
 }
 .plab-pk-left article:last-child strong,
@@ -104,12 +104,12 @@
   display: block;
 }
 .plab-pk-left article:last-child strong {
-  font-size: 9px;
+  font-size: 11px;
 }
 .plab-pk-left article:last-child small {
   margin-top: 4px;
   color: #86a8b7;
-  font-size: 7px;
+  font-size: 10px;
   line-height: 1.45;
 }
 .plab-body-map {
@@ -159,7 +159,7 @@
   z-index: 2;
   padding: 5px;
   border-radius: 50%;
-  font-size: 8px;
+  font-size: 11px;
 }
 .plab-human .stomach {
   left: 49%;
@@ -186,7 +186,7 @@
   left: 7%;
   top: 76px;
   color: #c7edf8;
-  font-size: 9px;
+  font-size: 11px;
 }
 .plab-human svg {
   position: absolute;
@@ -218,7 +218,7 @@
 }
 .plab-organ-insets h3 {
   text-align: left;
-  font-size: 8px;
+  font-size: 11px;
 }
 .lobule,
 .nephron {
@@ -234,7 +234,7 @@
   color: #f1a44d;
 }
 .plab-organ-insets span {
-  font-size: 6px;
+  font-size: 9px;
   color: #8fb0be;
 }
 .plab-adme-right {
@@ -258,7 +258,7 @@
   position: absolute;
   left: 18px;
   top: 76px;
-  font-size: 10px;
+  font-size: 12px;
 }
 .plab-sankey span {
   position: absolute;
@@ -267,7 +267,7 @@
   height: 30px;
   padding: 7px 13px;
   border-radius: 0 22px 22px 0;
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 800;
 }
 .plab-sankey .s1 {
@@ -302,7 +302,7 @@
   gap: 2px 6px;
   margin: 5px 8px;
   color: #8aa6b5;
-  font-size: 6px;
+  font-size: 9px;
 }
 .plab-pk-controls input[type="range"] {
   grid-column: 1/-1;
@@ -320,7 +320,7 @@
   background: #092235;
   color: #bde7f2;
   border: 1px solid #2a5368;
-  font-size: 6px;
+  font-size: 9px;
 }
 .plab-pk-controls > button {
   width: calc(50% - 11px);
@@ -330,7 +330,7 @@
   background: var(--plab-cyan);
   border: 0;
   border-radius: 4px;
-  font-size: 7px;
+  font-size: 10px;
 }
 .plab-pk-controls > button svg {
   width: 11px;
@@ -339,7 +339,7 @@
 .plab-pk-controls > p {
   margin: 6px 8px;
   color: #4fdff6;
-  font-size: 6px;
+  font-size: 9px;
 }
 .plab-primary-profile {
   height: 296px;
@@ -354,7 +354,7 @@
   display: block;
   padding: 0 8px;
   color: #72dff1;
-  font-size: 7px;
+  font-size: 10px;
 }
 .plab-adme-bottom {
   display: grid;
@@ -373,7 +373,7 @@
 .plab-adme-bottom article:first-child > b {
   padding: 0 9px;
   color: #65d9ed;
-  font-size: 6px;
+  font-size: 9px;
 }
 .plab-mass-bars {
   padding: 15px;
@@ -407,13 +407,13 @@
   position: absolute;
   left: 6px;
   top: 7px;
-  font-size: 6px;
+  font-size: 9px;
 }
 .plab-adme-bottom ul {
   margin: 8px 10px;
   padding-left: 12px;
   color: #9abbc8;
-  font-size: 7px;
+  font-size: 10px;
   line-height: 1.5;
 }
 .plab-adme-bottom li::marker {
@@ -422,7 +422,7 @@
 .plab-adme > footer {
   padding: 8px;
   color: #577a8d;
-  font-size: 6px;
+  font-size: 9px;
 }
 @keyframes plab-flow {
   to {

@@ -1,3 +1,4 @@
+import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { useMemo, useState } from "react";
 import {
   BarChart3,
@@ -713,6 +714,7 @@ function ChallengeScreen({ go }) {
             <button className="rx-primary" onClick={() => setChecked(true)}>
               Check Answer
             </button>
+            {checked && !correct && <button onClick={()=>{setAnswer({limiting:expected.limiting,co2:expected.products["CO₂"],water:expected.products["H₂O"],left:expected.leftovers["CH₄"]});setChecked(true)}}>Reveal Answer</button>}
             {checked && (
               <div className={correct ? "rx-success" : "rx-error"}>
                 {correct
@@ -780,7 +782,7 @@ function ReportScreen({ go }) {
           [BookOpen, "Learn"],
           [Settings, "Settings"],
         ].map(([I, n]) => (
-          <button className={n === "Report" ? "active" : ""} key={n}>
+          <button className={n === "Report" ? "active" : ""} key={n} onClick={()=>go(({Home:0,Experiment:1,Data:3,Report:5,Learn:0,Settings:2})[n])}>
             <I />
             {n}
           </button>
@@ -880,24 +882,7 @@ function ReportScreen({ go }) {
               ))}
             </div>
           </Card>
-          <Card title={`Knowledge Check — Score: ${score} / 3`}>
-            {questions.map((x, i) => (
-              <fieldset key={x.q}>
-                <legend>
-                  {i + 1}. {x.q}
-                </legend>
-                {x.opts.map((o) => (
-                  <button
-                    className={answers[i] === o ? "active" : ""}
-                    key={o}
-                    onClick={() => setAnswers({ ...answers, [i]: o })}
-                  >
-                    {o}
-                  </button>
-                ))}
-              </fieldset>
-            ))}
-          </Card>
+          <Card title={`Knowledge Check — Score: ${score} / 3`}><KnowledgeCheck questions={questions.map(q => ({prompt:q.q,correct:q.correct || q.a || q.opts[0],options:q.opts.map(label=>({id:label,label}))}))} onChecked={setAnswers}/></Card>
         </div>
         <button className="rx-primary rx-next" onClick={() => go(0)}>
           <RefreshCw /> Restart Lab

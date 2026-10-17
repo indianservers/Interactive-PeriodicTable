@@ -75,3 +75,11 @@
 .lab-rbf{left:34%;bottom:10%;border-radius:50%;height:170px}
 .lab-bench.is-live{box-shadow:inset 0 0 0 2px #075ff2}
 @media(prefers-reduced-motion:reduce){.ap-dropper i,.lab-drip{animation:none}}
+
+.ap-stages{display:flex;flex-wrap:wrap;gap:8px;padding:12px 24px;background:#eef4fa}.ap-stages button[aria-current]{background:#075ff2;color:white}.ap-app{padding-bottom:110px}
+
+.lab-apparatus-names{position:absolute;left:10px;right:10px;bottom:8px;display:flex;flex-wrap:wrap;gap:6px}.lab-apparatus-names small,.ap-apparatus-labels span{background:#fff;color:#113552;border:1px solid #719cba;border-radius:5px;padding:5px 8px}.lab-bench>span{top:8px!important;bottom:auto!important;max-width:95%;white-space:normal}.water-bath>svg{width:100%;height:calc(100% - 55px)}.ap-apparatus-labels{position:absolute;top:12px;left:12px;right:12px;display:flex;flex-wrap:wrap;gap:8px}.lab-procedure{padding:12px;border:1px solid #bfd5f8;border-radius:8px;margin-bottom:12px;font-size:14px}.lab-procedure li{margin-bottom:6px}
+
+.lab-action-controls{display:grid;gap:8px;margin-bottom:14px}.lab-action-controls button{text-align:left;justify-content:flex-start;font-size:14px}.lab-action-controls button[aria-pressed=true]{background:#075ff2;color:white}
+
+.ap-three-apparatus{position:absolute;inset:0}.ap-three-apparatus canvas{display:block;width:100%;height:100%}.ap-apparatus-status{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:#ffffffed;padding:8px 14px;border:1px solid #bdd4e9;border-radius:6px;font-weight:600}.ap-apparatus-labels{z-index:2;pointer-events:none}

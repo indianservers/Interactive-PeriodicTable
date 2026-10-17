@@ -1,5 +1,7 @@
 import { BIOCHEMISTRY_VIRTUAL_LABS, BIOCHEMISTRY_LAB_CATEGORIES } from "./biochemistryVirtualLabs.js";
 import { upcomingExperiences } from "./upcomingExperiences.js";
+import { additionalExperiences } from './additionalExperiences.js';
+import { completedVirtualLabs } from './completedVirtualLabs.js';
 import { syllabusInteractives, syllabusConcepts } from "../modules/core-simulations/syllabusInteractiveModel.js";
 
 // Home library: existing entries point to App routes; upcoming entries are
@@ -137,7 +139,7 @@ const baseChemistryCategories = [
           "Explore limiting reactants and stoichiometry",
           "simulations/reaction-leftovers",
         ],
-        ["lab", "Virtual Lab", "Set up and run virtual chemistry experiments"],
+        ["lab", "All Laboratories", "Browse and open every implemented laboratory and experiment"],
       ]),
       group("Atoms & interactions", [
         [
@@ -428,8 +430,8 @@ const baseChemistryCategories = [
         ],
         [
           "pharma-visuals",
-          "Pharma Visuals",
-          "Browse pharmaceutical chemistry concepts",
+          "Pharmaceutical Chemistry Lab",
+          "Explore medicines from target discovery through formulation, quality control, ADME and safety",
           "visuals/pharma",
         ],
         [
@@ -444,6 +446,15 @@ const baseChemistryCategories = [
           "Explore formulations and drug delivery",
           "visuals/pharma/dosage",
         ],
+      ]),
+      group("Pharmaceutical laboratory studios", [
+        ["pharma-medicinal", "Medicinal Chemistry", "Explore drug targets, docking and structure–activity relationships", "visuals/pharma/medicinal-chemistry"],
+        ["pharma-api-synthesis", "API Synthesis", "Explore synthetic routes, yield and green chemistry metrics", "visuals/pharma/api-synthesis"],
+        ["pharma-preformulation", "Preformulation", "Investigate drug properties before choosing a formulation", "visuals/pharma/preformulation"],
+        ["pharma-tablet-formulation", "Tablet Formulation", "Design tablet composition and examine formulation properties", "visuals/pharma/tablet-formulation"],
+        ["pharma-dissolution", "Dissolution Laboratory", "Investigate drug release and dissolution profiles", "visuals/pharma/dissolution"],
+        ["pharma-hplc", "Pharmaceutical HPLC", "Explore chromatographic analysis and pharmaceutical quality", "visuals/pharma/hplc"],
+        ["pharma-stability", "Stability Laboratory", "Investigate medicine stability under storage conditions", "visuals/pharma/stability"],
       ]),
       group("Analysis & safety", [
         [
@@ -656,6 +667,10 @@ const baseChemistryCategories = [
   },
 ];
 export const chemistryCategories = baseChemistryCategories.map((category) => {
+  const knownIds = new Set(baseChemistryCategories.flatMap(c => c.groups.flatMap(g => g.entries.map(e=>e.id))));
+  const additions = [...additionalExperiences, ...completedVirtualLabs.filter(lab=>!knownIds.has(lab.id)).map(lab=>({...lab,path:`simulations/${lab.id}`,category:({Physical:'simulators',Organic:'organic',Inorganic:'inorganic',Analytical:'analytical'})[lab.subject] || 'simulators'}))]
+    .filter(entry=>entry.category===category.id && !knownIds.has(entry.id));
+  const extraGroups = additions.length ? [{name:'More workspaces & tools',entries:additions.map(entry=>({...entry,addedAt:'2026-10-17'}))}] : [];
   const planned = upcomingExperiences.filter(
     (item) => item.category === category.id,
   );
@@ -674,12 +689,13 @@ export const chemistryCategories = baseChemistryCategories.map((category) => {
           ]),
       ),
   );
-  return { ...category, groups: [...category.groups, ...plannedGroups] };
+  return { ...category, groups: [...category.groups, ...extraGroups, ...plannedGroups] };
 });
 export const libraryEntries = chemistryCategories.flatMap((c) =>
   c.groups.flatMap((g) =>
     g.entries.map((e) => ({
       ...e,
+      path: ({'physical-chemistry-vl':'lab?subject=Physical','organic-chemistry-vl':'lab?subject=Organic','inorganic-chemistry-vl':'lab?subject=Inorganic','advanced-analytical-chemistry-vl':'lab?subject=Analytical'})[e.id] || e.path,
       category: c.id,
       categoryTitle: c.title,
       subgroup: g.name,

@@ -11,13 +11,13 @@ export const AtomVisualizerPage = ({ initialElement, reducedMotion }) => {
   const [query, setQuery] = useState('');
 
   const results = useMemo(() => {
-    if (!query) return elements.slice(0, 20);
+    if (!query) return elements;
     const q = query.toLowerCase();
     return elements.filter(e =>
       e.name.toLowerCase().includes(q) ||
       e.symbol.toLowerCase().includes(q) ||
       String(e.atomicNumber).includes(q)
-    ).slice(0, 20);
+    );
   }, [query]);
 
   const catInfo = getCategoryInfo(selected.category);

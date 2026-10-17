@@ -32,19 +32,21 @@ export function simulateStability({
   const lightFactor = env.light ? 1.28 : 1;
   const lossPerMonth =
     0.37 * tempFactor * humidityFactor * lightFactor * pack.factor;
+  const rate25 = 0.0037 * pack.factor;
+  const conditionRate = rate25 * tempFactor * humidityFactor * lightFactor;
   const rows = pullTimes.map((time) => ({
     x: time,
-    assay: Math.max(0, 100.1 - lossPerMonth * time),
+    assay: Math.max(0, 100.1 * Math.exp(-conditionRate * time)),
     impurities: 0.06 + lossPerMonth * time * 0.155,
     dissolution: Math.max(60, 96 - lossPerMonth * time * 0.82),
     moisture: 1.2 + lossPerMonth * time * 0.23,
   }));
   const rates = [25, 30, 35, 40].map((temperatureCelsius) => ({
     temperatureCelsius,
-    rate: 0.00118 * 2 ** ((temperatureCelsius - 25) / 10) * pack.factor,
+    rate: rate25 * 2 ** ((temperatureCelsius - 25) / 10),
   }));
   const arrhenius = arrheniusActivationEnergy(rates);
-  const rate25 = rates[0].rate;
+
   return {
     env,
     pack,
@@ -52,7 +54,7 @@ export function simulateStability({
     current: rows.find((row) => row.x === Number(months)),
     rates,
     arrhenius,
-    shelfLifeMonths: firstOrderShelfLifeMonths({ ratePerMonth: rate25 }),
+    shelfLifeMonths: firstOrderShelfLifeMonths({ ratePerMonth: rate25, initialAssayPercent:100.1 }),
   };
 }
 

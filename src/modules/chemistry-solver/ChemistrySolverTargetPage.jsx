@@ -32,7 +32,7 @@ const topicProblems = {
   Electrochemistry: { title: "Standard cell potential", question: "Find E°cell for a Zn|Zn²⁺ || Cu²⁺|Cu galvanic cell.", equation: "E°cell = E°cathode − E°anode", steps: ["Cu²⁺/Cu is the cathode: +0.34 V.", "Zn²⁺/Zn is the anode: −0.76 V.", "E°cell = 0.34 − (−0.76) = 1.10 V."], answer: "E°cell = 1.10 V" },
 };
 
-const sidePages = [[FileText, "New Problem"], [BookOpen, "My Notebook"], [Network, "Molecular Models"], [FileText, "Reference Data"], [Calculator, "Calculators"], [TestTube2, "Simulations"], [Save, "Saved Solutions"]];
+const sidePages = [[FileText, "New Problem"], [BookOpen, "Solved Questions"], [BookOpen, "My Notebook"], [Network, "Molecular Models"], [FileText, "Reference Data"], [Calculator, "Calculators"], [TestTube2, "Simulations"], [Save, "Saved Solutions"]];
 
 function TopicProblem({ topic, onVisualize, onSave, saved }) {
   const problem = topicProblems[topic];
@@ -45,6 +45,7 @@ function TopicProblem({ topic, onVisualize, onSave, saved }) {
 
 function SideWorkspace({ page, note, setNote, saved, onOpenTopic, onReturn }) {
   const content = {
+    "Solved Questions": <><h2>Solved Questions</h2><p>Open a worked example with its equations and explanation.</p><div className="cs-card-grid">{topics.map(topic=><button key={topic} onClick={()=>onOpenTopic(topic)}><BookOpen/><strong>{topicProblems[topic]?.title || 'Acid–base titration'}</strong><span>{topic}</span></button>)}</div></>,
     "My Notebook": <><h2>My Notebook</h2><p>Keep working notes beside the solver. Notes are retained while this page is open.</p><textarea aria-label="Chemistry notebook" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Record observations, formulae, or questions…" /></>,
     "Molecular Models": <><h2>Molecular Models</h2><p>Select a model to open the matching problem and molecular explanation.</p><div className="cs-card-grid">{[["HCl + NaOH", "Solutions"], ["CH₄ combustion", "Stoichiometry"], ["Zn/Cu cell", "Electrochemistry"]].map(([label, target]) => <button key={label} onClick={() => onOpenTopic(target)}><Network /><strong>{label}</strong><span>Open {target}</span></button>)}</div></>,
     "Reference Data": <><h2>Reference Data</h2><p>Frequently used constants and relationships.</p><dl className="cs-reference"><dt>Avogadro constant</dt><dd>6.022 × 10²³ mol⁻¹</dd><dt>Gas constant</dt><dd>8.314 J mol⁻¹ K⁻¹</dd><dt>Water heat capacity</dt><dd>4.184 J g⁻¹ °C⁻¹</dd><dt>Faraday constant</dt><dd>96,485 C mol⁻¹</dd></dl></>,

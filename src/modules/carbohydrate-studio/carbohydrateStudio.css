@@ -2964,3 +2964,4 @@
   text-align: right;
   color: #e8f6ff;
 }
+.cs-constituent-projections{display:flex;flex-direction:column;justify-content:center;min-height:280px;padding:12px;color:#a3bdd2;font-size:11px;line-height:1.5}.cs-constituent-projections>div{display:flex;min-width:0}.cs-constituent-projections section{flex:1;min-width:0;text-align:center}.cs-constituent-projections section>strong{font-size:11px;color:#53dfff}.cs-constituent-projections .cs-fischer{width:100%;height:230px;min-height:0}.cs-constituent-projections>small{font-size:10px;color:#91afc7}

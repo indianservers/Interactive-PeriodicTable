@@ -597,3 +597,5 @@
     overflow: visible;
   }
 }
+
+.ms-more-options{position:absolute;right:15px;top:55px;z-index:100;display:flex!important;flex-direction:column;background:#0a2034;padding:12px;border:1px solid #507695;border-radius:10px;box-shadow:0 8px 25px #0008}.ms-more-options button{width:100%;padding:10px}

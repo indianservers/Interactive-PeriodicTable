@@ -37,13 +37,12 @@
   margin: 0;
   color: #193d61;
   font:
-    800 20px/1.15 Georgia,
-    serif;
+    800 20px/1.15 "Segoe UI", sans-serif;
 }
 .scm-app > header p {
   margin: 3px 0 0;
   color: #598094;
-  font-size: 10px;
+  font-size: 13px;
 }
 .scm-app > header select {
   width: 170px;
@@ -101,8 +100,7 @@
   border-left: 1px solid #d8e5ea;
   color: #648194;
   font:
-    italic 11px/1.35 Georgia,
-    serif;
+    italic 11px/1.35 "Segoe UI", sans-serif;
 }
 .scm-app > header > span {
   color: #e3a840;
@@ -154,8 +152,7 @@
   background: #24506d;
   color: #d5e7eb;
   font:
-    13px/1.45 Georgia,
-    serif;
+    13px/1.45 "Segoe UI", sans-serif;
 }
 .scm-app > aside > article b {
   color: #74dfce;
@@ -205,20 +202,19 @@
   margin: 0;
   color: #173f64;
   font:
-    800 17px/1.2 Georgia,
-    serif;
+    800 17px/1.2 "Segoe UI", sans-serif;
 }
 .scm-map > header small {
   margin-top: 4px;
   color: #6e8999;
-  font-size: 9px;
+  font-size: 13px;
 }
 .scm-map > header nav {
   grid-column: 2;
   grid-row: 1/3;
   align-self: center;
   color: #668496;
-  font-size: 9px;
+  font-size: 13px;
 }
 .scm-grid {
   height: 339px;
@@ -281,23 +277,22 @@
   top: 6px;
   left: 8px;
   color: #7592a0;
-  font-size: 8px;
+  font-size: 11px;
 }
 .scm-grid button strong {
   display: block;
   font:
-    800 30px/1 Georgia,
-    serif;
+    800 30px/1 "Segoe UI", sans-serif;
 }
 .scm-grid button span {
   display: block;
   margin: 7px -8px 5px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 750;
   white-space: nowrap;
 }
 .scm-grid button b {
-  font-size: 10px;
+  font-size: 13px;
   color: #0d9297;
 }
 .scm-map > p {
@@ -309,7 +304,7 @@
   padding-top: 8px;
   border-top: 1px solid #dfeaed;
   color: #668493;
-  font-size: 9px;
+  font-size: 13px;
 }
 .scm-map > p span {
   float: right;
@@ -338,31 +333,29 @@
   position: absolute;
   top: 4px;
   left: 5px;
-  font-size: 7px;
+  font-size: 11px;
 }
 .scm-detail > header > span b {
   font:
-    800 28px Georgia,
-    serif;
+    800 28px "Segoe UI", sans-serif;
   color: #139497;
 }
 .scm-detail > header h2 {
   margin: 0 0 3px 11px;
   font:
-    800 18px Georgia,
-    serif;
+    800 18px "Segoe UI", sans-serif;
 }
 .scm-detail > header p {
   margin: 0 0 0 11px;
   color: #678697;
-  font-size: 9px;
+  font-size: 13px;
 }
 .scm-detail > header aside {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 13px;
 }
 .scm-detail > header aside strong {
   font-size: 14px;
@@ -386,7 +379,7 @@
   border-bottom: 2px solid transparent;
   background: none;
   color: #5c7788;
-  font-size: 10px;
+  font-size: 13px;
   cursor: pointer;
 }
 .scm-detail > nav button.active {
@@ -400,7 +393,7 @@
 }
 .scm-copy p,
 .scm-copy li {
-  font-size: 9px;
+  font-size: 13px;
   line-height: 1.35;
 }
 .scm-copy ul {
@@ -413,7 +406,7 @@
   border-radius: 5px;
   background: #119ba0;
   color: #fff;
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -436,12 +429,11 @@
   background: #fff;
   color: #173d5e;
   font:
-    700 11px Georgia,
-    serif;
+    700 11px "Segoe UI", sans-serif;
 }
 .scm-demo p {
   margin: 8px 0 0;
-  font-size: 8px;
+  font-size: 11px;
 }
 .scm-detail footer {
   position: absolute;
@@ -473,7 +465,7 @@
   margin-bottom: 10px;
 }
 .scm-right article > header a {
-  font-size: 9px;
+  font-size: 13px;
   color: #168e95;
 }
 .scm-mission > button {
@@ -509,7 +501,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  font-size: 11px;
+  font-size: 13px;
 }
 .scm-mission button small {
   width: max-content;
@@ -518,12 +510,12 @@
   border-radius: 6px;
   background: #e3f7f5;
   color: #158c91;
-  font-size: 7px;
+  font-size: 11px;
 }
 .scm-mission button span {
   margin-top: 4px;
   color: #738d9c;
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 500;
 }
 .scm-mission button > strong {
@@ -540,7 +532,7 @@
   border-radius: 5px;
   background: #fff5ed;
   color: #d77742;
-  font-size: 9px;
+  font-size: 13px;
 }
 .scm-mis p small {
   display: block;
@@ -551,8 +543,7 @@
 .scm-review h2 {
   margin: 0 0 10px;
   font:
-    800 16px Georgia,
-    serif;
+    800 16px "Segoe UI", sans-serif;
 }
 .scm-review > div {
   display: flex;
@@ -563,11 +554,11 @@
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  font-size: 9px;
+  font-size: 13px;
 }
 .scm-review > div small {
   color: #728b99;
-  font-size: 7px;
+  font-size: 11px;
 }
 .scm-review > div i {
   width: 7px;
@@ -588,7 +579,7 @@
   margin: 11px 0 0;
   padding-top: 8px;
   border-top: 1px solid #dbe6e9;
-  font-size: 9px;
+  font-size: 13px;
 }
 .scm-review button {
   float: right;
@@ -667,3 +658,8 @@
   font-size: 12px;
 }
 .scm-right a { cursor: pointer; }
+
+/* School mastery target palette and typography. */
+.scm-app{--ink:#d3e4f5;--line:#27445c;--teal:#29d8d0;background:#061522;color:var(--ink)}.scm-app>header{background:linear-gradient(100deg,#071522,#0e2237);border-color:#27445c}.scm-app>header h1{color:#d8e9fc;font-size:26px}.scm-app>header p{font-size:14px;color:#a8c6e3}.scm-app>header select,.scm-app>header label{background:#10253b;color:#d7e8f8;border-color:#284660}.scm-app>header input{color:#d7e8f8}.scm-app>aside{background:linear-gradient(#071927,#0b1d2c)}.scm-app>aside>button{font-size:15px;min-height:50px}.scm-app>aside>button.active,.scm-app>aside>button:hover{background:#123557;color:#52c4ff}.scm-app>main{background:#061522}.scm-app>main>section,.scm-right>article{background:linear-gradient(125deg,#0c2133,#071927);border-color:#25425b}.scm-app h2,.scm-app h3,.scm-app h4,.scm-app strong{color:#d5e9ff}.scm-map>header h2,.scm-right h2{font-size:20px;color:#d6eaff}.scm-map>header small,.scm-map>header nav{font-size: 13px;color:#9bb8d1}.scm-grid{background:radial-gradient(ellipse,#17384e,#071927 70%)}.scm-grid button{background:#102b42;border-color:#3c789b;color:#d8e9fa}.scm-grid button.active{border-color:#21d7ff;box-shadow:0 0 18px #0ebbe956}.scm-grid button.green{background:linear-gradient(135deg,#144a3a,#083326);color:#7cf4c0;border-color:#44d799}.scm-grid button.blue{background:linear-gradient(135deg,#16466c,#092e4c);color:#a5dcff;border-color:#39baff}.scm-grid button.purple{background:linear-gradient(135deg,#35245a,#201d40);color:#c6abff;border-color:#9871f4}.scm-grid button.yellow{background:linear-gradient(135deg,#54401b,#302c18);color:#ffe293;border-color:#e9b84b}.scm-detail{color:#c1d8ee}.scm-detail>header h2{color:#d6eaff}.scm-detail nav{border-color:#29445c}.scm-detail nav button{color:#a3c0db}.scm-detail nav button.active{color:#53cfff;border-color:#24bfff}.scm-copy{color:#b7cee4}.scm-mission>div,.scm-mis>div,.scm-review button{background:#10273d;border-color:#2c4962;color:#cce2f5}.scm-right p,.scm-right small{color:#a9c2da}.scm-detail footer button{background:#0e304b;color:#74d5ff;border-color:#328dbe}.scm-demo{background:#082337}.scm-demo p{color:#b1cde6}
+
+.scm-app h1,.scm-app h2,.scm-app h3,.scm-app button,.scm-app strong{font-family:'Segoe UI',Arial,sans-serif!important}.scm-app .scm-grid button.mastered{background:linear-gradient(135deg,#14513d,#092e2b);border-color:#45d9a0}.scm-app .scm-grid button.progress{background:linear-gradient(135deg,#174c77,#092a48);border-color:#38bfff}.scm-app .scm-grid button.learn{background:linear-gradient(135deg,#59441c,#302919);border-color:#e7ba4f}.scm-app .scm-grid button.selected,.scm-app .scm-grid button.active{background:linear-gradient(135deg,#103d5c,#082a40);border-color:#16dcff}.scm-app .scm-grid button.purple{background:linear-gradient(135deg,#36275a,#201c3c);border-color:#9370ee}.scm-app .scm-grid button b{font-size:15px;color:#53edc8}.scm-app .scm-grid button span{font-size:12px;white-space:normal;margin:7px 2px}.scm-app .scm-mission>button{background:linear-gradient(120deg,#102b41,#102239);border-color:#28465f;color:#d5e7f8;min-height:98px}.scm-app .scm-mission>button b{font-size:15px}.scm-app .scm-mission>button span{font-size:12px}.scm-app .scm-mission>button small{background:#123c4c;color:#6de4cf}.scm-app .scm-mis>p{background:#10283b;color:#c9dced;font-size:13px}.scm-app .scm-mis>p small{font-size:12px}.scm-app .scm-copy{font-size:13px;line-height:1.5;width:55%;max-height:190px;overflow:auto}.scm-app .scm-demo{position:absolute;right:16px;bottom:58px;width:40%;height:185px;display:grid;align-content:center;background:radial-gradient(ellipse,#17405b,#081d2c)}.scm-app .scm-demo>div{background:#102c40;color:#d9eaff;font-size:12px}.scm-app .scm-right{overflow:auto}.scm-app .scm-detail>header>span{background:#133d59;color:#cfe8ff}.scm-app .scm-detail>header aside i{box-shadow:inset 0 0 0 7px #0b263b}

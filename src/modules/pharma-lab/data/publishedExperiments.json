@@ -1,0 +1,319 @@
+{
+  "hplc": {
+    "pmcid": "PMC9230883",
+    "title": "Development and Validation of an HPLC-UV Method for the Dissolution Studies of 3D-Printed Paracetamol Formulations in Milk-Containing Simulated Gastrointestinal Media",
+    "doi": "10.3390/ph15060755",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9230883/#pharmaceuticals-15-00755-t002",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC9230883/fullTextXML",
+    "tableId": "pharmaceuticals-15-00755-t002",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "8e9a74f4e2e22f70258f6c161fe56cc7a477ed4429c2727e63f210069f40d0fd",
+    "authors": [
+      "Manousi Natalia",
+      "Karavasili Christina",
+      "Fatouros Dimitrios G.",
+      "Tzanavaras Paraskevas D.",
+      "Zacharis Constantinos K.",
+      "Lachowicz-Wiśniewska Sabina",
+      "Oszmianski Jan"
+    ],
+    "year": "2022",
+    "kind": "Published experimental summaries",
+    "formulation": "Paracetamol in milk-containing biorelevant dissolution samples",
+    "conditions": "BDS Hypersil C18, 250 × 4.6 mm, 5 µm; 25 mM phosphate buffer pH 3:methanol 80:20; 1 mL/min; 30 °C; 10 µL injection; 243 nm; 12 min run. Three experiment series, five levels and three replicates per series.",
+    "limitations": "Regression and validation summaries, not individual injections. Raw chromatographic signals are not included; no trace or calibration observations are reconstructed.",
+    "groups": [
+      {
+        "title": "Daily calibration regressions",
+        "headers": [
+          "Day",
+          "Slope (×10³)",
+          "Intercept (×10³)",
+          "R²"
+        ],
+        "rows": [
+          [
+            "Day 1",
+            "21.07",
+            "−2.483",
+            "0.9997"
+          ],
+          [
+            "Day 2",
+            "21.13",
+            "−0.238",
+            "0.9999"
+          ],
+          [
+            "Day 3",
+            "21.18",
+            "−3.135",
+            "1.0000"
+          ]
+        ]
+      },
+      {
+        "title": "Precision",
+        "headers": [
+          "Concentration (µg/mL)",
+          "Repeatability RSD (%)",
+          "Intermediate precision RSD (%)"
+        ],
+        "rows": [
+          [
+            "10",
+            "2.1",
+            "2.6"
+          ],
+          [
+            "50",
+            "2.7",
+            "3.0"
+          ],
+          [
+            "100",
+            "1.9",
+            "3.1"
+          ],
+          [
+            "300",
+            "1.5",
+            "2.4"
+          ],
+          [
+            "600",
+            "1.4",
+            "2.5"
+          ]
+        ]
+      },
+      {
+        "title": "Trueness",
+        "headers": [
+          "Concentration (µg/mL)",
+          "Relative bias (%)"
+        ],
+        "rows": [
+          [
+            "10",
+            "+1.1"
+          ],
+          [
+            "50",
+            "+3.9"
+          ],
+          [
+            "100",
+            "−1.2"
+          ],
+          [
+            "300",
+            "−3.0"
+          ],
+          [
+            "600",
+            "−4.5"
+          ]
+        ]
+      }
+    ]
+  },
+  "dissolution": {
+    "pmcid": "PMC10865243",
+    "title": "Physicochemical quality assessment of various brands of paracetamol tablets sold in Freetown Municipality",
+    "doi": "10.1016/j.heliyon.2024.e25502",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10865243/#tbl3",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10865243/fullTextXML",
+    "tableId": "tbl3",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "3427a38de236cb6dc1c6867fb708df569979c4328a391971c22b5b99585ec5ec",
+    "authors": [
+      "Vandy Ahmed",
+      "Conteh Eugene",
+      "Lahai Michael",
+      "Kolipha-Kamara Marie",
+      "Marah Mohamed",
+      "Marah Foday",
+      "Suma Kadiatu M",
+      "Mattia Sia C",
+      "Tucker Kenneth DS",
+      "Wray Victor SE",
+      "Koroma Abass",
+      "Lebbie Aiah U"
+    ],
+    "year": "2024",
+    "kind": "Published experimental summaries",
+    "formulation": "15 coded paracetamol tablet samples from Freetown; original study identifiers retained",
+    "conditions": "Paddle apparatus; 900 mL phosphate buffer pH 5.8; 50 rpm; 37 ± 1 °C; 45-minute endpoint; UV analysis. S1: 6 tablets. S2: combined 12 tablets where reported.",
+    "limitations": "One endpoint per sample, not a time course. Values above 100% are retained. Missing S2 results are not filled. Individual-vessel acceptance cannot be inferred from means. P012: the narrative quotes the S2 value; the S1 value here follows Table 3.",
+    "groups": [
+      {
+        "title": "45-minute dissolution endpoints",
+        "headers": [
+          "Study sample",
+          "S1 release (%), mean ± SD",
+          "S2 release (%), mean ± SD"
+        ],
+        "rows": [
+          [
+            "P001",
+            "98.65 ± 3.55",
+            "Not reported"
+          ],
+          [
+            "P002",
+            "97.72 ± 2.28",
+            "Not reported"
+          ],
+          [
+            "P003",
+            "97.03 ± 1.68",
+            "Not reported"
+          ],
+          [
+            "P004",
+            "102.34 ± 1.63",
+            "Not reported"
+          ],
+          [
+            "P005",
+            "102.06 ± 4.38",
+            "Not reported"
+          ],
+          [
+            "P006",
+            "82.95 ± 1.23",
+            "Not reported"
+          ],
+          [
+            "P007",
+            "94.80 ± 3.57",
+            "Not reported"
+          ],
+          [
+            "P008",
+            "91.31 ± 2.02",
+            "Not reported"
+          ],
+          [
+            "P009",
+            "86.80 ± 3.75",
+            "Not reported"
+          ],
+          [
+            "P010",
+            "85.18 ± 0.84",
+            "Not reported"
+          ],
+          [
+            "P011",
+            "96.20 ± 1.05",
+            "Not reported"
+          ],
+          [
+            "P012",
+            "19.22 ± 0.85",
+            "21.22 ± 5.76"
+          ],
+          [
+            "P013",
+            "95.45 ± 3.26",
+            "Not reported"
+          ],
+          [
+            "P014",
+            "65.97 ± 1.43",
+            "62.77 ± 9.53"
+          ],
+          [
+            "P015",
+            "98.09 ± 0.94",
+            "Not reported"
+          ]
+        ]
+      }
+    ]
+  },
+  "stability": {
+    "pmcid": "PMC8950020",
+    "title": "Stability of Paracetamol Instant Jelly for Reconstitution: Impact of Packaging, Temperature and Humidity",
+    "doi": "10.3390/gels8030144",
+    "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8950020/#gels-08-00144-t004",
+    "xmlUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8950020/fullTextXML",
+    "tableId": "gels-08-00144-t004",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "retrievedOn": "2026-10-17",
+    "sourceSha256": "0b94c61a67540f3a78a808004ee69175bbd117953d7d692f729cf9731f3fbda0",
+    "authors": [
+      "Hamed Almurisi Samah",
+      "AL-Japairai Khater",
+      "Alshammari Farhan",
+      "Alheibshy Fawaz",
+      "Sammour Rana MF",
+      "Doolaanea Abd Almonem",
+      "Dinu Maria Valentina"
+    ],
+    "year": "2022",
+    "kind": "Published experimental summaries",
+    "formulation": "Paracetamol instant jelly for reconstitution; a different dosage form from the simulated tablet",
+    "conditions": "Packaging 1: sealed plastic sachets. Packaging 2: sealed aluminium bags inside screw-capped amber glass bottles. Real-time: 30 °C/75% RH. Accelerated: 40 °C/75% RH. HPLC content determination; n = 3; mean ± SD.",
+    "limitations": "The source has one shared baseline spanning all four groups, shown here as a shared reference, not four independent measurements. Percentages follow the paper’s reported content scale (section 2.6 describes % w/v); no unit reinterpretation, normalization or shelf-life extrapolation is applied.",
+    "groups": [
+      {
+        "title": "Content during storage (reported %), mean ± SD",
+        "headers": [
+          "Packaging",
+          "Storage condition",
+          "Shared baseline",
+          "2 weeks",
+          "1 month",
+          "2 months",
+          "3 months"
+        ],
+        "rows": [
+          [
+            "Packaging 1",
+            "Real-time",
+            "103.27 ± 0.08",
+            "102.48 ± 0.60",
+            "102.37 ± 0.33",
+            "101.87 ± 0.11",
+            "101.65 ± 0.75"
+          ],
+          [
+            "Packaging 1",
+            "Accelerated",
+            "103.27 ± 0.08",
+            "102.50 ± 0.30",
+            "99.8 ± 1.02",
+            "93.7 ± 0.55",
+            "89.44 ± 2.22"
+          ],
+          [
+            "Packaging 2",
+            "Real-time",
+            "103.27 ± 0.08",
+            "102.37 ± 1.6",
+            "102.22 ± 1.03",
+            "101.87 ± 0.11",
+            "101.98 ± 0.04"
+          ],
+          [
+            "Packaging 2",
+            "Accelerated",
+            "103.27 ± 0.08",
+            "102.78 ± 2.17",
+            "102.35 ± 2.04",
+            "101.87 ± 0.12",
+            "102.08 ± 0.09"
+          ]
+        ]
+      }
+    ]
+  }
+}

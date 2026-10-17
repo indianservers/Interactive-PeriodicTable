@@ -695,3 +695,5 @@
   border-bottom: 2px dashed rgba(255,255,255,0.08);
   border-radius: 0 0 0 4px;
 }
+
+.trend-fullscreen:fullscreen {background:#101827;padding:32px;overflow:auto;width:100vw;height:100vh;}

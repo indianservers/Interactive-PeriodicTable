@@ -49,6 +49,7 @@ export default forwardRef(function CarbohydrateViewer({ compound, representation
         label={`${compound.name} PubChem CID ${compound.cid}`}
         representation={representationState}
         colorScheme="element"
+        transparentBackground
         selectedAtomIndex={selectedAtomIndex}
         focusOnSelection={false}
         showHydrogens={hydrogens}

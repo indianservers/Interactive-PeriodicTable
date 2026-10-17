@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Menu, Atom, ChevronRight, Home, Search, Star, Share2, Printer, Maximize2, Download, BookOpen, PauseCircle, PlayCircle } from 'lucide-react';
 import { ThemeToggle } from '../common/ThemeToggle.jsx';
-import { elements } from '../../data/elements.js';
-import { ALL_MOLECULES } from '../../data/molecules.js';
-import { labToolCatalog } from '../../data/syllabus.js';
 import { navGroups } from './Sidebar.jsx';
 import { getCategoryInfo } from '../../data/categories.js';
+import { searchGlobal } from '../../data/globalSearch.js';
 
 const pageIcons = {
   dashboard: '⬡',
@@ -243,25 +241,7 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
   const [query, setQuery] = useState('');
   const [copied, setCopied] = useState(false);
   const activeTitle = titles[currentPage] || 'Chemistry Universe';
-  const suggestions = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const pageMatches = pageItems
-      .filter(item => !q || `${item.label} ${item.id}`.toLowerCase().includes(q))
-      .map(item => ({ type: 'Page', label: item.label, detail: 'Open page', id: item.id }));
-    const elementMatches = elements
-      .filter(el => q && [el.name, el.symbol, String(el.atomicNumber), el.category].join(' ').toLowerCase().includes(q))
-      .slice(0, 8)
-      .map(el => ({ type: 'Element', label: `${el.name} (${el.symbol})`, detail: `#${el.atomicNumber} ${el.category}`, element: el }));
-    const moleculeMatches = ALL_MOLECULES
-      .filter(molecule => q && [molecule.name, molecule.formula, molecule.iupacName].join(' ').toLowerCase().includes(q))
-      .slice(0, 5)
-      .map(molecule => ({ type: 'Molecule', label: molecule.name, detail: molecule.formula, id: 'molecule' }));
-    const toolMatches = labToolCatalog
-      .filter(tool => q && [tool.title, tool.type, tool.id].join(' ').toLowerCase().includes(q))
-      .slice(0, 8)
-      .map(tool => ({ type: 'Tool', label: tool.title, detail: tool.type, id: 'lab' }));
-    return [...pageMatches, ...elementMatches, ...moleculeMatches, ...toolMatches].slice(0, 12);
-  }, [query]);
+  const suggestions = useMemo(() => searchGlobal(query, pageItems), [query]);
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -428,7 +408,7 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
                   if (event.key === 'Enter' && suggestions[0]) chooseSuggestion(suggestions[0]);
                 }}
                 className="w-full bg-transparent text-sm text-white outline-none"
-                placeholder="Search elements, molecules, lab tools, pages..."
+                aria-label="Search all chemistry" placeholder="Search pages, studios, labs, elements, molecules…"
               />
             </div>
             <div className="max-h-[60vh] overflow-y-auto p-2">

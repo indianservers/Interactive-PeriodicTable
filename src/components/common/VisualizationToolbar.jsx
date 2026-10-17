@@ -1,16 +1,27 @@
 import { Download, Maximize2, Printer } from 'lucide-react';
 
-export const VisualizationToolbar = ({ targetSelector = 'main svg, main canvas', title = 'visualization', extra = null }) => {
+export const VisualizationToolbar = ({ targetSelector = 'main svg, main canvas', title = 'visualization', extra = null, fullscreenSelector }) => {
   const findTarget = () => document.querySelector(targetSelector);
 
   const openFullscreen = () => {
-    const target = findTarget();
-    if (target?.requestFullscreen) target.requestFullscreen();
+    const target = document.querySelector(fullscreenSelector || targetSelector);
+    if (target?.requestFullscreen) target.requestFullscreen().catch(() => {});
   };
 
   const exportImage = () => {
-    const target = findTarget();
+    let target = findTarget();
     if (!target) return;
+    if (!["svg", "canvas"].includes(target.tagName?.toLowerCase())) {
+      const clone = target.cloneNode(true);
+      const original = [target, ...target.querySelectorAll("*")];
+      [clone, ...clone.querySelectorAll("*")].forEach((el, i) => { el.setAttribute("style", Array.from(getComputedStyle(original[i])).map(key => `${key}:${getComputedStyle(original[i]).getPropertyValue(key)}`).join(";")); });
+      const bounds = target.getBoundingClientRect();
+      const markup = new XMLSerializer().serializeToString(clone);
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.max(bounds.width,target.scrollWidth)}" height="${target.scrollHeight}"><foreignObject width="100%" height="100%">${markup}</foreignObject></svg>`;
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([svg], {type:"image/svg+xml"}));
+      link.download = `${title}.svg`;link.click();setTimeout(() => URL.revokeObjectURL(link.href),1000);return;
+    }
     const isCanvas = target.tagName?.toLowerCase() === 'canvas';
     const a = document.createElement('a');
     if (isCanvas) {
