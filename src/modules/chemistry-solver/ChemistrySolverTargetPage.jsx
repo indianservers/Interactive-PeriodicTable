@@ -36,24 +36,24 @@ const sidePages = [[FileText, "New Problem"], [BookOpen, "Solved Questions"], [B
 
 function TopicProblem({ topic, onVisualize, onSave, saved }) {
   const problem = topicProblems[topic];
-  return <main className="cs-topic-workspace">
-    <article className="cs-problem cs-topic-problem"><span className="cs-kicker">{topic}</span><h2>{problem.title}</h2><p>{problem.question}</p></article>
-    <article className="cs-solution cs-topic-solution"><h2>Step-by-Step Solution</h2><div className="cs-equation">{problem.equation}</div><ol>{problem.steps.map((step) => <li key={step}><b>{step}</b></li>)}</ol><div className="cs-answer">Answer <strong>{problem.answer}</strong><Check /></div><footer><button onClick={onSave}><Save /> {saved ? "Saved" : "Save solution"}</button><button onClick={onVisualize}><Network /> Open visualization</button></footer></article>
-    <aside className="cs-topic-visual" aria-label={`${topic} model`}><Atom /><span>{problem.equation}</span><strong>{problem.answer}</strong><p>The model and result update with the selected chemistry topic.</p></aside>
+  return <main className="solver-topic-workspace">
+    <article className="solver-problem solver-topic-problem"><span className="solver-kicker">{topic}</span><h2>{problem.title}</h2><p>{problem.question}</p></article>
+    <article className="solver-solution solver-topic-solution"><h2>Step-by-Step Solution</h2><div className="solver-equation">{problem.equation}</div><ol>{problem.steps.map((step) => <li key={step}><b>{step}</b></li>)}</ol><div className="solver-answer">Answer <strong>{problem.answer}</strong><Check /></div><footer><button onClick={onSave}><Save /> {saved ? "Saved" : "Save solution"}</button><button onClick={onVisualize}><Network /> Open visualization</button></footer></article>
+    <aside className="solver-topic-visual" aria-label={`${topic} model`}><Atom /><span>{problem.equation}</span><strong>{problem.answer}</strong><p>The model and result update with the selected chemistry topic.</p></aside>
   </main>;
 }
 
 function SideWorkspace({ page, note, setNote, saved, onOpenTopic, onReturn }) {
   const content = {
-    "Solved Questions": <><h2>Solved Questions</h2><p>Open a worked example with its equations and explanation.</p><div className="cs-card-grid">{topics.map(topic=><button key={topic} onClick={()=>onOpenTopic(topic)}><BookOpen/><strong>{topicProblems[topic]?.title || 'Acid–base titration'}</strong><span>{topic}</span></button>)}</div></>,
+    "Solved Questions": <><h2>Solved Questions</h2><p>Open a worked example with its equations and explanation.</p><div className="solver-card-grid">{topics.map(topic=><button key={topic} onClick={()=>onOpenTopic(topic)}><BookOpen/><strong>{topicProblems[topic]?.title || 'Acid–base titration'}</strong><span>{topic}</span></button>)}</div></>,
     "My Notebook": <><h2>My Notebook</h2><p>Keep working notes beside the solver. Notes are retained while this page is open.</p><textarea aria-label="Chemistry notebook" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Record observations, formulae, or questions…" /></>,
-    "Molecular Models": <><h2>Molecular Models</h2><p>Select a model to open the matching problem and molecular explanation.</p><div className="cs-card-grid">{[["HCl + NaOH", "Solutions"], ["CH₄ combustion", "Stoichiometry"], ["Zn/Cu cell", "Electrochemistry"]].map(([label, target]) => <button key={label} onClick={() => onOpenTopic(target)}><Network /><strong>{label}</strong><span>Open {target}</span></button>)}</div></>,
-    "Reference Data": <><h2>Reference Data</h2><p>Frequently used constants and relationships.</p><dl className="cs-reference"><dt>Avogadro constant</dt><dd>6.022 × 10²³ mol⁻¹</dd><dt>Gas constant</dt><dd>8.314 J mol⁻¹ K⁻¹</dd><dt>Water heat capacity</dt><dd>4.184 J g⁻¹ °C⁻¹</dd><dt>Faraday constant</dt><dd>96,485 C mol⁻¹</dd></dl></>,
-    Calculators: <><h2>Calculators</h2><p>Open a solver with the right equation and worked example.</p><div className="cs-card-grid">{[["Molarity & dilution", "Solutions"], ["Heat energy", "Thermochemistry"], ["Cell potential", "Electrochemistry"]].map(([label, target]) => <button key={label} onClick={() => onOpenTopic(target)}><Calculator /><strong>{label}</strong><span>Calculate now</span></button>)}</div></>,
-    Simulations: <><h2>Simulations</h2><p>Explore a live visual model for each supported problem type.</p><div className="cs-card-grid">{[["Acid-base titration", "Solutions"], ["Dynamic equilibrium", "Equilibrium"], ["Galvanic cell", "Electrochemistry"]].map(([label, target]) => <button key={label} onClick={() => onOpenTopic(target)}><TestTube2 /><strong>{label}</strong><span>Start simulation</span></button>)}</div></>,
-    "Saved Solutions": <><h2>Saved Solutions</h2><p>{saved.length ? `${saved.length} solution${saved.length === 1 ? "" : "s"} ready to reopen.` : "No saved solutions yet."}</p><div className="cs-saved-list">{saved.map((item) => <button key={item} onClick={() => onOpenTopic(item)}><Save /><strong>{item}</strong><span>Open worked solution</span></button>)}</div>{!saved.length && <button className="cs-primary-action" onClick={onReturn}>Solve a problem</button>}</>,
+    "Molecular Models": <><h2>Molecular Models</h2><p>Select a model to open the matching problem and molecular explanation.</p><div className="solver-card-grid">{[["HCl + NaOH", "Solutions"], ["CH₄ combustion", "Stoichiometry"], ["Zn/Cu cell", "Electrochemistry"]].map(([label, target]) => <button key={label} onClick={() => onOpenTopic(target)}><Network /><strong>{label}</strong><span>Open {target}</span></button>)}</div></>,
+    "Reference Data": <><h2>Reference Data</h2><p>Frequently used constants and relationships.</p><dl className="solver-reference"><dt>Avogadro constant</dt><dd>6.022 × 10²³ mol⁻¹</dd><dt>Gas constant</dt><dd>8.314 J mol⁻¹ K⁻¹</dd><dt>Water heat capacity</dt><dd>4.184 J g⁻¹ °C⁻¹</dd><dt>Faraday constant</dt><dd>96,485 C mol⁻¹</dd></dl></>,
+    Calculators: <><h2>Calculators</h2><p>Open a solver with the right equation and worked example.</p><div className="solver-card-grid">{[["Molarity & dilution", "Solutions"], ["Heat energy", "Thermochemistry"], ["Cell potential", "Electrochemistry"]].map(([label, target]) => <button key={label} onClick={() => onOpenTopic(target)}><Calculator /><strong>{label}</strong><span>Calculate now</span></button>)}</div></>,
+    Simulations: <><h2>Simulations</h2><p>Explore a live visual model for each supported problem type.</p><div className="solver-card-grid">{[["Acid-base titration", "Solutions"], ["Dynamic equilibrium", "Equilibrium"], ["Galvanic cell", "Electrochemistry"]].map(([label, target]) => <button key={label} onClick={() => onOpenTopic(target)}><TestTube2 /><strong>{label}</strong><span>Start simulation</span></button>)}</div></>,
+    "Saved Solutions": <><h2>Saved Solutions</h2><p>{saved.length ? `${saved.length} solution${saved.length === 1 ? "" : "s"} ready to reopen.` : "No saved solutions yet."}</p><div className="solver-saved-list">{saved.map((item) => <button key={item} onClick={() => onOpenTopic(item)}><Save /><strong>{item}</strong><span>Open worked solution</span></button>)}</div>{!saved.length && <button className="solver-primary-action" onClick={onReturn}>Solve a problem</button>}</>,
   };
-  return <main className="cs-side-workspace"><section>{content[page]}</section></main>;
+  return <main className="solver-side-workspace"><section>{content[page]}</section></main>;
 }
 export default function ChemistrySolverTargetPage({ initialPage = "New Problem" }) {
   const [topic, setTopic] = useState("Solutions"),
@@ -91,7 +91,7 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
   };
   const saveTopic = () => setSaved((items) => items.includes(topic) ? items : [topic, ...items]);
   return (
-    <div className="cs-app">
+    <div className="solver-app">
       <header>
         <FlaskConical />
         <div>
@@ -109,11 +109,11 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
             </button>
           ))}
         </nav>
-        <button className={`cs-lab ${labMode ? "active" : ""}`} onClick={() => setLabMode((v) => !v)}>
+        <button className={`solver-lab ${labMode ? "active" : ""}`} onClick={() => setLabMode((v) => !v)}>
           <Sun /> {labMode ? "Lab Mode" : "Study Mode"}
         </button>
-        <button className="cs-units" onClick={() => setUnits((v) => v === "SI" ? "US" : "SI")}>Units: {units}⌄</button>
-        <span className="cs-user">●</span>
+        <button className="solver-units" onClick={() => setUnits((v) => v === "SI" ? "US" : "SI")}>Units: {units}⌄</button>
+        <span className="solver-user">●</span>
       </header>
       <aside>
         {sidePages.map(([Icon, label]) => (
@@ -138,10 +138,10 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
       ) : topic !== "Solutions" ? (
         <TopicProblem topic={topic} onVisualize={() => setActiveSide("Molecular Models")} onSave={saveTopic} saved={saved.includes(topic)} />
       ) : <main>
-        <section className="cs-left">
-          <article className="cs-problem">
+        <section className="solver-left">
+          <article className="solver-problem">
             <h2>Problem</h2>
-            <div className="cs-edit">
+            <div className="solver-edit">
               <label>
                 HCl volume{" "}
                 <input
@@ -172,8 +172,8 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
                 />
               </label>
             </div>
-            <div className="cs-problem-actions">
-              <button onClick={() => document.querySelector(".cs-edit")?.classList.toggle("show")}>✎ Edit Values</button>
+            <div className="solver-problem-actions">
+              <button onClick={() => document.querySelector(".solver-edit")?.classList.toggle("show")}>✎ Edit Values</button>
               <button onClick={reset}><RotateCcw /> Reset</button>
               <button onClick={saveTopic}><Save /> {saved.includes(topic) ? "Saved" : "Save"}</button>
             </div>
@@ -184,16 +184,16 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
               Find the equivalence volume.
             </p>
           </article>
-          <article className="cs-solution">
+          <article className="solver-solution">
             <h2>Step-by-Step Solution</h2>
             <ol>
               <li>
                 <b>Balanced chemical equation</b>
-                <div className="cs-equation">
+                <div className="solver-equation">
                   HCl <i>(aq)</i>　+　NaOH <i>(aq)</i>　→　NaCl <i>(aq)</i>
                   　+　H₂O <i>(l)</i>
                 </div>
-                <span className="cs-ratio">
+                <span className="solver-ratio">
                   <strong>1 : 1</strong>
                   <small>
                     mole ratio
@@ -228,7 +228,7 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
                   {(result.volume / 1000).toFixed(4)} L ={" "}
                   <strong>{result.volume.toFixed(1)} mL</strong>
                 </p>
-                <div className="cs-dimensional">
+                <div className="solver-dimensional">
                   Dimensional Analysis (units cancel)
                   <br />
                   <b>
@@ -239,7 +239,7 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
               </li>
               <li>
                 <b>Answer</b>
-                <div className="cs-answer">
+                <div className="solver-answer">
                   Equivalence volume =　
                   <strong>{result.volume.toFixed(1)} mL</strong>
                   <Check />
@@ -261,14 +261,14 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
               </button>
             </footer>
             {hint && (
-              <p className="cs-hint">
+              <p className="solver-hint">
                 At equivalence, moles of H⁺ equal moles of OH⁻. The 1:1 balanced
                 equation makes the mole amounts equal.
               </p>
             )}
           </article>
         </section>
-        <section className="cs-visual">
+        <section className="solver-visual">
           <header>
             <h2>Visualization</h2>
             <nav>
@@ -283,8 +283,8 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
               ))}
             </nav>
           </header>
-          {tab === "Titration Setup" && <div className="cs-apparatus">
-            <div className="cs-titrant">
+          {tab === "Titration Setup" && <div className="solver-apparatus">
+            <div className="solver-titrant">
               <i />
               NaOH (titrant)
               <br />
@@ -295,24 +295,24 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
                 {result.volume.toFixed(1)} mL
               </strong>
             </div>
-            <div className="cs-burette">
+            <div className="solver-burette">
               <span style={{ height: `${Math.min(90, result.volume * 3)}%` }} />
               <i />
             </div>
-            <div className="cs-beaker">
+            <div className="solver-beaker">
               <i />
               <span />
             </div>
-            <div className="cs-analyte">
+            <div className="solver-analyte">
               <i />
               HCl (analyte)
               <br />
               {acidM.toFixed(3)} M<br />
               {acidVolume.toFixed(1)} mL
             </div>
-            <b className="cs-stir">●　Stir</b>
+            <b className="solver-stir">●　Stir</b>
           </div>}
-          {tab === "pH Curve" && <div className="cs-tab-panel cs-curve-panel"><p>Move the problem values to see the equivalence point shift along the calculated curve.</p><article className="cs-curve">
+          {tab === "pH Curve" && <div className="solver-tab-panel solver-curve-panel"><p>Move the problem values to see the equivalence point shift along the calculated curve.</p><article className="solver-curve">
             <h3>Titration Curve (Strong Acid–Strong Base)</h3>
             <svg viewBox="0 0 280 245">
               <path d="M30 205 C95 200 130 190 145 160 S148 75 165 57 S220 43 260 42" />
@@ -337,8 +337,8 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
               </text>
             </svg>
           </article></div>}
-          {tab === "Molecular View" && <div className="cs-tab-panel cs-molecular-panel"><div className="cs-particle acid">H⁺</div><span>+</span><div className="cs-particle base">OH⁻</div><span>→</span><div className="cs-water">H₂O</div><h3>Neutralization at particle level</h3><p>Equal amounts of hydrogen and hydroxide ions combine to form water. Na⁺ and Cl⁻ remain as spectator ions.</p></div>}
-          <article className={`cs-equivalence ${tab !== "Titration Setup" ? "cs-equivalence-wide" : ""}`}>
+          {tab === "Molecular View" && <div className="solver-tab-panel solver-molecular-panel"><div className="solver-particle acid">H⁺</div><span>+</span><div className="solver-particle base">OH⁻</div><span>→</span><div className="solver-water">H₂O</div><h3>Neutralization at particle level</h3><p>Equal amounts of hydrogen and hydroxide ions combine to form water. Na⁺ and Cl⁻ remain as spectator ions.</p></div>}
+          <article className={`solver-equivalence ${tab !== "Titration Setup" ? "solver-equivalence-wide" : ""}`}>
             <h3>At equivalence</h3>
             <dl>
               <dt>Volume of NaOH</dt>
@@ -355,7 +355,7 @@ export default function ChemistrySolverTargetPage({ initialPage = "New Problem" 
               <dd>Phenolphthalein</dd>
             </dl>
           </article>
-          <p className={`cs-note ${tab !== "Titration Setup" ? "cs-note-wide" : ""}`}>
+          <p className={`solver-note ${tab !== "Titration Setup" ? "solver-note-wide" : ""}`}>
             <Beaker />
             At the equivalence point, moles of acid and base are equal and the
             solution is neutral (pH ≈ 7.0) for a strong acid–strong base

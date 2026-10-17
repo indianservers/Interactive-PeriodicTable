@@ -36,10 +36,11 @@ async function ensureRepresentation(plugin, runtime, key) {
     : runtime.polymerOnly ? runtime.components?.polymer || runtime.components?.all : runtime.components?.all;
   if (!component) return null;
   const carbonColor = { name: runtime.color, params: {} };
+  const chainParams=runtime.chainColors?.length?{palette:{name:"colors",params:{list:{kind:"set",colors:runtime.chainColors}}}}:{};
   const params = {
-    Cartoon: { type: 'cartoon', color: runtime.color },
+    Cartoon: { type: 'cartoon', color: runtime.color, colorParams:chainParams },
     Backbone: { type: 'backbone', color: runtime.color },
-    Surface: { type: 'gaussian-surface', typeParams: { alpha: runtime.surfaceOpacity ?? 0.24, quality: 'low', resolution: 2 }, color: 'uniform', colorParams: { value: runtime.surfaceColor ?? 0x2d668a } },
+    Surface: { type: 'gaussian-surface', typeParams: { alpha: runtime.surfaceOpacity ?? 0.24, quality: 'low', resolution: 2 }, color: runtime.chainColors?.length?'chain-id':'uniform', colorParams: runtime.chainColors?.length?chainParams:{ value: runtime.surfaceColor ?? 0x2d668a } },
     Sticks: { type: 'ball-and-stick', typeParams: { sizeFactor: 0.18, ignoreHydrogens: runtime.ignoreHydrogens }, color: 'element-symbol', colorParams: { carbonColor } },
     BallAndStick: { type: 'ball-and-stick', typeParams: { sizeFactor: 0.34, ignoreHydrogens: runtime.ignoreHydrogens }, color: 'element-symbol', colorParams: { carbonColor } },
     Licorice: { type: 'ball-and-stick', typeParams: { sizeFactor: 0.12, ignoreHydrogens: runtime.ignoreHydrogens }, color: 'element-symbol', colorParams: { carbonColor } },
@@ -89,6 +90,7 @@ export default forwardRef(function MolstarViewer({
   pdbId,
   representation = { Cartoon: true, Surface: false, Sticks: false },
   colorScheme = 'chain',
+  chainColors,
   selectedChain,
   selectedResidue,
   selectedAtomIndex,
@@ -124,6 +126,7 @@ export default forwardRef(function MolstarViewer({
   const [selectionEpoch, setSelectionEpoch] = useState(0);
   const sourceKey = useMemo(() => structureSourceKey(source, sourceType, label), [source, sourceType, label]);
   const highlightedResidueKey = highlightedResidues.join(',');
+  const chainColorKey=(chainColors||[]).join(",");
   callbacksRef.current = { onReady, onSelectionChange, onLoadError };
 
   useEffect(() => {
@@ -229,7 +232,7 @@ export default forwardRef(function MolstarViewer({
         const branched = await plugin.builders.structure.tryCreateComponentStatic(loaded.structure, 'branched');
         const ion = await plugin.builders.structure.tryCreateComponentStatic(loaded.structure, 'ion');
         const color = resolveColorScheme(colorScheme);
-        const runtime = { ...runtimeRef.current, ...loaded, unitCell, structure: loaded.structure, components: { polymer, protein, nucleic, all, ligand, branched, ion }, representations: {}, color, ignoreHydrogens: !showHydrogens, polymerOnly, surfaceOpacity, surfaceColor, surfaceProteinOnly };
+        const runtime = { ...runtimeRef.current, ...loaded, unitCell, structure: loaded.structure, components: { polymer, protein, nucleic, all, ligand, branched, ion }, representations: {}, color, chainColors, ignoreHydrogens: !showHydrogens, polymerOnly, surfaceOpacity, surfaceColor, surfaceProteinOnly };
         runtimeRef.current = runtime;
         for (const key of REPRESENTATION_KEYS) if (representation[key]) await ensureRepresentation(plugin, runtime, key);
         if(nucleic)runtime.representations.Nucleic=await plugin.builders.structure.representation.addRepresentation(nucleic,{type:'ball-and-stick',typeParams:{sizeFactor:.3},color:'element-symbol'});
@@ -263,7 +266,7 @@ export default forwardRef(function MolstarViewer({
       }
     })();
     return () => { cancelled = true; window.clearTimeout(cameraTimer); };
-  }, [pluginReady, sourceKey, colorScheme, focusLigandOnLoad, focusLigandId, focusLigandChain, showUnitCell, showHydrogens, polymerOnly, surfaceOpacity, surfaceColor, surfaceProteinOnly, retry]);
+  }, [pluginReady, sourceKey, colorScheme, chainColorKey, focusLigandOnLoad, focusLigandId, focusLigandChain, showUnitCell, showHydrogens, polymerOnly, surfaceOpacity, surfaceColor, surfaceProteinOnly, retry]);
 
   useEffect(() => {
     const plugin = pluginRef.current, runtimeAtStart = runtimeRef.current, reps = runtimeAtStart?.representations;
@@ -310,7 +313,7 @@ export default forwardRef(function MolstarViewer({
           ? { 'atom-test': MS.core.set.has([MS.set(...atoms), MS.struct.atomProperty.core.sourceIndex()]) }
           : { 'residue-test': residueTests.length === 1 ? residueTests[0] : MS.core.logic.and(residueTests) });
         const query = StructureSelectionQuery('Application selection', expression);
-        plugin.managers.structure.selection.fromCompiledQuery('set', query.query, true);
+        plugin.managers.structure.selection.fromCompiledQuery('set', query.query, !atoms.length);
         if (focusOnSelection && Number.isFinite(selectedResidue)) {
           const loci = plugin.managers.structure.selection.getLoci(structure.obj.data);
           if (loci?.elements?.length) plugin.managers.camera.focusLoci(loci, { minRadius: 7, extraRadius: 5, durationMs: 220 });

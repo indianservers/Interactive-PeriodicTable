@@ -21,7 +21,7 @@
 .rx-app textarea {
   font: inherit;
 }
-.rx-header {
+.rx-app .rx-header {
   height: 76px;
   border-bottom: 1px solid #cbd8e7;
   box-shadow: 0 2px 8px #173b6420;
@@ -33,33 +33,33 @@
   position: relative;
   z-index: 2;
 }
-.rx-brand {
+.rx-app .rx-brand {
   display: flex;
   align-items: center;
   gap: 13px;
   min-width: 335px;
 }
-.rx-brand > svg {
+.rx-app .rx-brand > svg {
   width: 40px;
   height: 40px;
   color: #0873df;
   stroke-width: 2.7;
 }
-.rx-brand b {
+.rx-app .rx-brand b {
   display: block;
   font-size: 24px;
 }
-.rx-brand small {
+.rx-app .rx-brand small {
   display: block;
   color: #536b8b;
   margin-top: 2px;
 }
-.rx-header nav {
+.rx-app .rx-header nav {
   height: 100%;
   display: flex;
   gap: 8px;
 }
-.rx-header nav button {
+.rx-app .rx-header nav button {
   height: 100%;
   padding: 0 24px;
   border: 0;
@@ -70,55 +70,55 @@
   gap: 10px;
   font-weight: 600;
 }
-.rx-header nav button svg {
+.rx-app .rx-header nav button svg {
   width: 20px;
 }
-.rx-header nav button.active {
+.rx-app .rx-header nav button.active {
   background: linear-gradient(#1994ee, #0671d9);
   color: #fff;
 }
-.rx-progress {
+.rx-app .rx-progress {
   margin-left: auto;
   width: 325px;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 4px 12px;
 }
-.rx-progress i {
+.rx-app .rx-progress i {
   grid-column: 1/-1;
   height: 12px;
   border-radius: 10px;
   background: #d9e4ef;
   overflow: hidden;
 }
-.rx-progress i b {
+.rx-app .rx-progress i b {
   display: block;
   height: 100%;
   background: linear-gradient(90deg, #10ae9d, #0b77dc);
 }
-.rx-page {
+.rx-app .rx-page {
   min-height: calc(100vh - 76px);
   padding: 22px 34px 38px;
   background: linear-gradient(135deg, #fff, #f8fbfe);
 }
-.rx-page h1 {
+.rx-app .rx-page h1 {
   font-size: 40px;
   line-height: 1.05;
   margin: 0;
   color: #082655;
 }
-.rx-page p {
+.rx-app .rx-page p {
   color: #506886;
   line-height: 1.4;
 }
-.rx-title,
-.rx-work-title {
+.rx-app .rx-title,
+.rx-app .rx-work-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 22px;
 }
-.rx-title aside {
+.rx-app .rx-title aside {
   width: 390px;
   border-radius: 10px;
   background: #e8fbfa;
@@ -131,60 +131,60 @@
   font-size: 17px;
   font-weight: 600;
 }
-.rx-title aside svg {
+.rx-app .rx-title aside svg {
   width: 52px;
   height: 52px;
 }
-.rx-card {
+.rx-app .rx-card {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #fff;
   padding: 13px;
   box-shadow: 0 1px 3px #0c366111;
 }
-.rx-card h2 {
+.rx-app .rx-card h2 {
   font-size: 19px;
   margin: 0 0 9px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.rx-card h2 svg {
+.rx-app .rx-card h2 svg {
   width: 23px;
   color: #0878dc;
 }
-.rx-card > p {
+.rx-app .rx-card > p {
   margin: 6px 0;
 }
-.rx-home-grid {
+.rx-app .rx-home-grid {
   display: grid;
   grid-template-columns: 390px minmax(650px, 1fr) 420px;
   gap: 14px;
 }
-.rx-demo {
+.rx-app .rx-demo {
   grid-column: 1/3;
   min-height: 435px;
 }
-.rx-demo > p {
+.rx-app .rx-demo > p {
   float: right;
   margin-top: -34px;
 }
-.rx-demo-grid {
+.rx-app .rx-demo-grid {
   clear: both;
   display: grid;
   grid-template-columns: 1fr 1.25fr 0.9fr;
   gap: 18px;
   margin-top: 25px;
 }
-.rx-bin,
-.rx-chamber {
+.rx-app .rx-bin,
+.rx-app .rx-chamber {
   height: 315px;
   border-radius: 10px;
   background: #e8f6fd;
   padding: 12px;
   text-align: center;
 }
-.rx-bin > div {
+.rx-app .rx-bin > div {
   height: 180px;
   background: #fff;
   border-radius: 10px;
@@ -194,42 +194,42 @@
   align-items: center;
   gap: 30px;
 }
-.rx-chamber {
+.rx-app .rx-chamber {
   background: linear-gradient(145deg, #edf3f8, #bdc9d4);
   border: 10px solid #d4dde5;
 }
-.rx-chamber > .rx-molecule-set {
+.rx-app .rx-chamber > .rx-molecule-set {
   height: 90px;
 }
-.rx-equation {
+.rx-app .rx-equation {
   display: block;
   text-align: center;
   font-size: 31px;
   margin: 14px;
 }
-.rx-equation.boxed {
+.rx-app .rx-equation.boxed {
   padding: 20px;
   background: #eaf5fc;
   border-radius: 8px;
   margin: 8px 0 14px;
 }
-.rx-home-side {
+.rx-app .rx-home-side {
   grid-column: 3;
   grid-row: 1/3;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-.rx-home-side .rx-card:nth-child(2) {
+.rx-app .rx-home-side .rx-card:nth-child(2) {
   flex: 1;
 }
-.rx-legend {
+.rx-app .rx-legend {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 8px 0;
 }
-.rx-primary {
+.rx-app .rx-primary {
   border: 0;
   border-radius: 8px;
   background: linear-gradient(#168eec, #0769d5);
@@ -244,57 +244,57 @@
   gap: 12px;
   cursor: pointer;
 }
-.rx-primary:hover {
+.rx-app .rx-primary:hover {
   filter: brightness(1.06);
 }
-.rx-primary svg {
+.rx-app .rx-primary svg {
   width: 22px;
 }
-.rx-objectives ol {
+.rx-app .rx-objectives ol {
   padding-left: 25px;
 }
-.rx-objectives li {
+.rx-app .rx-objectives li {
   margin: 18px 0;
 }
-.rx-modes {
+.rx-app .rx-modes {
   grid-column: 2;
 }
-.rx-modes > div,
-.rx-modes {
+.rx-app .rx-modes > div,
+.rx-app .rx-modes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-.rx-modes h2 {
+.rx-app .rx-modes h2 {
   grid-column: 1/-1;
 }
-.rx-modes button {
+.rx-app .rx-modes button {
   border: 1px solid var(--line);
   border-radius: 9px;
   background: #fff;
   min-height: 150px;
   color: var(--navy);
 }
-.rx-modes button.active {
+.rx-app .rx-modes button.active {
   border: 2px solid #1684ed;
   background: #f6fbff;
 }
-.rx-modes button b,
-.rx-modes button small {
+.rx-app .rx-modes button b,
+.rx-app .rx-modes button small {
   display: block;
 }
-.rx-modes button small {
+.rx-app .rx-modes button small {
   margin-top: 8px;
   color: #4d6685;
 }
-.rx-molecule {
+.rx-app .rx-molecule {
   position: relative;
   display: inline-block;
   width: 84px;
   height: 58px;
   margin: 5px;
 }
-.rx-molecule i {
+.rx-app .rx-molecule i {
   --x: calc(var(--i) * 20px);
   position: absolute;
   width: 48px;
@@ -312,39 +312,39 @@
     inset -6px -7px 8px #0015,
     1px 3px 5px #0015;
 }
-.rx-molecule i.red {
+.rx-app .rx-molecule i.red {
   background: radial-gradient(circle at 28% 23%, #ff9e9e, #ef272e 35%, #8e0711);
 }
-.rx-molecule i.blue {
+.rx-app .rx-molecule i.blue {
   background: radial-gradient(circle at 28% 23%, #90c6ff, #176bc5 36%, #083775);
 }
-.rx-molecule i.black {
+.rx-app .rx-molecule i.black {
   background: radial-gradient(circle at 28% 23%, #b8bdc4, #2e333a 40%, #05080a);
 }
-.rx-molecule.small {
+.rx-app .rx-molecule.small {
   transform: scale(0.62);
   transform-origin: left center;
   width: 55px;
   margin-right: -8px;
 }
-.rx-molecule-set {
+.rx-app .rx-molecule-set {
   display: flex;
   flex-wrap: wrap;
   align-content: center;
   justify-content: center;
 }
-.rx-stepper {
+.rx-app .rx-stepper {
   display: flex;
   min-width: 650px;
   justify-content: flex-end;
 }
-.rx-stepper > div {
+.rx-app .rx-stepper > div {
   position: relative;
   width: 105px;
   text-align: center;
   color: #526d8b;
 }
-.rx-stepper > div:before {
+.rx-app .rx-stepper > div:before {
   content: "";
   position: absolute;
   top: 16px;
@@ -353,10 +353,10 @@
   height: 3px;
   background: #d5e0eb;
 }
-.rx-stepper > div:first-child:before {
+.rx-app .rx-stepper > div:first-child:before {
   display: none;
 }
-.rx-stepper i {
+.rx-app .rx-stepper i {
   position: relative;
   z-index: 1;
   width: 34px;
@@ -369,35 +369,35 @@
   font-style: normal;
   font-weight: 700;
 }
-.rx-stepper .done i {
+.rx-app .rx-stepper .done i {
   background: var(--teal);
   color: #fff;
 }
-.rx-stepper .done:before {
+.rx-app .rx-stepper .done:before {
   background: var(--teal);
 }
-.rx-stepper svg {
+.rx-app .rx-stepper svg {
   width: 18px;
 }
-.rx-stepper span {
+.rx-app .rx-stepper span {
   display: block;
   font-size: 11px;
   margin-top: 5px;
 }
-.rx-work-title h1 {
+.rx-app .rx-work-title h1 {
   font-size: 30px;
 }
-.rx-build-grid {
+.rx-app .rx-build-grid {
   display: grid;
   grid-template-columns: 440px minmax(520px, 1fr) 505px;
   gap: 16px;
 }
-.rx-build-grid > div {
+.rx-app .rx-build-grid > div {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-.rx-control {
+.rx-app .rx-control {
   border: 1px solid #dae5ef;
   border-radius: 9px;
   padding: 11px;
@@ -407,19 +407,19 @@
   gap: 7px;
   margin: 12px 0;
 }
-.rx-control b {
+.rx-app .rx-control b {
   font-size: 24px;
 }
-.rx-control b small {
+.rx-app .rx-control b small {
   display: block;
   font-size: 14px;
   color: #56708d;
   font-weight: 400;
 }
-.rx-control label {
+.rx-app .rx-control label {
   font-weight: 600;
 }
-.rx-control input {
+.rx-app .rx-control input {
   width: 70px;
   height: 45px;
   border: 1px solid #a9bfd4;
@@ -427,7 +427,7 @@
   text-align: center;
   font-weight: 700;
 }
-.rx-control button {
+.rx-app .rx-control button {
   height: 45px;
   border: 0;
   border-radius: 6px;
@@ -435,10 +435,10 @@
   color: #fff;
   font-size: 24px;
 }
-.rx-large-chamber {
+.rx-app .rx-large-chamber {
   height: 605px;
 }
-.rx-glass {
+.rx-app .rx-glass {
   min-height: 430px;
   border: 12px double #9db5c9;
   border-radius: 9px;
@@ -448,10 +448,10 @@
   padding: 20px;
   overflow: hidden;
 }
-.rx-large-chamber .rx-glass {
+.rx-app .rx-large-chamber .rx-glass {
   height: 540px;
 }
-.rx-equation-line {
+.rx-app .rx-equation-line {
   border: 1px solid var(--line);
   border-radius: 9px;
   padding: 12px;
@@ -459,67 +459,67 @@
   grid-template-columns: 35px 1fr;
   align-items: center;
 }
-.rx-equation-line strong {
+.rx-app .rx-equation-line strong {
   grid-column: 1/-1;
   text-align: center;
   font-size: 30px;
 }
-.rx-build-grid label,
-.rx-macro-top label,
-.rx-card > label {
+.rx-app .rx-build-grid label,
+.rx-app .rx-macro-top label,
+.rx-app .rx-card > label {
   display: block;
   font-weight: 600;
   margin: 13px 0;
 }
-.rx-build-grid select,
-.rx-build-grid input,
-.rx-macro-top input,
-.rx-card textarea,
-.rx-card > label input,
-.rx-answer input,
-.rx-answer select {
+.rx-app .rx-build-grid select,
+.rx-app .rx-build-grid input,
+.rx-app .rx-macro-top input,
+.rx-app .rx-card textarea,
+.rx-app .rx-card > label input,
+.rx-app .rx-answer input,
+.rx-app .rx-answer select {
   border: 1px solid #a8bdd2;
   border-radius: 6px;
   background: #fff;
   min-height: 41px;
   padding: 7px 10px;
 }
-.rx-build-grid label select,
-.rx-build-grid label input {
+.rx-app .rx-build-grid label select,
+.rx-app .rx-build-grid label input {
   display: block;
   width: 100%;
   margin-top: 5px;
 }
-.rx-card table {
+.rx-app .rx-card table {
   width: 100%;
   border-collapse: collapse;
 }
-.rx-card th,
-.rx-card td {
+.rx-app .rx-card th,
+.rx-app .rx-card td {
   border: 1px solid #ccdbe8;
   padding: 8px;
   text-align: left;
 }
-.rx-with-rail {
+.rx-app .rx-with-rail {
   padding: 0;
   display: grid;
   grid-template-columns: 290px 1fr;
 }
-.rx-rail {
+.rx-app .rx-rail {
   border-right: 1px solid #ccdbe8;
   background: #fbfdff;
   padding: 24px 18px;
 }
-.rx-rail h2 {
+.rx-app .rx-rail h2 {
   font-size: 23px;
 }
-.rx-rail > span {
+.rx-app .rx-rail > span {
   height: 60px;
   display: flex;
   align-items: center;
   gap: 14px;
 }
-.rx-rail > span i {
+.rx-app .rx-rail > span i {
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -528,15 +528,15 @@
   place-items: center;
   font-style: normal;
 }
-.rx-rail > span.active {
+.rx-app .rx-rail > span.active {
   color: #075fd1;
   font-weight: 700;
 }
-.rx-rail > span.active i {
+.rx-app .rx-rail > span.active i {
   background: #0871dd;
   color: #fff;
 }
-.rx-rail button {
+.rx-app .rx-rail button {
   width: 100%;
   height: 55px;
   border: 0;
@@ -547,21 +547,21 @@
   gap: 13px;
   padding: 0 13px;
 }
-.rx-rail button.active {
+.rx-app .rx-rail button.active {
   background: #1684e8;
   color: #fff;
   border-radius: 7px;
 }
-.rx-outcome,
-.rx-report {
+.rx-app .rx-outcome,
+.rx-app .rx-report {
   padding: 22px;
 }
-.rx-result-grid {
+.rx-app .rx-result-grid {
   display: grid;
   grid-template-columns: minmax(650px, 1fr) 390px;
   gap: 20px;
 }
-.rx-summary {
+.rx-app .rx-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: #eef5fc;
@@ -569,34 +569,34 @@
   padding: 14px 20px;
   margin-bottom: 12px;
 }
-.rx-summary b:first-child {
+.rx-app .rx-summary b:first-child {
   border-right: 1px solid #b9cde0;
 }
-.rx-summary strong {
+.rx-app .rx-summary strong {
   display: block;
   font-size: 24px;
   margin-top: 8px;
 }
-.rx-after {
+.rx-app .rx-after {
   height: 510px;
   grid-template-columns: 1.5fr 1fr;
   background: linear-gradient(145deg, #144d6e, #082b46);
   border-color: #4b8ab0;
   color: #fff;
 }
-.rx-after > section {
+.rx-app .rx-after > section {
   border: 3px solid #52e2c1;
   border-radius: 10px;
   text-align: center;
   padding: 10px;
 }
-.rx-after > section + section {
+.rx-app .rx-after > section + section {
   border-color: #ffc443;
 }
-.rx-after .rx-molecule-set {
+.rx-app .rx-after .rx-molecule-set {
   min-height: 300px;
 }
-.rx-yieldbar {
+.rx-app .rx-yieldbar {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 12px;
@@ -605,57 +605,57 @@
   padding: 10px;
   margin: 10px 0;
 }
-.rx-yieldbar i {
+.rx-app .rx-yieldbar i {
   height: 18px;
   background: #dbe5ee;
   border-radius: 10px;
 }
-.rx-yieldbar i b {
+.rx-app .rx-yieldbar i b {
   display: block;
   height: 100%;
   background: #0bb77c;
   border-radius: 10px;
 }
-.rx-success {
+.rx-app .rx-success {
   background: #e6f8ed;
   border-radius: 8px;
   color: #116b35;
   padding: 13px;
   margin-top: 10px;
 }
-.rx-success svg {
+.rx-app .rx-success svg {
   vertical-align: middle;
   margin-right: 8px;
 }
-.rx-error {
+.rx-app .rx-error {
   background: #fff0f0;
   color: #9d2430;
   padding: 13px;
   margin-top: 10px;
 }
-.rx-macro-top {
+.rx-app .rx-macro-top {
   display: grid;
   grid-template-columns: 1fr 330px;
   gap: 16px;
   margin-bottom: 14px;
 }
-.rx-macro-top .rx-card:first-child {
+.rx-app .rx-macro-top .rx-card:first-child {
   display: grid;
   place-items: center;
 }
-.rx-macro-top input {
+.rx-app .rx-macro-top input {
   width: 130px;
   margin-left: 12px;
 }
-.rx-beakers > div {
+.rx-app .rx-beakers > div {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 15px;
 }
-.rx-beakers section {
+.rx-app .rx-beakers section {
   text-align: center;
 }
-.rx-vessel {
+.rx-app .rx-vessel {
   height: 200px;
   border: 2px solid #9fb2c3;
   border-radius: 8px 8px 32px 32px;
@@ -665,20 +665,20 @@
   overflow: hidden;
   margin: 10px 0;
 }
-.rx-vessel .rx-molecule {
+.rx-app .rx-vessel .rx-molecule {
   transform: scale(0.55);
   margin: -8px -9px;
 }
-.rx-macro-bottom {
+.rx-app .rx-macro-bottom {
   display: grid;
   grid-template-columns: 1fr 330px 300px;
   gap: 14px;
   margin-top: 14px;
 }
-.rx-macro-bottom ol {
+.rx-app .rx-macro-bottom ol {
   line-height: 2;
 }
-.rx-percent {
+.rx-app .rx-percent {
   display: block;
   font-size: 34px;
   text-align: center;
@@ -686,47 +686,47 @@
   padding: 12px;
   border-radius: 8px;
 }
-.rx-next {
+.rx-app .rx-next {
   margin: 12px 0 0 auto;
   min-width: 240px;
 }
-.rx-challenge-grid {
+.rx-app .rx-challenge-grid {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   gap: 18px;
 }
-.rx-challenge-grid .rx-glass {
+.rx-app .rx-challenge-grid .rx-glass {
   min-height: 390px;
 }
-.rx-answer {
+.rx-app .rx-answer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
-.rx-answer label {
+.rx-app .rx-answer label {
   display: grid;
   grid-template-columns: 1fr 180px;
   align-items: center;
   font-weight: 700;
 }
-.rx-card.correct {
+.rx-app .rx-card.correct {
   border-color: #0fc9ae;
 }
-.rx-batches {
+.rx-app .rx-batches {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
-.rx-batches > span {
+.rx-app .rx-batches > span {
   border: 2px dashed #28aee9;
   border-radius: 8px;
   padding: 10px;
   text-align: center;
 }
-.rx-batches .rx-molecule {
+.rx-app .rx-batches .rx-molecule {
   display: block;
 }
-.rx-complete {
+.rx-app .rx-complete {
   background: linear-gradient(90deg, #e0f9e9, #f2fcf7);
   border: 1px solid #a9e2c2;
   border-radius: 9px;
@@ -734,7 +734,7 @@
   display: grid;
   grid-template-columns: 60px 1fr;
 }
-.rx-complete > svg {
+.rx-app .rx-complete > svg {
   grid-row: 1/3;
   width: 45px;
   height: 45px;
@@ -743,322 +743,322 @@
   color: white;
   padding: 9px;
 }
-.rx-complete b {
+.rx-app .rx-complete b {
   font-size: 23px;
 }
-.rx-stats {
+.rx-app .rx-stats {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin: 12px 0;
 }
-.rx-stats .rx-card {
+.rx-app .rx-stats .rx-card {
   display: flex;
   align-items: center;
   gap: 15px;
 }
-.rx-stats svg {
+.rx-app .rx-stats svg {
   width: 38px;
   height: 38px;
   color: #1486e2;
 }
-.rx-stats span,
-.rx-stats b {
+.rx-app .rx-stats span,
+.rx-app .rx-stats b {
   display: block;
 }
-.rx-stats b {
+.rx-app .rx-stats b {
   font-size: 23px;
 }
-.rx-report-grid {
+.rx-app .rx-report-grid {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: 12px;
   margin-bottom: 12px;
 }
-.rx-report-grid textarea {
+.rx-app .rx-report-grid textarea {
   width: 100%;
   height: 56px;
   resize: vertical;
 }
-.rx-snapshots {
+.rx-app .rx-snapshots {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
-.rx-snapshots > span {
+.rx-app .rx-snapshots > span {
   border-right: 1px solid #d5e1ec;
   padding: 8px;
 }
-.rx-snapshots .rx-molecule {
+.rx-app .rx-snapshots .rx-molecule {
   transform: scale(0.45);
   margin: -12px;
 }
-.rx-report fieldset {
+.rx-app .rx-report fieldset {
   border: 0;
   padding: 4px;
 }
-.rx-report fieldset button {
+.rx-app .rx-report fieldset button {
   border: 1px solid #b7cce0;
   background: #fff;
   padding: 5px 8px;
   margin: 3px;
   border-radius: 5px;
 }
-.rx-report fieldset button.active {
+.rx-app .rx-report fieldset button.active {
   background: #dff7e7;
   border-color: #51bd75;
 }
-.rx-report-grid.lower {
+.rx-app .rx-report-grid.lower {
   grid-template-columns: 1.25fr 1fr;
 }
 @media (max-width: 1200px) {
-  .rx-header {
+  .rx-app .rx-header {
     padding: 0 16px;
   }
-  .rx-brand {
+  .rx-app .rx-brand {
     min-width: 260px;
   }
-  .rx-header nav button {
+  .rx-app .rx-header nav button {
     padding: 0 12px;
   }
-  .rx-header nav button {
+  .rx-app .rx-header nav button {
     font-size: 0;
   }
-  .rx-header nav button svg {
+  .rx-app .rx-header nav button svg {
     width: 23px;
   }
-  .rx-progress {
+  .rx-app .rx-progress {
     width: 230px;
   }
-  .rx-page {
+  .rx-app .rx-page {
     padding: 18px;
   }
-  .rx-home-grid {
+  .rx-app .rx-home-grid {
     grid-template-columns: 1fr 340px;
   }
-  .rx-demo {
+  .rx-app .rx-demo {
     grid-column: 1;
   }
-  .rx-home-side {
+  .rx-app .rx-home-side {
     grid-column: 2;
     grid-row: 1/3;
   }
-  .rx-objectives {
+  .rx-app .rx-objectives {
     grid-column: 1;
   }
-  .rx-modes {
+  .rx-app .rx-modes {
     grid-column: 1;
   }
-  .rx-build-grid {
+  .rx-app .rx-build-grid {
     grid-template-columns: 330px minmax(450px, 1fr);
   }
-  .rx-build-grid > div:last-child {
+  .rx-app .rx-build-grid > div:last-child {
     grid-column: 1/-1;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
   }
-  .rx-build-grid > div:last-child > .rx-primary {
+  .rx-app .rx-build-grid > div:last-child > .rx-primary {
     grid-column: 1/-1;
   }
-  .rx-stepper {
+  .rx-app .rx-stepper {
     min-width: 500px;
   }
-  .rx-with-rail {
+  .rx-app .rx-with-rail {
     grid-template-columns: 210px 1fr;
   }
-  .rx-result-grid {
+  .rx-app .rx-result-grid {
     grid-template-columns: 1fr 330px;
   }
-  .rx-after {
+  .rx-app .rx-after {
     height: 480px;
   }
-  .rx-beakers > div {
+  .rx-app .rx-beakers > div {
     overflow-x: auto;
   }
-  .rx-beakers section {
+  .rx-app .rx-beakers section {
     min-width: 160px;
   }
-  .rx-macro-bottom {
+  .rx-app .rx-macro-bottom {
     grid-template-columns: 1fr 300px;
   }
-  .rx-macro-bottom > .rx-card:last-child {
+  .rx-app .rx-macro-bottom > .rx-card:last-child {
     grid-column: 1/-1;
   }
-  .rx-stats {
+  .rx-app .rx-stats {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 @media (max-width: 760px) {
-  .rx-header {
+  .rx-app .rx-header {
     height: 66px;
   }
-  .rx-brand {
+  .rx-app .rx-brand {
     min-width: 0;
   }
-  .rx-brand b {
+  .rx-app .rx-brand b {
     font-size: 16px;
   }
-  .rx-brand small,
-  .rx-header nav,
-  .rx-progress small {
+  .rx-app .rx-brand small,
+  .rx-app .rx-header nav,
+  .rx-app .rx-progress small {
     display: none;
   }
-  .rx-progress {
+  .rx-app .rx-progress {
     width: 120px;
     font-size: 11px;
   }
-  .rx-page {
+  .rx-app .rx-page {
     min-height: calc(100vh - 66px);
     padding: 12px;
   }
-  .rx-page h1 {
+  .rx-app .rx-page h1 {
     font-size: 26px;
   }
-  .rx-title,
-  .rx-work-title {
+  .rx-app .rx-title,
+  .rx-app .rx-work-title {
     display: block;
   }
-  .rx-title aside {
+  .rx-app .rx-title aside {
     width: 100%;
     margin-top: 12px;
   }
-  .rx-home-grid,
-  .rx-build-grid,
-  .rx-result-grid,
-  .rx-macro-top,
-  .rx-macro-bottom,
-  .rx-challenge-grid,
-  .rx-report-grid,
-  .rx-report-grid.lower {
+  .rx-app .rx-home-grid,
+  .rx-app .rx-build-grid,
+  .rx-app .rx-result-grid,
+  .rx-app .rx-macro-top,
+  .rx-app .rx-macro-bottom,
+  .rx-app .rx-challenge-grid,
+  .rx-app .rx-report-grid,
+  .rx-app .rx-report-grid.lower {
     display: block;
   }
-  .rx-home-grid > * {
+  .rx-app .rx-home-grid > * {
     margin-bottom: 12px;
   }
-  .rx-demo-grid {
+  .rx-app .rx-demo-grid {
     display: block;
   }
-  .rx-bin,
-  .rx-chamber {
+  .rx-app .rx-bin,
+  .rx-app .rx-chamber {
     height: auto;
     min-height: 210px;
     margin: 10px 0;
   }
-  .rx-demo > p {
+  .rx-app .rx-demo > p {
     float: none;
     margin: 0;
   }
-  .rx-home-side {
+  .rx-app .rx-home-side {
     display: block;
   }
-  .rx-home-side > * {
+  .rx-app .rx-home-side > * {
     margin-bottom: 10px;
   }
-  .rx-modes {
+  .rx-app .rx-modes {
     display: block;
   }
-  .rx-modes button {
+  .rx-app .rx-modes button {
     width: 100%;
     margin: 6px 0;
   }
-  .rx-stepper {
+  .rx-app .rx-stepper {
     min-width: 650px;
     justify-content: flex-start;
   }
-  .rx-work-title {
+  .rx-app .rx-work-title {
     overflow-x: auto;
   }
-  .rx-build-grid > div,
-  .rx-result-grid > div,
-  .rx-macro-top > *,
-  .rx-macro-bottom > *,
-  .rx-challenge-grid > div {
+  .rx-app .rx-build-grid > div,
+  .rx-app .rx-result-grid > div,
+  .rx-app .rx-macro-top > *,
+  .rx-app .rx-macro-bottom > *,
+  .rx-app .rx-challenge-grid > div {
     margin-bottom: 12px;
   }
-  .rx-build-grid > div:last-child {
+  .rx-app .rx-build-grid > div:last-child {
     display: flex;
   }
-  .rx-control {
+  .rx-app .rx-control {
     grid-template-columns: 65px 1fr 62px 42px 42px;
     padding: 6px;
   }
-  .rx-control .rx-molecule {
+  .rx-app .rx-control .rx-molecule {
     transform: scale(0.7);
     transform-origin: left;
   }
-  .rx-large-chamber {
+  .rx-app .rx-large-chamber {
     height: auto;
   }
-  .rx-large-chamber .rx-glass,
-  .rx-glass {
+  .rx-app .rx-large-chamber .rx-glass,
+  .rx-app .rx-glass {
     height: auto;
     min-height: 360px;
   }
-  .rx-with-rail {
+  .rx-app .rx-with-rail {
     display: block;
   }
-  .rx-rail {
+  .rx-app .rx-rail {
     display: none;
   }
-  .rx-outcome,
-  .rx-report {
+  .rx-app .rx-outcome,
+  .rx-app .rx-report {
     padding: 12px;
   }
-  .rx-after {
+  .rx-app .rx-after {
     grid-template-columns: 1fr;
     padding: 10px;
   }
-  .rx-after .rx-molecule-set {
+  .rx-app .rx-after .rx-molecule-set {
     min-height: 160px;
   }
-  .rx-yieldbar {
+  .rx-app .rx-yieldbar {
     grid-template-columns: 1fr;
   }
-  .rx-beakers > div {
+  .rx-app .rx-beakers > div {
     display: flex;
     overflow-x: auto;
   }
-  .rx-macro-bottom .rx-card {
+  .rx-app .rx-macro-bottom .rx-card {
     margin-bottom: 12px;
   }
-  .rx-answer {
+  .rx-app .rx-answer {
     display: block;
   }
-  .rx-answer label {
+  .rx-app .rx-answer label {
     display: grid;
     margin: 8px 0;
   }
-  .rx-batches {
+  .rx-app .rx-batches {
     grid-template-columns: 1fr 1fr;
   }
-  .rx-stats {
+  .rx-app .rx-stats {
     grid-template-columns: 1fr 1fr;
   }
-  .rx-stats .rx-card {
+  .rx-app .rx-stats .rx-card {
     margin: 3px;
   }
-  .rx-snapshots {
+  .rx-app .rx-snapshots {
     display: block;
   }
-  .rx-report-grid > .rx-card {
+  .rx-app .rx-report-grid > .rx-card {
     margin-bottom: 12px;
   }
-  .rx-equation {
+  .rx-app .rx-equation {
     font-size: 23px;
   }
-  .rx-next {
+  .rx-app .rx-next {
     margin: 12px 0;
     width: 100%;
   }
 }
 @media print {
-  .rx-header,
-  .rx-next {
+  .rx-app .rx-header,
+  .rx-app .rx-next {
     display: none;
   }
-  .rx-page {
+  .rx-app .rx-page {
     padding: 0;
   }
-  .rx-report {
+  .rx-app .rx-report {
     padding: 0;
   }
 }

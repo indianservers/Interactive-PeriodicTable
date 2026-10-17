@@ -1,3 +1,4 @@
+import {cleanHash} from "../../../utils/studioRouting.js";
 import '../utilityLabs.css';
 import { useEffect, useRef, useState } from 'react';
 import { savePharmaReport, downloadPharmaJson } from '../labReports.js';
@@ -35,9 +36,6 @@ const labPages = [
   ["visuals/pharma/dosage", "Dosage Forms"],
   ["visuals/pharma/qc", "Assay & QC"],
   ["visuals/pharma/buffers", "Buffers"],
-  ["visuals/pharma/dosage", "Dosage Designer"],
-  ["visuals/pharma/qc", "QC Calculations"],
-  ["visuals/pharma/buffers", "Buffer Formulator"],
 ];
 
 export default function PharmaLabShell({
@@ -60,7 +58,7 @@ export default function PharmaLabShell({
   useEffect(() => {const onKey=e=>{if(e.key==='Escape'){setSettingsOpen(false);setQuery('')}};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[setQuery]);
   const appMatches=query?.trim()?searchGlobal(query).filter(item=>item.id):[];
   const saveReport=()=>{try{savePharmaReport();setNotice('Report saved on this device and downloaded.')}catch(error){setNotice('Report could not be saved: '+error.message)}};
-  const route = window.location.hash.replace(/^#\/?/, "").replace(/\/$/, "");
+  const route = cleanHash(window.location.hash);
   const evidenceLab = route.startsWith('visuals/pharma/') && remainingPublishedLabs[route.split('/').at(-1)] ? route.split('/').at(-1) : null;
   const showingEvidence = Boolean(evidenceLab && evidenceMode === 'published');
   const showingComparison = Boolean(evidenceLab && evidenceMode === 'comparison');

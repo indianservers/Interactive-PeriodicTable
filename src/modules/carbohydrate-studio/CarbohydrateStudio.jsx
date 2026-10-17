@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Atom, BookOpen, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, FlaskConical,
+  Atom, Dna, BookOpen, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, FlaskConical,
   Link2, Maximize2, Menu, MousePointer2, Pause, Play, RotateCcw, Search, Settings2,
   Shapes, X, ZoomIn,
 } from 'lucide-react';
@@ -19,7 +19,7 @@ function IconButton({ label, children, onClick, className = '' }) {
 
 function StudioHeader({ route, navigate, openLibrary, openInspector }) {
   return <header className="cs-header">
-    <div className="cs-brand"><div className="cs-brand-mark"><Atom /></div><div><h1>Carbohydrate Structure Studio</h1><p>Visualize · Explore · Build · Understand</p></div></div>
+    <div className="cs-brand"><div className="cs-brand-mark"><Dna /></div><div><h1>Carbohydrate Structure Studio</h1><p>Visualize · Explore · Build · Understand</p></div></div>
     <button className="cs-mobile-trigger" onClick={openLibrary}><Menu /> Compounds</button>
     <nav aria-label="Studio pages">{STUDIO_ROUTES.map(([label, path]) => <button key={path} className={route === path ? 'is-active' : ''} onClick={() => navigate(path)}>{label}</button>)}</nav>
     <div className="cs-header-actions"><IconButton label="Search compounds" onClick={openLibrary}><Search /></IconButton><IconButton label="Open inspector" onClick={openInspector}><Settings2 /></IconButton><span className="cs-avatar">CS</span></div>
@@ -123,11 +123,11 @@ function StructurePage({ selectedName, setSelectedName, inspectorOpen, setInspec
   const [hydrogens, setHydrogens] = useState(true);
   const [labels, setLabels] = useState(false);
   const [carbonLabels, setCarbonLabels] = useState(true);
-  const [selectedCarbon, setSelectedCarbon] = useState(1);
+  const [selectedCarbon, setSelectedCarbon] = useState(null);
   const [builder, setBuilder] = useState({ donor:'D-Glucose', donorCarbon:'C1 (α)', acceptor:'D-Fructose', acceptorCarbon:'C2', linkage:'α(1→2)β' });
   const [buildResult, setBuildResult] = useState(null);
   useEffect(() => { if (!playing) return; const timer = setInterval(() => setProgress(p => p >= 100 ? 0 : p + 1), 55); return () => clearInterval(timer); }, [playing]);
-  useEffect(() => { setSelectedCarbon(1); }, [selectedName]);
+  useEffect(() => { setSelectedCarbon(null); }, [selectedName]);
   const buildBond = () => {
     const product = BUILT_DISACCHARIDES[`${builder.donor}|${builder.acceptor}|${builder.linkage}`];
     if (product) { setSelectedName(product); setBuildResult({ name: product, detail: `${builder.donor} ${builder.linkage} ${builder.acceptor} · validated product structure loaded` }); }

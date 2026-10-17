@@ -1,3 +1,5 @@
+import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
+import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import ApparatusIllustration from './ApparatusIllustration.jsx';
 import { completeLab } from "../../utils/labNavigation.js";
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
@@ -786,7 +788,7 @@ export default function PolarographyConcentrationLab() {
       setStep(n);
       const u = new URL(location.href);
       u.searchParams.set("screen", STEPS[n][0]);
-      history.replaceState({}, "", u);
+      pushLabScreen(u);
       scrollTo(0, 0);
     },
     reset = () => {
@@ -801,9 +803,10 @@ export default function PolarographyConcentrationLab() {
       setAccepted(false);
       go(0);
     };
+  useLabRouteSync(STEPS.map(item=>item[0]),setStep,true);
   return (
     <div className={`pg-app screen-${STEPS[step][0]}`}>
-      <Header {...{ step, go, reset }} />
+      <Header {...{ step, go, reset }} /><LabScreenNavigation ids={STEPS.map(item=>item[0])} active={step}/>
       {step === 0 && <Home go={go} />}{" "}
       {step === 1 && (
         <Setup {...{ selected, setSelected, validated, setValidated }} />

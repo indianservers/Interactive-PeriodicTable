@@ -1,3 +1,5 @@
+import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
+import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import ApparatusIllustration from './ApparatusIllustration.jsx';
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { useMemo, useState } from "react";
@@ -782,12 +784,13 @@ export default function SoilPhConductivityLab() {
       setScreen(s);
       const u = new URL(location.href);
       u.searchParams.set("screen", s);
-      history.replaceState(null, "", u);
+      pushLabScreen(u);
       scrollTo(0, 0);
     };
+  useLabRouteSync(ids,setScreen,false);
   return (
     <div className="soil-app">
-      <Header step={step} go={go} />
+      <Header step={step} go={go} /><LabScreenNavigation ids={ids} active={ids.indexOf(screen)}/>
       {step === 0 ? (
         <Home go={go} />
       ) : step === 1 ? (

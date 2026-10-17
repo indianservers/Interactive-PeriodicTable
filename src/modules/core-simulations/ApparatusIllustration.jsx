@@ -1,2 +1,3 @@
 import './apparatusIllustration.css';
-export default function ApparatusIllustration({kind,alt}){return <figure className="lab-apparatus-illustration"><img src={'/assets/virtual-labs/apparatus/'+kind+'.png'} alt={alt} loading="lazy"/><figcaption>Apparatus overview · open the experiment to adjust controls and take measurements.</figcaption></figure>}
+import LabApparatusScene from './LabApparatusScene.jsx';
+export default function ApparatusIllustration({kind,alt}){return <figure className="lab-apparatus-illustration"><LabApparatusScene kind={kind==='soil-analysis-bench'?'soil-bench':kind} label={alt}/><figcaption>Interactive procedural 3D apparatus.</figcaption></figure>}

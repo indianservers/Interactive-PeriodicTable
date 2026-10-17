@@ -1,0 +1,87 @@
+.lab-screen-menu {
+  position: fixed;
+  bottom: 82px;
+  right: 124px;
+  z-index: 65;
+  font:
+    12px/1.4 "Segoe UI",
+    sans-serif;
+  color: #def1ff;
+}
+.lab-screen-menu > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+  border: 1px solid #397b9d;
+  border-radius: 7px;
+  background: #082c43ed;
+  padding: 8px 12px;
+  box-shadow: 0 3px 14px #00182744;
+}
+.lab-screen-menu summary > b {
+  font-size: 10px;
+  color: #72d9ff;
+}
+.lab-screen-menu summary:after {
+  content: "⌃";
+  color: #78c7ef;
+}
+.lab-screen-menu[open] > summary {
+  background: #12486b;
+}
+.lab-screen-menu nav {
+  position: absolute;
+  right: 0;
+  bottom: 43px;
+  min-width: 245px;
+  max-height: 65vh;
+  overflow: auto;
+  background: #071f31;
+  border: 1px solid #367c9f;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 12px 35px #0007;
+}
+.lab-screen-menu nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #cce4f6;
+  padding: 10px;
+  border-radius: 5px;
+}
+.lab-screen-menu nav a:hover,
+.lab-screen-menu nav a[aria-current="page"] {
+  background: #115b85;
+  color: #fff;
+}
+.lab-screen-menu nav a > b {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border: 1px solid #3f809c;
+  border-radius: 50%;
+  font-size: 11px;
+}
+.lab-screen-menu nav a > span {
+  text-transform: capitalize;
+}
+.lab-screen-menu a:focus-visible,
+.lab-screen-menu summary:focus-visible {
+  outline: 2px solid #52cdff;
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .lab-screen-menu {
+    right: 8px;
+    bottom: 178px;
+  }
+  .lab-screen-menu > summary {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}

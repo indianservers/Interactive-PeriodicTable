@@ -1,3 +1,5 @@
+import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
+import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { completeLab } from "../../utils/labNavigation.js";
 import { useMemo, useState } from "react";
@@ -57,7 +59,7 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
     setStep(n);
     const u = new URL(location.href);
     u.searchParams.set("screen", STEPS[n][0]);
-    history.replaceState({}, "", u);
+    pushLabScreen(u);
     scrollTo(0, 0);
   };
   const reset = () => {
@@ -78,8 +80,9 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
     URL.revokeObjectURL(u);
   };
 
+  useLabRouteSync(STEPS.map(item=>item[0]),setStep,true);
   return (
-    <div className="ap-app">
+    <div className="ap-app"><LabScreenNavigation ids={STEPS.map(item=>item[0])} active={step}/>
       <header className="ap-head">
         <button onClick={() => go(step - 1)} aria-label="Previous screen"><ArrowLeft /></button>
         <span>Virtual Labs　/　{spec.subject}　/　{spec.paper}</span>

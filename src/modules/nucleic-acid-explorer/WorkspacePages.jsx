@@ -28,6 +28,7 @@ import ReplicationForkScene from './ReplicationForkScene.jsx';
 
 import structureCatalog from "./structureCatalog.json";
 import { navigateStudio } from "../../utils/studioRouting.js";
+const previewIds=new Set(["143D", "1A9N", "1AAY", "1ANA", "1BNA", "1D66", "1DCW", "1EHZ", "1EYG", "1F7U", "1F84", "1GID", "1GQU", "1HCR", "1HR2", "1IHA", "1KF1", "1KX5", "1LMB", "1M5K", "1RTD", "1S72", "1T7P", "1TAQ", "1TRA", "1TUP", "1URN", "1Y26", "1ZNA", "2GDI", "2HNH", "2KOC", "2OEU", "2OWO", "3B39", "3BEP", "3IRW", "3IVK", "4ESV", "4OCB", "4OO8", "4TNA", "4UN3", "5B2O", "5F9R", "6ALH", "6O0X", "7K00"]);
 export const STRUCTURES = structureCatalog;
 
 const localSource = (s) =>
@@ -128,6 +129,8 @@ function StructureInspector({ structure }) {
 export function MoleculesPage() {
   const [query, setQuery] = useState(() => new URLSearchParams(window.location.search).get("q") || "");
   const [type, setType] = useState("All");
+  const [organism,setOrganism]=useState("All"),[method,setMethod]=useState("All"),[resolution,setResolution]=useState(""),[page,setPage]=useState(1);
+  useEffect(()=>setPage(1),[query,type,organism,method,resolution]);
   const [selected, setSelected] = useState(() => {
     const requested = new URLSearchParams(window.location.search).get("pdb")?.toUpperCase();
     return STRUCTURES.find((structure) => structure.id === requested) || STRUCTURES[0];
@@ -136,7 +139,7 @@ export function MoleculesPage() {
   const [error, setError] = useState("");
   const results = STRUCTURES.filter(
     (s) =>
-      (type === "All" || s.category === type || s.type.includes(type)) &&
+      (type === "All" || s.category === type || s.type.includes(type)) && (organism==="All"||s.organism===organism)&&(method==="All"||s.method===method)&&(!resolution||parseFloat(s.resolution)<=Number(resolution))&&
       `${s.id} ${s.name} ${s.organism}`
         .toLowerCase()
         .includes(query.toLowerCase()),
@@ -188,7 +191,7 @@ export function MoleculesPage() {
             placeholder="PDB ID, title, organism…"
           />
         </label>
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <select aria-label="Molecule type" value={type} onChange={(e) => setType(e.target.value)}>
           <option>All</option>
           <option>DNA</option>
           <option>RNA</option>
@@ -199,10 +202,13 @@ export function MoleculesPage() {
           <option>Ribosome</option>
           <option>DNA-binding protein</option>
         </select>
+        <select aria-label="Structure organism" value={organism} onChange={e=>setOrganism(e.target.value)}><option value="All">All organisms</option>{[...new Set(STRUCTURES.map(s=>s.organism))].sort().map(x=><option key={x}>{x}</option>)}</select>
+        <select aria-label="Experimental method" value={method} onChange={e=>setMethod(e.target.value)}><option value="All">All methods</option>{[...new Set(STRUCTURES.map(s=>s.method))].sort().map(x=><option key={x}>{x}</option>)}</select>
+        <select aria-label="Maximum structure resolution" value={resolution} onChange={e=>setResolution(e.target.value)}><option value="">Any resolution</option><option value="1.5">≤ 1.5 Å</option><option value="2">≤ 2 Å</option><option value="3">≤ 3 Å</option></select>
         <Button
           onClick={() => {
             setQuery("");
-            setType("All");
+            setType("All");setOrganism("All");setMethod("All");setResolution("");
           }}
         >
           Reset
@@ -217,14 +223,14 @@ export function MoleculesPage() {
       <div className="nae-catalogue-layout">
         <Panel className="nae-data-table">
           <div className="nae-table-row header">
-            <span>PDB ID</span>
+            <span>Preview</span><span>PDB ID</span>
             <span>Name / description</span>
             <span>Organism</span>
             <span>Method</span>
             <span>Resolution</span>
             <span>Chains</span>
           </div>
-          {results.map((s) => (
+          {results.slice((page-1)*8,page*8).map((s) => (
             <button
               key={s.id}
               className={`nae-table-row ${selected.id === s.id ? "selected" : ""}`}
@@ -233,9 +239,9 @@ export function MoleculesPage() {
                 setUpload(null);
               }}
             >
-              <strong>{s.id}</strong>
+              <span className="nae-structure-thumb">{previewIds.has(s.id)?<img src={`/assets/nucleic-acid/previews/${s.id}.jpeg`} alt={`${s.id} coordinate rendering`} loading="lazy"/>:<span>{s.type}</span>}</span><strong>{s.id}</strong>
               <span>
-                <b>{s.name}</b>
+                <b title={s.name}>{s.name}</b>
                 <small>
                   {s.type} · {s.count}
                 </small>
@@ -253,6 +259,7 @@ export function MoleculesPage() {
               <p>Change the search term or reset filters.</p>
             </div>
           )}
+          <div className="nae-catalogue-pagination"><span>{results.length?`${(page-1)*8+1}–${Math.min(page*8,results.length)} of ${results.length}`:'0 matches'}</span><Button aria-label="Previous structure page" disabled={page===1} onClick={()=>setPage(p=>p-1)}><ChevronLeft/></Button><span>{page} / {Math.max(1,Math.ceil(results.length/8))}</span><Button aria-label="Next structure page" disabled={page>=Math.ceil(results.length/8)} onClick={()=>setPage(p=>p+1)}><ChevronRight/></Button></div>
         </Panel>
         <Panel className="nae-catalogue-view">
           <div className="nae-view-title">

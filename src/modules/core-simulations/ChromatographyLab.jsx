@@ -1,3 +1,5 @@
+import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
+import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import { completeLab } from "../../utils/labNavigation.js";
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 const assessmentQuestions = [{"prompt": "What does a more polar solvent do on silica?", "correct": 0, "options": [{"id": 0, "label": "Increases elution strength"}, {"id": 1, "label": "Always decreases elution strength"}]}, {"prompt": "What does a narrow loading band improve?", "correct": 0, "options": [{"id": 0, "label": "Resolution"}, {"id": 1, "label": "The atomic mass of the sample"}]}, {"prompt": "When should fractions be pooled?", "correct": 0, "options": [{"id": 0, "label": "When they contain the same sufficiently pure component"}, {"id": 1, "label": "Whenever their volumes are equal"}]}];
@@ -721,7 +723,7 @@ function ChromatographyLab({preparation,clearPreparation}) {
     setStep(n);
     const u = new URL(location.href);
     u.searchParams.set("screen", STEPS[n][0]);
-    history.replaceState({}, "", u);
+    pushLabScreen(u);
     scrollTo(0, 0);
   };
   const reset = () => {
@@ -737,9 +739,10 @@ function ChromatographyLab({preparation,clearPreparation}) {
     setAccepted(false);
     go(0);
   };
+  useLabRouteSync(STEPS.map(item=>item[0]),setStep,true);
   return (
     <div className="ch-app">
-      <Header step={step} go={go} reset={reset} />
+      <Header step={step} go={go} reset={reset} /><LabScreenNavigation ids={STEPS.map(item=>item[0])} active={step}/>
       {step === 0 && <ChromatographyHomeBenchmark go={go} />}{" "}
       {step === 1 && (
         <ChromatographyTlcBenchmark

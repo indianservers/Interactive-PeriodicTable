@@ -1,3 +1,5 @@
+import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
+import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import AromaticApparatus from './AromaticApparatus.jsx';
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { completeLab } from "../../utils/labNavigation.js";
@@ -72,7 +74,7 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination", onN
     setStep(n);
     const u = new URL(location.href);
     u.searchParams.set("screen", STEPS[n][0]);
-    history.replaceState({}, "", u);
+    pushLabScreen(u);
     scrollTo(0, 0);
   };
   const reset = () => {
@@ -98,9 +100,10 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination", onN
     URL.revokeObjectURL(u);
   };
 
+  useLabRouteSync(STEPS.map(item=>item[0]),setStep,true);
   return (
     <div className="ap-app">
-      <Header title={spec.title} step={step} go={go} reset={reset} />
+      <Header title={spec.title} step={step} go={go} reset={reset} /><LabScreenNavigation ids={STEPS.map(item=>item[0])} active={step}/>
       <nav className="ap-stages" aria-label="Experiment stages">{STEPS.map(([id,label],i) => <button key={id} aria-current={step===i?"step":undefined} onClick={() => go(i)}>{i+1}. {label}</button>)}</nav>
       {step === 0 && (
         <main className="ap-home">

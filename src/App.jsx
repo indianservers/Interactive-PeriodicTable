@@ -143,6 +143,7 @@ const NeutralisationCalorimetryLab = lazy(
 const PolarographyConcentrationLab = lazy(
   () => import("./modules/core-simulations/PolarographyConcentrationLab.jsx"),
 );
+const MolecularDynamicsLab = lazy(() => import("./modules/core-simulations/MolecularDynamicsLab.jsx"));
 const RealGasLawsLab = lazy(
   () => import("./modules/core-simulations/RealGasLawsLab.jsx"),
 );
@@ -978,7 +979,7 @@ function App() {
               />
             }
           >
-            <PhysicalTargetPage onNavigate={navigate} />
+            <MolecularDynamicsLab />
           </Suspense>
         );
       case "molecule-polarity":

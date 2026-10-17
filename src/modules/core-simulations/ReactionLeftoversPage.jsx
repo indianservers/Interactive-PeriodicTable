@@ -1,3 +1,5 @@
+import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
+import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { useMemo, useState } from "react";
 import {
@@ -905,12 +907,13 @@ export default function ReactionLeftoversPage() {
     setScreen(next);
     const url = new URL(location.href);
     url.searchParams.set("screen", next);
-    history.replaceState(null, "", url);
+    pushLabScreen(url);
     scrollTo(0, 0);
   };
+  useLabRouteSync(screenMap,setScreen,false);
   return (
     <div className="rx-app">
-      <Header step={step} go={go} />
+      <Header step={step} go={go} /><LabScreenNavigation ids={screenMap} active={screenMap.indexOf(screen)}/>
       {step === 0 ? (
         <HomeScreen go={go} />
       ) : step === 1 ? (

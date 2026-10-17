@@ -1,3 +1,5 @@
+import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
+import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import { completeLab } from "../../utils/labNavigation.js";
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { useMemo, useState } from "react";
@@ -824,7 +826,7 @@ export default function MoleculesLightPage() {
       setStep(n);
       const u = new URL(location.href);
       u.searchParams.set("screen", STEPS[n][0]);
-      history.replaceState({}, "", u);
+      pushLabScreen(u);
       scrollTo(0, 0);
     },
     reset = () => {
@@ -841,9 +843,10 @@ export default function MoleculesLightPage() {
       setAnimated(false);
       go(0);
     };
+  useLabRouteSync(STEPS.map(item=>item[0]),setStep,true);
   return (
     <div className={`ml2-app screen-${STEPS[step][0]}`}>
-      <Header step={step} go={go} />
+      <Header step={step} go={go} /><LabScreenNavigation ids={STEPS.map(item=>item[0])} active={step}/>
       {step === 0 && <Home {...{ wavelength, setWavelength, go }} />}
       {step === 1 && (
         <Source

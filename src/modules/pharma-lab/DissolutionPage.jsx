@@ -1,3 +1,4 @@
+import MolstarViewer from "../../components/molecular-viewer/MolstarViewer.jsx";
 import ExperimentComparison from './components/ExperimentComparison.jsx';
 import PublishedExperiment, { ExperimentDataMode } from './components/PublishedExperiment.jsx';
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -219,7 +220,7 @@ export default function DissolutionPage() {
               ))}
             </dl>
             <div className="plab-diss-structure">
-              <span>HO</span>
+              <div className="plab-method-molecule"><MolstarViewer source={{url:"/assets/toxicology/structures/acetaminophen.sdf",format:"sdf"}} sourceType="sdf" label="Paracetamol validated molecular structure" representation={{BallAndStick:true}} transparentBackground /></div>
               <b>Paracetamol</b>
               <small>C₈H₉NO₂ · MW 151.16</small>
             </div>
@@ -247,7 +248,7 @@ export default function DissolutionPage() {
                 limits={[q]}
                 xLabel="Time (min)"
                 yLabel="% dissolved"
-                label="Mean six-vessel simulated dissolution profile"
+                label="Mean profile (calculated)"
               />
             </div>
             <div className="plab-kinetics">

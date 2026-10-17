@@ -1,3 +1,4 @@
+import {frameMolecularStructure} from "../../utils/molecularFraming.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getRDKit } from "./rdkitService";
 import {
@@ -198,11 +199,13 @@ function ActivityWarning() {
 }
 function StructureViewer({
   compact = false,
+  focusPocket = true,
   selectedResidue,
   onSelectResidue,
   representation = "surface",
   viewerRef,
 }) {
+  const [framed,setFramed]=useState(false);
   const representationConfig =
     representation === "cartoon"
       ? { Cartoon: true, Ligand: true }
@@ -210,7 +213,7 @@ function StructureViewer({
         ? { Sticks: true, Ligand: true }
         : { Cartoon: true, Surface: true, Ligand: true };
   return (
-    <div className={cls("dds-protein-viewer", compact && "is-compact")}>
+    <div className={cls("dds-protein-viewer", compact && "is-compact")} data-framed={framed}>
       <ViewerErrorBoundary>
         <MolstarViewer
           ref={viewerRef}
@@ -220,11 +223,13 @@ function StructureViewer({
           pdbId="5IKR"
           representation={representationConfig}
           colorScheme="chain"
-          surfaceOpacity={0.7}
+          surfaceOpacity={focusPocket ? 0.45 : 0.36}
+          chainColors={focusPocket?undefined:[0x337fe5,0x27b69e]}
+          onReady={(plugin,loaded)=>{if(!focusPocket)frameMolecularStructure(plugin,loaded,{horizontal:true,scale:.7});if(!selectedResidue)plugin.managers.structure.selection.clear();setFramed(true);}}
           selectedChain="A"
           selectedResidue={selectedResidue}
-          focusOnSelection={Boolean(selectedResidue)}
-          focusLigandId="ID8"
+          focusOnSelection={focusPocket && Boolean(selectedResidue)}
+          focusLigandId={focusPocket ? "ID8" : undefined}
           focusLigandChain="A"
           showLabels={false}
           onSelectionChange={(selection) =>
@@ -330,7 +335,7 @@ export function CommandCenterPage({ navigate, onProvenance }) {
               Open project <ArrowRight />
             </button>
           </div>
-          <StructureViewer compact />
+          <StructureViewer compact focusPocket={false}/>
         </Panel>
         <Panel
           title="Project progress"
@@ -773,7 +778,7 @@ function Radar({ compound }) {
 
 export function TargetPage({ navigate, onProvenance }) {
   const [tab, setTab] = useState("Overview");
-  const [residue, setResidue] = useState(385);
+  const [residue, setResidue] = useState(null);
   const tabs = [
     "Overview",
     "Structural Biology",
@@ -784,7 +789,7 @@ export function TargetPage({ navigate, onProvenance }) {
     "AI Insights",
   ];
   return (
-    <div>
+    <div className="dds-target-screen">
       <PageHeading
         eyebrow="TARGET INTELLIGENCE"
         title={`${COX2_TARGET.commonName} · ${COX2_TARGET.gene}`}
@@ -822,6 +827,7 @@ export function TargetPage({ navigate, onProvenance }) {
           }
         >
           <StructureViewer
+            focusPocket={false}
             selectedResidue={residue}
             onSelectResidue={setResidue}
           />
@@ -896,7 +902,7 @@ export function TargetPage({ navigate, onProvenance }) {
           </div>
           <h4>Active-site residues</h4>
           <div className="dds-active-site">
-            <Molecule2D compound={COMPOUNDS[4]} compact />
+            <StructureViewer compact focusPocket selectedResidue={residue} onSelectResidue={setResidue}/>
             <ul>
               {COX2_STRUCTURE.residues.map((r) => (
                 <li key={r}>{r}</li>

@@ -15,6 +15,7 @@
     "test:physical": "node scripts/verify-physical-chemistry.mjs",
     "test:chemistry": "node scripts/verify-chemical-accuracy.mjs",
     "test:discovery": "node scripts/verify-discovery.mjs",
+    "test:lab-routing": "node scripts/verify-lab-route-state.mjs && node scripts/verify-molecular-framing.mjs && node scripts/verify-md-teaching-plots.mjs && node scripts/verify-lab-style-isolation.mjs",
     "test:studio-routing": "node scripts/verify-studio-routing.mjs",
     "test:md-controls": "node scripts/verify-md-controls.mjs",
     "test:hydrogen": "node scripts/verify-hydrogen-model.mjs",

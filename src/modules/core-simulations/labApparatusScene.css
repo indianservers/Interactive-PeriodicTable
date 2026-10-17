@@ -1,0 +1,78 @@
+.lab-live-apparatus {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  background: #142a3c;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.lab-live-canvas {
+  position: absolute;
+  inset: 0 0 34px;
+}
+.lab-live-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+.lab-live-tools {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  background: #0a2132;
+  color: #a8c7db;
+  min-height: 34px;
+  font:
+    11px/1.3 "Segoe UI",
+    sans-serif;
+}
+.lab-live-tools span {
+  flex: 1;
+}
+.lab-live-tools button {
+  display: grid;
+  place-items: center;
+  background: #143a54;
+  border: 1px solid #3a718f;
+  border-radius: 4px;
+  color: #ccefff;
+  cursor: pointer;
+  padding: 4px;
+}
+.lab-live-tools button[aria-pressed="true"] {
+  background: #0879ac;
+}
+.lab-live-apparatus > p {
+  position: absolute;
+  inset: 25% 10%;
+  color: #d3e6f1;
+}
+.lab-live-apparatus:fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+.lab-apparatus-illustration .lab-live-apparatus {
+  min-height: inherit;
+}
+.lab-apparatus-illustration figcaption {
+  display: none;
+}
+.lab-bench-3d {
+  height: 100%;
+  min-height: 360px;
+}
+.lab-bench-3d > p {
+  font:
+    12px "Segoe UI",
+    sans-serif;
+  color: inherit;
+  padding: 5px;
+  margin: 0;
+}
