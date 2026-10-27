@@ -178,8 +178,8 @@ export const AppShell = ({
     currentPage === "virtual-labs"
   ) {
     return (
-      <div className={isDark ? "dark" : "light"}>
-        <GlobalSearch onNavigate={onNavigate} onSelectElement={onSelectElement}/>
+      <div className={`${isDark ? "dark" : "light"}${isSyllabusLab ? " syllabus-shell" : ""}`}>
+        <GlobalSearch onNavigate={onNavigate} onSelectElement={onSelectElement} inlineOnMobile={isSyllabusLab}/>
         <main className="min-h-screen overflow-x-hidden">
           {children}
         </main>

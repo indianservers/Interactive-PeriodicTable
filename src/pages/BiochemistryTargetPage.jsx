@@ -12,11 +12,16 @@ import {
 import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
 import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
 import "./BiochemistryTargetPage.css";
+import { pushLabScreen, useLabRouteSync } from '../utils/labRouteState.js';
+
+const NOTEBOOK_SCREENS = ['observations', 'hypothesis', 'conclusion', 'feedback'];
+const NOTEBOOK_LABELS = ['Observations', 'Hypothesis', 'Conclusion', 'Instructor feedback'];
+function loadStored(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
 
 const STRUCTURE_LABS = new Set([
   "enzyme-kinetics", "km-vmax", "protein-structure", "enzyme-inhibitors",
   "enzyme-stability", "protein-purification", "dna-extraction", "gel-electrophoresis",
-  "pcr", "restriction-mapping", "carbohydrate-tests", "metabolic-pathways", "atp-energy",
+  "pcr", "restriction-mapping",
 ]);
 const STRUCTURE_SOURCES = {
   default: { url: "/assets/biochemistry/structures/1HEW.cif", format: "mmcif", label: "Hen egg-white lysozyme · PDB 1HEW", pdbId: "1HEW" },
@@ -25,8 +30,6 @@ const STRUCTURE_SOURCES = {
   pcr: { url: "/assets/nucleic-acid/structures/1BNA.cif", format: "mmcif", label: "B-DNA dodecamer · PDB 1BNA", pdbId: "1BNA" },
   "restriction-mapping": { url: "/assets/nucleic-acid/structures/1BNA.cif", format: "mmcif", label: "B-DNA dodecamer · PDB 1BNA", pdbId: "1BNA" },
   "carbohydrate-tests": { url: "/assets/carbohydrate-studio/structures/d-glucose.sdf", format: "sdf", label: "D-Glucose", pdbId: "" },
-  "metabolic-pathways": { url: "/assets/biochemistry/structures/1C96.cif", format: "mmcif", label: "Aconitase–citrate · PDB 1C96", pdbId: "1C96" },
-  "atp-energy": { url: "/assets/biochemistry/structures/1C96.cif", format: "mmcif", label: "Aconitase–citrate · PDB 1C96", pdbId: "1C96" },
 };
 const LYSOZYME_SOURCE = STRUCTURE_SOURCES.default;
 
@@ -89,9 +92,15 @@ function StructureLabVisual({ activeId, step, notice }) {
   return <div className="biovl-structure-stage">
     <div className="biovl-structure-meta"><div><b>{source.label}</b><span>{source.pdbId ? `PDB ${source.pdbId} · local experimental cache` : "Local coordinate model"}</span></div><em>Experimental structure</em></div>
     <div className="biovl-structure-view"><ViewerErrorBoundary><MolstarViewer ref={viewerRef} source={source} sourceType={source.format} label={source.label} pdbId={source.pdbId} representation={structureRepresentation} colorScheme={isMacromolecule ? "chain" : "element"} selectedChain={source.pdbId === "1HEW" ? "A" : undefined} selectedResidue={guidedResidue} highlightedResidues={source.pdbId === "1HEW" ? [35, 52] : []} focusOnSelection={Number.isFinite(guidedResidue)} focusLigandId={source.pdbId === "1HEW" ? "NAG" : undefined} focusLigandChain={source.pdbId === "1HEW" ? "B" : undefined} showLabels={false} onSelectionChange={setSelectedAtom} onLoadError={(error) => notice(error.message)} /></ViewerErrorBoundary></div>
-    <div className="biovl-structure-toolbar">{["Surface", "Cartoon", "Atoms"].map((item) => <button key={item} className={representation === item ? "active" : ""} onClick={() => setRepresentation(item)}>{item}</button>)}<button onClick={() => viewerRef.current?.focusLigandId("NAG", "B")}>Focus inhibitor</button><button onClick={() => viewerRef.current?.reset()}><RotateCcw /> Reset</button><button aria-label="Fullscreen molecular structure" onClick={() => viewerRef.current?.fullscreen()}><Maximize2 /></button></div>
+    <div className="biovl-structure-toolbar">{["Surface", "Cartoon", "Atoms"].map((item) => <button key={item} className={representation === item ? "active" : ""} onClick={() => setRepresentation(item)}>{item}</button>)}{source.pdbId === "1HEW" && <button onClick={() => viewerRef.current?.focusLigandId("NAG", "B")}>Focus inhibitor</button>}<button onClick={() => viewerRef.current?.reset()}><RotateCcw /> Reset</button><button aria-label="Fullscreen molecular structure" onClick={() => viewerRef.current?.fullscreen()}><Maximize2 /></button></div>
     <div className="biovl-structure-inspector"><span>{selectedAtom ? `${selectedAtom.residueName} ${selectedAtom.residue} · chain ${selectedAtom.chain} · ${selectedAtom.atom}` : guidedResidue ? `Protocol focus: catalytic residue ${guidedResidue}` : "Ligand-focused experimental reference"}</span><small>{lesson}</small></div>
   </div>;
+}
+
+function ScientificLabVisual({activeId, result, step, notice}) {
+  const [referenceOpen, setReferenceOpen] = useState(false);
+  if (activeId === 'protein-structure') return <><StructureLabVisual activeId={activeId} step={step} notice={notice}/><LabVisual visual={result.visual}/></>;
+  return <div className="biovl-scientific-visual"><LabVisual visual={result.visual}/>{STRUCTURE_LABS.has(activeId)&&<section className="biovl-reference"><button aria-expanded={referenceOpen} onClick={()=>setReferenceOpen(open=>!open)}>{referenceOpen?'Hide':'Inspect'} supporting experimental structure</button>{referenceOpen&&<StructureLabVisual activeId={activeId} step={step} notice={notice}/>}</section>}</div>;
 }
 
 function downloadText(name, text, type = "text/plain") {
@@ -106,14 +115,24 @@ export default function BiochemistryTargetPage({ onNavigate, initialLabId }) {
   const [values, setValues] = useState(() => defaultValuesForLab(activeLab));
   const [category, setCategory] = useState("All"), [query, setQuery] = useState(""), [difficulty, setDifficulty] = useState("Intermediate");
   const [safe, setSafe] = useState(false), [step, setStep] = useState(0), [running, setRunning] = useState(false), [progress, setProgress] = useState(0);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => loadStored('biochemistry-vl-history', []));
   const [notes, setNotes] = useState(() => { try { return JSON.parse(localStorage.getItem("biochemistry-vl-notes") || "{}"); } catch { return {}; } });
   const [notebookTab, setNotebookTab] = useState("Observations"), [quizChoice, setQuizChoice] = useState(null), [quizChecked, setQuizChecked] = useState(false);
+  useLabRouteSync(NOTEBOOK_SCREENS, index => setNotebookTab(NOTEBOOK_LABELS[index]), true);
+  const chooseNotebookTab = label => {
+    const index = NOTEBOOK_LABELS.indexOf(label);
+    const url = new URL(location.href);
+    url.searchParams.delete('screen');
+    url.hash = `${url.hash.split('?')[0]}?screen=${NOTEBOOK_SCREENS[index]}`;
+    setNotebookTab(label);
+    pushLabScreen(url);
+  };
   const [quizResults, setQuizResults] = useState({}), [unknownSample, setUnknownSample] = useState("Albumin"), [notice, setNotice] = useState("");
   const result = useMemo(() => calculateLab(activeId, values, unknownSample), [activeId, values, unknownSample]);
   const filteredLabs = useMemo(() => BIOCHEMISTRY_VIRTUAL_LABS.filter((lab) => (category === "All" || lab.category === category) && `${lab.title} ${lab.objective} ${lab.category}`.toLowerCase().includes(query.trim().toLowerCase())), [category, query]);
 
   useEffect(() => { localStorage.setItem("biochemistry-vl-notes", JSON.stringify(notes)); }, [notes]);
+  useEffect(() => { localStorage.setItem('biochemistry-vl-history', JSON.stringify(history)); }, [history]);
   useEffect(() => { if (!running) return undefined; const timer = window.setInterval(() => setProgress((current) => Math.min(100, current + 10)), 100); return () => window.clearInterval(timer); }, [running]);
   useEffect(() => {
     if (!running || progress < 100) return;
@@ -123,7 +142,12 @@ export default function BiochemistryTargetPage({ onNavigate, initialLabId }) {
   }, [progress, running, activeId, activeLab.title, values, result.metrics]);
   useEffect(() => { if (!notice) return undefined; const timer = window.setTimeout(() => setNotice(""), 2600); return () => window.clearTimeout(timer); }, [notice]);
 
-  const chooseLab = (lab) => { setActiveId(lab.id); setValues(defaultValuesForLab(lab)); setSafe(false); setStep(0); setProgress(0); setRunning(false); setQuizChoice(null); setQuizChecked(false); };
+  const chooseLab = (lab) => {
+    setRunning(false);
+    if (onNavigate) { onNavigate(`biochemistry-labs/${lab.id}`); return; }
+    location.hash = `/biochemistry-labs/${lab.id}`;
+    setActiveId(lab.id); setValues(defaultValuesForLab(lab)); setSafe(false); setStep(0); setProgress(0); setQuizChoice(null); setQuizChecked(false);
+  };
   const randomize = () => {
     const next = {};
     activeLab.controls.forEach((control) => {
@@ -156,10 +180,10 @@ export default function BiochemistryTargetPage({ onNavigate, initialLabId }) {
         <nav aria-label="Biochemistry virtual labs">{filteredLabs.map((lab) => <button key={lab.id} className={activeId === lab.id ? "active" : ""} onClick={() => chooseLab(lab)}><span>{String(BIOCHEMISTRY_VIRTUAL_LABS.indexOf(lab) + 1).padStart(2, "0")}</span><div><strong>{lab.title}</strong><small>{lab.category}</small></div>{quizResults[lab.id] && <CheckCircle2 className="complete" />}</button>)}{!filteredLabs.length && <p className="biovl-empty">No labs match this search.</p>}</nav>
       </aside>
       <main className="biovl-workbench">
-        <section className="biovl-titlebar"><div><span>{activeLab.category} · {difficulty}</span><h1>{activeLab.title}</h1><p>{activeLab.objective}</p></div><div className="biovl-title-actions"><button onClick={randomize}><Shuffle /> Randomise sample</button></div></section>
+        <section className="biovl-titlebar"><div><span>{activeLab.category} · {difficulty}</span><h1>{activeLab.title}</h1><p>{activeLab.objective}</p></div><div className="biovl-title-actions"><button onClick={randomize} disabled={running}><Shuffle /> Randomise sample</button></div></section>
         <section className="biovl-simulation-grid">
-          <div className="biovl-visual-card"><div className="biovl-card-label"><Beaker /> {STRUCTURE_LABS.has(activeId) ? "LIVE MOLECULAR REFERENCE" : "LIVE EXPERIMENT"} <span>{running ? "Running" : progress === 100 ? "Complete" : "Ready"}</span></div>{STRUCTURE_LABS.has(activeId) ? <StructureLabVisual activeId={activeId} step={step} notice={setNotice} /> : <LabVisual visual={result.visual} />}<div className="biovl-progress-line"><span style={{ width: `${progress}%` }} /></div><div className="biovl-actions"><button className="primary" disabled={!safe || running} onClick={() => { setProgress(0); setRunning(true); setNotice("Experiment running…"); }}><Play /> {running ? "Running…" : "Run experiment"}</button><button onClick={() => { setValues(defaultValuesForLab(activeLab)); setProgress(0); }}><RotateCcw /> Reset</button></div></div>
-          <div className="biovl-controls-card"><div className="biovl-card-label"><BarChart3 /> VARIABLES</div><div className="biovl-controls">{activeLab.controls.map((control) => <label key={control.key}><span>{control.label}<output>{values[control.key]}{control.unit ? ` ${control.unit}` : ""}</output></span>{control.type === "select" ? <select value={values[control.key]} onChange={(event) => setValues((current) => ({ ...current, [control.key]: event.target.value }))}>{control.options.map((option) => <option key={option}>{option}</option>)}</select> : <input type="range" min={control.min} max={control.max} step={control.step} value={values[control.key]} onInput={(event) => setValues((current) => ({ ...current, [control.key]: Number(event.target.value) }))} onChange={(event) => setValues((current) => ({ ...current, [control.key]: Number(event.target.value) }))} aria-valuetext={`${values[control.key]} ${control.unit}`} />}</label>)}</div><label className={`biovl-safety-check ${safe ? "checked" : ""}`}><input type="checkbox" checked={safe} onChange={(event) => setSafe(event.target.checked)} /><ShieldCheck /><span><strong>Safety checkpoint</strong><small>{activeLab.safety}</small></span></label></div>
+          <div className="biovl-visual-card"><div className="biovl-card-label"><Beaker /> {activeId === "protein-structure" ? "LIVE MOLECULAR STRUCTURE" : "LIVE SCIENTIFIC MODEL"} <span>{running ? "Running" : progress === 100 ? "Complete" : "Ready"}</span></div><ScientificLabVisual key={activeId} activeId={activeId} result={result} step={step} notice={setNotice}/><div className="biovl-progress-line"><span style={{ width: `${progress}%` }} /></div><div className="biovl-actions"><button className="primary" disabled={!safe || running} onClick={() => { setProgress(0); setRunning(true); setNotice("Experiment running…"); }}><Play /> {running ? "Running…" : "Run experiment"}</button><button onClick={() => { setRunning(false); setValues(defaultValuesForLab(activeLab)); setProgress(0); setStep(0); setSafe(false); }}><RotateCcw /> Reset</button></div></div>
+          <div className="biovl-controls-card"><div className="biovl-card-label"><BarChart3 /> VARIABLES</div><fieldset className="biovl-controls" disabled={running}>{activeLab.controls.map((control) => <label key={control.key}><span>{control.label}<output>{values[control.key]}{control.unit ? ` ${control.unit}` : ""}</output></span>{control.type === "select" ? <select value={values[control.key]} onChange={(event) => setValues((current) => ({ ...current, [control.key]: event.target.value }))}>{control.options.map((option) => <option key={option}>{option}</option>)}</select> : <input type="range" min={control.min} max={control.max} step={control.step} value={values[control.key]} onInput={(event) => setValues((current) => ({ ...current, [control.key]: Number(event.target.value) }))} onChange={(event) => setValues((current) => ({ ...current, [control.key]: Number(event.target.value) }))} aria-valuetext={`${values[control.key]} ${control.unit}`} />}</label>)}</fieldset><label className={`biovl-safety-check ${safe ? "checked" : ""}`}><input type="checkbox" checked={safe} onChange={(event) => setSafe(event.target.checked)} /><ShieldCheck /><span><strong>Safety checkpoint</strong><small>{activeLab.safety}</small></span></label></div>
         </section>
         <section className="biovl-results-card"><div className="biovl-card-label"><ClipboardCheck /> CALCULATED RESULTS <span>Equation-backed</span></div><div className="biovl-metrics">{result.metrics.map((item) => <article key={item.label}><span>{item.label}</span><strong>{item.value}</strong><small>{item.unit}</small></article>)}</div><p className="biovl-interpretation">{result.summary}</p><details><summary>Model and accuracy notes</summary><p>{activeLab.model}</p></details></section>
         <section className="biovl-learning-grid">
@@ -167,7 +191,7 @@ export default function BiochemistryTargetPage({ onNavigate, initialLabId }) {
           <article className="biovl-quiz-card"><div className="biovl-card-label"><GraduationCap /> CONCEPT CHECK</div><h2>{activeLab.quiz.prompt}</h2><KnowledgeCheck key={activeId} questions={[{prompt:activeLab.quiz.prompt,correct:activeLab.quiz.answer,explanation:activeLab.quiz.explanation,options:activeLab.quiz.choices.map((label,id)=>({id,label}))}]} onChecked={a=>setQuizResults(scores=>({...scores,[activeId]:a[0]===activeLab.quiz.answer}))}/></article>
         </section>
       </main>
-      <aside className="biovl-notebook"><div className="biovl-notebook-head"><div><BookOpen /><span><strong>Lab notebook</strong><small>Saved on this device</small></span></div><span>{history.length} runs</span></div><div className="biovl-notebook-tabs">{["Hypothesis", "Observations", "Conclusion", "Instructor feedback"].map((item) => <button key={item} className={notebookTab === item ? "active" : ""} onClick={() => setNotebookTab(item)}>{item}</button>)}</div><textarea value={currentNotes[notebookTab] || ""} onChange={(event) => setNotes((all) => ({ ...all, [activeId]: { ...currentNotes, [notebookTab]: event.target.value } }))} placeholder={`Record ${notebookTab.toLowerCase()} for ${activeLab.title}…`} /><div className="biovl-export-row"><button disabled={!history.length} onClick={exportCsv}><Download /> CSV</button><button onClick={() => window.print()}><Printer /> Print / PDF</button></div><section className="biovl-history"><h2>Recent measurements</h2>{history.filter((item) => item.labId === activeId).slice(0, 5).map((item) => <article key={item.id}><span>{item.time}</span><strong>{item.result}</strong></article>)}{!history.some((item) => item.labId === activeId) && <p>Pass the safety checkpoint and run this experiment to capture a result.</p>}</section><section className="biovl-coverage"><h2>Implemented toolkit</h2><ul><li>25 complete lab workspaces</li><li>Live calculations and visual feedback</li><li>Safety and procedural checkpoints</li><li>Randomised repeat practice</li><li>Device-local notes and exports</li><li>Accessible keyboard and touch controls</li></ul></section></aside>
+      <aside className="biovl-notebook"><div className="biovl-notebook-head"><div><BookOpen /><span><strong>Lab notebook</strong><small>Saved on this device</small></span></div><span>{history.length} runs</span></div><div className="biovl-notebook-tabs">{["Hypothesis", "Observations", "Conclusion", "Instructor feedback"].map((item) => <button key={item} className={notebookTab === item ? "active" : ""} onClick={() => chooseNotebookTab(item)} aria-pressed={notebookTab === item}>{item}</button>)}</div><textarea value={currentNotes[notebookTab] || ""} onChange={(event) => setNotes((all) => ({ ...all, [activeId]: { ...currentNotes, [notebookTab]: event.target.value } }))} placeholder={`Record ${notebookTab.toLowerCase()} for ${activeLab.title}…`} /><div className="biovl-export-row"><button disabled={!history.length} onClick={exportCsv}><Download /> CSV</button><button onClick={() => window.print()}><Printer /> Print / PDF</button></div><section className="biovl-history"><h2>Recent measurements</h2>{history.filter((item) => item.labId === activeId).slice(0, 5).map((item) => <article key={item.id}><span>{item.time}</span><strong>{item.result}</strong></article>)}{!history.some((item) => item.labId === activeId) && <p>Pass the safety checkpoint and run this experiment to capture a result.</p>}</section><section className="biovl-coverage"><h2>Implemented toolkit</h2><ul><li>25 laboratory models under individual validation</li><li>Live calculations and visual feedback</li><li>Safety and procedural checkpoints</li><li>Randomised repeat practice</li><li>Device-local notes and exports</li><li>Accessible keyboard and touch controls</li></ul></section></aside>
     </div>
     <div className="sr-only" aria-live="polite">{notice}</div>{notice && <div className="biovl-toast" role="status">{notice}</div>}
   </div>;

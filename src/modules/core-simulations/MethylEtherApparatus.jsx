@@ -1,0 +1,40 @@
+import {useEffect,useRef,useState} from 'react';
+import * as T from 'three';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
+import {Maximize2,RotateCcw} from 'lucide-react';
+import {fitApparatusCamera} from './fitApparatusCamera.js';
+import useApparatusFullscreen from './useApparatusFullscreen.js';
+
+export default function MethylEtherApparatus({state,values,result}){
+ const host=useRef(),live=useRef(),api=useRef();live.current={state,values,result};const [error,setError]=useState(''),{fullscreen,toggle}=useApparatusFullscreen(host,setError);
+ useEffect(()=>{
+  const node=host.current;let renderer;try{renderer=new T.WebGLRenderer({antialias:true});}catch{setError('WebGL unavailable; species inventory and controls remain available.');return;}
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor('#f5f9fc');renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.9;renderer.shadowMap.enabled=true;node.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Original 3D stirred methylation vessel, separate electrophile reservoir, temperature-jacketed crystalliser, vacuum filter and drying dish. Drag to orbit; scroll to zoom.');
+  const scene=new T.Scene(),camera=new T.PerspectiveCamera(37,1,.1,60),controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.minDistance=5;controls.maxDistance=25;api.current=controls;
+  const pmrem=new T.PMREMGenerator(renderer),room=new RoomEnvironment(),env=pmrem.fromScene(room);scene.environment=env.texture;scene.add(new T.HemisphereLight('#fff','#899cad',1));const sun=new T.DirectionalLight('#fff',2);sun.position.set(-4,7,5);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+  const mat=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.4,envMapIntensity:.65,...extra}),navy=mat('#344d64'),white=mat('#f3f0e8'),steel=mat('#9aaeb9',{metalness:.6}),glass=new T.MeshPhysicalMaterial({color:'#c9e6ee',transparent:true,opacity:.28,roughness:.09,depthWrite:false,side:T.DoubleSide}),solution=mat('#d8e9e5',{transparent:true,opacity:.65}),ice=mat('#bde0e9',{transparent:true,opacity:.5});
+  const mesh=(g,m,x=0,y=0,z=0)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=m!==glass&&m!==solution&&m!==ice;o.receiveShadow=true;scene.add(o);return o;},box=(w,h,d,m,x,y,z)=>mesh(new T.BoxGeometry(w,h,d),m,x,y,z),cyl=(r,h,m,x,y,z)=>mesh(new T.CylinderGeometry(r,r,h,48),m,x,y,z);
+  const label=(t,x,y,z,w=2)=>{const c=document.createElement('canvas');c.width=512;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#365369';ctx.font='bold 30px monospace';ctx.textAlign='center';ctx.fillText(t,256,60);const tex=new T.CanvasTexture(c),o=new T.Sprite(new T.SpriteMaterial({map:tex,transparent:true}));o.position.set(x,y,z);o.scale.set(w,w*96/512,1);scene.add(o);};
+  box(8,.12,3.4,white,0,.12,0);box(1.7,.3,1.5,navy,-2.4,.36,0);cyl(.62,1.6,glass,-2.4,1.36,0);cyl(.66,.1,steel,-2.4,2.19,0);cyl(.035,1.7,steel,-2.4,1.5,0);box(.5,.4,.5,navy,-2.4,2.5,0);const stir=box(.65,.04,.1,white,-2.4,.64,0),reactLiquid=cyl(.57,.6,solution,-2.4,.9,0);label('STIRRED VESSEL',-2.4,2.95,0,2.3);
+  cyl(.22,.7,glass,-3.5,.8,.85);cyl(.17,.16,navy,-3.5,1.23,.85);const reservoir=cyl(.18,.5,solution,-3.5,.78,.85);label('VIRTUAL CH₃I',-3.5,1.6,.85,1.8);
+  box(2,.65,1.9,glass,0,.58,0);const coolantShape=new T.Shape();coolantShape.moveTo(-.925,-.875);coolantShape.lineTo(.925,-.875);coolantShape.lineTo(.925,.875);coolantShape.lineTo(-.925,.875);coolantShape.closePath();const cavity=new T.Path();cavity.absarc(0,0,.67,0,Math.PI*2,true);coolantShape.holes.push(cavity);const coolantGeometry=new T.ExtrudeGeometry(coolantShape,{depth:.45,bevelEnabled:false,curveSegments:48});coolantGeometry.rotateX(-Math.PI/2);mesh(coolantGeometry,ice,0,.325,0);cyl(.64,1.25,glass,0,1.1,0);const workLiquid=cyl(.58,.8,solution,0,.9,0);label('DILUTION / COOLING',0,2.15,0,2.6);
+  const profile=[[0,0],[.52,0],[.58,.15],[.17,1.05],[.14,1.3]].map(([r,y])=>new T.Vector2(r,y));mesh(new T.LatheGeometry(profile,48),glass,2.1,.3,0);mesh(new T.CylinderGeometry(.5,.13,.4,48),white,2.1,1.85,0);cyl(.13,.3,glass,2.1,1.5,0);const filtrate=cyl(.38,.4,solution,2.1,.58,0);
+  mesh(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(2.3,1.2,0),new T.Vector3(2.8,1.2,.1),new T.Vector3(3.2,.4,-.5)]),36,.035,8,false),navy);box(.65,.6,.6,navy,3.2,.5,-.5);label('FILTER / MOTHER LIQUOR',2.1,2.5,0,2.8);cyl(.5,.07,glass,2.8,.32,1);label('COLLECTED CAKE',2.8,.75,1.3,2.2);
+  const etherCrystals=Array.from({length:45},(_,i)=>{const o=mesh(new T.OctahedronGeometry(.06,0),white);o.rotation.set(i*.2,i*.7,i*.3);return o;}),impurityCrystals=Array.from({length:20},(_,i)=>mesh(new T.OctahedronGeometry(.065,0),mat('#d9cbb4')));
+  let frame,prior,last=0,dirty=true,visible=true,lastVolume=-1;
+  const resize=new ResizeObserver(()=>{const r=node.getBoundingClientRect();renderer.setSize(r.width,r.height);camera.aspect=r.width/Math.max(1,r.height);fitApparatusCamera(scene,camera,controls);dirty=true;});resize.observe(node);const obs=new IntersectionObserver(([e])=>{visible=e.isIntersecting;dirty=true;});obs.observe(node);controls.addEventListener('change',()=>{dirty=true;});
+  const draw=now=>{frame=requestAnimationFrame(draw);if(!visible||document.hidden||now-last<33)return;last=now;
+   if(prior!==live.current){prior=live.current;dirty=true;const {state:s,values:v,result:r}=prior,reactive=['activated','reaction'].includes(s.phase),work=s.phase==='workup',collected=s.phase==='collected';
+    reservoir.visible=s.phase==='activated';reactLiquid.visible=stir.visible=reactive;workLiquid.visible=work;filtrate.visible=collected;stir.rotation.y=s.time*8;
+    const h=.2+v.volume/100;reactLiquid.scale.y=h/.6;reactLiquid.position.y=.57+h/2;const wh=.2+(v.volume+v.dilution)/250;workLiquid.scale.y=wh/.8;workLiquid.position.y=.49+wh/2;
+    if(lastVolume!==v.volume+v.dilution){lastVolume=v.volume+v.dilution;const b=.54,m=.4/.9,H=.85,volume=h=>Math.PI*(b*b*h-b*m*h*h+m*m*h*h*h/3),target=volume(H)*lastVolume/250;let a=0,z=H;for(let i=0;i<35;i++){const mid=(a+z)/2;if(volume(mid)<target)a=mid;else z=mid;}const h=(a+z)/2;filtrate.geometry.dispose();filtrate.geometry=new T.LatheGeometry([new T.Vector2(0,0),new T.Vector2(.5,0),new T.Vector2(.54,.14),new T.Vector2(b-m*h,.14+h),new T.Vector2(0,.14+h)],48);filtrate.position.y=.32;}
+
+    for(const [list,mass] of [[etherCrystals,collected?s.collectedEther:r.etherCrystals],[impurityCrystals,collected?s.collectedNaphthol:r.naphtholCrystals]])list.forEach((o,i)=>{o.visible=(reactive||work||collected)&&i<Math.min(list.length,Math.round(mass*18));const a=i*2.39996+(reactive?s.time*2:0),rad=.38*Math.sqrt((i+.5)/list.length);o.position.set((collected?2.8:reactive?-2.4:0)+Math.cos(a)*rad,(collected?.4:reactive?.69:.52)+(i%3)*.025,(collected?1:0)+Math.sin(a)*rad);});
+   }
+   if(controls.update())dirty=true;if(dirty){renderer.render(scene,camera);dirty=false;}
+  };frame=requestAnimationFrame(draw);
+  return()=>{cancelAnimationFrame(frame);resize.disconnect();obs.disconnect();controls.dispose();scene.traverse(o=>{o.geometry?.dispose();if(o.material)for(const m of Array.isArray(o.material)?o.material:[o.material]){m.map?.dispose();m.dispose();}});env.dispose();room.dispose();pmrem.dispose();renderer.dispose();renderer.forceContextLoss();node.replaceChildren();api.current=null;};
+ },[]);
+ return <div className="ether-scene"><div className="ether-scene-host" ref={host}/>{error&&<p role="alert">{error}</p>}<div className="titration-camera"><span>Original 3D · representative crystals · impurity tint for tracking</span><button aria-label="Reset ether apparatus camera" onClick={()=>api.current?.reset()}><RotateCcw size={15}/></button><button aria-label={fullscreen?'Exit ether apparatus fullscreen':'Fullscreen ether apparatus'} onClick={toggle}><Maximize2 size={15}/></button></div></div>;
+}

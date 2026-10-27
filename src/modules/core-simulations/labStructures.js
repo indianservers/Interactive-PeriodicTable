@@ -34,7 +34,6 @@ export const INTERACTIVE_STRUCTURES = {
   "carbohydrates-glucose-fructose": { url: "/assets/carbohydrate-studio/structures/d-glucose.sdf", format: "sdf", label: "D-Glucose" },
   "conformational-analysis": { url: "/assets/isomerism/butane.sdf", format: "sdf", label: "Butane conformer" },
   "nmr-mass-ir-uv-practice": { url: "/assets/spectroscopy/ethyl-acetate.sdf", format: "sdf", label: "Ethyl acetate" },
-  "pblock-structures": { url: "/assets/p-block/silicon-diamond.cif", format: "mmcif", label: "Diamond-cubic silicon" },
   "heterocycles-pyrrole-pyridine": { url: "/assets/research-toolkit/caffeine-2519.sdf", format: "sdf", label: "Caffeine · fused N-heterocycle reference" },
 };
 

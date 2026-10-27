@@ -123,7 +123,41 @@ const DistillationCrystallisationLab = lazy(
 const SyllabusInteractiveLab = lazy(
   () => import("./modules/core-simulations/SyllabusInteractiveLab.jsx"),
 );
+const MethylHydrolysisLab = lazy(() => import('./modules/core-simulations/MethylHydrolysisLab.jsx'));
+const ConductometryHclLab = lazy(() => import('./modules/core-simulations/ConductometryHclLab.jsx'));
+const ConductometryAceticLab = lazy(() => import('./modules/core-simulations/ConductometryAceticLab.jsx'));
+const KaConductometryLab = lazy(() => import('./modules/core-simulations/KaConductometryLab.jsx'));
+const ColorimetryLab = lazy(() => import('./modules/core-simulations/ColorimetryLab.jsx'));
+const SurfaceDensityViscosityLab = lazy(() => import('./modules/core-simulations/SurfaceDensityViscosityLab.jsx'));
+const KspConductometryLab = lazy(() => import('./modules/core-simulations/KspConductometryLab.jsx'));
+const PotentiometryIronLab = lazy(() => import('./modules/core-simulations/PotentiometryIronLab.jsx'));
+const BenzoicDistributionLab = lazy(() => import('./modules/core-simulations/BenzoicDistributionLab.jsx'));
+const PblockStructuresLab = lazy(() => import('./modules/core-simulations/PblockStructuresLab.jsx'));
+const ColloidsLab = lazy(() => import('./modules/core-simulations/ColloidsLab.jsx'));
+const ConformationalLab = lazy(() => import('./modules/core-simulations/ConformationalLab.jsx'));
+const DfBlockLab = lazy(() => import('./modules/core-simulations/DfBlockLab.jsx'));
+const JablonskiLab = lazy(() => import('./modules/core-simulations/JablonskiLab.jsx'));
+const EasDirectingLab = lazy(() => import('./modules/core-simulations/EasDirectingLab.jsx'));
+const HydrocarbonMechanismsLab = lazy(() => import('./modules/core-simulations/HydrocarbonMechanismsLab.jsx'));
+const IsatinAllylationLab = lazy(() => import('./modules/core-simulations/IsatinAllylationLab.jsx'));
+const ElectrogravimetryLab = lazy(() => import('./modules/core-simulations/ElectrogravimetryLab.jsx'));
+const IronExtractionLab = lazy(() => import('./modules/core-simulations/IronExtractionLab.jsx'));
+const ButanolDistributionLab = lazy(() => import('./modules/core-simulations/ButanolDistributionLab.jsx'));
+const PhMetryLab = lazy(() => import('./modules/core-simulations/PhMetryLab.jsx'));
+const SaponificationLab = lazy(() => import('./modules/core-simulations/SaponificationLab.jsx'));
+const PersulfateClockLab = lazy(() => import('./modules/core-simulations/PersulfateClockLab.jsx'));
 const TitrationExperimentLab = lazy(() => import('./modules/core-simulations/TitrationExperimentLab.jsx'));
+const SaltAnalysisLab = lazy(() => import('./modules/core-simulations/SaltAnalysisLab.jsx'));
+const AspirinSynthesisLab = lazy(() => import('./modules/core-simulations/AspirinSynthesisLab.jsx'));
+const NitrationLab = lazy(() => import('./modules/core-simulations/NitrationLab.jsx'));
+const BenzoicPreparationLab = lazy(() => import('./modules/core-simulations/BenzoicPreparationLab.jsx'));
+const EsterificationLab = lazy(() => import('./modules/core-simulations/EsterificationLab.jsx'));
+const MethylEtherLab = lazy(() => import('./modules/core-simulations/MethylEtherLab.jsx'));
+const SchiffBaseLab = lazy(() => import('./modules/core-simulations/SchiffBaseLab.jsx'));
+const AzoCouplingLab = lazy(() => import('./modules/core-simulations/AzoCouplingLab.jsx'));
+const MicrowaveReactionLab = lazy(() => import('./modules/core-simulations/MicrowaveReactionLab.jsx'));
+const OrganicAnalysisLab = lazy(() => import('./modules/core-simulations/OrganicAnalysisLab.jsx'));
+const PeroxideKineticsLab = lazy(() => import('./modules/core-simulations/PeroxideKineticsLab.jsx'));
 const OrganicAromaticPrepLab = lazy(
   () => import("./modules/core-simulations/OrganicAromaticPrepLab.jsx"),
 );
@@ -763,7 +797,41 @@ function App() {
             </div>
           }
         >
-          {TITRATION_EXPERIMENTS[currentPage]
+          {currentPage === 'df-block-properties' ? <DfBlockLab/>
+          :currentPage === 'colloids-adsorption' ? <ColloidsLab/>
+          :currentPage === 'conformational-analysis' ? <ConformationalLab/>
+          :currentPage === 'jablonski-photochemistry' ? <JablonskiLab reducedMotion={reducedMotion}/>
+          :currentPage === 'eas-directing-groups' ? <EasDirectingLab reducedMotion={reducedMotion}/>
+          :currentPage === 'hydrocarbon-mechanisms' ? <HydrocarbonMechanismsLab reducedMotion={reducedMotion}/>
+          :currentPage === 'pblock-structures' ? <PblockStructuresLab reducedMotion={reducedMotion}/>
+          :currentPage === 'isatin-allylation' ? <IsatinAllylationLab reducedMotion={reducedMotion}/>
+          :currentPage === 'electrogravimetric-metals' ? <ElectrogravimetryLab reducedMotion={reducedMotion}/>
+          :currentPage === 'solvent-extraction-iron' ? <IronExtractionLab reducedMotion={reducedMotion}/>
+          :currentPage === 'distribution-acetic-butanol' ? <ButanolDistributionLab reducedMotion={reducedMotion}/>
+          :currentPage === 'distribution-benzoic-acid' ? <BenzoicDistributionLab reducedMotion={reducedMotion}/>
+          :currentPage === 'potentiometry-iron-dichromate' ? <PotentiometryIronLab reducedMotion={reducedMotion}/>
+          :currentPage === 'ksp-baso4-conductometry' ? <KspConductometryLab reducedMotion={reducedMotion}/>
+          :['ph-metry-hcl','ph-metry-acetic'].includes(currentPage) ? <PhMetryLab key={currentPage} id={currentPage} reducedMotion={reducedMotion}/>
+          :currentPage === 'saponification-order' ? <SaponificationLab reducedMotion={reducedMotion}/>
+          :currentPage === 'persulfate-iodide-kinetics' ? <PersulfateClockLab reducedMotion={reducedMotion}/>
+            : currentPage === 'surface-tension-density-viscosity' ? <SurfaceDensityViscosityLab reducedMotion={reducedMotion}/>
+            : currentPage === 'colorimetry-kmno4-cuso4' ? <ColorimetryLab reducedMotion={reducedMotion}/>
+            : currentPage === 'ka-acetic-conductometry' ? <KaConductometryLab reducedMotion={reducedMotion}/>
+            : currentPage === 'conductometry-acetic-naoh' ? <ConductometryAceticLab reducedMotion={reducedMotion}/>
+            : currentPage === 'conductometry-hcl-naoh' ? <ConductometryHclLab reducedMotion={reducedMotion}/>
+            : currentPage === 'methyl-acetate-hydrolysis' ? <MethylHydrolysisLab reducedMotion={reducedMotion}/>
+            : currentPage === 'h2o2-kinetics' ? <PeroxideKineticsLab reducedMotion={reducedMotion}/>
+            : currentPage === 'organic-qualitative-analysis' ? <OrganicAnalysisLab/>
+            : currentPage === 'microwave-aspirin' ? <MicrowaveReactionLab/>
+            : currentPage === 'azo-coupling-naphthol' ? <AzoCouplingLab/>
+            : currentPage === 'benzylidene-aniline' ? <SchiffBaseLab/>
+            : currentPage === 'naphthyl-methyl-ether' ? <MethylEtherLab/>
+            : currentPage === 'butyl-acetate-esterification' ? <EsterificationLab/>
+            : currentPage === 'benzoic-from-benzyl-chloride' ? <BenzoicPreparationLab/>
+            : currentPage === 'nitrobenzene-nitration' ? <NitrationLab/>
+            : currentPage === 'aspirin-acetylation' ? <AspirinSynthesisLab/>
+            : currentPage === 'semi-micro-salt-analysis' ? <SaltAnalysisLab/>
+            : TITRATION_EXPERIMENTS[currentPage]
             ? <TitrationExperimentLab key={currentPage} experimentId={currentPage} onNavigate={navigate}/>
             : <SyllabusInteractiveLab key={currentPage} experimentId={currentPage} onNavigate={navigate} />}
         </Suspense>
@@ -1542,7 +1610,7 @@ function App() {
 
   return (
     <div
-      className={`${reducedMotion ? "no-motion motion-paused" : ""} ${highContrast ? "high-contrast" : ""} ${compact ? "app-compact" : ""} ${studyMode ? "study-mode" : ""} theme-${colorTheme}`}
+      className={`${syllabusInteractiveIds.includes(currentPage) ? "chemistry-practical-route" : ""} ${reducedMotion ? "no-motion motion-paused" : ""} ${highContrast ? "high-contrast" : ""} ${compact ? "app-compact" : ""} ${studyMode ? "study-mode" : ""} theme-${colorTheme}`}
       data-app-page={currentPage}
     >
       <AppShell

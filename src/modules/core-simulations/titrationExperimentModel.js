@@ -13,10 +13,22 @@ export const TITRATION_EXPERIMENTS = {
 
 export function titrationDefaults(id) {
   const spec=TITRATION_EXPERIMENTS[id];
-  return { concentration:spec.concentration, analyte:spec.analyte, aliquot:25, bicarbonate:0.02, capacity:3.16, delivered:0, indicator:id==='carbonate-bicarbonate-mixture'?'phenolphthalein':'default', starch:false, prepared:false, conditioned:false, standardised:id!=='iron-permanganate', oxalate:0.05, oxalateVolume:25, standardTitre:25 };
+  return { concentration:spec.concentration, analyte:spec.analyte, sampleMass:id==='washing-soda-carbonate'?2.8614:2.100165, sampleAssay:id==='washing-soda-carbonate'?105.99/286.14*100:100, aliquot:25, bicarbonate:0.02, capacity:3.16, delivered:0, indicator:id==='carbonate-bicarbonate-mixture'?'phenolphthalein':'default', starch:false, prepared:false, conditioned:false, standardised:id!=='iron-permanganate', oxalate:0.05, oxalateVolume:25, standardTitre:25 };
 }
 
 const positive=(n,name)=>{if(!Number.isFinite(n)||n<=0)throw new RangeError(`${name} must be positive and finite`);return n;};
+export function sampleConcentration(id,values) {
+  if(!['washing-soda-carbonate','baking-soda-bicarbonate'].includes(id))return positive(values.analyte,'Sample concentration');
+  const mass=positive(values.sampleMass,'Sample mass'),assay=positive(values.sampleAssay,'Sample assay');
+  if(assay>100)throw new RangeError('Mass percentage cannot exceed 100');
+  return mass*assay/100/(id==='washing-soda-carbonate'?105.99:84.0066)/.25;
+}
+
+export function carbonateSpecies(totalMoles,ph) {
+  if(!Number.isFinite(totalMoles)||totalMoles<0||!Number.isFinite(ph))throw new RangeError('Invalid carbonate state');
+  const h=10**-ph,k1=10**-6.35,k2=10**-10.33,d=h*h+k1*h+k1*k2;
+  return {'CO₂(aq) + H₂CO₃':totalMoles*h*h/d,'HCO₃⁻':totalMoles*k1*h/d,'CO₃²⁻':totalMoles*k1*k2/d};
+}
 export function standardisePermanganate(oxalate,volume,titre) {
   return 2/5*positive(oxalate,'Oxalate concentration')*positive(volume,'Oxalate volume')/positive(titre,'Standard titre');
 }
@@ -36,17 +48,18 @@ export function carbonatePH(carbonateMoles,bicarbonateMoles,acidMoles,volumeL) {
 
 export function titrationState(id,values) {
   const spec=TITRATION_EXPERIMENTS[id];if(!spec)throw new Error('Unknown titration');
-  const c=positive(values.concentration,'Titrant concentration'),ca=positive(values.analyte,'Sample concentration'),v=positive(values.aliquot,'Aliquot');
+  const c=positive(values.concentration,'Titrant concentration'),ca=sampleConcentration(id,values),v=positive(values.aliquot,'Aliquot');
   if(!Number.isFinite(values.delivered)||values.delivered<0||values.delivered>50)throw new RangeError('Burette delivery must be 0–50 mL');
   if(!Number.isFinite(values.bicarbonate)||values.bicarbonate<0)throw new RangeError('Bicarbonate must be nonnegative');
   const n=ca*v/1000, nb=spec.type==='mixture'?values.bicarbonate*v/1000:0;
   const first=spec.type==='mixture'?n/c*1000:null;
-  const equivalents=spec.type==='mixture'?2*n+nb:spec.ratio*n;
+  const redox=['redox','permanganate'].includes(spec.type);
+  const equivalents=spec.type==='mixture'?2*n+nb:redox?n/spec.ratio:spec.ratio*n;
   if(spec.type==='back'&&(!Number.isFinite(values.capacity)||values.capacity<0||values.capacity>=5))throw new RangeError('Capacity must be below the 5 mmol acid excess');
   const acidRemaining=(5-values.capacity)/1000;
   const endpoint=spec.type==='back'?acidRemaining/c*1000:equivalents/c*1000;
   const delivered=values.delivered,nt=c*delivered/1000;
-  const consumed=spec.type==='back'?Math.min(nt,acidRemaining):Math.min(n,nt*(spec.type==='mixture'?0.5:1/spec.ratio));
+  const consumed=spec.type==='back'?Math.min(nt,acidRemaining):Math.min(n,nt*(redox?spec.ratio:spec.type==='mixture'?0.5:1/spec.ratio));
   const extent=Math.min(1,delivered/endpoint),remaining=Math.max(0,(spec.type==='back'?acidRemaining:n)-consumed),totalVolume=(spec.type==='back'?50:v)+delivered;
   let ph=null,color=spec.color,observation='Reaction in progress';
   if(['carbonate','bicarbonate','mixture'].includes(spec.type)){
@@ -69,8 +82,9 @@ export function titrationState(id,values) {
     color=extent>=1?(spec.type==='magnesium'?'#63b5e8':'#9272c6'):spec.color;
     observation=extent>=1?(spec.type==='magnesium'?'Free EBT is sky blue.':'Free murexide is purple-violet.'):'Metal–indicator color persists; EDTA is binding free metal.';
   }
-  const found=spec.type==='back'?(5-c*delivered):c*delivered/(spec.ratio*v);
-  return { endpoint,first,extent,remaining,consumed,nt,ph,color,observation,totalVolume,found,iodineMoles:spec.type==='iodometry'?Math.max(0,(n-nt)/2):0,assay:spec.type==='carbonate'?found*0.25*105.99/2.8614*100:spec.type==='bicarbonate'?found*0.25*84.0066/2.100165*100:null };
+  const found=spec.type==='back'?(5-c*delivered):c*delivered*(redox?spec.ratio:1/spec.ratio)/v;
+  const species=['carbonate','bicarbonate','mixture'].includes(spec.type)?carbonateSpecies(n+nb,ph):redox?{'Fe²⁺':remaining,'Fe³⁺':consumed}:['magnesium','copper'].includes(spec.type)?{'Uncomplexed metal (stoichiometric)':remaining,'Metal–EDTA':consumed}:{};
+  return { endpoint,first,extent,remaining,consumed,nt,ph,color,observation,totalVolume,found,sampleConcentration:ca,species,iodineMoles:spec.type==='iodometry'?Math.max(0,(n-nt)/2):0,assay:spec.type==='carbonate'?found*0.25*105.99/values.sampleMass*100:spec.type==='bicarbonate'?found*0.25*84.0066/values.sampleMass*100:null };
 }
 
 export function mixtureFromTitres(c,v1,v2) {

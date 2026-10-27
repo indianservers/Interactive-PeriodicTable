@@ -10,7 +10,8 @@ export const cleanHash = hash => hash.replace(/^#\/?/, '').split('?')[0].replace
 export function resolveAppRoute(location, aliases = {}) {
   const hash = cleanHash(location.hash || '');
   // Explicit hashes take precedence over legacy pathname routes, including exit.
-  if (hash) {
+  if (hash || (location.hash || '').startsWith('#')) {
+    if (!hash) return 'dashboard';
     if (aliases[hash]) return aliases[hash];
     const studio = studioRoutes.find(item => within(hash, item.hash));
     if (studio) return studio.id;
@@ -26,6 +27,8 @@ export function studioSection(location, id) {
   if (!studio) return '';
   const hash = cleanHash(location.hash || '');
   if (within(hash, studio.hash)) return hash.slice(studio.hash.length).replace(/^\//, '');
+  // An explicit hash exit must never resurrect a stale legacy path section.
+  if ((location.hash || '').startsWith('#')) return '';
   const path = (location.pathname || '').replace(/\/$/, '');
   return studio.path && within(path, studio.path) ? path.slice(studio.path.length).replace(/^\//, '') : '';
 }

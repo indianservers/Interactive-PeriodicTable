@@ -14,7 +14,20 @@ import { syllabusInteractives, syllabusConcepts } from '../src/modules/core-simu
 import { MODELS, initialInputs, solve } from '../src/modules/physical-chemistry/workspaceModels.js';
 
 const near = (actual, expected, tolerance = 1e-9) => assert(Math.abs(actual - expected) <= tolerance, `${actual} != ${expected}`);
-const noInvalid = (result, label) => assert(!/NaN|Infinity|undefined/.test(JSON.stringify(result)), label);
+const noInvalid = (result, label) => {
+  const visit = value => {
+    if (typeof value === 'number') assert(Number.isFinite(value), label);
+    else if (typeof value === 'string') assert(!/\bNaN\b|(?:^|[=:·]\s*)[+-]?Infinity(?:\s|$)|^undefined$/.test(value), label);
+    else if (Array.isArray(value)) value.forEach(visit);
+    else if (value && typeof value === 'object') Object.values(value).forEach(visit);
+  };
+  visit(result);
+};
+// Explanations may correctly describe an undefined t=0 estimate. JSON.stringify
+// hides numeric NaN/Infinity as null, so inspect numeric values before encoding.
+noInvalid({detail:'At t = 0 the single-point rate estimate is undefined.'},'valid explanatory prose');
+assert.throws(()=>noInvalid({value:NaN},'numeric NaN'));
+assert.throws(()=>noInvalid({value:Infinity},'numeric infinity'));
 near(spectrum(620, 4e-5, 2) - CALIBRATION_INTERCEPT, 2 * (spectrum(620, 4e-5, 1) - CALIBRATION_INTERCEPT));
 assert(spectrum(500) < spectrum(620));
 near(spectrum(500, 0), CALIBRATION_INTERCEPT);

@@ -1,0 +1,31 @@
+export const JB_CONSTANTS={h:6.62607015e-34,c:299792458,e:1.602176634e-19,singletEV:2.7,tripletEV:1.9,kq:1e9,detectorEfficiency:.2};
+export const JB_DEFAULTS={preset:'balanced',pumpNm:365,timeLog:-8,zeroTime:false,quencherUM:0,photons:10000,kf:1e8,kic:5e7,kisc:2e7,kp:1000,ktnr:1000,speed:1,azimuth:25,showLabels:true};
+export const JB_PRESETS={
+ balanced:{label:'Balanced pathways',rates:[1e8,5e7,2e7,1000,1000]},
+ fluorescence:{label:'Fluorescence favored',rates:[2e8,2e7,1e7,1000,1000]},
+ triplet:{label:'Triplet / phosphorescence favored',rates:[2e7,1e7,2e8,5000,500]},
+ dark:{label:'Internal conversion favored',rates:[1e7,8e8,1e7,1000,1e5]},
+ equal:{label:'Equal decay constants (analytic limit)',rates:[1e7,1e7,2e7,2e7,2e7]},
+ trapped:{label:'Trapped triplet (ideal limit)',rates:[0,0,1e8,0,0]}
+};
+const finite=(x,a,b)=>{if(!Number.isFinite(x)||x<a||x>b)throw Error('Parameter outside valid range.');return x;},grid=(x,a,b,s)=>{finite(x,a,b);if(Math.abs((x-a)/s-Math.round((x-a)/s))>1e-6)throw Error('Invalid control increment.');return x;};
+export function jbValues(v){if(!v||Array.isArray(v)||!Object.hasOwn(JB_PRESETS,v.preset)||typeof v.preset!=='string'||typeof v.zeroTime!=='boolean'||typeof v.showLabels!=='boolean'||![.25,.5,1,2,4].includes(v.speed))throw Error('Invalid photochemistry configuration.');return {preset:v.preset,pumpNm:grid(v.pumpNm,300,450,1),timeLog:Math.round(finite(v.timeLog,-12,-1)*1e9)/1e9,zeroTime:v.zeroTime,quencherUM:grid(v.quencherUM,0,500,1),photons:grid(v.photons,1,1e6,1),kf:finite(v.kf,0,1e10),kic:finite(v.kic,0,1e10),kisc:finite(v.kisc,0,1e10),kp:finite(v.kp,0,1e9),ktnr:finite(v.ktnr,0,1e9),speed:v.speed,azimuth:grid(v.azimuth,0,360,1),showLabels:v.showLabels};}
+export function jbPreset(v,key){if(typeof key!=='string'||!Object.hasOwn(JB_PRESETS,key))throw Error('Unknown photophysics preset.');return jbValues({...v,preset:key,...Object.fromEntries(['kf','kic','kisc','kp','ktnr'].map((name,i)=>[name,JB_PRESETS[key].rates[i]]))});}
+export const jbTime=v=>v.zeroTime?0:10**v.timeLog;
+export function jbAdvance(v,dt){finite(dt,0,3600);return {...v,zeroTime:false,timeLog:Math.min(-1,(v.zeroTime?-12:v.timeLog)+dt*v.speed)};}
+const integral=(k,t)=>k===0?t:-Math.expm1(-k*t)/k;
+export function jbAt(v,time=jbTime(v)){
+ finite(time,0,.1);const C=JB_CONSTANTS,q=C.kq*v.quencherUM*1e-6,a=v.kf+v.kic+v.kisc+q,b=v.kp+v.ktnr+q,S=Math.exp(-a*time),d=Math.abs(a-b),T=v.kisc*(d===0?time*Math.exp(-a*time):Math.exp(-Math.min(a,b)*time)*(-Math.expm1(-d*time))/d),Is=integral(a,time);
+ let It=0;if(v.kisc&&time){const x=a*time,y=b*time;if(Math.max(x,y)<=.1){let sum=0,factorial=2;for(let k=0;k<=12;k++){let hk=0;for(let j=0;j<=k;j++)hk+=x**j*y**(k-j);if(k)factorial*=k+2;sum+=(k%2?-1:1)*hk/factorial;}It=v.kisc*time*time*sum;}else if(Math.abs(a-b)<=1e-5*Math.max(a,b))It=(v.kisc*Is-T)/b;else It=v.kisc*(integral(b,time)-Is)/(a-b);}
+ const F=v.kf*Is,IC=v.kic*Is,ISC=v.kisc*Is,QS=q*Is,P=v.kp*It,NR=v.ktnr*It,QT=q*It,G=F+IC+QS+P+NR+QT,phiF=a?v.kf/a:0,phiISC=a?v.kisc/a:0,phiP=b?phiISC*v.kp/b:0,trapS=a===0?1:0,trapT=b===0?phiISC:0,energy=C.h*C.c/(v.pumpNm*1e-9)/C.e,stored=S*C.singletEV+T*C.tripletEV,emitted=F*C.singletEV+P*C.tripletEV,heat=energy-C.singletEV+(IC+QS)*C.singletEV+ISC*(C.singletEV-C.tripletEV)+(NR+QT)*C.tripletEV;
+ return {time,a,b,S,T,G,F,P,IC,ISC,QS,NR,QT,phiF,phiISC,phiP,trapS,trapT,tauS:a?1/a:null,tauT:b?1/b:null,fluorRate:v.kf*S,phosRate:v.kp*T,expectedFluor:v.photons*F,expectedPhos:v.photons*P,detected:v.photons*(F+P)*C.detectorEfficiency,absorptionEV:energy,storedEV:stored,emittedEV:emitted,heatEV:heat,energyResidualEV:energy-stored-emitted-heat,populationResidual:1-S-T-G,fluorNm:C.h*C.c/C.e/C.singletEV*1e9,phosNm:C.h*C.c/C.e/C.tripletEV*1e9};
+}
+export const jbCurve=v=>Array.from({length:145},(_,i)=>{const time=10**(-12+11*i/144);return jbAt(v,time);});
+export function jbSweepCsv(v){v=jbValues(v);return [['time_s','pump_nm','quencher_uM','absorbed_photons','kf_s-1','kic_s-1','kisc_s-1','kp_s-1','ktnr_s-1','S1','T1','S0','F_per_absorbed','P_per_absorbed','F_rate_s-1','P_rate_s-1'],...jbCurve(v).map(r=>[r.time,v.pumpNm,v.quencherUM,v.photons,v.kf,v.kic,v.kisc,v.kp,v.ktnr,r.S,r.T,r.G,r.F,r.P,r.fluorRate,r.phosRate])].map(row=>row.join(',')).join('\r\n');}
+export function jbSternVolmer(v,quencherUM){const base=jbAt({...v,quencherUM:0}),now=jbAt({...v,quencherUM});return {quencherUM,ratio:base.phiF&&now.phiF?base.phiF/now.phiF:null,theoretical:base.a?1+JB_CONSTANTS.kq*quencherUM*1e-6/base.a:null};}
+export function jbRecord(id,values){if(!Number.isInteger(id)||id<1||id>1e6)throw Error('Invalid observation ID.');values=jbValues(values);return {id,values,reading:jbAt(values),included:true};}
+export const jbNotebook=()=>({schema:1,experiment:'jablonski-photochemistry',records:[],notes:''});
+const canonical=x=>Array.isArray(x)?x.map(canonical):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])])):x;
+export function jbParse(raw){if(typeof raw==='string')raw=JSON.parse(raw);if(!raw||raw.schema!==1||raw.experiment!=='jablonski-photochemistry'||!Array.isArray(raw.records)||raw.records.length>1000||typeof raw.notes!=='string'||raw.notes.length>100000)throw Error('Invalid photochemistry notebook.');let last=0;return {...jbNotebook(),notes:raw.notes,records:raw.records.map(r=>{const check=jbRecord(r?.id,r?.values);if(r.id<=last||typeof r.included!=='boolean'||JSON.stringify(canonical(r.reading))!==JSON.stringify(canonical(check.reading)))throw Error('Inconsistent or duplicate photochemistry observation.');last=r.id;return {...check,included:r.included};})};}
+export const JB_CSV_FIELDS=['time','S','T','G','F','P','IC','ISC','QS','NR','QT','phiF','phiP','tauS','tauT','expectedFluor','expectedPhos','detected','absorptionEV','storedEV','emittedEV','heatEV','energyResidualEV','populationResidual'];
+export function jbCsv(book){return [['id','preset','pump_nm','quencher_uM','absorbed_photons','kf_s-1','kic_s-1','kisc_s-1','kp_s-1','ktnr_s-1',...JB_CSV_FIELDS,'included'],...book.records.map(r=>[r.id,r.values.preset,r.values.pumpNm,r.values.quencherUM,r.values.photons,r.values.kf,r.values.kic,r.values.kisc,r.values.kp,r.values.ktnr,...JB_CSV_FIELDS.map(k=>r.reading[k]??''),r.included])].map(row=>row.map(x=>'"'+String(x).replaceAll('"','""')+'"').join(',')).join('\r\n');}

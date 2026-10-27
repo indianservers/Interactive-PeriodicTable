@@ -1,5 +1,5 @@
 import LabScreenNavigation from '../../utils/LabScreenNavigation.jsx';
-import {useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
+import {labScreenIndex,useLabRouteSync,pushLabScreen} from '../../utils/labRouteState.js';
 import KnowledgeCheck from "../../components/common/KnowledgeCheck.jsx";
 import { completeLab } from "../../utils/labNavigation.js";
 import { useMemo, useState } from "react";
@@ -20,17 +20,18 @@ const STEPS = [
   ["report", "Assessment"],
 ];
 
-const initialStep = () => Math.max(0, STEPS.findIndex(([id]) => id === new URLSearchParams(location.search).get("screen")));
+const initialStep = () => labScreenIndex(location, STEPS.map(([id]) => id));
 
-function Chart({ points }) {
+function Chart({ points, xLabel = "Independent variable", yLabel = "Response", label = "Model reference" }) {
   if (!points?.length) return null;
   return (
     <div className="dc-chart">
       <SciencePlot
-        series={[{ label: "Live data", data: points, color: "#2d8cff", points: true }]}
-        xLabel="Independent variable"
-        yLabel="Response"
+        series={[{ label, data: points, color: "#2d8cff", points: true }]}
+        xLabel={xLabel}
+        yLabel={yLabel}
         height={230}
+        theme="lab"
         legend={false}
       />
     </div>
@@ -47,6 +48,7 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
   const [hasRun, setHasRun] = useState(false);
   const [action, setAction] = useState(-1);
   const [recorded, setRecorded] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const questions = useMemo(() => (spec.quiz || []).map(q => ({...q, correct: 0, options: q.options.map((label,id) => ({id,label}))})), [spec]);
   const result = useMemo(() => spec.compute(values), [spec, values]);
   const bench = benchKindFor(spec.id, spec.subject);
@@ -56,6 +58,7 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
   const go = (n) => {
     if (n > 5) { completeLab(); return; }
     n = Math.max(0, Math.min(5, n));
+    setRunning(false);
     setStep(n);
     const u = new URL(location.href);
     u.searchParams.set("screen", STEPS[n][0]);
@@ -71,16 +74,17 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
   };
 
   const csv = () => {
-    const text = `experiment,metric,value\n${spec.id},primary,${result.primary}\n${spec.id},detail,${result.detail}`;
+    const rows=[['experiment','metric','value'],...Object.entries(values).map(([key,value])=>[spec.id,`input.${key}`,value]),[spec.id,'primary',result.primary],[spec.id,'detail',result.detail],[spec.id,'observation',result.observation],[spec.id,'model_basis',result.quality]];
+    const text = rows.map(row=>row.map(cell=>`"${String(cell??'').replaceAll('"','""')}"`).join(',')).join('\r\n');
     const a = document.createElement("a");
     const u = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
     a.href = u;
     a.download = `${spec.id}-results.csv`;
     a.click();
-    URL.revokeObjectURL(u);
+    setTimeout(()=>URL.revokeObjectURL(u),1000);
   };
 
-  useLabRouteSync(STEPS.map(item=>item[0]),setStep,true);
+  useLabRouteSync(STEPS.map(item=>item[0]),next => {setRunning(false);setStep(next);},true);
   return (
     <div className="ap-app"><LabScreenNavigation ids={STEPS.map(item=>item[0])} active={step}/>
       <header className="ap-head">
@@ -88,9 +92,11 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
         <span>Virtual Labs　/　{spec.subject}　/　{spec.paper}</span>
         <b>{spec.title}　 {step + 1} of 6</b>
         <div>{STEPS.map((_, i) => <i className={i <= step ? "done" : ""} key={i} />)}</div>
-        <button aria-label="Help"><HelpCircle /></button>
+        <button aria-label="Help" aria-expanded={helpOpen} aria-controls="practical-help" onClick={() => setHelpOpen(open => !open)}><HelpCircle /></button>
         <button onClick={reset}><RefreshCw /> Reset</button>
       </header>
+
+      {helpOpen && <section id="practical-help" className="ap-panel" aria-label="Practical help"><h2>{spec.title}: help</h2><p>Use the six stage tabs to read the theory, inspect apparatus, operate the experiment controls, and review results. Changing stages pauses the apparatus animation. Browser Back and Forward restore the selected stage.</p><p>{spec.description}</p><p>{spec.hazard}</p><button onClick={() => setHelpOpen(false)}>Close help</button></section>}
 
       <nav className="ap-stages" aria-label="Experiment stages">{STEPS.map(([id,label],i) => <button key={id} aria-current={step===i?"step":undefined} onClick={() => go(i)}>{i+1}. {label}</button>)}</nav>
       {step === 0 && (
@@ -159,7 +165,7 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
             <h2>Live experiment</h2><ol className="lab-procedure">{spec.steps.map((item,i)=><li key={item}>{i+1}. {item}</li>)}</ol>
             {structure ? <LabMoleculeStage structureId={spec.id} label={structure.label} /> : <LabBenchVisual apparatus={spec.apparatus} kind={bench} running={running} fill={fill} label={action >= 0 ? spec.steps[action] : result.primary} />}
             {action>=0&&<p className="ap-valid" role="status">Current operation: {spec.steps[action]}</p>}
-            <Chart points={result.chart} />
+            <Chart points={result.chart} xLabel={result.xLabel} yLabel={result.yLabel} label={result.chartLabel} />
             <p className={running ? "ap-valid" : "ap-notice"}>{running ? result.observation : "Press Run to lock in the live observation."}</p>
           </section>
           <section className="ap-panel">
@@ -177,8 +183,9 @@ export default function SyllabusInteractiveLab({ experimentId, onNavigate }) {
             <div className="ap-metric"><span>Primary result</span><b className="good">{result.primary}</b></div>
             <p>{result.detail}</p>
             <p className="ap-valid">{result.quality}</p>
+            {!result.chart?.length&&<button onClick={csv}><Download /> Export qualitative summary CSV</button>}
           </section>
-          <section className="ap-panel"><h2>Evidence plot</h2><Chart points={result.chart} /><button onClick={csv}><Download /> CSV</button></section>
+          {!!result.chart?.length&&<section className="ap-panel"><h2>Model plot</h2><Chart points={result.chart} xLabel={result.xLabel} yLabel={result.yLabel} label={result.chartLabel} /><button onClick={csv}><Download /> CSV</button></section>}
           <section className="ap-panel"><h2>Observation</h2><p>{result.observation}</p></section>
         </main>
       )}

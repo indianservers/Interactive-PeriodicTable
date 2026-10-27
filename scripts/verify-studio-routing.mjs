@@ -18,6 +18,8 @@ for(const [path,id,base] of [['nucleic-acid-explorer','bio-nucleic-acids','visua
  const old=new URL(`http://localhost/${path}/quizzes?screen=old&pdb=1BNA&q=dna`);
  check(resolveAppRoute(old,aliases),id);
  old.hash='/dashboard';check(resolveAppRoute(old,aliases),'dashboard');
+ check(studioSection(old,id),'');
+ old.hash='/';check(resolveAppRoute(old,aliases),'dashboard');check(studioSection(old,id),'');
  const next=appRouteUrl(old,'molecule');check(next.pathname,'/');check(next.hash,'#/molecule');check(next.search,'');
  const nested=appRouteUrl(old,`${base}/quizzes`);check(resolveAppRoute(nested,aliases),id);
 }

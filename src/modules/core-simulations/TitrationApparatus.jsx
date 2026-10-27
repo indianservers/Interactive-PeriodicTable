@@ -1,3 +1,4 @@
+import useApparatusFullscreen from './useApparatusFullscreen.js';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -7,7 +8,8 @@ export default function TitrationApparatus({ state, values, spec }) {
   const host=useRef(), api=useRef(), live=useRef({state,values});
   const [ready,setReady]=useState(false),[error,setError]=useState('');
   live.current={state,values};
-  useEffect(()=>{
+  const {fullscreen,toggle:toggleFullscreen}=useApparatusFullscreen(host,setError);
+ useEffect(()=>{
     const node=host.current;
     let renderer;
     try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch{setError('WebGL unavailable. Volume, chemistry and recording controls still work.');return;}
@@ -66,12 +68,21 @@ export default function TitrationApparatus({ state, values, spec }) {
     const tick=now=>{
       frame=requestAnimationFrame(tick);if(!visible||document.hidden||now-previous<33)return;previous=now;
       const current=live.current,{state:s,values:v}=current;
-      if(v!==lastValues){dirty=true;lastValues=v;}
+      if(v!==lastValues){
+        dirty=true;lastValues=v;
+        // Invert the frustum's volume integral, so liquid height follows volume.
+        const volumeAt=h=>Math.PI*(.6*.6*h-.6*.45*h*h+.45*.45*h*h*h/3);
+        const target=volumeAt(1.0)*Math.min(1,s.totalVolume/250);
+        let lo=0,hi=1;
+        for(let i=0;i<35;i++){const mid=(lo+hi)/2;if(volumeAt(mid)>target)hi=mid;else lo=mid;}
+        const height=(lo+hi)/2,radius=.6-.45*height;
+        flaskLiquid.geometry.dispose();flaskLiquid.geometry=new THREE.CylinderGeometry(radius,.6,height,48);
+        flaskLiquid.position.y=.32+height/2;
+        meniscus.position.y=.32+height;meniscus.scale.set(radius/.39,1,radius/.39);
+      }
       if(v.delivered!==lastVolume){if(v.delivered>lastVolume)dropUntil=now+350;lastVolume=v.delivered;dirty=true;}
       const fraction=Math.max(.001,(50-v.delivered)/50);column.scale.y=fraction;column.position.y=2.325+2.65*fraction/2;
-      const height=v.prepared ? .28+v.delivered/50*.23 : .001;
       flaskLiquid.visible=v.prepared;meniscus.visible=v.prepared;
-      flaskLiquid.scale.y=height/.38;flaskLiquid.position.y=.32+height/2;meniscus.position.y=.32+height;
       liquid.color.set(s.color);pipetteLiquid.visible=!v.prepared;
       drop.visible=v.prepared&&!reduced&&now<dropUntil;
       if(drop.visible)drop.position.y=1.7-(1-(dropUntil-now)/350)*.6;
@@ -85,6 +96,6 @@ export default function TitrationApparatus({ state, values, spec }) {
   return <div className="titration-3d" data-ready={ready}>
     <div ref={host} className="titration-3d-host" />
     {error&&<p role="alert">{error}</p>}
-    <div className="titration-camera"><span>Real 3D · drag to orbit · scroll to zoom</span><button aria-label="Reset apparatus camera" onClick={()=>api.current?.reset()}><RotateCcw size={15}/></button><button aria-label="Fullscreen apparatus" onClick={()=>host.current?.parentElement.requestFullscreen?.()}><Maximize2 size={15}/></button></div>
+    <div className="titration-camera"><span>Real 3D · drag to orbit · scroll to zoom</span><button aria-label="Reset apparatus camera" onClick={()=>api.current?.reset()}><RotateCcw size={15}/></button><button aria-label={fullscreen?"Exit apparatus fullscreen":"Fullscreen apparatus"} onClick={toggleFullscreen}><Maximize2 size={15}/></button></div>
   </div>;
 }

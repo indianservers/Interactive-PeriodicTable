@@ -1,3 +1,8 @@
+import {JB_DEFAULTS,jbAt,jbPreset} from './jablonskiModel.js';
+import {phSpecies,PH_DEFAULTS} from './phMetryModel.js';
+import {potSpecies,POT_DEFAULTS} from './potentiometryIronModel.js';
+import {conductometryResult,conductometryInitial,CONDUCTOMETRY_DEFAULTS} from './conductometryHclModel.js';
+import {conductometryResult as aceticConductometryResult} from './conductometryAceticModel.js';
 const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
 const fmt = (n, d = 3) => (Number.isFinite(n) ? n.toFixed(d) : "—");
 
@@ -398,9 +403,9 @@ export const syllabusInteractives = [
     title: "Qualitative Analysis of Organic Compounds",
     subject: "Organic",
     paper: "BSCH-402",
-    description: "Identify unknowns by ignition, MP/BP, solubility and functional-group tests, then make a derivative.",
+    description: "Investigate six organic reference unknowns using functional-group assays, positive controls, reagent blanks and an observation notebook.",
     kicker: "Organic qualitative analysis",
-    lead: "Follow the college scheme: preliminary tests, solubility class, functional tests, derivative.",
+    lead: "Compare fresh portions with controlled qualitative assays; support identification with recorded evidence.",
     equation: "Observation + control → functional class → derivative MP",
     hazard: "Do not taste samples. Brady’s, Tollens, ceric ammonium nitrate and sodium fusion need a hood.",
     theory: "Solubility in water, NaOH, NaHCO₃ and HCl classifies the compound before specific tests.",
@@ -413,7 +418,7 @@ export const syllabusInteractives = [
         3: { name: "Amine", tests: "HCl soluble; azo dye or carbylamine", deriv: "Acetyl / benzoyl" },
         4: { name: "Aldehyde", tests: "2,4-DNP + Tollens", deriv: "2,4-DNP hydrazone" },
         5: { name: "Ketone", tests: "2,4-DNP; Tollens negative", deriv: "2,4-DNP hydrazone" },
-        6: { name: "Amide", tests: "Biuret/hydrolysis to acid + NH₃", deriv: "Hydrolysis product" },
+        6: { name: "Primary carboxamide", tests: "Alkaline hydrolysis gives carboxylate + NH₃; Biuret is not a general simple-amide test", deriv: "Acidify the hydrolysate to obtain the carboxylic acid" },
       };
       const u = map[Math.round(v.unknown)] || map[1];
       const fizzOk = (Math.round(v.unknown) === 1 && v.nahco3 > 0.5) || (Math.round(v.unknown) !== 1 && v.nahco3 < 0.5);
@@ -427,9 +432,9 @@ export const syllabusInteractives = [
     title: "Kinetics: Decomposition of H₂O₂",
     subject: "Physical",
     paper: "BSCH-502",
-    description: "Follow first-order decomposition of hydrogen peroxide and extract k and t½.",
+    description: "Investigate an effective first-order peroxide model using recorded gas displacement, calibration and collection checks.",
     kicker: "First-order kinetics",
-    lead: "Measure volume of O₂ or remaining H₂O₂ versus time. A linear ln(c) plot confirms first order.",
+    lead: "Record gas displacement versus time, check collection validity, and fit an apparent first-order constant. A near-linear log plot alone does not prove mechanism.",
     equation: "2 H₂O₂ → 2 H₂O + O₂",
     hazard: "H₂O₂ is an oxidiser. Catalysts (MnO₂, Fe³⁺, I⁻) can evolve oxygen rapidly.",
     theory: "ln([H₂O₂]₀/[H₂O₂]) = kt. Half-life is independent of initial concentration.",
@@ -450,16 +455,16 @@ export const syllabusInteractives = [
     paper: "BSCH-502",
     description: "Acid-catalysed ester hydrolysis treated as pseudo-first order.",
     kicker: "Pseudo-first order",
-    lead: "Water is in large excess. Follow [ester] by titrating acetic acid produced.",
-    equation: "CH₃COOCH₃ + H₂O → CH₃COOH + CH₃OH",
+    lead: "Explore an ideal forward-rate approximation with excess water and fixed acid catalyst. Calculated titres are model references, not recorded aliquot measurements.",
+    equation: "CH₃COOCH₃ + H₂O ⇌ CH₃COOH + CH₃OH (H⁺ catalyst)",
     hazard: "HCl catalyst is corrosive. Keep the thermostat temperature constant.",
-    theory: "Rate = k[ester] when [H₂O] and [H⁺] are effectively constant. Titre ∞ acid formed.",
+    theory: "Acid-catalysed ester hydrolysis is reversible. The displayed exponential neglects the reverse rate and assumes effectively constant water and acid-catalyst concentrations. Each titre includes an 8 mL acid-catalyst blank; subtract it before relating titre increase to ester consumption. V∞ here is an assumed complete-hydrolysis acid-equivalent limit, not a measured equilibrium titre. Cooling and dilution slow aliquot reaction rather than instantly stopping it. A sampling, quenching and titration workflow is still pending.",
     apparatus: ["Methyl acetate", "HCl", "Thermostat", "NaOH burette"],
     controls: [control("kobs", "k (pseudo-first)", 0.01, 0.2, 0.001, "h⁻¹", 0.045), control("time", "Time", 0, 8, 0.1, "h", 2), control("tinf", "Infinity titre", 20, 45, 0.1, "mL", 32)],
     compute: (v) => {
       const t0 = 8;
       const vt = t0 + (v.tinf - t0) * (1 - Math.exp(-v.kobs * v.time));
-      return { primary: `Vₜ = ${fmt(vt, 2)} mL · k = ${fmt(v.kobs, 3)} h⁻¹`, detail: "k = (2.303/t) log((V∞−V₀)/(V∞−Vₜ))", observation: "Titre rises toward V∞ as ester is consumed.", quality: "Use the same NaOH for all titres", chart: titreCurve(vt, v.tinf) };
+      return { primary: `Model Vₜ = ${fmt(vt, 2)} mL · input k = ${fmt(v.kobs, 3)} h⁻¹`, detail: "For t > 0 in the ideal forward model: k = ln((V∞−V₀)/(V∞−Vₜ))/t. At t = 0 the single-point rate estimate is undefined.", observation: "Calculated acid-equivalent titre increases from the fixed 8 mL catalyst blank. This is a parameter exploration, not a measured kinetic fit.", quality: "Illustrative forward model; reverse reaction, aliquot handling and endpoint uncertainty are not simulated.", chart: Array.from({length: 41}, (_, i) => { const time = i / 5; return { x: time, y: t0 + (v.tinf - t0) * -Math.expm1(-v.kobs * time) }; }), xLabel: "Reaction time (h)", yLabel: "Model titre (mL)", chartLabel: "Ideal forward-model reference" };
     },
     steps: ["Start the clock on mixing ester with acid.", "Withdraw aliquots, quench, titrate.", "Calculate k from V₀, Vₜ, V∞."],
     quiz: [quiz("Why is the reaction called pseudo-first order?", "water", ["Water concentration is effectively constant", "The ester is zero order", "Acid is consumed completely"])],
@@ -479,8 +484,9 @@ export const syllabusInteractives = [
     controls: [control("hcl", "HCl taken", 5, 25, 0.5, "mL", 10), control("hclM", "HCl molarity", 0.05, 0.2, 0.001, "M", 0.1), control("naohM", "NaOH molarity", 0.05, 0.2, 0.001, "M", 0.1), control("added", "NaOH added", 0, 30, 0.1, "mL", 9.2)],
     compute: (v) => {
       const eq = v.hcl * v.hclM / v.naohM;
-      const kappa = Math.abs(v.added - eq) * 0.8 + 0.4;
-      return { primary: `Equivalence ${fmt(eq, 2)} mL · κ model ${fmt(kappa, 2)}`, detail: v.added < eq ? "Before end-point: κ falling" : "After end-point: κ rising", observation: "Plot two lines; intersection is the end-point.", quality: Math.abs(v.added - eq) < 0.4 ? "Near the break" : "Add more points around equivalence", chart: vCurve(eq) };
+      const values={...CONDUCTOMETRY_DEFAULTS,acidVolume:v.hcl,acid:v.hclM,base:v.naohM};
+      const at=added=>conductometryResult({...conductometryInitial(),loaded:true,delivered:added,used:added},values).kappa;
+      return { primary: `Reference equivalence ${fmt(eq, 2)} mL · model κ ${fmt(at(v.added), 3)} mS/cm`, detail: '25 °C limiting-ion-conductivity approximation with 40 mL dilution water; not a recorded measurement.', observation: 'The dedicated workspace measures settled conductance, applies a calibrated cell factor and fits recorded branches.', quality: 'Finite-concentration mobility and activity corrections are omitted.', chart: Array.from({length:31},(_,x)=>({x,y:at(x)})), xLabel:'NaOH added (mL)', yLabel:'Model conductivity (mS/cm)', chartLabel:'Limiting-ion model reference' };
     },
     steps: ["Measure κ after each NaOH increment.", "Plot κ vs volume.", "Read the intersection as the titre."],
     quiz: [quiz("Why does conductivity fall before equivalence?", "hplus", ["High-mobility H⁺ is replaced by Na⁺", "The solution is becoming non-electrolyte", "NaOH is a non-conductor"])],
@@ -490,19 +496,19 @@ export const syllabusInteractives = [
     title: "Conductometric Titration: Acetic Acid vs NaOH",
     subject: "Physical",
     paper: "BSCH-502",
-    description: "Weak acid–strong base conductivity curve and Ka from dilute solutions.",
+    description: "Weak-acid dissociation, conductivity curves and recorded endpoint analysis.",
     kicker: "Conductometry",
     lead: "A weak acid starts with low κ. Neutralisation produces acetate, then excess OH⁻ raises κ sharply.",
     equation: "CH₃COOH + OH⁻ → CH₃COO⁻ + H₂O",
     hazard: "Rinse the cell between runs.",
-    theory: "The first branch rises slowly; the second is steep due to OH⁻. Intersection is the end-point.",
+    theory: "An initial conductivity dip can occur as mobile H+ is consumed and acid dissociation is suppressed. Salt formation then gives a gradual rise; excess OH- produces a steeper rise. Two lines approximate these curved equilibrium regions. The dedicated lab also fits the fixed-Ka equilibrium model to recorded conductivities.",
     apparatus: ["Conductivity cell", "Acetic acid", "NaOH"],
-    controls: [control("acid", "Acetic acid molarity", 0.02, 0.2, 0.001, "M", 0.08), control("added", "NaOH added", 0, 30, 0.1, "mL", 12), control("eq", "Expected equivalence", 8, 25, 0.1, "mL", 20)],
+    controls: [control("acid", "Acetic acid molarity", 0.005, 0.05, 0.001, "M", 0.02), control("added", "NaOH added", 0, 30, 0.1, "mL", 4), control("base", "NaOH concentration", 0.02, 0.1, 0.005, "M", 0.05), control("volume", "Acid aliquot", 10, 25, 1, "mL", 20)],
     compute: (v) => {
-      const kappa = v.added < v.eq ? 0.3 + v.added * 0.04 : 0.3 + v.eq * 0.04 + (v.added - v.eq) * 0.12;
-      return { primary: `κ ≈ ${fmt(kappa, 2)} (relative) · end-point ${fmt(v.eq, 1)} mL`, detail: "Use the intersection of the two linear branches", observation: "Shallow then steep branches.", quality: "More points after equivalence define the OH⁻ branch", chart: vCurve(v.eq) };
+      const values={...CONDUCTOMETRY_DEFAULTS,acid:v.acid,acidVolume:v.volume,base:v.base},at=added=>aceticConductometryResult({...conductometryInitial(),loaded:true,delivered:added,used:added},values),result=at(v.added);
+      return { primary: `Model κ ${fmt(result.kappa,3)} mS/cm · reference equivalence ${fmt(result.equivalence,2)} mL`, detail:'25 °C ideal weak-acid charge equilibrium and limiting ionic mobilities; not recorded measurements.', observation:'Initial dissociation suppression, salt formation and excess-base conductivity follow the same equilibrium solver.', quality:'Fixed Ka=1.75e-5. Finite-concentration activities and mobilities are omitted.', chart:Array.from({length:61},(_,i)=>({x:i/2,y:at(i/2).kappa})),xLabel:'NaOH added (mL)',yLabel:'Model conductivity (mS/cm)',chartLabel:'Weak-acid equilibrium reference'};
     },
-    steps: ["Titrate acetic acid conductometrically.", "Locate the break.", "Optionally compute Ka from dilute conductance."],
+    steps: ["Titrate acetic acid conductometrically.", "Locate the break.", "Compare straight branches with a fixed-Ka equilibrium fit; Ka is not inferred."],
     quiz: [quiz("Which ion causes the steep rise after equivalence?", "oh", ["OH⁻", "H⁺", "CH₃COOH"])],
   }),
   lab({
@@ -519,9 +525,10 @@ export const syllabusInteractives = [
     apparatus: ["Conductivity meter", "Acetic acid dilutions", "Cell constant"],
     controls: [control("c", "Concentration", 0.005, 0.1, 0.001, "M", 0.02), control("lambda", "Λₘ", 5, 80, 0.5, "S cm² mol⁻¹", 18), control("lambda0", "Λₘ°", 300, 420, 1, "S cm² mol⁻¹", 390)],
     compute: (v) => {
-      const a = clamp(v.lambda / v.lambda0, 0.01, 0.95);
+      const a = v.lambda / v.lambda0;
+      if(!(a>0&&a<1))return {primary:'Invalid alpha: expected 0 < Λm / Λ∞ < 1',detail:'No clamp or fabricated Ka is applied.',observation:'Check conductance, units, concentration and the reference conductivity.',quality:'Invalid manual estimate',chart:[]};
       const ka = v.c * a * a / (1 - a);
-      return { primary: `α = ${fmt(a, 3)} · Ka = ${fmt(ka, 6)}`, detail: "Ostwald dilution law", observation: "Ka should be near 1.8×10⁻⁵ at 25 °C for a good run.", quality: Math.abs(Math.log10(ka) + 4.74) < 0.6 ? "Close to literature Ka" : "Check cell constant and Λ°", chart: titreCurve(a * 100, 20) };
+      return { primary: `α = ${fmt(a, 3)} · manual Ka = ${ka.toExponential(4)} M`, detail: "Classical Ostwald calculator; water autoionization and background corrections omitted.", observation: "The dedicated workspace records actual simulated dilution and blank readings.", quality: "A manual calculated point is not experimental validation.", chart: [{x:v.c,y:ka}],xLabel:'Input concentration (M)',yLabel:'Calculated Ka (M)',chartLabel:'Manual calculation' };
     },
     steps: ["Measure κ at several dilutions.", "Compute Λₘ and α.", "Apply Ostwald’s law."],
     quiz: [quiz("α is estimated as", "ratio", ["Λₘ / Λₘ°", "κ / c", "pH / 14"])],
@@ -538,10 +545,10 @@ export const syllabusInteractives = [
     hazard: "KMnO₄ and dichromate stain and oxidise. Dispose as heavy-metal/oxidiser waste.",
     theory: "Use the linear portion of the calibration. Deviations appear at high concentration.",
     apparatus: ["Colorimeter", "Cuvettes", "Standards", "Unknown"],
-    controls: [control("eps", "ε (relative)", 0.5, 5, 0.1, "", 2.1), control("c", "Unknown concentration", 0.0005, 0.02, 0.0001, "M", 0.006), control("path", "Path length", 0.5, 2, 0.1, "cm", 1)],
+    controls: [control("eps", "Assumed ε at chosen wavelength", 200, 3000, 10, "L mol⁻¹ cm⁻¹", 2400), control("c", "Prepared concentration", 0.00001, 0.0005, 0.00001, "M", 0.00032), control("path", "Path length", 0.5, 2, 0.1, "cm", 1)],
     compute: (v) => {
-      const A = v.eps * v.c * v.path * 80;
-      return { primary: `A = ${fmt(A, 3)} · c = ${fmt(v.c, 4)} M`, detail: "Unknown read from the calibration slope", observation: "Match λmax: KMnO₄ ~525 nm, Cu²⁺ ~630 nm, Cr(VI) ~440 nm.", quality: A < 1.2 ? "In the linear Beer–Lambert region" : "Dilute the unknown", chart: titreCurve(A * 20, 50) };
+      const A = v.eps * v.c * v.path;
+      return { primary: `A = ${fmt(A, 3)} · c = ${v.c.toExponential(3)} M`, detail: "Manual ideal Beer–Lambert calculator; ε must be appropriate to analyte and wavelength. Use the dedicated instrument for recorded calibration.", observation: "Permanganate absorbs near 525 nm; hydrated Cu²⁺ has a broad band toward the near infrared. Cr(VI) spectra depend on speciation and solution conditions.", quality: "Ideal monochromatic calculation; no instrumental corrections or assay validity implied", chart: {xLabel:"Prepared concentration (M)",yLabel:"Ideal absorbance",points:Array.from({length:6},(_,i)=>({x:v.c*i/5,y:A*i/5}))} };
     },
     steps: ["Record A for standards.", "Plot A vs c.", "Read the unknown."],
     quiz: [quiz("Beer–Lambert’s law relates absorbance to", "conc", ["Concentration (and path length)", "Only temperature", "Only refractive index"])],
@@ -560,8 +567,8 @@ export const syllabusInteractives = [
     apparatus: ["Stalagmometer", "Pyknometer", "Ostwald viscometer", "Water bath"],
     controls: [control("tliq", "Flow time liquid", 40, 180, 1, "s", 92), control("twater", "Flow time water", 40, 120, 1, "s", 62), control("rho", "Density liquid", 0.7, 1.4, 0.001, "g mL⁻¹", 0.789)],
     compute: (v) => {
-      const eta = 0.89 * (v.tliq / v.twater) * v.rho;
-      return { primary: `η ≈ ${fmt(eta, 3)} mPa s`, detail: `ρ = ${fmt(v.rho, 3)} g mL⁻¹`, observation: "Report temperature with every physical constant.", quality: "Water calibration must be at the same T", chart: titreCurve(v.tliq, 90) };
+      const eta = 0.890439 * (v.tliq / v.twater) * (v.rho / 0.997075);
+      return { primary: `η ≈ ${fmt(eta, 3)} mPa s`, detail: `Manual relative-viscosity calculation at prescribed 25 °C; ρsample = ${fmt(v.rho, 3)} g mL⁻¹; ρwater = 0.997075 g mL⁻¹`, observation: "Use the dedicated physical-properties bench to record bottle masses, drop counts and capillary transit times.", quality: "Approximate water reference at 25 °C; kinetic-energy/end corrections omitted", chart: [{x:0,y:v.twater},{x:1,y:v.tliq}],xLabel:"Liquid: 0 = water, 1 = sample",yLabel:"Input flow time (s)" };
     },
     steps: ["Determine density vs water.", "Count drops or drop weight for γ.", "Measure viscometer times."],
     quiz: [quiz("Ostwald viscosity relative to water uses", "times", ["Flow times and densities", "Only boiling points", "Only refractive index"])],
@@ -576,15 +583,15 @@ export const syllabusInteractives = [
     lead: "S₂O₈²⁻ oxidises I⁻ to I₂. Follow iodine or use a thiosulfate clock.",
     equation: "S₂O₈²⁻ + 2 I⁻ → 2 SO₄²⁻ + I₂",
     hazard: "Iodine stains. Keep concentrations in the teaching range.",
-    theory: "Rate = k[S₂O₈²⁻][I⁻]. With equal concentrations, 1/[A] vs t is linear.",
+    theory: "Manual no-thiosulfate reference: with [I⁻]₀ = 2[P]₀, stoichiometry maintains [I⁻] = 2[P], so 1/[P] − 1/[P]₀ = 2kt. The dedicated clock experiment also models fast iodine recycling by thiosulfate; its induction stage does not obey this no-scavenger relation.",
     apparatus: ["K₂S₂O₈", "KI", "Na₂S₂O₃ clock", "Starch"],
-    controls: [control("k", "k", 0.02, 0.4, 0.005, "L mol⁻¹ min⁻¹", 0.12), control("c0", "Equal initial conc.", 0.01, 0.08, 0.001, "M", 0.04), control("time", "Time", 0, 40, 1, "min", 12)],
+    controls: [control("k", "k", 0.02, 0.4, 0.005, "L mol⁻¹ min⁻¹", 0.12), control("c0", "Initial persulfate (iodide = 2×)", 0.01, 0.08, 0.001, "M", 0.04), control("time", "Time", 0, 40, 1, "min", 12)],
     compute: (v) => {
-      const c = v.c0 / (1 + v.k * v.c0 * v.time);
-      return { primary: `[A] = ${fmt(c, 4)} M`, detail: "Second-order equal-concentration integrated law", observation: "Clock blue appears when iodine exceeds thiosulfate.", quality: "1/c vs t should be linear", chart: decayChart(v.c0, v.k * v.c0) };
+      const c = v.c0 / (1 + 2 * v.k * v.c0 * v.time);
+      return { primary: `[Persulfate] = ${fmt(c, 4)} M · [I⁻] = ${fmt(2*c, 4)} M`, detail: "No-scavenger 2:1 initial stoichiometric ratio; integrated slope is 2k, not k.", observation: "This reference calculation has no thiosulfate induction interval. Use the dedicated coupled clock for iodine recycling and recorded blue-onset analysis.", quality: "Fixed k, homogeneous solution and no triiodide/indicator binding", chart: Array.from({length:41},(_,i)=>({x:i,y:v.c0/(1+2*v.k*v.c0*i)})),xLabel:"Time (min)",yLabel:"Persulfate (M)" };
     },
     steps: ["Mix persulfate and iodide at t = 0.", "Follow iodine or clock time.", "Determine k and overall order."],
-    quiz: [quiz("If both reactants start equal, a linear plot is", "inv", ["1/[A] versus t", "ln[A] versus t", "[A] versus t"])],
+    quiz: [quiz("Without scavenger, for [I⁻]₀ = 2[P]₀, a linear plot is", "inv", ["1/[P] versus t", "ln[P] versus t", "[P] versus t"])],
   }),
   lab({
     id: "saponification-order",
@@ -601,7 +608,7 @@ export const syllabusInteractives = [
     controls: [control("k", "k", 0.02, 0.5, 0.005, "L mol⁻¹ min⁻¹", 0.11), control("c0", "Initial [NaOH]=[ester]", 0.02, 0.1, 0.001, "M", 0.05), control("time", "Time", 0, 50, 1, "min", 15)],
     compute: (v) => {
       const c = v.c0 / (1 + v.k * v.c0 * v.time);
-      return { primary: `[OH⁻] = ${fmt(c, 4)} M · order 2`, detail: "Titre of remaining alkali falls with time", observation: "Phenolphthalein titre decreases as ester is saponified.", quality: "Keep ionic strength and T constant", chart: decayChart(v.c0, v.k * v.c0) };
+      return { primary: `[OH⁻] = ${fmt(c, 4)} M · assigned overall order 2`, detail: "Manual equal-reactant reference; k uses minutes here", observation: "Remaining hydroxide follows a hyperbola, not an exponential.", quality: "Dedicated experiment estimates order from recorded conductance; this calculator assumes the law.", chart: Array.from({length:41},(_,i)=>{const t=i*50/40;return {x:t,y:v.c0/(1+v.k*v.c0*t)};}) };
     },
     steps: ["Mix ester and NaOH at t = 0.", "Withdraw, quench, titrate leftover alkali.", "Test 1/c vs t for linearity."],
     quiz: [quiz("Saponification of ethyl acetate is typically", "second", ["Second order overall", "Zero order", "Third order in water"])],
@@ -620,8 +627,8 @@ export const syllabusInteractives = [
     apparatus: ["pH meter", "Glass electrode", "HCl", "NaOH"],
     controls: [control("eq", "Equivalence volume", 15, 30, 0.1, "mL", 24.8), control("added", "NaOH added", 0, 40, 0.1, "mL", 18)],
     compute: (v) => {
-      const pH = v.added < v.eq ? 1.3 + (v.added / v.eq) * 2.2 : 7 + Math.min(6, (v.added - v.eq) * 0.9);
-      return { primary: `pH ≈ ${fmt(pH, 2)}`, detail: `Equivalence at ${fmt(v.eq, 1)} mL`, observation: v.added > v.eq - 0.3 && v.added < v.eq + 0.3 ? "Steep jump: near end-point" : "Buffer-like slope away from equivalence", quality: "Calibrate at pH 4 and 7 before the run", chart: pHCurve(v.eq) };
+      const values={...PH_DEFAULTS,acid:.1*v.eq/25},pH=phSpecies('ph-metry-hcl',values,v.added).pH;
+      return { primary: `pH = ${fmt(pH, 3)}`, detail: `Assigned equivalence ${fmt(v.eq, 1)} mL; 25 mL acid +25 mL water, 0.100 M base`, observation: "Strong-acid charge balance includes water near neutrality; there is no HCl buffer region.", quality: "Manual ideal25 C reference; the dedicated experiment estimates equivalence from recorded data.", chart:Array.from({length:81},(_,i)=>({x:i/2,y:phSpecies('ph-metry-hcl',values,i/2).pH})) };
     },
     steps: ["Calibrate the meter.", "Add NaOH in small increments near 24–26 mL.", "Plot pH vs V."],
     quiz: [quiz("The end-point is best read from", "jump", ["The steep pH jump / first derivative peak", "The first pH 3 reading", "The colour of NaOH"])],
@@ -636,13 +643,12 @@ export const syllabusInteractives = [
     lead: "The buffer region appears before equivalence. Equivalence pH is > 7 because of acetate hydrolysis.",
     equation: "CH₃COOH + OH⁻ → CH₃COO⁻ + H₂O",
     hazard: "Rinse the electrode with distilled water, blot, do not rub.",
-    theory: "Half-equivalence pH = pKa. Equivalence is not pH 7.",
+    theory: "Half-equivalence pH approximates pKa when buffer assumptions hold. Acetate equivalence is alkaline at25 C.",
     apparatus: ["pH meter", "Acetic acid", "NaOH"],
     controls: [control("eq", "Equivalence volume", 15, 30, 0.1, "mL", 22), control("added", "NaOH added", 0, 40, 0.1, "mL", 11), control("pka", "pKa", 4.4, 5, 0.01, "", 4.76)],
     compute: (v) => {
-      const f = v.added / v.eq;
-      const pH = f < 0.98 ? v.pka + Math.log10(Math.max(f, 0.02) / Math.max(1 - f, 0.02)) : 8.4 + (v.added - v.eq) * 0.4;
-      return { primary: `pH ≈ ${fmt(pH, 2)}`, detail: f < 0.55 && f > 0.45 ? "Near half-equivalence: pH ≈ pKa" : "See buffer vs jump", observation: "Choose phenolphthalein, not methyl orange, in a visual check.", quality: "Half-equivalence is the pKa checkpoint", chart: pHCurve(v.eq) };
+      const values={...PH_DEFAULTS,acid:.1*v.eq/25},ka=10**-v.pka,pH=phSpecies('ph-metry-acetic',values,v.added,ka).pH;
+      return { primary: `pH = ${fmt(pH, 3)}`, detail: "Assigned monoprotic weak-acid reference; editable pKa is a teaching parameter.", observation: "Charge balance includes dissociation, hydrolysis and water at every volume.", quality: "Half-equivalence pH approximates pKa in the buffer limit; dedicated acetic-acid experiment uses fixed4.756.", chart:Array.from({length:81},(_,i)=>({x:i/2,y:phSpecies('ph-metry-acetic',values,i/2,ka).pH})) };
     },
     steps: ["Calibrate, titrate acetic acid.", "Note buffer region, half-equivalence, jump.", "Equivalence pH is alkaline."],
     quiz: [quiz("At half-equivalence, pH equals", "pka", ["pKa of acetic acid", "7.00 exactly", "pKb of acetate"])],
@@ -661,9 +667,8 @@ export const syllabusInteractives = [
     apparatus: ["Conductivity meter", "Saturated BaSO₄", "Conductivity water"],
     controls: [control("kappa", "κ(saturated) − κ(blank)", 1, 40, 0.1, "µS cm⁻¹", 4.2), control("lambda0", "Λₘ° (BaSO₄)", 200, 320, 1, "S cm² mol⁻¹", 280)],
     compute: (v) => {
-      const s = (v.kappa * 1e-6 * 1000) / (v.lambda0 / 1000) / 1000;
-      const ksp = s * s;
-      return { primary: `s ≈ ${s.toExponential(2)} M · Ksp ≈ ${ksp.toExponential(2)}`, detail: "Teaching estimate from conductance", observation: "Saturated solution must be clear and thermostatted.", quality: "Order of 10⁻¹⁰ is the literature target", chart: titreCurve(v.kappa, 4) };
+      const s = v.kappa / (1000*v.lambda0),ksp = s*s;
+      return { primary: `s ≈ ${s.toExponential(2)} M · Qc ≈ ${ksp.toExponential(2)} M²`, detail: "Manual ideal pure-water reference: s=Δκ(µS/cm)/(1000Λm°)", observation: "Matched blank, clear filtrate and excess solid at saturation are required before interpreting Qc as Ksp.", quality: "Common-ion and activity corrections belong in the dedicated experiment.", chart:Array.from({length:41},(_,i)=>({x:i,y:(i/(1000*v.lambda0))**2})) };
     },
     steps: ["Prepare a saturated BaSO₄ solution at known T.", "Measure κ vs a water blank.", "Convert to s and Ksp."],
     quiz: [quiz("For BaSO₄, Ksp equals", "s2", ["s²", "4s³", "s"])],
@@ -682,8 +687,8 @@ export const syllabusInteractives = [
     apparatus: ["Pt electrode", "Reference electrode", "Fe(II)", "K₂Cr₂O₇", "Potentiometer"],
     controls: [control("eq", "Equivalence volume", 15, 30, 0.1, "mL", 21.4), control("added", "Titrant added", 0, 35, 0.1, "mL", 16)],
     compute: (v) => {
-      const E = v.added < v.eq ? 0.68 + 0.06 * Math.log10((v.added + 0.2) / (v.eq - v.added + 0.2)) : 1.05 + 0.02 * (v.added - v.eq);
-      return { primary: `E ≈ ${fmt(E, 3)} V`, detail: `End-point ${fmt(v.eq, 1)} mL`, observation: v.added > v.eq - 0.4 && v.added < v.eq + 0.4 ? "ΔE/ΔV is largest here" : "Still on a plateau", quality: "Plot E and ΔE/ΔV", chart: pHCurve(v.eq) };
+      const values={...POT_DEFAULTS,iron:v.eq*6*POT_DEFAULTS.titrant/POT_DEFAULTS.aliquot},z=potSpecies(values,v.added);
+      return { primary: `Ecell ≈ ${fmt(z.cell/1000,3)} V`, detail: `Calculated ideal Pt vs nominal Ag/AgCl; configured stoichiometric reference ${fmt(v.eq,1)}mL`, observation:'Coupled Fe/Cr Nernst equilibrium with proton consumption and dilution; not a measured endpoint.',quality:'Dedicated experiment infers its endpoint from recorded mV/volume differences.',chart:Array.from({length:71},(_,i)=>({x:i/2,y:potSpecies(values,i/2).cell/1000})) };
     },
     steps: ["Assemble Pt and reference electrodes.", "Add dichromate, record E.", "Locate the first-derivative peak."],
     quiz: [quiz("The indicator electrode for Fe²⁺/Fe³⁺ is typically", "pt", ["Platinum", "Glass pH electrode only", "A zinc rod"])],
@@ -700,11 +705,11 @@ export const syllabusInteractives = [
     hazard: "Toluene is flammable and toxic. Use a separatory funnel in a hood.",
     theory: "If dimerisation occurs, a plot of c_org vs c_aq² (or related forms) diagnoses association.",
     apparatus: ["Separatory funnel", "Toluene", "Benzoic acid", "NaOH titre"],
-    controls: [control("caq", "c(aq)", 0.002, 0.05, 0.001, "M", 0.012), control("kd", "True Kd (monomer)", 0.5, 8, 0.1, "", 3.2), control("kdim", "Dimer K", 0, 40, 0.5, "", 12)],
+    controls: [control("caq", "Neutral HA(aq)", 0.002, 0.025, 0.001, "M", 0.012), control("kd", "Conditional Kd (monomer)", 0.5, 8, 0.1, "", 3.2), control("kdim", "Dimer K", 0, 40, 0.5, "L/mol", 12)],
     compute: (v) => {
       const corg = v.kd * v.caq + 2 * v.kdim * (v.kd * v.caq) ** 2;
       const D = corg / v.caq;
-      return { primary: `D_app = ${fmt(D, 2)} · c_org ${fmt(corg, 4)} M`, detail: v.kdim > 1 ? "Apparent D rises with concentration: dimerisation" : "Simple Nernst partition", observation: "Titrate each layer after settling.", quality: "Always state T and which layer was titrated", chart: titreCurve(D, 8) };
+      return { primary: `Co/[HA]aq = ${fmt(D,2)} · Co ${fmt(corg,4)} M acid units`, detail:'Manual neutral-species reference; total aqueous acid also includes benzoate.',observation:'Co=Kd[HA]aq+2Kdim(Kd[HA]aq)². No water is formed by hydrogen-bond association.',quality:'Dedicated experiment corrects measured blanks and aqueous ionisation before fitting.',chart:Array.from({length:51},(_,i)=>{const x=i*.0005;return {x,y:v.kd*x+2*v.kdim*(v.kd*x)**2};}) };
     },
     steps: ["Shake known benzoic acid between equal volumes.", "Separate and titrate both layers.", "Compute D and test for association."],
     quiz: [quiz("If benzoic acid dimerises in toluene, D_app", "rises", ["Increases with concentration", "Is always exactly Kd", "Becomes zero"])],
@@ -721,10 +726,10 @@ export const syllabusInteractives = [
     hazard: "n-Butanol is flammable. Avoid emulsions by gentle inversion.",
     theory: "For a solute in the same molecular form in both layers, Kd is constant.",
     apparatus: ["Separatory funnel", "n-Butanol", "Acetic acid", "NaOH"],
-    controls: [control("caq", "c(water)", 0.02, 0.3, 0.005, "M", 0.1), control("kd", "Kd", 0.3, 4, 0.05, "", 1.15)],
+    controls: [control("caq", "Neutral HA(water-rich)", 0.002, 0.05, 0.001, "M", 0.01), control("kd", "Conditional Kd", 0.3, 4, 0.05, "", 1.15)],
     compute: (v) => {
       const corg = v.kd * v.caq;
-      return { primary: `K_d = ${fmt(v.kd, 2)} · c_org ${fmt(corg, 3)} M`, detail: "Assume monomer in both layers", observation: "Layers must be clear before sampling.", quality: "Report volumes and T", chart: titreCurve(v.kd * 10, 12) };
+      return { primary: `Co/[HA]water = ${fmt(v.kd,2)} · Co ${fmt(corg,4)}M`,detail:'Manual neutral-monomer reference at fixed conditional phase composition.',observation:'Pre-saturated phases and measured layer volumes matter; total aqueous acid also includes acetate.',quality:'Dedicated experiment infers a coefficient from reference/blank-corrected recorded titres.',chart:Array.from({length:41},(_,i)=>({x:i*.00125,y:v.kd*i*.00125})) };
     },
     steps: ["Prepare the two-phase system.", "Shake, settle, sample each layer.", "Titrate and compute Kd."],
     quiz: [quiz("Nernst distribution law assumes", "same-form", ["The solute has the same molecular form in both phases", "The solute always dimerises", "Volumes must be unequal"])],
@@ -741,11 +746,11 @@ export const syllabusInteractives = [
     hazard: "Organic extractants (ether, MIBK) are flammable. Use a hood.",
     theory: "Multiple small extractions beat one large extraction with the same total organic volume.",
     apparatus: ["Separatory funnel", "Fe(III) solution", "Organic solvent", "Colorimetry"],
-    controls: [control("D", "Distribution ratio D", 0.5, 40, 0.1, "", 8), control("vr", "Vaq/Vorg", 0.5, 5, 0.1, "", 1), control("n", "Number of extractions", 1, 4, 1, "", 2)],
+    controls: [control("D", "Distribution ratio D", 0.5, 40, 0.1, "", 8), control("vr", "Vaq / total Vorg", 0.5, 5, 0.1, "", 1), control("n", "Number of extractions", 1, 4, 1, "", 2)],
     compute: (v) => {
-      const remain = (v.vr / (v.D + v.vr)) ** v.n;
+      const remain = (v.vr / (v.D / v.n + v.vr)) ** v.n;
       const pct = (1 - remain) * 100;
-      return { primary: `${fmt(pct, 1)}% Fe extracted`, detail: `${v.n} extraction(s), D = ${fmt(v.D, 1)}`, observation: "Organic layer coloured by the Fe complex.", quality: v.n > 1 ? "Multiple contacts improve recovery" : "Consider a second extraction", chart: titreCurve(pct, 90) };
+      return { primary: `${fmt(pct, 1)}% Fe extracted`, detail: `${v.n} extraction(s), D = ${fmt(v.D, 1)}; same total solvent`, observation: "Conditional total-iron distribution; actual species/color require a specified matrix.", quality: v.n > 1 ? "Multiple contacts improve recovery" : "Consider a second extraction", chart: Array.from({length:4},(_,i)=>({x:i+1,y:100*(1-(v.vr/(v.D/(i+1)+v.vr))**(i+1))})), xLabel:"Equal fresh contacts (same total solvent)", yLabel:"Calculated Fe extraction (%)", chartLabel:"Ideal equal-total-solvent reference" };
     },
     steps: ["Adjust pH/ligand as specified.", "Shake with the organic solvent.", "Analyse both layers; compute %E."],
     quiz: [quiz("For the same total organic volume, extraction is more complete with", "multi", ["Several small portions", "One huge portion only", "No shaking"])],
@@ -770,13 +775,13 @@ export const syllabusInteractives = [
       control("eff", "Current efficiency", 70, 100, 1, "%", 96),
     ],
     compute: (v) => {
-      const m = (v.I * v.t * 60 * v.M * (v.eff / 100)) / (v.n * 96485);
+      const m = (v.I * v.t * 60 * v.M * (v.eff / 100)) / (v.n * 96485.33212331002);
       return {
-        primary: `${fmt(m * 1000, 1)} mg deposited`,
+        primary: `${fmt(m * 1000, 1)} mg charge-only estimate`,
         detail: `I = ${fmt(v.I, 2)} A for ${v.t} min`,
-        observation: v.eff < 90 ? "Gas evolution: current efficiency below 90%." : "Smooth metallic deposit on the cathode.",
+        observation: "Manual Faraday reference; finite analyte, transport and deposit morphology require the dedicated experiment.",
         quality: v.eff >= 95 ? "Weigh to constant mass after drying." : "Lower current or stir to raise efficiency.",
-        chart: titreCurve(v.t, 50),
+        chart: Array.from({length:41},(_,i)=>({x:v.I*v.t*60*i/40,y:v.I*v.t*60*i/40*v.M*(v.eff/100)/(v.n*96485.33212331002)*1000})),xLabel:"Charge(C)",yLabel:"Calculated mass(mg)",chartLabel:"Manual constant-efficiency Faraday reference",
       };
     },
     steps: ["Weigh the clean dry cathode.", "Electrolyse until the analyte test is negative.", "Wash, dry, reweigh; compute % metal."],
@@ -801,15 +806,14 @@ export const syllabusInteractives = [
       control("time", "Time", 20, 180, 5, "min", 90),
     ],
     compute: (v) => {
-      const mmol = v.isatin / 0.147;
-      const yieldPct = clamp(78 * Math.min(1, v.allyl / 1.1) * (v.temp > 40 && v.temp < 70 ? 1 : 0.82) * Math.min(1, v.time / 80), 20, 92);
-      const mass = mmol * 0.187 * yieldPct / 100;
+      const mmol = v.isatin / 0.147133;
+      const limit = mmol * Math.min(1, v.allyl);
       return {
-        primary: `${fmt(yieldPct, 0)}% · ${fmt(mass, 2)} g N-allylisatin`,
-        detail: `${fmt(mmol, 1)} mmol isatin`,
-        observation: v.allyl < 1 ? "Incomplete conversion: TLC still shows isatin." : "Product spot grows; recrystallise from ethanol.",
-        quality: "Report melting point and TLC Rf vs authentic isatin.",
-        chart: titreCurve(v.time / 4, 40),
+        primary: `${fmt(limit * 0.187198, 3)} g stoichiometric maximum`,
+        detail: `${fmt(mmol, 2)} mmol isatin; time and temperature do not establish measured yield`,
+        observation: "Use the dedicated reaction, isolation and qNMR workspace for conditional yield inference.",
+        quality: "N-allylation retains both carbonyls. No empirical conversion or TLC result is inferred from these setup values.",
+        chart: [],
       };
     },
     steps: ["Charge isatin, base and solvent.", "Add allyl bromide and stir at the set temperature.", "Quench, extract, recrystallise and weigh."],
@@ -829,7 +833,7 @@ export const syllabusConcepts = [
     lead: "Switch compounds to inspect 3c–2e bonds, ABₙ geometries and hydrolysis behaviour.",
     equation: "Examples: B₂H₆, B₃N₃H₆, ClF₃, XeF₄, XeO₃",
     hazard: "These are structural teaching models, not laboratory preparations of xenon fluorides.",
-    theory: "Diborane uses banana bonds. Interhalogens follow VSEPR (T-shape, square planar, pentagonal bipyramid). Xenon fluorides expand the octet using d-orbitals in the simple teaching picture (or 3c–4e in modern MOT).",
+    theory: "Diborane contains two three-centre two-electron bridges. VSEPR distinguishes molecular and electron-domain geometry. Historical sp3d labels describe shapes; they do not establish d-orbital participation. Multicentre MO models describe hypervalent electron sharing.",
     controls: [control("cmpd", "Compound (1=B2H6,2=borazine,3=ClF3,4=XeF4,5=silicone)", 1, 5, 1, "", 1)],
     compute: (v) => {
       const rows = {
@@ -840,7 +844,7 @@ export const syllabusConcepts = [
         5: ["Silicones", "–(R₂SiO)ₙ–", "Straight, cyclic or cross-linked"],
       };
       const r = rows[Math.round(v.cmpd)] || rows[1];
-      return { primary: r[0], detail: r[1], observation: r[2], quality: "Match geometry with VSEPR electron groups", chart: titreCurve(v.cmpd * 15, 50) };
+      return { primary: r[0], detail: r[1], observation: r[2], quality: "Match geometry with VSEPR electron groups", chart: [] };
     },
     steps: ["Select a representative compound.", "Read bonding and geometry.", "Predict hydrolysis/reactivity."],
     quiz: [quiz("Diborane contains", "bridge", ["3-centre–2-electron B–H–B bonds", "Only 2c–2e B–B bonds", "Ionic H⁻ only"])],
@@ -856,18 +860,18 @@ export const syllabusConcepts = [
     lead: "See how HX, HOX, KMnO₄, peracids and ozone map onto the expected outcomes.",
     equation: "RCH=CH₂ + HX → Markovnikov alkyl halide (no peroxide)",
     hazard: "Teaching predictor only.",
-    theory: "Zaitsev: more substituted alkene. Peroxide + HBr: anti-Markovnikov. Ozonolysis locates the double bond.",
+    theory: "For suitable substrates with accessible elimination geometry, a small strong base commonly favors the more substituted (Zaitsev) alkene; bulky bases and stereochemical constraints can change the outcome. Radical peroxide-initiated anti-Markovnikov addition applies to HBr, not generically to HCl or HI. Reductive alkene ozonolysis gives carbonyl fragments; an oxidative workup can further oxidize aldehydes. Alkyne HX addition can give a vinyl halide with one equivalent and a geminal dihalide with excess HX; do not infer a universal free vinyl-cation mechanism.",
     controls: [control("rxn", "Reaction (1=HX,2=HBr/ROOR,3=Zaitsev,4=ozone,5=KMnO4 cis)", 1, 5, 1, "", 1)],
     compute: (v) => {
       const rows = {
         1: ["HX addition", "Markovnikov", "H adds to the carbon with more hydrogens"],
         2: ["HBr / peroxide", "Anti-Markovnikov", "Radical chain; Br at the less substituted carbon"],
-        3: ["Dehydrohalogenation", "Zaitsev alkene", "More substituted C=C predominates"],
-        4: ["Ozonolysis", "Carbonyls from each C of C=C", "Used to locate the double bond"],
+        3: ["Dehydrohalogenation", "Zaitsev tendency", "Small strong base and accessible elimination geometry: more substituted alkene commonly favored; not a universal product ratio"],
+        4: ["Reductive alkene ozonolysis", "Carbonyls from each C of C=C", "Carbon substituents determine aldehyde versus ketone; oxidative workup gives different outcomes"],
         5: ["Cold KMnO₄ / OsO₄", "Syn diol", "Anti diol via epoxide/peracid then hydrolysis"],
       };
       const r = rows[Math.round(v.rxn)] || rows[1];
-      return { primary: r[0], detail: r[1], observation: r[2], quality: "Write the mechanism arrow pattern next", chart: titreCurve(v.rxn * 15, 50) };
+      return { primary: r[0], detail: r[1], observation: r[2], quality: "Qualitative reaction-family comparison; no concentration, kinetics or yield is calculated", chart: [] };
     },
     steps: ["Pick the reagent set.", "State regiochemistry.", "Write the organic product."],
     quiz: [quiz("HBr with peroxides gives", "anti", ["Anti-Markovnikov addition", "Zaitsev elimination", "Syn dihydroxylation"])],
@@ -905,17 +909,18 @@ export const syllabusConcepts = [
     subject: "Physical",
     paper: "BSCH-101",
     kind: "sim",
-    description: "Map absorption, IC, ISC, fluorescence and phosphorescence, including H₂–Cl₂ vs H₂–Br₂.",
+    description: "Explore absorption, IC, ISC, fluorescence, phosphorescence and the distinction from chemical chain quantum yield.",
     kicker: "Photochemistry",
-    lead: "Φ = molecules transformed / photons absorbed. Chain reactions can give Φ ≫ 1.",
+    lead: "Φ = specified events / absorbed photons; emission and chemical product yields are different.",
     equation: "Φ = rate of process / photon absorption rate",
     hazard: "Teaching model of excited states.",
-    theory: "H₂–Cl₂ has a high quantum yield (chain). H₂–Br₂ is much less efficient. Phosphorescence is T₁ → S₀.",
+    theory: "Phosphorescence is T₁ → S₀. Chemical chain product yields can exceed1, but depend on reaction conditions; no universal H₂–halogen value is assigned.",
     controls: [control("path", "Process (1=fluor,2=phos,3=H2Cl2,4=H2Br2)", 1, 4, 1, "", 1), control("photons", "Photons absorbed (relative)", 1, 20, 1, "", 4)],
     compute: (v) => {
-      const phi = { 1: 0.7, 2: 0.05, 3: 1e5, 4: 0.01 }[Math.round(v.path)] || 0.7;
-      const prod = phi * v.photons;
-      return { primary: `Φ model ${phi > 10 ? phi.toExponential(1) : fmt(phi, 2)} · product ~ ${fmt(prod, 1)}`, detail: Math.round(v.path) === 3 ? "Chain reaction: Φ ≫ 1" : "Unimolecular photophysics or inefficient chain", observation: "ISC populates T₁; phosphorescence is longer-lived.", quality: "Abnormal Φ needs a chain explanation", chart: titreCurve(Math.min(100, Math.log10(phi + 1) * 40), 50) };
+      const path=Math.round(v.path);
+      if(path>=3)return {primary:'Chemical chain contrast: no fixed quantum yield',detail:'Product yield depends on initiation, propagation, inhibition and termination conditions.',observation:'Multiple products per absorbed photon can use chemical energy; this is distinct from nonchain emission.',quality:'Qualitative explanation only; no measured or predicted H₂–halogen yield.',chart:[]};
+      const state=jbAt(jbPreset({...JB_DEFAULTS,photons:v.photons},path===1?'balanced':'triplet')),phi=path===1?state.phiF:state.phiP;
+      return {primary:'Assigned emission Φ='+phi.toFixed(4),detail:'Asymptotic expected emitted photons='+(phi*v.photons).toFixed(3),observation:'Calculated from explicitly assigned competing rates; not a named-compound measurement.',quality:'Use the dedicated Jablonski lab for rates, curves and assumptions.',chart:[]};
     },
     steps: ["Trace S₀→S₁ absorption.", "Choose fluorescence vs ISC/phosphorescence.", "Contrast H₂–Cl₂ and H₂–Br₂ yields."],
     quiz: [quiz("A quantum yield much greater than 1 usually means", "chain", ["A chain reaction", "A forbidden transition", "A singlet only"])],
@@ -929,14 +934,13 @@ export const syllabusConcepts = [
     description: "Rotate Newman projections and compare staggered, eclipsed, gauche and anti energies.",
     kicker: "Stereochemistry",
     lead: "Staggered ethane is lower than eclipsed. n-Butane anti is below gauche.",
-    equation: "E(θ) teaching model: V₃/2 (1 − cos 3θ) plus gauche terms",
+    equation: "A–C1–C2–B torsion; use the dedicated MMFF94 scan for energies",
     hazard: "Teaching energy profile.",
     theory: "Configurational isomers cannot be interconverted by rotation; conformational isomers can.",
     controls: [control("theta", "Dihedral angle", 0, 180, 5, "°", 60), control("mol", "Molecule (1=ethane,2=butane,3=1,2-dichloroethane)", 1, 3, 1, "", 2)],
     compute: (v) => {
-      const ecl = Math.cos((v.theta * Math.PI) / 60);
-      const E = (1 - ecl) * (Math.round(v.mol) === 1 ? 12 : 16) + (Math.abs(v.theta - 60) < 20 ? 3.3 : 0);
-      return { primary: `θ = ${v.theta}° · E rel. ${fmt(E, 1)} kJ mol⁻¹`, detail: v.theta % 60 === 0 && v.theta % 120 !== 0 ? "Staggered" : "Toward eclipsed", observation: v.theta === 180 ? "Anti (butane/dichloroethane)" : v.theta === 60 ? "Gauche" : "Scan the profile", quality: "Anti n-butane is the global minimum", chart: titreCurve(v.theta, 180) };
+      const theta=v.theta,staggered=Math.abs(theta%120-60)<1e-6;
+      return {primary:'Dihedral '+theta+'°',detail:staggered?'Staggered reference geometry':'Eclipsed or skew reference geometry',observation:'Use the dedicated five-molecule MMFF94 workspace for coordinate-derived energies and Newman projections.',quality:'No arbitrary energy or titration curve is assigned in this legacy summary.',chart:[]};
     },
     steps: ["Set the dihedral.", "Identify staggered/eclipsed/gauche/anti.", "Rank energies."],
     quiz: [quiz("The most stable n-butane conformer is", "anti", ["Anti (180°)", "Fully eclipsed", "Gauche only"])],
@@ -947,17 +951,16 @@ export const syllabusConcepts = [
     subject: "Physical",
     paper: "BSCH-101",
     kind: "sim",
-    description: "Coagulating power vs ion charge; Freundlich vs Langmuir coverage.",
+    description: "Counter-ion valence, colloidal diffusion and finite-bath adsorption.",
     kicker: "Surface chemistry",
     lead: "Hardy–Schulze: coagulating power rises sharply with counter-ion charge. Langmuir saturates; Freundlich is empirical.",
-    equation: "θ = KP/(1+KP);  x/m = k P^{1/n}",
+    equation: "D = kBT/(6πηa); q = qmax KCe/(1+KCe)",
     hazard: "Teaching model.",
     theory: "Gold number measures protective power of lyophilic colloids.",
     controls: [control("charge", "Coagulating ion charge", 1, 3, 1, "", 2), control("P", "Pressure / conc. (relative)", 0.1, 10, 0.1, "", 2), control("K", "Langmuir K", 0.1, 8, 0.1, "", 1.4)],
     compute: (v) => {
-      const coag = 10 ** (v.charge - 1);
       const theta = (v.K * v.P) / (1 + v.K * v.P);
-      return { primary: `Relative coagulating power ~ ${fmt(coag, 0)} · θ = ${fmt(theta, 3)}`, detail: "Al³⁺ ≫ Ca²⁺ ≫ Na⁺ for a negative sol", observation: "Langmuir θ → 1 at high P; Freundlich has no strict monolayer cap in the simple form.", quality: "State sol charge before quoting Hardy–Schulze", chart: titreCurve(theta * 100, 80) };
+      return { primary: `Qualitative surface-chemistry summary · θ = ${fmt(theta, 3)}`, detail: "Open the dedicated colloids workspace for explicit concentration units, mass balance, diffusion and seeded coagulation.", observation: "Schulze–Hardy concerns counter-ions; Freundlich does not define fractional coverage or saturation.", quality: "The legacy relative input is qualitative only; no measured coagulating power or titration curve is implied.", chart: [] };
     },
     steps: ["Change ion charge and see coagulating power.", "Slide P to fill a Langmuir monolayer.", "Contrast Freundlich’s log plot."],
     quiz: [quiz("For a negative As₂S₃ sol, the best coagulant among these is", "al", ["Al³⁺", "Na⁺", "Ca²⁺ equally with Na⁺"])],

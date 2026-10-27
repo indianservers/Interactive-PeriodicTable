@@ -34,3 +34,13 @@
 .biovl-title-actions{display:flex;flex:0 0 auto;gap:8px}.biovl-title-actions button{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--border);border-radius:9px;padding:0 13px;color:#cae1e7;background:#0c2535;font-size:.78rem;font-weight:750;cursor:pointer}.biovl-title-actions svg{width:15px}
 @media(max-width:860px){.biovl-title-actions{align-self:flex-start;flex-wrap:wrap}}
 .biovl-title-actions{display:flex;flex:0 0 auto;gap:8px}.biovl-title-actions button{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--border);border-radius:9px;padding:0 13px;color:#cae1e7;background:#0c2535;font-size:.78rem;font-weight:750;cursor:pointer}.biovl-title-actions svg{width:15px}@media(max-width:860px){.biovl-title-actions{align-self:flex-start;flex-wrap:wrap}}
+
+/* Let the workspace shrink before its inner instrument grid creates page overflow. */
+.biovl-layout>*,.biovl-simulation-grid>*,.biovl-learning-grid>*{min-width:0}
+@media(min-width:861px) and (max-width:1180px){
+  .biovl-simulation-grid,.biovl-learning-grid{grid-template-columns:minmax(0,1fr)}
+  .biovl-titlebar{flex-wrap:wrap}
+  .biovl-structure-meta,.biovl-structure-inspector{flex-wrap:wrap}
+}
+
+.biovl-scientific-visual{min-width:0}.biovl-scientific-visual>figure,.biovl-scientific-visual>.bio-gel,.biovl-scientific-visual>.bio-workflow{min-height:245px}.biovl-reference{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}.biovl-reference>button{border:1px solid var(--border);padding:7px 10px;border-radius:7px;background:#0c2535;color:#bedbe4;font-size:11px;cursor:pointer}.biovl-reference>.biovl-structure-stage{margin-top:10px}

@@ -39,7 +39,7 @@ export default function LabMoleculeStage({
       </ViewerErrorBoundary></div>
       <div className="lab-mol-tools">
         {["BallAndStick", "Sticks", "Spacefill"].map((item) => (
-          <button key={item} className={style === item ? "active" : ""} onClick={() => setStyle(item)}>
+          <button key={item} aria-pressed={style === item} className={style === item ? "active" : ""} onClick={() => setStyle(item)}>
             {item === "BallAndStick" ? "Ball + stick" : item}
           </button>
         ))}

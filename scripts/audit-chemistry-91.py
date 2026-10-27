@@ -22,19 +22,25 @@ def ssim(a, b):
 rows = json.loads((TARGET/'manifest.json').read_text(encoding='utf-8-sig'))
 assert len(rows) == 91
 assert len({r['route'] for r in rows}) == 91
-pages = {'virtual-labs': 'VirtualLabsHomePage.jsx', 'lab': 'VirtualLabsHomePage.jsx', 'draw': 'StructureDrawPage.jsx', 'library': 'ChemistryLibraryPage.jsx'}
+pages = {'virtual-labs': 'VirtualLabsHomePage.jsx', 'lab': 'VirtualLabsHomePage.jsx', 'draw': 'StructureDrawPage.jsx', 'library': 'LibraryPage.jsx'}
+register_path = Path('docs/chemistry-91-route-manifest.json')
+prior = {r['route']: r for r in json.loads(register_path.read_text(encoding='utf-8'))} if register_path.exists() else {}
 for i, r in enumerate(rows, 1):
+    # Preserve reviewed implementation/science evidence when recapturing baseline scores.
+    current_reference = dict(r)
+    r.update(prior.get(r['route'], {}))
+    r.update(current_reference)
     r['id'] = i
     r['targetImage'] = str((TARGET/r['image']).resolve())
     r['referenceViewport'] = dict(zip(('width', 'height'), Image.open(r['targetImage']).size))
     slug = r['route'].split('/')[-1]
-    r['source'] = ('src/pages/BiochemistryTargetPage.jsx' if i >= 67 else
+    r.setdefault('source', ('src/pages/BiochemistryTargetPage.jsx' if i >= 67 else
                    'src/modules/core-simulations/OrganicAromaticPrepLab.jsx' if i >= 65 else
                    'src/modules/core-simulations/SyllabusInteractiveLab.jsx' if i <= 56 else
-                   'src/pages/'+pages.get(slug, 'ChemistrySubjectHomePage.jsx'))
+                   'src/pages/'+pages.get(slug, 'ChemistrySubjectHomePage.jsx')))
     r['status'] = 'In Progress'
-    r['scientificValidation'] = 'Pending individual reference and boundary tests'
-    r['interactionValidation'] = 'Pending individual browser tests'
+    r.setdefault('scientificValidation', 'Pending individual reference and boundary tests')
+    r.setdefault('interactionValidation', 'Pending individual browser tests')
 
 Path('docs/chemistry-91-route-manifest.json').write_text(json.dumps(rows, indent=2, ensure_ascii=False), encoding='utf-8')
 
