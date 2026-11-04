@@ -44,6 +44,7 @@ import {
   structureMolfile,
 } from "../utils/structureDrawing.js";
 import { getRDKit } from "../modules/drug-discovery/rdkitService.js";
+import DrawChemistryTools from "./DrawChemistryTools.jsx";
 import DrawMoleculePreview from "./DrawMoleculePreview.jsx";
 import "./structureDraw.css";
 import { templates, conformers } from "../utils/structureDrawLibrary.js";
@@ -138,12 +139,13 @@ export default function StructureDrawPage({ onNavigate }) {
     [ringSize, setRingSize] = useState(6),
     [transparentExport, setTransparentExport] = useState(false),
     [exportSize, setExportSize] = useState(1600);
+  const [generatedName, setGeneratedName] = useState({});
   const graphSignature =
     model.atoms
       .map((a) => `${a.id}:${a.element}:${a.charge || 0}:${a.isotope || 0}`)
       .join("|") +
     "/" +
-    model.bonds.map((b) => `${b.a}:${b.b}:${b.order}`).join("|");
+    model.bonds.map((b) => `${b.a}:${b.b}:${b.order}:${b.stereo || 0}`).join("|");
   const svg = useRef(),
     drag = useRef(),
     preview = useRef(),
@@ -316,6 +318,7 @@ export default function StructureDrawPage({ onNavigate }) {
             const graph = JSON.parse(mol.get_json());
             const defaults = graph.defaults.atom;
             desc.graphSignature = graphSignature;
+            desc.stereo = JSON.parse(mol.get_stereo_tags());
             desc.atomHydrogens = graph.molecules[0].atoms.map(
               (a) => a.impHs ?? defaults.impHs ?? 0,
             );
@@ -1051,6 +1054,29 @@ export default function StructureDrawPage({ onNavigate }) {
               Custom...
             </button>
           </div>
+          <h2>Molecule builder</h2>
+          <div className="draw-advanced">
+            <button disabled={!model.atoms.length || busy} onClick={async () => {
+              const original = model;
+              setBusy(true);
+              let molecule;
+              try {
+                const rd = await getRDKit();
+                molecule = rd.get_mol(structureMolfile(original));
+                if (!molecule) throw Error("Fix atom valences before arranging the drawing.");
+                molecule.set_new_coords();
+                const arranged = parseMolfile(molecule.get_molblock());
+                // Keep original atom identifiers so selections and annotations remain stable.
+                const ids = arranged.atoms.map((a, i) => original.atoms[i].id);
+                arranged.atoms = arranged.atoms.map((a, i) => ({ ...a, id: ids[i] }));
+                arranged.bonds = arranged.bonds.map(b => ({ ...b, a: ids[b.a - 1], b: ids[b.b - 1] }));
+                commit(arranged);
+                setNotice("2D coordinates arranged. Undo restores the previous layout.");
+              } catch (e) { setNotice(e.message); }
+              finally { molecule?.delete(); setBusy(false); }
+            }}>Arrange 2D</button>
+            <p>Choose an element, then click to add an atom. Use a bond tool to connect atoms; select and drag to move.</p>
+          </div>
           <h2>Advanced</h2>
           <div className="draw-advanced">
             {iconButton(FileText, "Load SMILES / MOL", () =>
@@ -1527,6 +1553,7 @@ export default function StructureDrawPage({ onNavigate }) {
                   </div>
                 </>
               )}
+              <DrawChemistryTools smiles={descriptors.graphSignature === graphSignature ? smiles : ""} descriptors={descriptors.graphSignature === graphSignature ? descriptors : {}} model={model} onHighlight={setHighlightAtoms} onStereoTool={setTool} onName={(value) => setGeneratedName({ smiles, name: value })} />
               <section className="draw-info">
                 <h3>
                   Molecule Information <Pencil size={15} />
@@ -1544,9 +1571,7 @@ export default function StructureDrawPage({ onNavigate }) {
                       ],
                       [
                         "IUPAC Name",
-                        name === "Caffeine"
-                          ? "1,3,7-trimethylpurine-2,6-dione"
-                          : "—",
+                        generatedName.smiles === smiles ? generatedName.name : "Generate below",
                       ],
                       ["SMILES", smiles || "—"],
                     ].map(([k, v]) => (

@@ -25,7 +25,7 @@
     "test:salt-analysis": "node scripts/verify-salt-analysis.mjs && node scripts/verify-salt-render.mjs",
     "test:aspirin-synthesis": "node scripts/verify-aspirin-synthesis.mjs && node scripts/verify-aspirin-render.mjs",
     "test:draw-library": "node scripts/verify-draw-library.mjs",
-    "test:draw": "node scripts/verify-structure-draw.mjs && node scripts/verify-draw-research.mjs",
+    "test:draw": "node scripts/verify-structure-draw.mjs && node scripts/verify-draw-research.mjs && node scripts/verify-draw-calculations.mjs",
     "test:nitration": "node scripts/verify-nitration.mjs && node scripts/verify-nitration-render.mjs",
     "test:benzoic-preparation": "node scripts/verify-benzoic-preparation.mjs && node scripts/verify-benzoic-render.mjs",
     "test:esterification": "node scripts/verify-esterification.mjs && node scripts/verify-esterification-render.mjs",
