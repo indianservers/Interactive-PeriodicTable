@@ -84,7 +84,7 @@ export function canonicalSmiles(rd, input) {
   try {
     mol = rd.get_mol(input);
     if (!mol) throw Error("Invalid molecular structure.");
-    normalized = rd.get_mol(mol.remove_hs());
+    normalized = rd.get_mol(mol.get_smiles());
     if (!normalized) throw Error("Cannot normalize molecular hydrogens.");
     return normalized.get_smiles();
   } finally {
@@ -98,7 +98,7 @@ export function analyzeMolecule(rd, input) {
     throw Error("Invalid molecule: check atom valences and input syntax.");
   let normalized;
   try {
-    normalized = rd.get_mol(mol.remove_hs());
+    normalized = rd.get_mol(mol.get_smiles());
     if (!normalized) throw Error("Cannot normalize molecular hydrogens.");
     const descriptors = JSON.parse(normalized.get_descriptors()),
       graph = JSON.parse(mol.get_json());

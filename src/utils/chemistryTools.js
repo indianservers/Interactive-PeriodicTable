@@ -221,13 +221,23 @@ export const balanceEquation = (input) => {
     if (lead >= 0 && lead < m) solution[lead] = a[r][m];
   }
   const coeffsFloat = [...solution, 1].map(v => Math.abs(v) < 1e-8 ? 0 : v);
-  const scale = 1000;
+  // Recover rational denominators before scaling: a fixed decimal scale
+  // distorts ratios such as 1/3 and 7/6 and can break atom conservation.
+  const denominators = coeffsFloat.map(value => {
+    for (let denominator = 1; denominator <= 10000; denominator += 1) {
+      if (Math.abs(value * denominator - Math.round(value * denominator)) < 1e-8) return denominator;
+    }
+    return NaN;
+  });
+  const scale = denominators.reduce((multiple, denominator) => lcm(multiple, denominator), 1);
+  if (!Number.isSafeInteger(scale)) return { ok: false, error: 'Could not balance this equation with the local solver.' };
   const ints = coeffsFloat.map(v => Math.round(v * scale));
   const common = ints.reduce((g, v) => gcd(g, v), Math.abs(ints[0]) || scale);
   let coeffs = ints.map(v => Math.abs(v / common));
   const common2 = coeffs.reduce((g, v) => gcd(g, Math.round(v)), Math.round(coeffs[0]) || 1);
   coeffs = coeffs.map(v => Math.round(v / common2));
   if (coeffs.some(v => !Number.isFinite(v) || v <= 0)) return { ok: false, error: 'Could not balance this equation with the local solver.' };
+  if (rows.some(row => Math.abs(row.reduce((sum, count, i) => sum + count * coeffs[i], 0)) > 1e-8)) return { ok: false, error: 'Could not balance this equation with the local solver.' };
   const format = (comp, coeff) => `${coeff === 1 ? '' : coeff}${comp}`;
   return {
     ok: true,

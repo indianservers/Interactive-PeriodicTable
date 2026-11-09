@@ -25,3 +25,10 @@ for (const [smiles, expected] of [['CC(O)C(=O)O', '(?)'], ['C[C@H](O)C(=O)O', '(
   molecule.delete(); restored.delete();
 }
 console.log('PASS: unspecified, R and S centers retain their stereo labels after canvas round trip.');
+
+for (const [equation, coefficients] of [
+  ['C2H6 + O2 -> CO2 + H2O', [2, 7, 4, 6]],
+  ['Al + HCl -> AlCl3 + H2', [2, 6, 2, 3]],
+  ['C6H12O6 + O2 -> CO2 + H2O', [1, 6, 6, 6]],
+]) assert.deepEqual(prepareReaction(equation).coefficients, coefficients);
+console.log('PASS: fractional coefficient ratios balance exactly for combustion and metal-acid reactions.');

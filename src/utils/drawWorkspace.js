@@ -1,3 +1,4 @@
+import { validateReaction } from "./drawReaction.js";
 import { parseMolfile, structureMolfile } from "./structureDrawing.js";
 export function validateDrawWorkspace(data) {
   if (
@@ -70,9 +71,11 @@ export function validateDrawWorkspace(data) {
     version: 1,
     documents,
     activeDocumentId: data.activeDocumentId,
+    reaction: validateReaction(data.reaction, ids),
     annotation: String(data.annotation || "").slice(0, 10000),
     settings: {
       grid: Boolean(data.settings?.grid),
+      snap: data.settings?.snap !== false,
       labels: data.settings?.labels !== false,
     },
   };

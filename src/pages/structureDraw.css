@@ -1119,3 +1119,42 @@ body:has(.draw-app) .dx-tools-menu {
 .draw-inspector { overflow-y: auto; }
 .draw-chemistry-tools { flex-shrink: 0; }
 .draw-advanced > p { grid-column: 1 / -1; font-size: 11px; line-height: 1.5; }
+.draw-fragment-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px; background:#eef5ff; border:1px solid #cbdcf0; border-radius:8px; font-size:12px; }
+.draw-fragment-toolbar[hidden] { display:none; }
+.draw-fragment-toolbar button, .draw-reaction-workspace button { border:1px solid #94aecb; border-radius:5px; padding:7px 9px; background:#fff; color:#173553; cursor:pointer; }
+.draw-fragment-toolbar button[aria-pressed=true] { background:#156cda; color:white; }
+.draw-fragment-toolbar button:disabled, .draw-reaction-workspace button:disabled { opacity:.45; cursor:default; }
+.draw-fragment-toolbar label { display:flex; align-items:center; gap:5px; }
+.draw-validation { padding:12px; border:1px solid #cbdcf0; border-radius:8px; font-size:12px; flex-shrink:0; }
+.draw-validation h3 { font-weight:700; }
+.draw-validation p { margin:6px 0; }
+.draw-validation button { display:block; text-align:left; width:100%; margin:7px 0; padding:8px; border:1px solid; border-radius:5px; line-height:1.5; }
+.draw-validation .issue-error { background:#fff1f2; color:#9f1239; border-color:#fda4af; }
+.draw-validation .issue-warning { background:#fffbeb; color:#92400e; border-color:#fcd34d; }
+.draw-reaction-workspace { overflow:auto; min-height:0; padding:18px; background:#f7faff; border-radius:12px; color:#18334f; font-size:13px; }
+.draw-reaction-workspace h2 { font-size:22px; font-weight:700; }
+.draw-reaction-workspace p { margin:8px 0; }
+.reaction-controls { display:flex; flex-wrap:wrap; gap:10px; align-items:end; margin:14px 0; }
+.draw-reaction-workspace label { display:block; font-size:12px; }
+.draw-reaction-workspace input, .draw-reaction-workspace select { display:block; padding:7px; border:1px solid #9cb4cf; border-radius:5px; background:white; color:#173553; max-width:100%; }
+.reaction-scheme { display:grid; grid-template-columns:minmax(200px,1fr) 140px minmax(200px,1fr); gap:14px; align-items:center; }
+.reaction-card { padding:12px; border:1px solid #b7cce5; border-radius:10px; margin:8px 0; background:white; }
+.reaction-card h4 { font-weight:700; font-size:15px; }
+.reaction-card small { display:block; overflow-wrap:anywhere; }
+.reaction-card button { margin:8px 5px 0 0; }
+.reaction-molecule { width:100%; height:170px; margin:10px 0; }
+.reaction-molecule [role=button] { cursor:pointer; }
+.reaction-molecule [role=button]:focus { outline:2px solid #3186ec; }
+.reaction-arrow { text-align:center; overflow-wrap:anywhere; }
+.reaction-arrow b { display:block; font-size:60px; }
+.reaction-arrow span { font-size:12px; }
+.reaction-plus { display:block; text-align:center; font-size:28px; }
+.reaction-amount { display:flex; gap:8px; margin-top:8px; }
+.reaction-amount input { width:100%; }
+.reaction-results { border:1px solid #b3d7bb; background:#f0fdf4; padding:12px; border-radius:8px; margin:16px 0; }
+.draw-reaction-workspace details { margin-top:18px; border-top:1px solid #cad8e7; padding-top:12px; }
+.draw-reaction-workspace summary { cursor:pointer; font-weight:700; }
+@media(max-width:850px) { .reaction-scheme { grid-template-columns:1fr; } .reaction-arrow b { font-size:42px; } .draw-reaction-workspace { max-height:75vh; } }
+.draw-fragment-toolbar small { flex-basis:100%; color:#48617c; }
+.reaction-equation { padding:12px; font-size:18px; font-weight:700; background:#eaf2ff; border-radius:8px; overflow-wrap:anywhere; }
+.drawing-surface { user-select:none; -webkit-user-select:none; }

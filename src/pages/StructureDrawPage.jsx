@@ -44,6 +44,10 @@ import {
   structureMolfile,
 } from "../utils/structureDrawing.js";
 import { getRDKit } from "../modules/drug-discovery/rdkitService.js";
+import DrawReactionCanvas from "./DrawReactionCanvas.jsx";
+import DrawValidationPanel from "./DrawValidationPanel.jsx";
+import { emptyReaction } from "../utils/drawReaction.js";
+import { connectedAtoms, atomsInRegion, transformFragment, snapBondPoint, structureIssues } from "../utils/drawEditorTools.js";
 import DrawChemistryTools from "./DrawChemistryTools.jsx";
 import DrawMoleculePreview from "./DrawMoleculePreview.jsx";
 import "./structureDraw.css";
@@ -140,12 +144,20 @@ export default function StructureDrawPage({ onNavigate }) {
     [transparentExport, setTransparentExport] = useState(false),
     [exportSize, setExportSize] = useState(1600);
   const [generatedName, setGeneratedName] = useState({});
+  const [selection, setSelection] = useState([]), [selectionPath, setSelectionPath] = useState([]), [snap, setSnap] = useState(true);
+  const [reactionWorkspace, setReactionWorkspace] = useState(emptyReaction);
+  const regionDrag = useRef(null), suppressCanvasClick = useRef(false);
+  const sourceDocuments = documents.map(d => d.id === documentId ? { ...d, model, name, sdfText } : d);
+
   const graphSignature =
     model.atoms
       .map((a) => `${a.id}:${a.element}:${a.charge || 0}:${a.isotope || 0}`)
       .join("|") +
     "/" +
     model.bonds.map((b) => `${b.a}:${b.b}:${b.order}:${b.stereo || 0}`).join("|");
+  const currentDescriptors = descriptors.graphSignature === graphSignature ? descriptors : {};
+  const issues = useMemo(() => structureIssues(model, currentDescriptors.stereo, currentDescriptors.invalid), [model, descriptors, graphSignature]);
+  const issueAtoms = new Set(issues.flatMap(issue => issue.atomIds));
   const svg = useRef(),
     drag = useRef(),
     preview = useRef(),
@@ -155,6 +167,7 @@ export default function StructureDrawPage({ onNavigate }) {
     setUndo((u) => [...u, { model, name, sdfText }].slice(-80));
     setRedo([]);
     setModel(next);
+    setSelection(ids => ids.filter(id => next.atoms.some(a => a.id === id)));
     setSdfText("");
     setHighlightAtoms([]);
     if (!next.atoms.some((a) => a.id === selected)) setSelected(null);
@@ -248,7 +261,7 @@ export default function StructureDrawPage({ onNavigate }) {
         );
       commit(next);
       setName(label);
-      setSelected(null);
+      setSelected(null); setSelection([]);
       setNotice(`Loaded ${label}.`);
       return true;
     } catch (e) {
@@ -303,14 +316,14 @@ export default function StructureDrawPage({ onNavigate }) {
         const mol = rd.get_mol(structureMolfile(model));
         if (!mol) {
           if (active) {
-            setDescriptors({ invalid: true });
+            setDescriptors({ invalid: true, graphSignature });
             setSmiles("");
           }
           return;
         }
         let normalized;
         try {
-          normalized = rd.get_mol(mol.remove_hs());
+          normalized = rd.get_mol(mol.get_smiles());
           if (!normalized) throw Error("Cannot normalize molecular hydrogens.");
           if (active) {
             setSmiles(normalized.get_smiles());
@@ -400,11 +413,23 @@ export default function StructureDrawPage({ onNavigate }) {
       y: (local.y - 300 * (1 - zoom)) / zoom,
     };
   };
+  const editFragment = (operation) => {
+    try {
+      const next = transformFragment(model, selection, operation);
+      if (next === model) return;
+      commit(next);
+      if (operation === "duplicate") setSelection(next.atoms.filter(a => !model.atoms.some(old => old.id === a.id)).map(a => a.id));
+      if (operation === "delete") setSelection([]);
+      setNotice(`Fragment ${operation.replaceAll("-", " ")} complete.`);
+    } catch (e) { setNotice(e.message); }
+  };
   const addAt = (e) => {
-    if (e.target !== svg.current) return;
-    const { x, y } = point(e);
+    if (suppressCanvasClick.current) { suppressCanvasClick.current = false; return; }
+    if (e.target !== svg.current || ["Rectangle select", "Lasso select", "Fragment select"].includes(tool)) return;
+    const origin = model.atoms.find(a => a.id === selected);
+    const { x, y } = snapBondPoint(origin, point(e), snap && tool.includes("bond"));
     if (tool === "Select / Move") {
-      setSelected(null);
+      setSelected(null); setSelection([]);
       return;
     }
     if (tool === "Erase") return;
@@ -434,12 +459,17 @@ export default function StructureDrawPage({ onNavigate }) {
   };
   const atomClick = (e, a) => {
     e.stopPropagation();
+    if (["Rectangle select", "Lasso select", "Fragment select"].includes(tool) || (tool === "Select / Move" && e.shiftKey)) {
+      const ids = tool === "Fragment select" ? connectedAtoms(model, a.id) : [a.id];
+      setSelection(previous => e.shiftKey ? (ids.every(id => previous.includes(id)) ? previous.filter(id => !ids.includes(id)) : [...new Set([...previous,...ids])]) : ids);
+      return;
+    }
     if (tool === "Erase") {
       commit({
         atoms: model.atoms.filter((v) => v.id !== a.id),
         bonds: model.bonds.filter((b) => b.a !== a.id && b.b !== a.id),
       });
-      setSelected(null);
+      setSelected(null); setSelection([]);
       return;
     }
     if (tool === "Atom") {
@@ -493,7 +523,7 @@ export default function StructureDrawPage({ onNavigate }) {
     setHighlightAtoms([]);
     setName(undo.at(-1).name);
     setUndo((u) => u.slice(0, -1));
-    setSelected(null);
+    setSelected(null); setSelection([]);
   };
   const redoAction = () => {
     if (!redo.length) return;
@@ -503,7 +533,7 @@ export default function StructureDrawPage({ onNavigate }) {
     setHighlightAtoms([]);
     setName(redo.at(-1).name);
     setRedo((r) => r.slice(0, -1));
-    setSelected(null);
+    setSelected(null); setSelection([]);
   };
   const save = () => {
     if (busy) {
@@ -538,7 +568,7 @@ export default function StructureDrawPage({ onNavigate }) {
     setName("Untitled structure");
     setSdfText("");
     setHighlightAtoms([]);
-    setSelected(null);
+    setSelected(null); setSelection([]);
   };
   const iconButton = (Icon, label, action, extra = {}) => (
     <button key={label} onClick={action} title={label} {...extra}>
@@ -575,7 +605,7 @@ export default function StructureDrawPage({ onNavigate }) {
     setName(doc.name);
     setUndo([]);
     setRedo([]);
-    setSelected(null);
+    setSelected(null); setSelection([]);
   };
   const newDocument = () => {
     if (documents.length >= 30) {
@@ -606,7 +636,7 @@ export default function StructureDrawPage({ onNavigate }) {
     setHighlightAtoms([]);
     setUndo([]);
     setRedo([]);
-    setSelected(null);
+    setSelected(null); setSelection([]);
   };
   const hydrogen = async (add) => {
     let mol;
@@ -638,7 +668,8 @@ export default function StructureDrawPage({ onNavigate }) {
       .map((d) => (d.id === documentId ? { ...d, model, name, sdfText } : d))
       .map((d) => ({ ...d, model: d.model || emptyStructure() })),
     annotation,
-    settings: { grid, labels },
+    settings: { grid, labels, snap },
+    reaction: reactionWorkspace,
   });
   const restoreWorkspace = (data) => {
     ++loadSequence.current;
@@ -651,9 +682,11 @@ export default function StructureDrawPage({ onNavigate }) {
     setAnnotation(data.annotation);
     setGrid(data.settings.grid);
     setLabels(data.settings.labels);
+    setSnap(data.settings.snap !== false);
+    setReactionWorkspace(data.reaction || emptyReaction());
     setUndo([]);
     setRedo([]);
-    setSelected(null);
+    setSelected(null); setSelection([]);
     setFeature("Draw");
     setNotice("Workspace restored.");
   };
@@ -767,6 +800,8 @@ export default function StructureDrawPage({ onNavigate }) {
     annotation,
     grid,
     labels,
+    snap,
+    reactionWorkspace,
   ]);
   useEffect(() => {
     const key = (e) => {
@@ -789,6 +824,8 @@ export default function StructureDrawPage({ onNavigate }) {
         }
         return;
       }
+      if (e.key === "Escape") { setSelection([]); setSelected(null); }
+      if (e.key === "Delete" && selection.length) { e.preventDefault(); editFragment("delete"); return; }
       if (e.key === "Delete" && selected) {
         e.preventDefault();
         commit({
@@ -925,7 +962,7 @@ export default function StructureDrawPage({ onNavigate }) {
                   : label === "Properties"
                     ? setFeature("Analysis")
                     : label === "Reactions"
-                      ? onNavigate?.("organic-reaction-visualizer")
+                      ? setFeature("Reaction")
                       : label === "Spectra"
                         ? onNavigate?.("spectroscopy-interpreter")
                         : label === "Structure Draw"
@@ -978,7 +1015,7 @@ export default function StructureDrawPage({ onNavigate }) {
                   if (t === "undo") undoAction();
                   else {
                     setTool(t);
-                    setSelected(null);
+                    setSelected(null); setSelection([]);
                   }
                 },
                 { className: i < 2 ? "wide" : "", "aria-pressed": tool === t },
@@ -1133,7 +1170,7 @@ export default function StructureDrawPage({ onNavigate }) {
             {iconButton(Copy, "Copy", copy)}
             {iconButton(Clipboard, "Paste", paste)}
             {iconButton(Trash2, "Delete", () =>
-              selected
+              selection.length ? editFragment("delete") : selected
                 ? commit({
                     atoms: model.atoms.filter((a) => a.id !== selected),
                     bonds: model.bonds.filter(
@@ -1159,6 +1196,7 @@ export default function StructureDrawPage({ onNavigate }) {
           >
             {[
               "Draw",
+              "Reaction",
               "Analysis",
               "Compare",
               "Batch",
@@ -1195,7 +1233,7 @@ export default function StructureDrawPage({ onNavigate }) {
             </button>
           </div>
           <DrawResearchWorkbench
-            active={feature}
+            active={feature === "Reaction" ? "Draw" : feature}
             model={model}
             molfile={structureMolfile(model)}
             name={name}
@@ -1229,6 +1267,20 @@ export default function StructureDrawPage({ onNavigate }) {
               }
             }}
           />
+          {feature === "Reaction" && <DrawReactionCanvas documents={sourceDocuments} currentId={documentId} value={reactionWorkspace} onChange={setReactionWorkspace} onEdit={id => { switchDocument(id); setFeature("Draw"); }} />}
+          <div className="draw-fragment-toolbar" hidden={feature !== "Draw"} aria-label="Fragment editing">
+            {["Select / Move", "Rectangle select", "Lasso select", "Fragment select"].map(value => <button key={value} aria-pressed={tool === value} onClick={() => { setTool(value); setSelected(null); }}>{value}</button>)}
+            <button onClick={() => setSelection(model.atoms.map(a => a.id))}>Select all atoms</button>
+            <button onClick={() => setSelection([])}>Clear selection</button>
+            <span role="status">{selection.length} atoms selected</span>
+            <button disabled={!selection.length} onClick={() => editFragment("rotate")}>Rotate 30°</button>
+            <button disabled={!selection.length} onClick={() => editFragment("flip-horizontal")}>Flip horizontal</button>
+            <button disabled={!selection.length} onClick={() => editFragment("flip-vertical")}>Flip vertical</button>
+            <button disabled={!selection.length} onClick={() => editFragment("duplicate")}>Duplicate fragment</button>
+            <button disabled={!selection.length} onClick={() => editFragment("delete")}>Delete fragment</button>
+            <label><input type="checkbox" checked={snap} onChange={e => setSnap(e.target.checked)} />Snap bonds to 30°</label>
+            <small>Shift-click adds/removes atoms. Drag a box or lasso from empty canvas. Use Select / Move to drag a selected group.</small>
+          </div>
           <div className="draw-editor-grid" hidden={feature !== "Draw"}>
             <div className="draw-left">
               <section className={`draw-canvas ${grid ? "has-grid" : ""}`}>
@@ -1256,19 +1308,42 @@ export default function StructureDrawPage({ onNavigate }) {
                   viewBox="0 0 800 600"
                   aria-label="Structure drawing canvas"
                   onClick={addAt}
-                  onPointerMove={(e) => {
-                    if (!drag.current) return;
+                  onPointerDown={e => {
+                    if (e.target !== svg.current || !["Rectangle select", "Lasso select"].includes(tool)) return;
+                    e.preventDefault();
                     const p = point(e);
-                    setModel((m) => ({
-                      ...m,
-                      atoms: m.atoms.map((a) =>
-                        a.id === drag.current ? { ...a, ...p } : a,
-                      ),
-                    }));
-                    setName("Edited structure");
+                    regionDrag.current = { points: [p], add: e.shiftKey, rectangle: tool === "Rectangle select" };
+                    setSelectionPath([p]);
+                    svg.current.setPointerCapture(e.pointerId);
                   }}
-                  onPointerUp={() => (drag.current = null)}
-                  onPointerCancel={() => (drag.current = null)}
+                  onPointerMove={e => {
+                    const p = point(e);
+                    if (regionDrag.current) {
+                      const state = regionDrag.current;
+                      state.points = state.rectangle ? [state.points[0],p] : [...state.points,p];
+                      setSelectionPath(state.points);
+                    }
+                    if (!drag.current) return;
+                    const state = drag.current, dx = p.x - state.start.x, dy = p.y - state.start.y;
+                    setModel({ ...state.model, atoms: state.model.atoms.map(a => state.ids.includes(a.id) ? {...a,x:a.x+dx,y:a.y+dy}:a) });
+                  }}
+                  onPointerUp={e => {
+                    if (regionDrag.current) {
+                      const state = regionDrag.current;
+                      const ids = atomsInRegion(model,[...state.points,point(e)],state.rectangle);
+                      setSelection(previous => state.add ? [...new Set([...previous,...ids])] : ids);
+                      suppressCanvasClick.current = true;
+                      regionDrag.current = null; setSelectionPath([]);
+                    }
+                    if (drag.current) {
+                      const state = drag.current;
+                      if (Math.hypot(point(e).x-state.start.x,point(e).y-state.start.y) > 1) {
+                        setUndo(u => [...u,{model:state.model,name,sdfText}].slice(-80));setRedo([]);setSdfText("");setName("Edited structure");
+                      }
+                      drag.current = null;
+                    }
+                  }}
+                  onPointerCancel={() => { if(drag.current)setModel(drag.current.model);drag.current=null;regionDrag.current=null;setSelectionPath([]); }}
                 >
                   <g
                     transform={`translate(${400 * (1 - zoom)},${300 * (1 - zoom)}) scale(${zoom})`}
@@ -1361,7 +1436,7 @@ export default function StructureDrawPage({ onNavigate }) {
                           ? a.charge || 0
                           : 0;
                       const h =
-                        descriptors.graphSignature === graphSignature
+                        descriptors.graphSignature === graphSignature && descriptors.atomHydrogens
                           ? descriptors.atomHydrogens[atomIndex]
                           : Math.max(0, normalValence + chargeShift - valence);
                       const suffix = h
@@ -1387,14 +1462,16 @@ export default function StructureDrawPage({ onNavigate }) {
                               atomClick(e, a);
                           }}
                           onPointerDown={(e) => {
-                            if (tool === "Select / Move") {
-                              setUndo((u) => [...u, { model, name, sdfText }]);
-                              setRedo([]);
-                              drag.current = a.id;
+                            if (tool === "Select / Move" && !e.shiftKey) {
+                              e.preventDefault();
+                              const ids = selection.includes(a.id) ? selection : [a.id];
+                              if (!selection.includes(a.id)) setSelection([a.id]);
+                              drag.current = { ids, start: point(e), model };
                               e.currentTarget.setPointerCapture(e.pointerId);
                             }
                           }}
                         >
+                          {issueAtoms.has(a.id) && <circle cx={a.x} cy={a.y} r="22" fill="none" stroke={issues.some(i => i.severity === "error" && i.atomIds.includes(a.id)) ? "#dc2626" : "#d97706"} strokeWidth="3"><title>{issues.filter(i => i.atomIds.includes(a.id)).map(i => i.message).join(" ")}</title></circle>}
                           <circle
                             cx={a.x}
                             cy={a.y}
@@ -1402,13 +1479,14 @@ export default function StructureDrawPage({ onNavigate }) {
                             fill={
                               highlightAtoms.includes(a.id)
                                 ? "#b1f1c8"
-                                : selected === a.id
+                                : selection.includes(a.id) || selected === a.id
                                   ? "#dbeafe"
                                   : text
                                     ? "white"
                                     : "transparent"
                             }
                           />
+                          {(selection.includes(a.id) || issueAtoms.has(a.id)) && <text x={a.x+15} y={a.y-18} fontSize="13" fill="#1d4ed8">{a.id}</text>}
                           {text && (
                             <text
                               x={a.x}
@@ -1442,6 +1520,9 @@ export default function StructureDrawPage({ onNavigate }) {
                       );
                     })}
                   </g>
+                  {selectionPath.length > 1 && <g pointerEvents="none" transform={`translate(${400 * (1 - zoom)},${300 * (1 - zoom)}) scale(${zoom})`}>
+                    {tool === "Rectangle select" ? <rect x={Math.min(selectionPath[0].x,selectionPath.at(-1).x)} y={Math.min(selectionPath[0].y,selectionPath.at(-1).y)} width={Math.abs(selectionPath.at(-1).x-selectionPath[0].x)} height={Math.abs(selectionPath.at(-1).y-selectionPath[0].y)} fill="#3b82f622" stroke="#2563eb" strokeDasharray="5 4"/> : <polygon points={selectionPath.map(p=>`${p.x},${p.y}`).join(" ")} fill="#3b82f622" stroke="#2563eb" strokeDasharray="5 4"/>}
+                  </g>}
                   {annotation && (
                     <text x="30" y="45" fill="#334155">
                       {annotation}
@@ -1553,7 +1634,8 @@ export default function StructureDrawPage({ onNavigate }) {
                   </div>
                 </>
               )}
-              <DrawChemistryTools smiles={descriptors.graphSignature === graphSignature ? smiles : ""} descriptors={descriptors.graphSignature === graphSignature ? descriptors : {}} model={model} onHighlight={setHighlightAtoms} onStereoTool={setTool} onName={(value) => setGeneratedName({ smiles, name: value })} />
+              <DrawValidationPanel issues={issues} empty={!model.atoms.length} pending={!currentDescriptors.graphSignature} onHighlight={setHighlightAtoms} />
+              <DrawChemistryTools smiles={descriptors.graphSignature === graphSignature ? smiles : ""} descriptors={descriptors.graphSignature === graphSignature ? descriptors : {}} model={model} onHighlight={setHighlightAtoms} onStereoTool={(value) => { setTool(value); setSelected(null); setSelection([]); }} onName={(value) => setGeneratedName({ smiles, name: value })} />
               <section className="draw-info">
                 <h3>
                   Molecule Information <Pencil size={15} />
@@ -1571,7 +1653,7 @@ export default function StructureDrawPage({ onNavigate }) {
                       ],
                       [
                         "IUPAC Name",
-                        generatedName.smiles === smiles ? generatedName.name : "Generate below",
+                        generatedName.smiles === smiles ? generatedName.name : "Use Generate IUPAC name",
                       ],
                       ["SMILES", smiles || "—"],
                     ].map(([k, v]) => (
@@ -1735,7 +1817,7 @@ export default function StructureDrawPage({ onNavigate }) {
                       key={t}
                       onClick={() => {
                         setTool(t);
-                        setSelected(null);
+                        setSelected(null); setSelection([]);
                         setDialog("");
                         setNotice(
                           `${t}: connect atoms or click an existing bond.`,
