@@ -1,5 +1,7 @@
+import "./labResponsive.css";
 import { useState } from "react";
 import { CheckCircle2, FlaskConical, RotateCcw, Search } from "lucide-react";
+const groupExamples = {"Carboxylic acid":["CH₃COOH","ethanoic acid","-oic acid"],Anhydride:["(CH₃CO)₂O","ethanoic anhydride","anhydride"],Ester:["CH₃COOCH₃","methyl ethanoate","-oate"],"Acyl halide":["CH₃COCl","ethanoyl chloride","-oyl halide"],Amide:["CH₃CONH₂","ethanamide","-amide"],Nitrile:["CH₃C≡N","ethanenitrile","-nitrile"],Aldehyde:["CH₃CHO","ethanal","-al"],Ketone:["CH₃COCH₃","propan-2-one","-one"],Alcohol:["CH₃CH₂OH","ethanol","-ol"],Thiol:["CH₃CH₂SH","ethanethiol","-thiol"],Amine:["CH₃CH₂NH₂","ethanamine","-amine"],Alkene:["CH₂=CH₂","ethene","-ene"],Alkyne:["HC≡CH","ethyne","-yne"],Alkane:["CH₃CH₃","ethane","-ane"]};
 const groups = [
   "Carboxylic acid",
   "Anhydride",
@@ -133,7 +135,7 @@ export default function IupacTargetPage({ onNavigate }) {
   const composedName = `${locantA}-${substituentA}-${locantB}-${substituentB}${parent}`;
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#061522] text-slate-100"
+      className="iupac-studio min-h-screen overflow-hidden bg-[#061522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-4 border-b border-white/10 bg-[#091c2e] px-5">
@@ -190,12 +192,13 @@ export default function IupacTargetPage({ onNavigate }) {
           <p className="text-[10px] text-slate-400">
             Higher priority takes suffix, others are prefixes.
           </p>
+          <section className="my-3 rounded border border-cyan-300/40 bg-slate-950 p-3 text-xs" aria-live="polite"><h3 className="font-bold">{selectedGroup} example</h3><p className="my-2 text-lg">{groupExamples[selectedGroup][0]}</p><p>{groupExamples[selectedGroup][1]}</p><p>Principal suffix: {groupExamples[selectedGroup][2]}</p><small>Reference example; the naming exercise below is a separate molecule.</small></section>
           {groups.map((x, i) => (
             <button
               key={x}
               onClick={() => {
                 setSelectedGroup(x);
-                announce(`${x} selected`);
+                setGuideTab("Rules");
               }}
               className={`mt-1 flex w-full items-center gap-2 border-b border-white/5 py-2 text-left text-xs ${selectedGroup === x ? "bg-cyan-300/10 text-cyan-100" : ""}`}
             >

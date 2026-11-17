@@ -496,3 +496,5 @@
     height: 330px;
   }
 }
+
+.rb-left{display:flex;flex-direction:column;overflow-y:auto}.rb-left blockquote{position:static;margin-top:auto;padding-top:24px}.rb-left .rb-example{flex-shrink:0;white-space:normal}

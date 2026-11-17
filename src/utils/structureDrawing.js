@@ -117,11 +117,19 @@ export function addRing(model, x, y, aromatic = false, size = 6) {
     bonds: [...model.bonds, ...bonds],
   };
 }
-export function bondSegments(a, b, order) {
+export function bondSegments(a, b, order, stereo = 0) {
   const count = order === 4 ? 2 : order;
   const dx = b.x - a.x,
     dy = b.y - a.y,
     length = Math.hypot(dx, dy) || 1;
+  if (order === 2 && stereo === 3) {
+    const nx = (-dy / length) * 4, ny = (dx / length) * 4;
+    return [1, -1].map(sign => ({x1:a.x+nx*sign,y1:a.y+ny*sign,x2:b.x-nx*sign,y2:b.y-ny*sign}));
+  }
+  if (order === 1 && stereo === 4) {
+    const points=Array.from({length:17},(_,i)=>{const t=i/16,w=Math.sin(t*Math.PI*8)*4;return {x:a.x+dx*t-dy/length*w,y:a.y+dy*t+dx/length*w};});
+    return points.slice(0,-1).map((p,i)=>({x1:p.x,y1:p.y,x2:points[i+1].x,y2:points[i+1].y}));
+  }
   return Array.from({ length: count }, (_, i) => {
     const offset = (i - (count - 1) / 2) * 6,
       nx = (-dy / length) * offset,

@@ -8,7 +8,7 @@ export function validateReaction(value, documentIds) {
   if (!Array.isArray(value.participants) || value.participants.length > 30 || typeof value.conditions !== 'string' || value.conditions.length > 2000 || !['forward', 'equilibrium'].includes(value.arrow)) throw Error('Invalid reaction workspace.');
   const ids = new Set();
   const participants = value.participants.map(p => {
-    if (!Number.isInteger(p.id) || ids.has(p.id) || !documentIds.has(p.documentId) || !['reactant', 'product'].includes(p.role) || !Number.isInteger(p.coefficient) || p.coefficient < 1 || p.coefficient > 1000000 || typeof p.amount !== 'string' || p.amount.length > 50 || !['g', 'mol'].includes(p.unit)) throw Error('Invalid reaction participant.');
+    if (!Number.isInteger(p.id) || ids.has(p.id) || !documentIds.has(p.documentId) || !['reactant', 'product', 'agent'].includes(p.role) || !Number.isInteger(p.coefficient) || p.coefficient < 1 || p.coefficient > 1000000 || typeof p.amount !== 'string' || p.amount.length > 50 || !['g', 'mol'].includes(p.unit)) throw Error('Invalid reaction participant.');
     ids.add(p.id);
     const maps = {};
     if (p.maps && (typeof p.maps !== 'object' || Array.isArray(p.maps) || Object.keys(p.maps).length > 500)) throw Error('Invalid atom maps.');
@@ -67,11 +67,11 @@ export function reactionYields(participants, analyses, coefficients) {
     return moles / coefficients[p.id];
   });
   const extent = Math.min(...extents);
-  return { limiting: reactants.filter((p,i) => Math.abs(extents[i] - extent) < 1e-10).map(p => p.id), rows: participants.map(p => ({ id:p.id, mol: p.role === 'product' ? extent * coefficients[p.id] : Math.max(0,Number(p.amount) / (p.unit === 'g' ? analyses[p.documentId].mass : 1) - extent * coefficients[p.id]), mass: analyses[p.documentId].mass })) };
+  return { limiting: reactants.filter((p,i) => Math.abs(extents[i] - extent) < 1e-10).map(p => p.id), rows: participants.filter(p => p.role !== 'agent').map(p => ({ id:p.id, mol: p.role === 'product' ? extent * coefficients[p.id] : Math.max(0,Number(p.amount) / (p.unit === 'g' ? analyses[p.documentId].mass : 1) - extent * coefficients[p.id]), mass: analyses[p.documentId].mass })) };
 }
 export function mappingIssues(participants, documents) {
   const seen = new Map(), issues = [];
-  for (const p of participants) for (const [atomId, label] of Object.entries(p.maps || {})) {
+  for (const p of participants.filter(p => p.role !== 'agent')) for (const [atomId, label] of Object.entries(p.maps || {})) {
     const atom = documents.find(d => d.id === p.documentId)?.model?.atoms.find(a => a.id === Number(atomId));
     if (!atom) { issues.push(`Map ${label}: source atom no longer exists. Clear or reassign it.`); continue; }
     const record = seen.get(label) || {};

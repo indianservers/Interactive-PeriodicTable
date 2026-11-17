@@ -4,6 +4,7 @@ const workspace = (category, subject, prefix, rows) => rows.map(([slug,title]) =
   description:`Open the ${title} workspace.`, kind:'Workspace',
 }));
 export const additionalExperiences = [
+  {id:'progress',path:'progress',title:'Your Learning Progress',category:'learn',subject:'General',description:'View your saved lesson completion and continue learning.'},
   ...workspace('simulators','Physical','modules/physical',[
     ['molecular-dynamics','Molecular Dynamics workspace'],['real-gas-laws','Real Gas Laws workspace'],['thermodynamics','Carnot Cycle Laboratory'],['statistical-thermodynamics','Boltzmann Population Explorer'],['chemical-kinetics','Chemical Kinetics'],['chemical-equilibrium','Chemical Equilibrium'],['phase-equilibrium','Phase Equilibrium'],['solutions-colligative-properties','Solutions & Colligative Properties'],['electrochemistry','Electrochemistry'],['quantum-chemistry','Quantum Chemistry'],['molecular-spectroscopy','Molecular Spectroscopy'],['surface-chemistry','Surface Chemistry'],['photochemistry','Photochemistry'],['transport-phenomena','Transport Phenomena'],
   ]),

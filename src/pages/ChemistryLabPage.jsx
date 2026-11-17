@@ -14816,7 +14816,7 @@ export const ChemistryLabPage = ({
                   className="text-7xl"
                   style={{ color: activeAtlasItem.color }}
                 >
-                  {activeAtlasItem.icon}
+                  {activeAtlasItem.title.startsWith("SN2") ? <svg viewBox="0 0 380 120" role="img" aria-label="SN2 preview: hydroxide attacks carbon as bromide departs" className="h-28 w-full"><path d="M110 60H170M205 60H265" stroke="#8bdcff" strokeWidth="5"/><circle cx="80" cy="60" r="25" fill="#d83c58"/><text x="80" y="66" textAnchor="middle" fill="white" fontSize="17">OH⁻</text><circle cx="190" cy="60" r="25" fill="#536579"/><text x="190" y="66" textAnchor="middle" fill="white" fontSize="17">C</text><circle cx="300" cy="60" r="25" fill="#ad642f"/><text x="300" y="66" textAnchor="middle" fill="white" fontSize="17">Br</text><path d="M83 25Q130 0 168 26" stroke="#fbbf24" strokeWidth="3" fill="none"/><text x="190" y="108" textAnchor="middle" fill="#9cdff6" fontSize="12">Backside attack · inversion · C–Br cleavage</text></svg> : activeAtlasItem.icon}
                 </span>
               </div>
               <h2 className="mt-3 text-lg font-black text-white">

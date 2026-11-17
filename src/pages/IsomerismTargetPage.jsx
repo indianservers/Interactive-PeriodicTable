@@ -15,6 +15,9 @@ import {
   Sparkles,
   StopCircle,
 } from "lucide-react";
+import ResourceDialog from "../components/common/ResourceDialog.jsx";
+import KnowledgeCheck from "../components/common/KnowledgeCheck.jsx";
+import { useLocalStorage } from "../hooks/useLocalStorage.js";
 import MolstarViewer from "../components/molecular-viewer/MolstarViewer.jsx";
 import ViewerErrorBoundary from "../components/molecular-viewer/ViewerErrorBoundary.jsx";
 import "./isomerismTarget.css";
@@ -30,7 +33,7 @@ const molecules = [
     density: "1.206 g mL⁻¹",
     solubility: "Miscible",
     rotation: "+3.8°",
-    groups: ["–COOH", "–OH", "–CH₃", "–H"],
+    groups: ["–OH", "–COOH", "–CH₃", "–H"],
     leftLabel:"(R)-lactic acid",rightLabel:"(S)-lactic acid",leftSource:"r-lactic.sdf",rightSource:"s-lactic.sdf",centers:[3],provenance:"PubChem CIDs 61503 / 107689",
   },
   {
@@ -238,6 +241,8 @@ function Molecule({
 export default function IsomerismTargetPage() {
   const leftViewerRef=useRef(null),rightViewerRef=useRef(null);
   const [moleculeIndex, setMoleculeIndex] = useState(0);
+  const [tool, setTool] = useState("");
+  const [notes, setNotes] = useLocalStorage("chemistry-isomerism-notes", "");
   const [spinning, setSpinning] = useState(false);
   const [superimpose, setSuperimpose] = useState(false);
   const [tested, setTested] = useState(false);
@@ -314,7 +319,7 @@ export default function IsomerismTargetPage() {
           {["Molecules Library", "Simulations", "Quizzes", "Notes"].map((x) => (
             <button
               key={x}
-              onClick={() => announce(x + " opened")}
+              onClick={() => setTool(x)}
               className="rounded-lg px-3 py-3 text-left text-xs text-slate-300 hover:bg-white/5"
             >
               <FlaskConical size={15} className="mr-2 inline text-slate-400" />
@@ -579,6 +584,7 @@ export default function IsomerismTargetPage() {
           </div>
         </section>
       </div>
+      {tool && <ResourceDialog title={tool} onClose={()=>setTool("")}>{tool === "Notes" ? <label>Isomerism notebook<textarea aria-label="Isomerism notes" className="mt-3 min-h-48 w-full rounded bg-slate-900 p-3" value={notes} onChange={e=>setNotes(e.target.value)}/><small>Saved automatically on this device.</small></label> : tool === "Quizzes" ? <KnowledgeCheck questions={[{prompt:"Which pair consists of non-superimposable mirror images?",correct:"enantiomers",options:[{id:"enantiomers",label:"Enantiomers"},{id:"conformers",label:"Conformers"},{id:"constitutional",label:"Constitutional isomers"}]}]}/> : <div className="grid gap-3 sm:grid-cols-2">{molecules.map((m,i)=><button className="rounded border border-slate-600 p-4 text-left" key={m.name} onClick={()=>{setMoleculeIndex(i);setSelectedAtom(null);setTested(false);setSuperimpose(false);setSpinning(tool === "Simulations");setTool("");}}><b>{m.name}</b><p>{m.formula} · {m.tag}</p><small>{tool === "Simulations" ? "Run comparison" : "Load molecular pair"}</small></button>)}</div>}</ResourceDialog>}
       {notice && (
         <div
           role="status"

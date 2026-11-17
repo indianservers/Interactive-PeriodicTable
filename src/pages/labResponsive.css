@@ -1,0 +1,21 @@
+/* Keep the laboratory panels in normal flow at tablet and phone widths. */
+:is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests){height:auto;min-height:100vh;overflow:visible}
+:is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>div.grid{height:auto;min-height:calc(100vh - 76px);grid-template-rows:auto auto}
+:is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>header{height:auto;min-height:76px;flex-wrap:wrap;padding:16px;gap:12px}
+:is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests) :is(main,aside,section){min-width:0}
+.named-reactions main>section>div.flex{flex-wrap:wrap;gap:8px}.named-reactions button{white-space:normal}
+@media(max-width:1200px){
+ :is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>div.grid{grid-template-columns:minmax(200px,260px) minmax(0,1fr)}
+ :is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>div.grid>:last-child{grid-column:1/-1;grid-row:auto}
+ .iupac-studio>div.grid,.functional-tests>div.grid{grid-template-columns:1fr}
+ .iupac-studio>div.grid>*,.functional-tests>div.grid>*{grid-column:auto;grid-row:auto}
+}
+@media(max-width:700px){
+ :is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>div.grid{display:flex;flex-direction:column}
+ :is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>div.grid>*{grid-column:auto;grid-row:auto;width:100%;min-width:0}
+ :is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>header nav{display:flex;flex-wrap:wrap;gap:10px}
+ :is(.reaction-visualizer,.named-reactions,.metallurgy,.salt-analysis,.iupac-studio,.functional-tests)>header h1{font-size:22px;line-height:1.3}
+ .iupac-studio main .grid{grid-template-columns:1fr}.iupac-studio main .flex{flex-wrap:wrap}
+ .metallurgy>div.grid>section:last-child>div{flex-wrap:wrap;gap:14px}
+ .functional-tests>div.grid>nav{flex-direction:row;flex-wrap:wrap;justify-content:center}
+}

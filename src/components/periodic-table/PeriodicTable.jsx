@@ -122,7 +122,8 @@ export const PeriodicTable = ({
   };
 
   return (
-    <div className="overflow-x-auto scrollbar-thin pb-3 rounded-2xl periodic-table-wrap">
+    <div className="overflow-x-auto scrollbar-thin pb-3 rounded-2xl periodic-table-wrap" tabIndex={0} role="region" aria-label="Periodic table, scroll horizontally to see all 18 groups">
+      <p className="sticky left-0 w-fit px-3 py-1 text-xs text-slate-400 lg:hidden">Swipe or scroll horizontally to explore all 18 groups and the f-block.</p>
       <div className="relative inline-block min-w-max p-3">
         <div className={`f-block-connector absolute pointer-events-none ${compact ? 'left-[6.25rem] top-[13.1rem] h-[3.1rem] w-[5.6rem]' : 'left-[13.25rem] top-[27rem] h-[5.2rem] w-[10rem]'}`} aria-hidden="true" />
         {/* Group numbers header */}

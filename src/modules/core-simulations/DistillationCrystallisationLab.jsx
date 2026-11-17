@@ -36,7 +36,7 @@ function CrystalSequence() {
 function Curve({ kind = 'fractional', marker = 38 }) {
   const points = Array.from({ length: 51 }, (_, i) => { const v = i * 2; const p = kind === 'fractional' ? ethanolDistillate(v) : steamRun(v / 2.2); return { x: v, y: kind === 'fractional' ? p.temperature : p.oilMass }; });
   const poly = points.map(p => `${48 + p.x * 5.4},${kind === 'fractional' ? 245 - (p.y - 60) * 4.5 : 245 - p.y * 65}`).join(' ');
-  return <svg className="dc-chart" viewBox="0 0 640 280" role="img" aria-label={`${kind} results chart`}><line x1="48" x2="600" y1="245" y2="245"/><line x1="48" x2="48" y1="25" y2="245"/><polyline points={poly}/><line className="marker" x1={48 + marker * 5.4} x2={48 + marker * 5.4} y1="25" y2="245"/><text x="250" y="273">{kind === 'fractional' ? 'Distillate volume (mL)' : 'Time / distillate progress'}</text></svg>;
+  return <svg className="dc-chart" viewBox="0 0 640 280" role="img" aria-label={`${kind} results chart`}><line x1="48" x2="600" y1="245" y2="245"/><line x1="48" x2="48" y1="25" y2="245"/><polyline points={poly}/><line className="marker" x1={48 + marker * 5.4} x2={48 + marker * 5.4} y1="25" y2="245"/><text x="16" y="145" transform="rotate(-90 16 145)">{kind === "fractional" ? "Temperature (°C)" : "Oil mass (g)"}</text>{(kind === "fractional" ? [60,70,80,90,100] : [0,1,2,3]).map(v=><text key={v} x="42" textAnchor="end" y={kind === "fractional" ? 249-(v-60)*4.5 : 249-v*65}>{v}</text>)}<text x="370" y="20">Dashed line: current progress</text><text x="250" y="273">{kind === 'fractional' ? 'Distillate volume (mL)' : 'Time / distillate progress'}</text></svg>;
 }
 
 function Home({ go }) {

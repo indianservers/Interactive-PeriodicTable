@@ -1,15 +1,18 @@
 import { Search } from 'lucide-react';
+import { useState } from 'react';
 import { moleculeLibrary } from '../data/moleculeData.js';
 
 export function MoleculeSelector({ selectedId, onSelect }) {
+  const [difficulty, setDifficulty] = useState('All');
   return (
     <section className="glass rounded-xl p-3">
       <div className="mb-3 flex items-center gap-2 text-sm font-bold text-white">
         <Search size={16} className="text-cyan-300" />
         Molecule Library
       </div>
+      <label className="mb-3 block text-xs text-slate-300">Difficulty<select className="ml-2 rounded bg-slate-900 p-2" aria-label="Symmetry practice difficulty" value={difficulty} onChange={e=>setDifficulty(e.target.value)}>{['All',...new Set(moleculeLibrary.map(m=>m.difficulty))].map(level=><option key={level}>{level}</option>)}</select></label>
       <div className="space-y-2">
-        {moleculeLibrary.map(molecule => (
+        {moleculeLibrary.filter(m=>difficulty==='All'||m.difficulty===difficulty).map(molecule => (
           <button
             key={molecule.id}
             onClick={() => onSelect(molecule.id)}

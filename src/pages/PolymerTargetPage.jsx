@@ -79,6 +79,7 @@ function oligomerSdf(index, repeatCount) {
 }
 export default function PolymerTargetPage() {
   const [selected, setSelected] = useState(0);
+  const [light, setLight] = useState(false);
   const [n, setN] = useState(120);
   const [branch, setBranch] = useState(0);
   const [cross, setCross] = useState(0);
@@ -126,7 +127,7 @@ export default function PolymerTargetPage() {
   const importStructure=event=>{const file=event.target.files?.[0];if(!file)return;const format=file.name.split(".").pop()?.toLowerCase();if(!["pdb","cif","mmcif","mol","sdf"].includes(format))return;setImportedSource({url:URL.createObjectURL(file),format,label:file.name});setStructureReady(false);event.target.value="";};
   return (
     <div
-      className="poly-app min-h-screen overflow-hidden bg-[#071522] text-slate-100"
+      className={`poly-app min-h-screen overflow-hidden bg-[#071522] text-slate-100 ${light ? "lab-light" : ""}`}
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-4 border-b border-white/10 bg-[#091a2b] px-5">
@@ -159,8 +160,7 @@ export default function PolymerTargetPage() {
               </option>
             ))}
           </select>
-          <Sun size={16} />
-          <Moon size={16} />
+          <button aria-label="Toggle polymer color theme" aria-pressed={light} onClick={()=>setLight(v=>!v)}>{light ? <Moon size={16}/> : <Sun size={16}/>}</button>
           <span className="rounded-full bg-indigo-400 px-3 py-2 font-bold">
             LS
           </span>

@@ -267,11 +267,12 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
     setQuery('');
   };
 
-  const sharePage = () => {
-    if (!navigator.clipboard) return;
+  const [shareLink, setShareLink] = useState("");
+  const sharePage = async () => {
     const shareHash = pageHashMap[currentPage] || currentPage;
-    navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#/${shareHash}`);
-    setCopied(true);
+    const url = `${window.location.origin}${window.location.pathname}#/${shareHash}`;
+    setShareLink(url);
+    try { await navigator.clipboard.writeText(url); setCopied(true); } catch { setCopied(false); }
     window.setTimeout(() => setCopied(false), 1400);
   };
   const fullscreenPage = () => {
@@ -300,7 +301,7 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
   };
 
   return (
-    <header className="sticky top-0 z-40 h-14 flex items-center justify-between px-4 border-b border-white/[0.07]"
+    <header className="sticky top-0 z-40 min-h-14 flex flex-wrap items-center justify-between gap-2 px-2 sm:px-4 border-b border-white/[0.07]"
       style={{ background: 'rgba(3,7,18,0.82)', backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)' }}>
       <div className="flex items-center gap-3">
         <button
@@ -374,6 +375,7 @@ export const Topbar = ({ onMenuToggle, isDark, onThemeToggle, currentPage, onNav
         <button onClick={sharePage} className="rounded-xl border border-white/10 p-2 text-gray-400 hover:text-gray-100" title={copied ? 'Copied' : 'Share this page'}>
           <Share2 size={16} />
         </button>
+        {shareLink && <div role="dialog" aria-label="Share this page" className="absolute right-3 top-16 z-50 w-[min(420px,94vw)] rounded-xl border border-slate-600 bg-slate-950 p-4 text-slate-100 shadow-xl"><h2 className="font-bold">Share this page</h2><p role="status" className="my-2 text-xs">{copied ? "Link copied to clipboard." : "Copy the link below to share this page."}</p><input aria-label="Page share link" readOnly value={shareLink} className="w-full rounded border border-slate-600 bg-slate-900 p-2 text-xs" onFocus={e=>e.target.select()}/><button className="mt-3 rounded border border-slate-600 px-3 py-1" onClick={()=>setShareLink("")}>Close</button></div>}
         <button onClick={exportFirstVisual} className="hidden sm:block rounded-xl border border-white/10 p-2 text-gray-400 hover:text-gray-100" title="Export first visualization">
           <Download size={16} />
         </button>

@@ -15,6 +15,7 @@ const ChemistryLabPage = lazy(() => import("./pages/ChemistryLabPage.jsx").then(
 const SyllabusPage = lazy(() => import("./pages/SyllabusPage.jsx").then(module => ({ default: module.SyllabusPage })));
 import { syllabusInteractiveIds } from "./modules/core-simulations/syllabusInteractiveModel.js";
 import { TITRATION_EXPERIMENTS } from "./modules/core-simulations/titrationExperimentModel.js";
+const LearnerProgressPage = lazy(() => import("./pages/LearnerProgressPage.jsx"));
 const LearningPathTargetPage = lazy(() => import("./pages/LearningPathTargetPage.jsx").then(module => ({ default: module.LearningPathTargetPage })));
 const ReactionBalancerTargetPage = lazy(() => import("./pages/ReactionBalancerTargetPage.jsx").then(module => ({ default: module.ReactionBalancerTargetPage })));
 const StudyToolkitTargetPage = lazy(() => import("./pages/StudyToolkitTargetPage.jsx").then(module => ({ default: module.StudyToolkitTargetPage })));
@@ -865,6 +866,8 @@ function App() {
         return <PeriodicTablePage {...commonProps} />;
       case "trends":
         return <TrendsPage {...commonProps} />;
+      case "progress":
+        return <LearnerProgressPage onNavigate={navigate} />;
       case "compare":
         return <ComparePage initialElement={compareElement} />;
       case "atom":

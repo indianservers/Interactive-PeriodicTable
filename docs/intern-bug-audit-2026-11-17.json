@@ -1,0 +1,557 @@
+{
+  "review_date": "2026-11-17",
+  "source_handling": "Workbooks were treated as untrusted bug evidence. Embedded instructions were not executed; originals were not modified.",
+  "scope": "Current repository checkout plus reported public-domain routing. Existing uncommitted drawing improvements preserved.",
+  "counts": {
+    "fixed": 52,
+    "already_present": 7,
+    "not_reproduced": 3,
+    "clarified": 1
+  },
+  "observations": [
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 2,
+      "reported_id": "BUG-001",
+      "status": "fixed",
+      "resolution_or_finding": "Separated the target-to-build label from the current atom identity."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 3,
+      "reported_id": "BUG-002",
+      "status": "fixed",
+      "resolution_or_finding": "Numbered shell capacity labels and wrapping preset names."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 4,
+      "reported_id": "BUG-003",
+      "status": "fixed",
+      "resolution_or_finding": "Challenge inputs start blank; blank submissions fail, correct answers pass."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 5,
+      "reported_id": "BUG-004",
+      "status": "fixed",
+      "resolution_or_finding": "The computed 20.0 mL answer already existed; removed solution clipping and enabled page scrolling."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 6,
+      "reported_id": "BUG-005",
+      "status": "already_present",
+      "resolution_or_finding": "Notebook already uses synchronous local storage. Reload verified in the browser; updated misleading retention copy."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 7,
+      "reported_id": "BUG-006",
+      "status": "fixed",
+      "resolution_or_finding": "Temperature preference persists and the settings viewer displays 25.00 °C / 298.15 K consistently."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 8,
+      "reported_id": "BUG-007",
+      "status": "fixed",
+      "resolution_or_finding": "Formula Sheet now opens an actual scrollable reference dialog."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 9,
+      "reported_id": "BUG-008",
+      "status": "fixed",
+      "resolution_or_finding": "Added a difficulty selector to the practice molecule library and relaxed symmetry control layouts."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 10,
+      "reported_id": "BUG-009",
+      "status": "fixed",
+      "resolution_or_finding": "Search lives in a navigation bar; balancer examples and tagline no longer share absolute footer space."
+    },
+    {
+      "source_file": "Soumya_13thNovember - Soumya Singh.xlsx",
+      "sheet": "QA Bug Log",
+      "row": 11,
+      "reported_id": "BUG-010",
+      "status": "fixed",
+      "resolution_or_finding": "Lesson index, section and experiment inputs persist; learning cards and title use flowing layouts."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 5,
+      "reported_id": "BUG-001",
+      "status": "fixed",
+      "resolution_or_finding": "Subject-navigation Virtual Labs link no longer appears permanently active."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 6,
+      "reported_id": "BUG-002",
+      "status": "fixed",
+      "resolution_or_finding": "Periodic table retains horizontal scrolling with an explicit 18-group/f-block cue and keyboard-focusable region."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 7,
+      "reported_id": "BUG-003",
+      "status": "fixed",
+      "resolution_or_finding": "Topbar wraps with compact spacing."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 8,
+      "reported_id": "BUG-004",
+      "status": "fixed",
+      "resolution_or_finding": "Viewer tabs wrap in normal flow; hidden grid spacer removes the empty library column."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 9,
+      "reported_id": "BUG-005",
+      "status": "fixed",
+      "resolution_or_finding": "Replaced the SN2 featured placeholder with an explanatory reaction preview."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 10,
+      "reported_id": "BUG-006",
+      "status": "fixed",
+      "resolution_or_finding": "Moved search into a reserved application navigation bar."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 11,
+      "reported_id": "BUG-007",
+      "status": "fixed",
+      "resolution_or_finding": "Hydrogen uses the numeric red gradient correctly. Europium has no reported value in the current dataset and uses neutral grey; added a missing-value legend and explicit unavailable-value tooltip. Verified both actual tile colors in the browser."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 12,
+      "reported_id": "BUG-008",
+      "status": "already_present",
+      "resolution_or_finding": "Current legend has numerical endpoints plus low/high descriptions, not duplicate numerical scales."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 13,
+      "reported_id": "BUG-009",
+      "status": "already_present",
+      "resolution_or_finding": "Current calcium data uses Ca. No Cu/Calcium mapping found."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 14,
+      "reported_id": "BUG-010",
+      "status": "fixed",
+      "resolution_or_finding": "The loaded product is named immediately instead of showing a pending label."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 15,
+      "reported_id": "BUG-011",
+      "status": "fixed",
+      "resolution_or_finding": "Four matching pathway stages; benzaldehyde explicitly paired with acetophenone; corrected condensed structures."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 16,
+      "reported_id": "BUG-012",
+      "status": "fixed",
+      "resolution_or_finding": "EtOH is already correct; reaction panels now stack/wrap at narrow widths."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 17,
+      "reported_id": "BUG-013",
+      "status": "fixed",
+      "resolution_or_finding": "Connected receiver adapter, coolant nozzles and support clamps; increased glass visibility; open receiving flask."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 18,
+      "reported_id": "BUG-014",
+      "status": "fixed",
+      "resolution_or_finding": "Added y-axis units/ticks and dashed marker legend; distillation panels follow dark theme."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 19,
+      "reported_id": "BUG-015",
+      "status": "fixed",
+      "resolution_or_finding": "Bromination stages and cards wrap without fixed vertical squeezing."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 20,
+      "reported_id": "BUG-016",
+      "status": "fixed",
+      "resolution_or_finding": "Removed the duplicate hazard paragraph; retained the visible hazard panel."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 21,
+      "reported_id": "BUG-017",
+      "status": "fixed",
+      "resolution_or_finding": "SN2 3D model contains four carbons with distinct methyl/ethyl/H groups and umbrella inversion."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 22,
+      "reported_id": "BUG-018",
+      "status": "fixed",
+      "resolution_or_finding": "Product has C–O bond and detached bromide; schematic C–Br line disappears."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 23,
+      "reported_id": "BUG-019",
+      "status": "fixed",
+      "resolution_or_finding": "Orbital interaction layout wraps; cyclohexene has a labeled ring with a double bond."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 24,
+      "reported_id": "BUG-020",
+      "status": "fixed",
+      "resolution_or_finding": "Named-reaction header/tabs and columns wrap/stack."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 25,
+      "reported_id": "BUG-021",
+      "status": "already_present",
+      "resolution_or_finding": "Current equation is CO₂ + C → 2CO; reported 200 typo is absent."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 26,
+      "reported_id": "BUG-022",
+      "status": "fixed",
+      "resolution_or_finding": "Feed rate uses 3000/24 t/h, normalized compositions and iron mass fraction; units and example readings clarified."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 27,
+      "reported_id": "BUG-023",
+      "status": "fixed",
+      "resolution_or_finding": "Initial barium state is suspected. Explicit sulfate addition is required for confirmation; verified in browser."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 28,
+      "reported_id": "BUG-024",
+      "status": "fixed",
+      "resolution_or_finding": "Confirmation badge spans its own footer area; current label already says Solid sample."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 29,
+      "reported_id": "BUG-025",
+      "status": "fixed",
+      "resolution_or_finding": "All displayed cobalt equations include chloride/water; aqua-favoured result explicitly identifies the pink complex."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 30,
+      "reported_id": "BUG-026",
+      "status": "fixed",
+      "resolution_or_finding": "Density already shares one computed value; corrected escaped KaTeX and cm⁻³ rendering."
+    },
+    {
+      "source_file": "Chemistry_Universe_Bug_Report_13-11-2026 - Malti.xlsx",
+      "sheet": "Bug Report",
+      "row": 31,
+      "reported_id": "BUG-027",
+      "status": "fixed",
+      "resolution_or_finding": "Polymer mechanism cards grow with content; workspace and lower preview are scrollable."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 3,
+      "reported_id": "TC_001",
+      "status": "already_present",
+      "resolution_or_finding": "Study Tools is implemented and its current route opens; checked browser and catalog route coverage."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 4,
+      "reported_id": "TC_002",
+      "status": "fixed",
+      "resolution_or_finding": "Share opens a visible link dialog and reports clipboard success/fallback."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 5,
+      "reported_id": "TC_003",
+      "status": "already_present",
+      "resolution_or_finding": "Compare Elements is implemented and covered by catalog/route checks."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 6,
+      "reported_id": "TC_004",
+      "status": "already_present",
+      "resolution_or_finding": "Atomic Explorer is implemented and covered by catalog/route checks."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 7,
+      "reported_id": "TC_005",
+      "status": "fixed",
+      "resolution_or_finding": "Every standalone laboratory now has an explicit Main home action."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 8,
+      "reported_id": "TC_006",
+      "status": "fixed",
+      "resolution_or_finding": "Bromination back arrow at the first screen returns to the lab directory."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 9,
+      "reported_id": "TC_007",
+      "status": "fixed",
+      "resolution_or_finding": "Shared Main home navigation added."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 10,
+      "reported_id": "TC_008",
+      "status": "fixed",
+      "resolution_or_finding": "Mechanism color-theme control now changes rendered colors."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 11,
+      "reported_id": "TC_009",
+      "status": "fixed",
+      "resolution_or_finding": "Confirmed disconnection can be reversed with Reconnect target."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 12,
+      "reported_id": "TC_010",
+      "status": "fixed",
+      "resolution_or_finding": "Shared Main home navigation added."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 13,
+      "reported_id": "TC_011",
+      "status": "fixed",
+      "resolution_or_finding": "Library, simulation chooser, quiz and persistent notes open working dialogs."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 14,
+      "reported_id": "TC_012",
+      "status": "fixed",
+      "resolution_or_finding": "Shared Main home navigation added."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 15,
+      "reported_id": "TC_013",
+      "status": "fixed",
+      "resolution_or_finding": "Functional-group selection displays a matching formula, example name and naming suffix. Reference is distinguished from the separate exercise."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 16,
+      "reported_id": "TC_014",
+      "status": "fixed",
+      "resolution_or_finding": "Shared Main home navigation added."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 17,
+      "reported_id": "TC_015",
+      "status": "fixed",
+      "resolution_or_finding": "Unknown-sample panel scrolls; overall lab no longer clips its contents."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 18,
+      "reported_id": "TC_016",
+      "status": "fixed",
+      "resolution_or_finding": "Polymer color-theme button now changes rendered colors."
+    },
+    {
+      "source_file": "chemistry_lab_day4 - Dhanashri Mhamane.xlsx",
+      "sheet": "Sheet1",
+      "row": 19,
+      "reported_id": "TC_017",
+      "status": "fixed",
+      "resolution_or_finding": "Shared Main home navigation added."
+    },
+    {
+      "source_file": "Day_4_Chemistry_Bug_Report - JAHANNAVI D.xlsx",
+      "sheet": "Day 4 - Bug Verification",
+      "row": 2,
+      "reported_id": "DAY4-BUG-01",
+      "status": "fixed",
+      "resolution_or_finding": "Solver solution and visualization layout no longer clip the answer/footer."
+    },
+    {
+      "source_file": "Day_4_Chemistry_Bug_Report - JAHANNAVI D.xlsx",
+      "sheet": "Day 4 - Bug Verification",
+      "row": 3,
+      "reported_id": "DAY4-BUG-02",
+      "status": "not_reproduced",
+      "resolution_or_finding": "No specific screen identified. Reviewed shared scrolling and tested other reported page navigation; exact original failure remains unverified."
+    },
+    {
+      "source_file": "Day_4_Chemistry_Bug_Report - JAHANNAVI D.xlsx",
+      "sheet": "Day 4 - Bug Verification",
+      "row": 4,
+      "reported_id": "DAY4-BUG-03",
+      "status": "fixed",
+      "resolution_or_finding": "Open Simulation launches the relevant reaction-particle experiment; shared solver/toolkit layouts no longer overlap."
+    },
+    {
+      "source_file": "Day_4_Chemistry_Bug_Report - JAHANNAVI D.xlsx",
+      "sheet": "Day 4 - Bug Verification",
+      "row": 5,
+      "reported_id": "DAY4-BUG-04",
+      "status": "not_reproduced",
+      "resolution_or_finding": "No specific page or tab names identified. Broadened tab/navigation checks; exact original failure remains unverified."
+    },
+    {
+      "source_file": "Day_4_Chemistry_Bug_Report - JAHANNAVI D.xlsx",
+      "sheet": "Day 4 - Bug Verification",
+      "row": 6,
+      "reported_id": "DAY4-BUG-05",
+      "status": "fixed",
+      "resolution_or_finding": "Study Toolkit uses normal-flow formula, model, tip, answer and review sections."
+    },
+    {
+      "source_file": "Day_4_Chemistry_Bug_Report - JAHANNAVI D.xlsx",
+      "sheet": "Day 4 - Bug Verification",
+      "row": 7,
+      "reported_id": "DAY4-BUG-06",
+      "status": "clarified",
+      "resolution_or_finding": "Dispense remains correctly gated by conditioning, sample transfer and standardisation. Added an exact missing-prerequisite list and Ready to dispense status; titration regression suite passes."
+    },
+    {
+      "source_file": "Day 7 Sheet - Kamasani Sai Teja Reddy.xlsx",
+      "sheet": "Sheet1",
+      "row": 12,
+      "reported_id": "BUG-001",
+      "status": "fixed",
+      "resolution_or_finding": "Buttons now sample deterministic velocities, minimize periodic Lennard–Jones energy and integrate 100 velocity-Verlet steps. Browser verified and regression tested; sample capped at 108 particles with explicit model limits."
+    },
+    {
+      "source_file": "Day 7 Sheet - Kamasani Sai Teja Reddy.xlsx",
+      "sheet": "Sheet1",
+      "row": 13,
+      "reported_id": "BUG-002",
+      "status": "not_reproduced",
+      "resolution_or_finding": "Current screen navigation preserves the mounted lab and changes hash state; Build→Run works without retry/reloading. Route-state and studio-routing regressions pass."
+    },
+    {
+      "source_file": "Day 7 Sheet - Kamasani Sai Teja Reddy.xlsx",
+      "sheet": "Sheet1",
+      "row": 14,
+      "reported_id": "BUG-003",
+      "status": "fixed",
+      "resolution_or_finding": "Progress links now lead to a learner dashboard based on real saved lesson completion; classroom dashboard remains a separate destination."
+    }
+  ],
+  "validation": [
+    "test:intern-bugs: 15 model cases + five server-rendered cases",
+    "test:chemistry",
+    "test:catalog",
+    "test:lab-routing",
+    "test:studio-routing",
+    "test:titration-experiments",
+    "test:salt-analysis",
+    "test:draw",
+    "verify-crystal-data.mjs",
+    "Production build",
+    "Browser checks: dynamics setup, challenge grading, notebook reload, formula sheet, salt evidence, solver answer; additional tabs/navigation; reversible retrosynthesis and all four isomerism tool dialogs (quiz score 1/1); saved lesson inputs, temperature conversion, both theme buttons, share fallback, trend colors"
+  ],
+  "limitations": [
+    "Three observations not reproduced exactly; two omit specific screen/tab names.",
+    "Legacy test:physical browser script requires PLAYWRIGHT_MODULE_ROOT and was not run; browser interactions used the supported browser tools.",
+    "Phone viewport override did not affect the Chrome tab; responsive CSS was reviewed, but phone-device rendering is not claimed as verified."
+  ],
+  "additional_finding": {
+    "module": "Isomerism Studio",
+    "fix": "Corrected lactic-acid CIP order: OH precedes COOH because directly attached O has higher atomic number than C."
+  },
+  "scientific_references": [
+    "https://openstax.org/books/organic-chemistry/pages/11-2-the-sn2-reaction",
+    "https://openstax.org/books/organic-chemistry/pages/23-5-mixed-aldol-reactions"
+  ],
+  "deployment": {
+    "url": "https://chemistry.aimersociety.com/",
+    "release": "20261117T062840Z",
+    "rollback_release": "20261117T053424Z",
+    "build_files_sha256_verified": 697,
+    "public_entry_assets": [
+      "/assets/index-C6MMFbcG.js",
+      "/assets/index-TQskJj0E.css"
+    ],
+    "public_entry_asset_checksums": "match local build",
+    "live_browser_check": "Deployed Formula Sheet opens; browser loads index-C6MMFbcG.js",
+    "source_commit": "692809b2a8b24fe7f2c92c9d8e4ee44bcbe5c5c8",
+    "source_has_uncommitted_changes": true
+  }
+}

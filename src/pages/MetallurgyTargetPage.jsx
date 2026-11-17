@@ -1,3 +1,4 @@
+import "./labResponsive.css";
 import { useState } from "react";
 import {
   BarChart3,
@@ -19,11 +20,15 @@ export default function MetallurgyTargetPage() {
   const total = ore + coke + lime;
   const normalizedFeed = total || 1;
   const ironYield = Math.min(98, Math.max(45, 78 + (temp - 1000) * 0.018 - Math.abs((ore / normalizedFeed) * 100 - 62) * 0.22));
-  const hotMetal = Math.round((ore / normalizedFeed) * 300 * (ironYield / 100));
+  const feedRate = 3000 / 24;
+  const oreRate = ore / normalizedFeed * feedRate;
+  const cokeRate = coke / normalizedFeed * feedRate;
+  const ironFraction = oreType.startsWith("Magnetite") ? 0.7236 : 0.6994;
+  const hotMetal = Math.round(oreRate * ironFraction * ironYield / 100);
   const announce = (x) => setNotice(x);
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
+      className="metallurgy min-h-screen overflow-hidden bg-[#071522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[68px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5">
@@ -160,10 +165,10 @@ export default function MetallurgyTargetPage() {
               <span className="float-right text-slate-400">{b}</span>
             </div>
           ))}
-          <h2 className="mt-5 font-bold">Process results (per hour)</h2>
+          <h2 className="mt-5 font-bold">Illustrative process results (per hour)</h2>
           {[
             ["Hot metal (molten iron)", `${hotMetal} t/h`],
-            ["Slag", "62 t/h"],
+            ["Slag (illustrative)", "62 t/h"],
             ["Top gas", "320,000 Nm³/h"],
             ["CO₂ (in top gas)", "22.4 %"],
             ["N₂ (in top gas)", "77.1 %"],
@@ -189,12 +194,12 @@ export default function MetallurgyTargetPage() {
             <div>
               Iron ore
               <br />
-              <b>{Math.round(ore * 9)} t</b>
+              <b>{oreRate.toFixed(1)} t/h</b>
               <br />
               <br />
               Coke
               <br />
-              <b>{Math.round(coke * 9)} t</b>
+              <b>{cokeRate.toFixed(1)} t/h</b>
             </div>
             <div className="rounded border border-cyan-300/40 bg-slate-500/30 px-6 py-6">
               Blast Furnace
@@ -202,12 +207,12 @@ export default function MetallurgyTargetPage() {
             <div className="text-orange-300">
               Hot metal
               <br />
-              <b>182 t</b>
+              <b>{hotMetal} t/h</b>
               <br />
               <br />
               Slag
               <br />
-              <b>62 t</b>
+              <b>62 t/h (example)</b>
             </div>
           </div>
         </section>

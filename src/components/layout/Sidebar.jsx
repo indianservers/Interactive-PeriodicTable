@@ -139,6 +139,7 @@ export const navGroups = [
           { id: 'senior-core', label: 'Senior Chemistry Core', icon: Sigma },
           { id: 'advanced-visuals', label: 'Advanced Visual Chemistry', icon: Sparkles },
           { id: 'practice-tutor', label: 'Practice, Exams and Tutor', icon: FileQuestion },
+          { id: 'progress', label: 'My Progress', icon: ListTree },
           { id: 'learning-command', label: 'Learning Command Center', icon: ListTree },
           { id: 'coverage-audit', label: 'Curriculum Map', icon: BadgeCheck },
           { id: 'research-toolkit', label: 'Research Toolkit', icon: Microscope },

@@ -1158,3 +1158,29 @@ body:has(.draw-app) .dx-tools-menu {
 .draw-fragment-toolbar small { flex-basis:100%; color:#48617c; }
 .reaction-equation { padding:12px; font-size:18px; font-weight:700; background:#eaf2ff; border-radius:8px; overflow-wrap:anywhere; }
 .drawing-surface { user-select:none; -webkit-user-select:none; }
+.draw-document-manager { min-width:0; flex:1; }
+.draw-documents { align-items:flex-start; }
+.draw-document-list { display:flex; overflow-x:auto; gap:6px; align-items:center; }
+.draw-document-item { display:flex; flex-shrink:0; align-items:center; border:1px solid #ccdaea; border-radius:8px; background:#edf4fd; }
+.draw-document-list .draw-document-item > button[role=tab] { min-width:100px; max-width:230px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.draw-document-list .draw-document-item > button:last-child { min-width:24px; width:24px; padding:4px; }
+.draw-document-actions { display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin:5px 0; font-size:11px; }
+.draw-document-actions button, .draw-document-rename button { padding:4px 7px; border:1px solid #adc1d9; border-radius:5px; background:white; }
+.draw-document-actions button:disabled { opacity:.4; }
+.draw-document-actions span { color:#47617e; }
+.draw-document-rename { display:flex; align-items:end; gap:8px; padding:8px; background:#eaf3ff; border:1px solid #a5c4e9; border-radius:6px; }
+.draw-document-rename input { display:block; background:white; border:1px solid #8caacb; border-radius:4px; padding:5px; }
+.draw-fragment-toolbar select { max-width:135px; border:1px solid #9bb5d3; border-radius:4px; background:white; color:#173553; padding:5px; }
+.reaction-transfer textarea { display:block; width:100%; max-width:800px; padding:8px; color:#18334f; background:white; border:1px solid #a5bdd9; border-radius:5px; font-family:monospace; }
+.reaction-transfer label { margin:10px 0; }
+.reaction-arrow .reaction-card { font-size:11px; padding:5px; }
+.reaction-arrow .reaction-molecule { height:100px; }
+.draw-documents { height:auto; min-height:76px; }
+.draw-documents > .draw-document-manager { display:block; max-width:none; width:calc(100% - 180px); overflow:visible; }
+.draw-document-actions { flex-wrap:nowrap; overflow-x:auto; }
+.draw-document-actions > * { flex-shrink:0; }
+.draw-document-actions button { height:26px; }
+.draw-document-rename { flex-wrap:wrap; }
+.reaction-export-artifact { padding:12px; background:#eaf3ff; border:1px solid #b4cce9; border-radius:8px; }
+.reaction-export-artifact a { color:#0755b7; font-weight:700; text-decoration:underline; }
+.reaction-export-artifact img { display:block; max-width:100%; height:auto; margin-top:10px; background:white; }

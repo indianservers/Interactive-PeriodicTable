@@ -37,6 +37,7 @@ export const TrendHeatmap = ({ onTrendChange, activeTrend }) => {
           <span>High absolute value</span>
         </div>
       </div>
+      <span className="flex items-center gap-2 text-xs text-slate-300"><i aria-hidden="true" className="inline-block h-3 w-3 rounded border border-slate-500" style={{background:'#1f2937'}}/>No reported value</span>
     </div>
   );
 };

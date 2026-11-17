@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { seededParticles } from "./molecularDynamicsModel.js";
 export default function LabParticleBox3D({
   count = 256,
+  particles = null,
   seed = 8675309,
   running = false,
   vectors = true,
@@ -70,7 +71,7 @@ export default function LabParticleBox3D({
       }),
     );
     scene.add(glass);
-    const points = seededParticles(n, seed),
+    const points = particles || seededParticles(n, seed),
       arrows = [];
     if (vectors)
       for (let i = 0; i < Math.min(40, n); i++) {
@@ -157,7 +158,7 @@ export default function LabParticleBox3D({
       renderer.forceContextLoss();
       node.replaceChildren();
     };
-  }, [count, seed, vectors, phase]);
+  }, [count, seed, vectors, phase, particles]);
   return (
     <div
       ref={host}

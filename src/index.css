@@ -697,3 +697,4 @@
 }
 
 .trend-fullscreen:fullscreen {background:#101827;padding:32px;overflow:auto;width:100vw;height:100vh;}
+.lab-light{background:#f1f6fa!important;color:#172d40!important;color-scheme:light}.lab-light>header,.lab-light [class*="bg-[#"],.lab-light [class*="bg-slate-950"],.lab-light [class*="bg-black/"]{background:#fff!important;color:#172d40!important;border-color:#b8cbd8!important}.lab-light [class*="text-slate-"],.lab-light [class*="text-cyan-"],.lab-light [class*="text-sky-"],.lab-light [class*="text-emerald-"],.lab-light [class*="text-fuchsia-"]{color:#284c65!important}.lab-light select{background:#e7f0f5!important;color:#172d40!important}.lab-light .poly-structure,.lab-light .mech-molstar-view{background:#071522!important;color:#dfefff!important}

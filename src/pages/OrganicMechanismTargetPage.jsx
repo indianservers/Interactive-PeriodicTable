@@ -1,3 +1,4 @@
+import { mechanismMol } from "../utils/mechanismStates.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft,
@@ -52,7 +53,7 @@ const mechanisms = [
     species: [
       ["Water (nucleophile)", "H₂O · neutral nucleophile"],
       ["tert-Butyl bromide (substrate)", "(CH₃)₃CBr · tertiary halide"],
-      ["tert-Butanol (product)", "(CH₃)₃COH · racemic product"],
+      ["tert-Butanol (product)", "(CH₃)₃COH · achiral alcohol"],
       ["Hydrobromic acid", "HBr · conjugate acid"],
     ],
     features: [
@@ -107,7 +108,8 @@ const mechanisms = [
     ],
   },
 ];
-function MechanismSvg({ stage, arrows = true }) {
+function MechanismSvg({ stage, arrows = true, id = "sn2" }) {
+  if (id !== "sn2") return <div className="p-4 text-xs">{id === "sn1" ? ["(CH₃)₃C—Br + H₂O", "(CH₃)₃C⁺ + Br⁻", "(CH₃)₃C—OH₂⁺", "(CH₃)₃C—OH + H⁺"][stage] : ["CH₃CH₂Br + OH⁻", "Anti-periplanar β-H / Br", "C=C forms as H and Br leave", "CH₂=CH₂ + H₂O + Br⁻"][stage]}</div>;
   const bond = stage === 1 ? "#a78bfa" : stage === 2 ? "#f59e0b" : "#7dd3fc";
   return (
     <svg
@@ -121,18 +123,18 @@ function MechanismSvg({ stage, arrows = true }) {
         y1="60"
         x2={stage === 0 ? 52 : 42}
         y2="60"
-        stroke={bond}
+        stroke={stage === 0 ? "transparent" : bond}
         strokeWidth="6"
-        strokeDasharray={stage === 1 ? "5 5" : "0"}
+        strokeDasharray={stage === 1 || stage === 2 ? "5 5" : "0"}
       />
       <line
         x1="108"
         y1="60"
         x2={stage === 2 ? 174 : 168}
         y2="60"
-        stroke={bond}
+        stroke={stage === 3 ? "transparent" : bond}
         strokeWidth="6"
-        strokeDasharray={stage === 1 ? "5 5" : "0"}
+        strokeDasharray={stage === 1 || stage === 2 ? "5 5" : "0"}
       />
       <circle
         cx="108"
@@ -179,7 +181,7 @@ function MechanismSvg({ stage, arrows = true }) {
       >
         Br
       </text>
-      <circle cx="108" cy="22" r="12" fill="#e2e8f0" />
+      <text x="108" y="16" fill="#e2e8f0" textAnchor="middle" fontSize="11">H</text><text x="66" y="108" fill="#e2e8f0" fontSize="11">CH₃</text><text x="125" y="108" fill="#e2e8f0" fontSize="11">CH₂CH₃</text><path d={stage < 2 ? "M100 77L74 96M116 77L151 96" : "M100 77L74 96M116 77L151 96"} stroke="#cbd5e1" strokeWidth="3"/>
       <line
         x1="108"
         y1="46"
@@ -203,6 +205,7 @@ function MechanismSvg({ stage, arrows = true }) {
           markerEnd="url(#mArrow)"
         />
       )}
+      <text x="210" y="117" fill="#bbdefb" fontSize="10" textAnchor="end">{stage===0?"R substrate":stage===3?"S product · inverted":"Inverting geometry"}</text>
       <defs>
         <marker
           id="mArrow"
@@ -217,21 +220,6 @@ function MechanismSvg({ stage, arrows = true }) {
       </defs>
     </svg>
   );
-}
-
-function mechanismMol(id,stage){
-  const travel=[3.2,2.15,1.75,1.52][stage],depart=[1.55,2.05,2.65,3.5][stage];
-  let atoms,bonds;
-  if(id==='e2'){
-    atoms=[['C',-.75,0,0],['C',.75,0,0],['H',-1.25,1.1,0],['Br',1.5,-1.2,0],['O',-2.1,1.65,0],['H',-2.8,1.85,0]];
-    bonds=[[0,1],[0,2],[1,3],[4,5],...(stage>1?[[0,1]]:[])];
-  }else{
-    atoms=[['C',0,0,0],['Br',depart,0,0],['O',-travel,0,0],['C',0,1.45,.75],['C',0,-1.35,.8],['H',0,0,-1.4],['H',-travel-.7,.35,0]];
-    bonds=[[0,3],[0,4],[0,5],[2,6],...(stage<3?[[0,1]]:[]),...(stage>0?[[0,2]]:[])];
-  }
-  const atomLines=atoms.map(([e,x,y,z])=>`${x.toFixed(4).padStart(10)}${y.toFixed(4).padStart(10)}${z.toFixed(4).padStart(10)} ${e.padEnd(3)} 0  0  0  0  0  0  0  0  0  0  0  0`).join('\n');
-  const bondLines=bonds.map(([a,b],index)=>`${String(a+1).padStart(3)}${String(b+1).padStart(3)}${String(id==='e2'&&stage>1&&index===bonds.length-1?2:1).padStart(3)}  0  0  0  0`).join('\n');
-  return{data:`${id.toUpperCase()} · stage ${stage+1}\n  Organic Mechanism Player\n  Idealized coordinate teaching model\n${String(atoms.length).padStart(3)}${String(bonds.length).padStart(3)}  0  0  0  0            999 V2000\n${atomLines}\n${bondLines}\nM  END\n`,format:'mol',label:`${id.toUpperCase()} · ${stage+1}`};
 }
 
 export default function OrganicMechanismTargetPage({ onNavigate }) {
@@ -270,7 +258,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
   useEffect(()=>{setViewerReady(false);setSelectedAtom(null);},[mechanism.id,stage]);
   return (
     <div
-      className="mech-app min-h-screen bg-[#061426] text-slate-100"
+      className={`mech-app min-h-screen bg-[#061426] text-slate-100 ${toggles.dark ? "lab-light" : ""}`}
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-5 border-b border-white/10 bg-[#07172a] px-6">
@@ -288,7 +276,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
             <Settings size={15} className="mr-1 inline" />
             Settings
           </button>
-          <button onClick={() => toggle("dark")}>☼ ◐</button>
+          <button aria-label="Toggle mechanism color theme" aria-pressed={!!toggles.dark} onClick={() => toggle("dark")}>☼ ◐</button>
         </div>
       </header>
       <div className="mech-shell grid min-h-[calc(100vh-64px)] grid-cols-[110px_245px_1fr] gap-2 p-2">
@@ -367,7 +355,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
                     {mechanism.notes[i]}
                   </p>
                   <div className="mx-auto mt-5 flex h-24 w-32 items-center justify-center rounded-xl bg-slate-950/70">
-                    <MechanismSvg stage={i} arrows={toggles.arrows} />
+                    <MechanismSvg id={mechanismId} stage={i} arrows={toggles.arrows} />
                     {toggles.charges && (
                       <small className="absolute ml-28 text-xs text-cyan-200">
                         δ
@@ -382,7 +370,7 @@ export default function OrganicMechanismTargetPage({ onNavigate }) {
                 </button>
               ))}
             </div>
-            {toggles.view3d&&<div className="mech-molstar-panel"><div className="mech-molstar-head"><div><b>Optional 3D state inspection</b><span>{mechanism.stages[stage]} · stage {stage+1}/4</span></div><select value={representation} onChange={event=>setRepresentation(event.target.value)}><option>Ball &amp; stick</option><option>Space filling</option><option>Sticks</option></select><button aria-label="Full screen mechanism structure" onClick={()=>viewerRef.current?.fullscreen()}><Maximize2 size={14}/></button></div><div className="mech-molstar-view"><ViewerErrorBoundary label="Mechanism state viewer"><MolstarViewer ref={viewerRef} source={molecularState} sourceType="mol" label={molecularState.label} representation={{BallAndStick:representation==='Ball & stick',Spacefill:representation==='Space filling',Sticks:representation==='Sticks',Ligand:false,Branched:false,Ion:false}} colorScheme="element" selectedAtomIndex={selectedAtom?.sourceIndex} onReady={()=>{setViewerReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(1.2));}} onLoadError={()=>setViewerReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary><span>{viewerReady?'Mol* ready':'Loading…'} · idealized transition-related coordinates</span></div><p>{selectedAtom?`${selectedAtom.element} atom ${selectedAtom.sourceIndex+1} · [${selectedAtom.coordinates.map(value=>value.toFixed(2)).join(', ')}] Å`:'Click an atom for stereochemical coordinates'} · Coordinate states are teaching models, not optimized transition structures.</p></div>}
+            {toggles.view3d&&<div className="mech-molstar-panel"><div className="mech-molstar-head"><div><b>Optional 3D state inspection</b><span>{mechanism.stages[stage]} · stage {stage+1}/4</span></div><select value={representation} onChange={event=>setRepresentation(event.target.value)}><option>Ball &amp; stick</option><option>Space filling</option><option>Sticks</option></select><button aria-label="Full screen mechanism structure" onClick={()=>viewerRef.current?.fullscreen()}><Maximize2 size={14}/></button></div><div className="mech-molstar-view"><ViewerErrorBoundary label="Mechanism state viewer"><MolstarViewer ref={viewerRef} source={molecularState} sourceType="mol" label={molecularState.label} representation={{BallAndStick:representation==='Ball & stick',Spacefill:representation==='Space filling',Sticks:representation==='Sticks',Ligand:false,Branched:false,Ion:false}} colorScheme="element" selectedAtomIndex={selectedAtom?.sourceIndex} onReady={()=>{setViewerReady(true);requestAnimationFrame(()=>viewerRef.current?.zoom(1.2));}} onLoadError={()=>setViewerReady(false)} onSelectionChange={setSelectedAtom}/></ViewerErrorBoundary><span>{viewerReady?'Mol* ready':'Loading…'} · schematic coordinates; intermediate connectivity does not encode fractional bond orders</span></div><p>{selectedAtom?`${selectedAtom.element} atom ${selectedAtom.sourceIndex+1} · [${selectedAtom.coordinates.map(value=>value.toFixed(2)).join(', ')}] Å`:'Click an atom for stereochemical coordinates'} · Coordinate states are teaching models, not optimized transition structures.</p></div>}
           </section>
           <section className="rounded-xl border border-white/10 bg-[#0a1c31] p-3">
             <div className="flex items-center gap-4">

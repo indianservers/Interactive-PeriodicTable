@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getRDKit } from '../modules/drug-discovery/rdkitService.js';
 import { analyzeReactionMolecule, mappingIssues, reactionBalance, reactionYields } from '../utils/drawReaction.js';
+import { reactionRxn, reactionSmiles, reactionSchemeSvg } from '../utils/drawReactionFormats.js';
 import { bondSegments } from '../utils/structureDrawing.js';
 
 function ReactionDrawing({ model, maps, onMap, label }) {
@@ -8,16 +9,26 @@ function ReactionDrawing({ model, maps, onMap, label }) {
   const x = Math.min(...xs)-30, y = Math.min(...ys)-30, width = Math.max(100,Math.max(...xs)-x+30), height = Math.max(100,Math.max(...ys)-y+30);
   return <svg className="reaction-molecule" viewBox={`${x} ${y} ${width} ${height}`} aria-label={`${label} reaction structure`}>
     {model.bonds.map((b,i) => { const a = model.atoms.find(a => a.id === b.a), c = model.atoms.find(a => a.id === b.b); if (!a || !c) return null; const dx=c.x-a.x,dy=c.y-a.y,length=Math.hypot(dx,dy)||1,nx=-dy/length,ny=dx/length;
-      return <g key={i}>{b.stereo===1 ? <polygon points={`${a.x},${a.y} ${c.x+nx*6},${c.y+ny*6} ${c.x-nx*6},${c.y-ny*6}`} fill="#172b46"/> : b.stereo===6 ? Array.from({length:7},(_,j)=>{const t=(j+1)/8,x=a.x+dx*t,y=a.y+dy*t,w=t*6;return <line key={j} x1={x-nx*w} y1={y-ny*w} x2={x+nx*w} y2={y+ny*w} stroke="#172b46" strokeWidth="2"/>;}) : bondSegments(a,c,b.order).map((line,j) => <line key={j} {...line} stroke="#172b46" strokeWidth="2"/>)}</g>; })}
+      return <g key={i}>{b.stereo===1 ? <polygon points={`${a.x},${a.y} ${c.x+nx*6},${c.y+ny*6} ${c.x-nx*6},${c.y-ny*6}`} fill="#172b46"/> : b.stereo===6 ? Array.from({length:7},(_,j)=>{const t=(j+1)/8,x=a.x+dx*t,y=a.y+dy*t,w=t*6;return <line key={j} x1={x-nx*w} y1={y-ny*w} x2={x+nx*w} y2={y+ny*w} stroke="#172b46" strokeWidth="2"/>;}) : bondSegments(a,c,b.order,b.stereo).map((line,j) => <line key={j} {...line} stroke="#172b46" strokeWidth="2"/>)}</g>; })}
     {model.atoms.map(a => <g key={a.id} role="button" tabIndex="0" aria-label={`${label} atom ${a.id}: ${a.element}${maps[a.id] ? ` map ${maps[a.id]}` : ''}`} onClick={() => onMap(a.id)} onKeyDown={e => {if (['Enter',' '].includes(e.key)) {e.preventDefault();onMap(a.id);}}}><circle cx={a.x} cy={a.y} r="14" fill={maps[a.id] ? '#bfdbfe' : 'white'}/><text x={a.x} y={a.y+5} textAnchor="middle" fontSize="16" fill={a.element === 'O' ? '#d82436' : '#172b46'}>{a.isotope || ""}{a.element}{a.charge ? `${Math.abs(a.charge)>1?Math.abs(a.charge):""}${a.charge>0?"+":"−"}` : ""}</text><text x={a.x+10} y={a.y-14} fontSize="12" fill="#0755bd">{maps[a.id] || a.id}</text></g>)}
   </svg>;
 }
-export default function DrawReactionCanvas({ documents, currentId, value, onChange, onEdit }) {
+export default function DrawReactionCanvas({ documents, currentId, value, onChange, onEdit, onImport }) {
   const [analyses, setAnalyses] = useState({}), [mapNumber, setMapNumber] = useState(1), [past,setPast] = useState([]), [future,setFuture] = useState([]);
+  const [formatInput,setFormatInput]=useState(''),[formatStatus,setFormatStatus]=useState(''),[formatBusy,setFormatBusy]=useState(false),[artifact,setArtifact]=useState(null);
+  useEffect(()=>()=>{if(artifact)URL.revokeObjectURL(artifact.url);},[artifact]);
   const mode = value.balancing || 'auto';
   const [source,setSource] = useState(currentId), [role,setRole] = useState('reactant');
   const usedDocuments = [...new Set(value.participants.map(p => p.documentId))];
   const signature = usedDocuments.map(id => {const d = documents.find(d => d.id === id);return JSON.stringify([id,d?.model]);}).join('|');
+  const documentIds=documents.map(d=>d.id).join('|');
+  useEffect(()=>{
+    const available=new Set(documents.map(d=>d.id));
+    const valid=snapshot=>snapshot.participants.every(p=>available.has(p.documentId));
+    setPast(history=>history.filter(valid));setFuture(history=>history.filter(valid));
+    if(!available.has(source))setSource(available.has(currentId)?currentId:documents[0]?.id);
+  },[documentIds]);
+  useEffect(()=>{setArtifact(null);setFormatStatus('');},[signature,value]);
   useEffect(() => {let active=true; setAnalyses({}); getRDKit().then(rd => {
     const next = {};
     for (const id of usedDocuments) {try {next[id] = analyzeReactionMolecule(rd,documents.find(d => d.id === id)?.model);} catch(e) {next[id]={error:e.message};}}
@@ -35,6 +46,34 @@ export default function DrawReactionCanvas({ documents, currentId, value, onChan
     const doc = documents.find(d=>d.id===Number(source));if(!doc?.model?.atoms.length)return;
     change({...value,participants:[...value.participants,{id:Math.max(0,...value.participants.map(p=>p.id))+1,documentId:doc.id,role,coefficient:1,amount:'',unit:'g',maps:{}}]});
   };
+  const exportReaction = async format => {
+    setFormatBusy(true);setFormatStatus('');setArtifact(null);
+    try {
+      const rd=await getRDKit();let output;
+      if(format==='rxn'||format==='rsmi') {
+        const mappedSmiles=reactionSmiles(rd,value,documents);
+        const text=format==='rxn'?reactionRxn(value,documents):mappedSmiles;
+        output=new Blob([text],{type:'text/plain'});
+      } else {
+        const svg=reactionSchemeSvg(rd,value,documents,info.coefficients||{});
+        if(format==='svg')output=new Blob([svg],{type:'image/svg+xml'});
+        else {
+          const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+          try {
+            const image=new Image();image.src=url;await image.decode();
+            const scale=Math.min(2,4096/image.width),canvas=document.createElement('canvas');
+            canvas.width=Math.ceil(image.width*scale);canvas.height=Math.ceil(image.height*scale);
+            canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
+            output=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+            if(!output)throw Error('PNG export could not be generated.');
+          } finally {URL.revokeObjectURL(url);}
+        }
+      }
+      setArtifact({url:URL.createObjectURL(output),filename:`reaction.${format}`,format});
+      setFormatStatus(`Reaction ${format.toUpperCase()} is ready. Use the download link below.`);
+    } catch(e){setFormatStatus(e.message);}finally{setFormatBusy(false);}
+  };
+  const importText=async()=>{setFormatBusy(true);try{await onImport(formatInput);setFormatInput('');setPast([]);setFuture([]);setFormatStatus('Reaction imported into new drawing tabs.');}catch(e){setFormatStatus(e.message);}finally{setFormatBusy(false);}};
   const card = p => {
     const doc=documents.find(d=>d.id===p.documentId), data=analyses[p.documentId], label=`${p.role} ${p.id}`;
     return <article className="reaction-card" key={p.id} aria-label={label}>
@@ -47,12 +86,20 @@ export default function DrawReactionCanvas({ documents, currentId, value, onChan
   };
   return <section className="draw-reaction-workspace" aria-label="Connected reaction canvas">
     <h2>Reaction canvas & stoichiometry</h2><p>Add document drawings to each side. Structures, formulas and molar masses stay linked when you edit the source document.</p>
-    <div className="reaction-controls"><label>Source drawing<select aria-label="Reaction source drawing" value={source} onChange={e=>setSource(Number(e.target.value))}>{documents.map(d=><option key={d.id} value={d.id}>{d.title} · {d.name}</option>)}</select></label><label>Side<select aria-label="Reaction side" value={role} onChange={e=>setRole(e.target.value)}><option value="reactant">Reactant</option><option value="product">Product</option></select></label><button onClick={add} disabled={!documents.find(d=>d.id===Number(source))?.model?.atoms.length || value.participants.length>=30}>Add drawing to reaction</button>
+    <div className="reaction-controls"><label>Source drawing<select aria-label="Reaction source drawing" value={source} onChange={e=>setSource(Number(e.target.value))}>{documents.map(d=><option key={d.id} value={d.id}>{d.title} · {d.name}</option>)}</select></label><label>Side<select aria-label="Reaction side" value={role} onChange={e=>setRole(e.target.value)}><option value="reactant">Reactant</option><option value="product">Product</option><option value="agent">Agent / catalyst</option></select></label><button onClick={add} disabled={!documents.find(d=>d.id===Number(source))?.model?.atoms.length || value.participants.length>=30}>Add drawing to reaction</button>
     <button disabled={!past.length} onClick={()=>{setFuture(f=>[...f,value]);onChange(past.at(-1));setPast(p=>p.slice(0,-1));}}>Undo reaction</button><button disabled={!future.length} onClick={()=>{setPast(p=>[...p,value]);onChange(future.at(-1));setFuture(f=>f.slice(0,-1));}}>Redo reaction</button></div>
     <div className="reaction-controls"><label>Conditions / catalysts<input aria-label="Reaction conditions" maxLength="2000" placeholder="e.g. H2SO4, heat, 80 °C" value={value.conditions} onChange={e=>change({...value,conditions:e.target.value})}/></label><label>Arrow<select aria-label="Reaction arrow" value={value.arrow} onChange={e=>change({...value,arrow:e.target.value})}><option value="forward">Forward →</option><option value="equilibrium">Equilibrium ⇌</option></select></label><label>Balancing<select aria-label="Reaction balancing mode" value={mode} onChange={e=>change({...value,balancing:e.target.value})}><option value="auto">Auto balance drawn formulas</option><option value="manual">Check entered coefficients</option></select></label></div>
-    <div className="reaction-scheme"><div>{value.participants.filter(p=>p.role==='reactant').map((p,i)=><div key={p.id}>{i>0&&<span className="reaction-plus">+</span>}{card(p)}</div>)}</div><div className="reaction-arrow"><span>{value.conditions}</span><b>{value.arrow==='equilibrium'?'⇌':'→'}</b></div><div>{value.participants.filter(p=>p.role==='product').map((p,i)=><div key={p.id}>{i>0&&<span className="reaction-plus">+</span>}{card(p)}</div>)}</div></div>
+    <div className="reaction-scheme"><div>{value.participants.filter(p=>p.role==='reactant').map((p,i)=><div key={p.id}>{i>0&&<span className="reaction-plus">+</span>}{card(p)}</div>)}</div><div className="reaction-arrow"><span>{value.conditions}</span>{value.participants.filter(p=>p.role==='agent').map(card)}<b>{value.arrow==='equilibrium'?'⇌':'→'}</b></div><div>{value.participants.filter(p=>p.role==='product').map((p,i)=><div key={p.id}>{i>0&&<span className="reaction-plus">+</span>}{card(p)}</div>)}</div></div>
     {info.coefficients && <p className="reaction-equation" aria-label="Balanced drawn equation">{['reactant','product'].map(side=>value.participants.filter(p=>p.role===side).map(p=>`${info.coefficients[p.id]===1?'':info.coefficients[p.id]}${analyses[p.documentId].formula}`).join(' + ')).join(value.arrow==='equilibrium'?' ⇌ ':' → ')}</p>}
     <div role="status" className="reaction-results">{info.error || info.amountError || 'Balanced: atoms and formal charge are conserved.'}{info.yields && <><p>Limiting reactant(s): {info.yields.limiting.map(id=>{const p=value.participants.find(p=>p.id===id);return analyses[p.documentId].formula;}).join(', ')}</p>{info.yields.rows.map(row=>{const p=value.participants.find(p=>p.id===row.id);return <p key={row.id}>{p.role==='product'?'Theoretical yield':'Remaining'} {analyses[p.documentId].formula}: <b>{(row.mol*row.mass).toPrecision(5)} g</b> ({row.mol.toPrecision(5)} mol)</p>;})}</>}</div>
+    <details className="reaction-transfer"><summary>Import / export reaction</summary>
+      <p>RXN V2000 and reaction SMILES preserve structures and atom maps. Standard reaction formats do not store amounts, coefficients or equilibrium arrows; use a workspace backup for all experiment settings. SVG/PNG includes the full scheme, coefficients and conditions. Choose a format, then download the generated file below.</p>
+      <div className="reaction-controls">{['rxn','rsmi','svg','png'].map(format=><button key={format} disabled={formatBusy} onClick={()=>exportReaction(format)}>Export reaction {format.toUpperCase()}</button>)}</div>
+      {artifact&&<div className="reaction-export-artifact"><a href={artifact.url} download={artifact.filename}>Download generated {artifact.format.toUpperCase()}</a>{['svg','png'].includes(artifact.format)&&<img src={artifact.url} alt="Exported full reaction scheme preview"/>}</div>}
+      <label>Reaction RXN / SMILES<textarea aria-label="Reaction import text" rows="5" value={formatInput} onChange={e=>setFormatInput(e.target.value)} placeholder="[CH3:1][OH:2]>>[CH2:1]=[O:2]"/></label>
+      <label>Open reaction file<input aria-label="Reaction import file" type="file" accept=".rxn,.rsmi,.smi,.txt" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;if(file.size>2e6){setFormatStatus('Use a reaction file smaller than 2 MB.');return;}try{setFormatInput(await file.text());}catch{setFormatStatus('Could not read the reaction file.');}e.target.value='';}}/></label>
+      <p>Import adds new drawing tabs and replaces the current reaction. Existing drawings are retained.</p><button disabled={formatBusy||!formatInput.trim()} onClick={importText}>Import reaction</button><p role="status">{formatStatus}</p>
+    </details>
     <details open><summary>Manual atom mapping</summary><p>Choose a map number, then click the corresponding atom on each side. Click again with the same number to remove it. Blue labels are map numbers; other labels are atom IDs. Mapping applies to the displayed molecules; coefficients do not expand atom copies.</p><label>Map number<input aria-label="Atom map number" type="number" min="1" max="999" value={mapNumber} onChange={e=>{const n=Number(e.target.value);if(Number.isInteger(n)&&n>=1&&n<=999)setMapNumber(n);}}/></label><button onClick={()=>change({...value,participants:value.participants.map(p=>({...p,maps:{}}))})}>Clear atom maps</button><div role="status">{mapIssues.length?mapIssues.map((message,i)=><p key={i}>{message}</p>):mappedCount?'Assigned map pairs match elements and isotopes.':'No atom maps assigned.'}</div></details>
   </section>;
 }

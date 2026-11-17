@@ -25,7 +25,7 @@
     "test:salt-analysis": "node scripts/verify-salt-analysis.mjs && node scripts/verify-salt-render.mjs",
     "test:aspirin-synthesis": "node scripts/verify-aspirin-synthesis.mjs && node scripts/verify-aspirin-render.mjs",
     "test:draw-library": "node scripts/verify-draw-library.mjs",
-    "test:draw": "node scripts/verify-structure-draw.mjs && node scripts/verify-draw-research.mjs && node scripts/verify-draw-calculations.mjs && node scripts/verify-draw-editor.mjs",
+    "test:draw": "node scripts/verify-structure-draw.mjs && node scripts/verify-draw-research.mjs && node scripts/verify-draw-calculations.mjs && node scripts/verify-draw-editor.mjs && node scripts/verify-draw-workflow.mjs",
     "test:nitration": "node scripts/verify-nitration.mjs && node scripts/verify-nitration-render.mjs",
     "test:benzoic-preparation": "node scripts/verify-benzoic-preparation.mjs && node scripts/verify-benzoic-render.mjs",
     "test:esterification": "node scripts/verify-esterification.mjs && node scripts/verify-esterification-render.mjs",
@@ -57,7 +57,8 @@
     "test:jablonski": "node scripts/verify-jablonski.mjs && node scripts/verify-jablonski-render.mjs",
     "test:conformational": "node scripts/verify-conformational.mjs && node scripts/verify-conformational-render.mjs",
     "test:colloids": "node scripts/verify-colloids.mjs && node scripts/verify-colloids-render.mjs",
-    "test:df-block": "node scripts/verify-df-block.mjs && node scripts/verify-df-block-render.mjs"
+    "test:df-block": "node scripts/verify-df-block.mjs && node scripts/verify-df-block-render.mjs",
+    "test:intern-bugs": "node scripts/verify-intern-regressions.mjs"
   },
   "dependencies": {
     "@rdkit/rdkit": "^2025.3.4-1.0.0",

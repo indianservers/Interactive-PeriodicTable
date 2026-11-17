@@ -389,3 +389,5 @@
 @media (prefers-reduced-motion: reduce) {
   .atom-builder-v2 *, .atom-builder-v2 *::before, .atom-builder-v2 *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+.atom-builder-v2 .preset-chips{grid-template-columns:repeat(auto-fit,minmax(78px,1fr))}.atom-builder-v2 .preset-chips span{white-space:normal;overflow:visible;text-overflow:clip;font-size:10px;text-align:center;overflow-wrap:anywhere}.shell-cap-v2{white-space:nowrap;font-size:10px}

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage.js";
 import {
   Accessibility,
   Atom,
@@ -101,7 +102,7 @@ export const SettingsPage = ({
   const [opacity, setOpacity] = useState(50);
   const [speed, setSpeed] = useState(55);
   const [units, setUnits] = useState("SI (m, g, mol, K, Pa)");
-  const [temp, setTemp] = useState("Kelvin (K)");
+  const [temp, setTemp] = useLocalStorage("chemistry-temperature-unit", "Kelvin (K)");
   const [figures, setFigures] = useState("3");
   const [safeColors, setSafeColors] = useState(true);
   const [narration, setNarration] = useState(true);
@@ -401,7 +402,7 @@ export const SettingsPage = ({
             </h2>
             <div className="st-view-head">
               <div>
-                <b>Molecule: Water (H₂O)</b>
+                <b>Molecule: Water (H₂O)</b><small>Reference temperature: {temp === "Celsius (°C)" ? "25.00 °C" : "298.15 K"}</small>
                 <small>
                   Switch rendering modes to see how the same molecule can be
                   visualized.

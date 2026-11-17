@@ -163,7 +163,7 @@ export default function LabApparatusScene({
         z,
       );
     };
-    const flask = (x, z, color = liquid, scale = 1) => {
+    const flask = (x, z, color = liquid, scale = 1, capped = true) => {
       const f = new T.Group();
       group.add(f);
       f.position.set(x, 0.25, z);
@@ -178,7 +178,7 @@ export default function LabApparatusScene({
       );
       cyl(0.17, 0.5, glass, 0, 1.2, 0, f);
       mesh(new T.CylinderGeometry(0.36, 0.53, 0.5, 40), color, 0, 0.27, 0, f);
-      cyl(0.2, 0.07, blue, 0, 1.48, 0, f);
+      if (capped) cyl(0.2, 0.07, blue, 0, 1.48, 0, f);
       return f;
     };
     const beaker = (x, z, r = 0.65, h = 1.5) => {
@@ -352,6 +352,8 @@ export default function LabApparatusScene({
           );
         });
     } else if (type === "distillation") {
+      glass.opacity = .48;
+      glass.color.setHex(0x8acde5);
       box(2, 0.38, 2, dark, -2, 0.45, 0);
       const mantle = sphere(0.72, material(0x5383a6, 0.2), -2, 0.9, 0);
       mantle.scale.y = 0.6;
@@ -383,7 +385,16 @@ export default function LabApparatusScene({
         0.04,
         material(0xc65343),
       );
-      flask(2.15, 0);
+      flask(2.15, 0, liquid, 1, false);
+      // Receiver adapter joins the condenser outlet and enters the open neck.
+      tube([[1.8,1.5,0],[2.15,1.5,0],[2.15,1.25,0]], .075, glass);
+      rod([-3,2.7,-.5],[-2,2.7,0],.035,steel);
+      rod([.5,2.35,-.5],[.5,2.35,0],.035,steel);
+      // Short coolant nozzles meet the jacket; hose ends remain open to supply/drain.
+      rod([-.5,3,-.15],[-.5,3,0],.05,glass);
+      rod([1.4,1.8,-.15],[1.4,1.8,0],.05,glass);
+      text("CONNECTED VAPOUR PATH",-.7,3.65,0,2.5,.25);
+      text("OPEN RECEIVER",2.15,.55,.7,1.5,.25);
       for (const x of [-3, 0.5]) {
         box(0.8, 0.12, 0.8, steel, x, 0.28, -0.5);
         cyl(0.035, 3.6, steel, x, 2.05, -0.5);

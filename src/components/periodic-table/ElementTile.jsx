@@ -17,6 +17,7 @@ const keyProperty = (element, activeTrend) => {
     };
     return `${labels[activeTrend] || activeTrend}: ${element[activeTrend]}`;
   }
+  if (activeTrend) return `${activeTrend}: no reported value`;
   return `Group ${element.group ?? 'f-block'} - Period ${element.period}`;
 };
 

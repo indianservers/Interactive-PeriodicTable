@@ -1,3 +1,4 @@
+import "./labResponsive.css";
 import { useEffect, useState } from "react";
 import {
   BookOpen,
@@ -97,7 +98,7 @@ export default function NamedReactionsTargetPage({ onNavigate }) {
   }, [playing]);
   return (
     <div
-      className="min-h-screen bg-[#061426] text-slate-100"
+      className="named-reactions min-h-screen bg-[#061426] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-5 border-b border-white/10 bg-[#07172a] px-6">
@@ -256,7 +257,7 @@ export default function NamedReactionsTargetPage({ onNavigate }) {
               <p className="text-xs text-slate-400">
                 Frontier orbital interaction
               </p>
-              <div className="flex items-center justify-around py-8 text-center">
+              <div className="flex flex-wrap items-center justify-around gap-5 py-8 text-center">
                 <div>
                   <div className="text-6xl text-indigo-300">◉　◉</div>
                   <b>{reaction.interaction[0]}</b>
@@ -274,9 +275,9 @@ export default function NamedReactionsTargetPage({ onNavigate }) {
                 </div>
                 <span className="text-4xl">→</span>
                 <div className="rounded-full border-4 border-emerald-300/70 p-8 text-3xl text-emerald-300">
-                  {reaction.interaction[4]}
+                  {reaction.name === "Diels–Alder" ? <svg viewBox="0 0 100 90" width="90" height="80" role="img" aria-label="Cyclohexene ring with one carbon-carbon double bond"><path d="M25 10H75L95 45L75 80H25L5 45Z M30 20H70" stroke="currentColor" strokeWidth="4" fill="none"/></svg> : reaction.interaction[4]}
                 </div>
-                <b>Product</b>
+                <b>{reaction.name === "Diels–Alder" ? "Cyclohexene product" : "Product"}</b>
               </div>
               <p className="text-center font-semibold text-cyan-100">
                 {reaction.formula}

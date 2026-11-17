@@ -253,12 +253,12 @@ export default function RetrosynthesisTargetPage({ onNavigate }) {
               </div>
               <button
                 onClick={() => {
-                  setBond(true);
-                  msg("Disconnection confirmed");
+                  setBond(value => !value);
+                  msg(bond ? "Target reconnected" : "Disconnection confirmed");
                 }}
                 className="mt-4 rounded bg-indigo-500 px-4 py-2 text-xs font-bold"
               >
-                {bond ? "Disconnection confirmed ✓" : "Confirm disconnection →"}
+                {bond ? "Reconnect target ↶" : "Confirm disconnection →"}
               </button>
               <div className="mt-5 rounded border border-white/10 p-3">
                 <h4 className="font-bold">Retrosynthetic step 1</h4>

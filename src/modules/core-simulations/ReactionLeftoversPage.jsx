@@ -620,13 +620,14 @@ function YieldScreen({ go }) {
 function ChallengeScreen({ go }) {
   const expected = reactionOutcome("methane", { "CH₄": 5, "O₂": 8 }),
     [answer, setAnswer] = useState({
-      limiting: "O₂",
-      co2: 4,
-      water: 8,
-      left: 1,
+      limiting: "",
+      co2: "",
+      water: "",
+      left: "",
     }),
     [checked, setChecked] = useState(false),
     correct =
+      Object.values(answer).every(value => String(value).trim() !== "") &&
       answer.limiting === expected.limiting &&
       +answer.co2 === expected.products["CO₂"] &&
       +answer.water === expected.products["H₂O"] &&
@@ -675,12 +676,12 @@ function ChallengeScreen({ go }) {
               <label>
                 Limiting Reactant
                 <select
-                  value={answer.limiting}
+                  aria-label="Limiting reactant answer" value={answer.limiting}
                   onChange={(e) =>
                     setAnswer({ ...answer, limiting: e.target.value })
                   }
                 >
-                  <option>CH₄</option>
+                  <option value="" disabled>Choose a reactant</option><option>CH₄</option>
                   <option>O₂</option>
                   <option>Neither</option>
                 </select>

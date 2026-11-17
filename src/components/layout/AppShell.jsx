@@ -179,7 +179,10 @@ export const AppShell = ({
   ) {
     return (
       <div className={`${isDark ? "dark" : "light"}${isSyllabusLab ? " syllabus-shell" : ""}`}>
-        <GlobalSearch onNavigate={onNavigate} onSelectElement={onSelectElement} inlineOnMobile={isSyllabusLab}/>
+        <nav className="standalone-tools" aria-label="Application navigation">
+          <button onClick={() => onNavigate('dashboard')}><Home size={16}/> Main home</button>
+          <GlobalSearch onNavigate={onNavigate} onSelectElement={onSelectElement} inlineOnMobile/>
+        </nav>
         <main className="min-h-screen overflow-x-hidden">
           {children}
         </main>

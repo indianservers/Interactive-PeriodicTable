@@ -1,3 +1,4 @@
+import "./labResponsive.css";
 import { useState } from "react";
 import {
   Beaker,
@@ -60,7 +61,7 @@ export default function FunctionalTestsTargetPage() {
   };
   return (
     <div
-      className="h-[calc(100vh-70px)] overflow-hidden bg-[#061426] text-slate-100"
+      className="functional-tests h-[calc(100vh-70px)] overflow-hidden bg-[#061426] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[76px] items-center gap-4 border-b border-white/10 bg-[#07172a] px-7">
@@ -99,7 +100,7 @@ export default function FunctionalTestsTargetPage() {
             </button>
           ))}
         </nav>
-        <aside className="rounded-xl border border-white/10 bg-[#0a1c31] p-3">
+        <aside className="max-h-[80vh] overflow-y-auto rounded-xl border border-white/10 bg-[#0a1c31] p-3">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black">Unknown sample A</h2>
             <span>✎</span>

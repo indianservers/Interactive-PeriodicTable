@@ -1,3 +1,4 @@
+import "./labResponsive.css";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
@@ -15,7 +16,7 @@ const substrates = [
   "Acetaldehyde (self-condensation)",
   "Propanal",
   "Acetone",
-  "Benzaldehyde",
+  "Benzaldehyde + acetophenone",
 ];
 const steps = [
   "Enolate formation",
@@ -40,7 +41,7 @@ const productProfiles = {
     mass: "98.15",
     features: [
       "α,β-Unsaturated aldehyde",
-      "Crossed aldol regioisomers possible",
+      "Self-condensation of propanal",
       "E (trans) alkene favored",
     ],
   },
@@ -51,110 +52,28 @@ const productProfiles = {
     features: [
       "β-Hydroxy ketone",
       "Self-aldol addition product",
-      "Dehydration requires stronger heating",
+      "Addition endpoint shown; heating can yield mesityl oxide",
     ],
   },
-  Benzaldehyde: {
-    name: "Chalcone-like aldol product",
+  "Benzaldehyde + acetophenone": {
+    name: "Chalcone",
     formula: "C₁₅H₁₂O",
     mass: "208.26",
     features: [
       "Conjugated enone",
-      "Aromatic crossed aldol product",
+      "Benzaldehyde is the electrophile; acetophenone supplies the enolate",
       "E (trans) major product",
     ],
   },
 };
-function MoleculeSvg({ kind, trace }) {
-  const atoms =
-    kind === "enolate"
-      ? [
-          [48, 72, "C", "#9baabd"],
-          [90, 48, "O", "#ef5555"],
-          [108, 91, "C", "#9baabd"],
-          [30, 106, "H", "#eaf5ff"],
-        ]
-      : kind === "product"
-        ? [
-            [45, 89, "C", "#9baabd"],
-            [85, 89, "C", "#9baabd"],
-            [125, 65, "O", "#ef5555"],
-            [165, 89, "C", "#9baabd"],
-            [202, 62, "O", "#ef5555"],
-            [179, 120, "H", "#eaf5ff"],
-          ]
-        : [
-            [52, 90, "C", "#9baabd"],
-            [94, 66, "O", "#ef5555"],
-            [132, 90, "C", "#9baabd"],
-            [52, 130, "H", "#eaf5ff"],
-          ];
-  return (
-    <svg
-      viewBox="0 0 240 160"
-      className="mx-auto h-[150px] w-full"
-      aria-label="Molecular mechanism structure"
-    >
-      <g stroke="#d8e6f2" strokeWidth="6" opacity=".9">
-        {atoms.slice(1).map(([x, y], i) => (
-          <line key={i} x1={atoms[0][0]} y1={atoms[0][1]} x2={x} y2={y} />
-        ))}
-      </g>
-      {kind === "product" && (
-        <line
-          x1="83"
-          y1="87"
-          x2="128"
-          y2="65"
-          stroke="#d8e6f2"
-          strokeWidth="4"
-        />
-      )}
-      {atoms.map(([x, y, label, color]) => (
-        <g key={`${x}-${y}`}>
-          <circle
-            cx={x}
-            cy={y}
-            r={label === "H" ? 13 : 18}
-            fill={color}
-            stroke="#f4fbff"
-            strokeWidth="2"
-          />
-          <text
-            x={x}
-            y={y + 5}
-            textAnchor="middle"
-            fill="#142032"
-            fontSize="11"
-            fontWeight="700"
-          >
-            {label}
-          </text>
-        </g>
-      ))}
-      {trace && (
-        <path
-          d="M175 30 Q205 50 180 76"
-          fill="none"
-          stroke="#40c7ff"
-          strokeWidth="3"
-          markerEnd="url(#flow)"
-        />
-      )}
-      <defs>
-        <marker
-          id="flow"
-          markerWidth="8"
-          markerHeight="8"
-          refX="6"
-          refY="3"
-          orient="auto"
-        >
-          <path d="M0 0 L0 6 L7 3Z" fill="#40c7ff" />
-        </marker>
-      </defs>
-    </svg>
-  );
+const pathwayFormulae = {
+ "Acetaldehyde (self-condensation)": ["CH₃–CHO", "⁻CH₂–CHO + CH₃–CHO", "CH₃–CH(OH)–CH₂–CHO", "CH₃–CH=CH–CHO + H₂O"],
+ Propanal: ["CH₃CH₂–CHO", "CH₃–CH⁻–CHO + CH₃CH₂CHO", "CH₃CH₂–CH(OH)–CH(CH₃)–CHO", "CH₃CH₂–CH=C(CH₃)–CHO + H₂O"],
+ Acetone: ["CH₃–CO–CH₃", "CH₃–CO–CH₂⁻ + CH₃COCH₃", "CH₃COCH₂–C(OH)(CH₃)₂", "Diacetone alcohol (addition product)"],
+ "Benzaldehyde + acetophenone": ["Ph–CHO + Ph–CO–CH₃", "Ph–CO–CH₂⁻ + Ph–CHO", "Ph–CO–CH₂–CH(OH)–Ph", "Ph–CO–CH=CH–Ph + H₂O"],
+};
+function MoleculeSvg({ substrate, stageIndex, trace }) {
+ return <svg viewBox="0 0 360 160" className="mx-auto h-[150px] w-full" role="img" aria-label={`Step ${stageIndex+1} condensed structure: ${pathwayFormulae[substrate][stageIndex]}`}><rect x="4" y="4" width="352" height="152" rx="12" fill="#071827" stroke="#34566b"/><text x="180" y="65" textAnchor="middle" fill="#d9f5ff" fontSize="13" textLength={pathwayFormulae[substrate][stageIndex].length>28?330:undefined} lengthAdjust="spacingAndGlyphs">{pathwayFormulae[substrate][stageIndex]}</text><text x="180" y="100" textAnchor="middle" fill="#67d9eb" fontSize="12">{steps[stageIndex]}</text>{trace&&<text x="180" y="130" textAnchor="middle" fill="#d5b8ff" fontSize="10">Enolate carbon attacks the carbonyl carbon</text>}</svg>;
 }
 export default function OrganicReactionTargetPage({ onNavigate }) {
   const [step, setStep] = useState(1);
@@ -166,13 +85,14 @@ export default function OrganicReactionTargetPage({ onNavigate }) {
   const [view, setView] = useState("Mechanism");
   const [solvent, setSolvent] = useState("Ethanol (EtOH)");
   const [selectivity, setSelectivity] = useState(
-    "Self-condensation (acetaldehyde)",
+    "Self-condensation",
   );
   const [stereoisomers, setStereoisomers] = useState(true);
   const [predicted, setPredicted] = useState(false);
   const [query, setQuery] = useState("");
   const [notice, setNotice] = useState("");
-  const mechanism = useMemo(() => steps[step - 1], [step]);
+  const activeSteps = substrate === "Acetone" ? [...steps.slice(0,3), "Aldol addition endpoint"] : steps;
+  const mechanism = activeSteps[step-1];
   const product =
     productProfiles[substrate] ||
     productProfiles["Acetaldehyde (self-condensation)"];
@@ -187,7 +107,7 @@ export default function OrganicReactionTargetPage({ onNavigate }) {
   }, [playing]);
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#061522] text-slate-100"
+      className="reaction-visualizer min-h-screen overflow-hidden bg-[#061522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[64px] items-center gap-4 border-b border-white/10 bg-[#091c2e] px-5">
@@ -338,31 +258,27 @@ export default function OrganicReactionTargetPage({ onNavigate }) {
             </div>
           )}
           <section className="mt-0 min-h-[264px] rounded border border-white/10 bg-[#0b2135] p-4">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                "Acetaldehyde",
+                substrate,
                 "Enolate (resonance stabilized)",
-                "Crotonaldehyde",
+                "Aldol addition / proton transfer",
+                product.name,
               ].map((label, i) => (
                 <div key={label} className="relative text-center">
                   <h3 className="text-left text-sm font-bold text-cyan-200">
                     {i + 1}.{" "}
-                    {i === 0
-                      ? "Enolate formation"
-                      : i === 1
-                        ? "Nucleophilic addition"
-                        : "Dehydration (E1cb)"}
+                    {activeSteps[i]}
                   </h3>
                   <div className="mx-auto mt-1 grid h-40 place-items-center">
                     <MoleculeSvg
-                      kind={
-                        i === 1 ? "enolate" : i === 2 ? "product" : "substrate"
-                      }
+                      substrate={substrate}
+                      stageIndex={i}
                       trace={trace}
                     />
                   </div>
                   <p className="text-xs text-slate-300">{label}</p>
-                  {i < 2 && (
+                  {i < 3 && (
                     <ArrowRight className="absolute -right-5 top-24 text-slate-400" />
                   )}
                 </div>
@@ -417,7 +333,7 @@ export default function OrganicReactionTargetPage({ onNavigate }) {
               </button>
             </div>
             <div className="mt-4 grid grid-cols-4 gap-2">
-              {steps.map((x, i) => (
+              {activeSteps.map((x, i) => (
                 <button
                   key={x}
                   onClick={() => setStep(i + 1)}
@@ -492,7 +408,7 @@ export default function OrganicReactionTargetPage({ onNavigate }) {
             }}
             className="mt-3 w-full rounded border border-white/15 bg-slate-900 p-2 text-xs"
           >
-            <option>Self-condensation (acetaldehyde)</option>
+            <option>Self-condensation</option>
             <option>Crossed aldol</option>
           </select>
           <label className="mt-4 flex items-center gap-2 text-xs">
@@ -506,7 +422,7 @@ export default function OrganicReactionTargetPage({ onNavigate }) {
           <section className="mt-5 rounded border border-white/10 p-3">
             <h3 className="font-bold">Product Information</h3>
             <p className="mt-3 text-sm text-cyan-200">
-              {predicted ? product.name : "Prediction pending"}
+              {product.name}
             </p>
             <p className="text-xs text-slate-400">
               {product.formula} · M = {product.mass} g/mol
@@ -532,6 +448,7 @@ export default function OrganicReactionTargetPage({ onNavigate }) {
                 key={x}
                 onClick={() => {
                   setSubstrate(x);
+                  setSelectivity(x === "Benzaldehyde + acetophenone" ? "Crossed aldol" : "Self-condensation");
                   announce(`${x} selected`);
                 }}
                 className={`mt-2 w-full rounded border p-2 text-left text-xs ${substrate === x ? "border-cyan-300 bg-cyan-300/10" : "border-white/10"}`}

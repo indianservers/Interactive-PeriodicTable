@@ -44,6 +44,10 @@ import {
   structureMolfile,
 } from "../utils/structureDrawing.js";
 import { getRDKit } from "../modules/drug-discovery/rdkitService.js";
+import DrawDocumentTabs from "./DrawDocumentTabs.jsx";
+import { documentStamp, reorderDocument, duplicateDrawing } from "../utils/drawDocuments.js";
+import { GROUP_TEMPLATES, placeGroup, attachRing, fuseRing } from "../utils/drawTemplates.js";
+import { importReaction } from "../utils/drawReactionFormats.js";
 import DrawReactionCanvas from "./DrawReactionCanvas.jsx";
 import DrawValidationPanel from "./DrawValidationPanel.jsx";
 import { emptyReaction } from "../utils/drawReaction.js";
@@ -144,6 +148,11 @@ export default function StructureDrawPage({ onNavigate }) {
     [transparentExport, setTransparentExport] = useState(false),
     [exportSize, setExportSize] = useState(1600);
   const [generatedName, setGeneratedName] = useState({});
+  const [savedDocuments,setSavedDocuments]=useState({}),[closeTarget,setCloseTarget]=useState(null);
+  const [groupTemplate,setGroupTemplate]=useState("Me"),[fusionSide,setFusionSide]=useState("auto");
+  const nextDocumentId=useRef(1),modelRef=useRef(model);
+  modelRef.current=model;
+
   const [selection, setSelection] = useState([]), [selectionPath, setSelectionPath] = useState([]), [snap, setSnap] = useState(true);
   const [reactionWorkspace, setReactionWorkspace] = useState(emptyReaction);
   const regionDrag = useRef(null), suppressCanvasClick = useRef(false);
@@ -423,6 +432,17 @@ export default function StructureDrawPage({ onNavigate }) {
       setNotice(`Fragment ${operation.replaceAll("-", " ")} complete.`);
     } catch (e) { setNotice(e.message); }
   };
+  const placeChemicalTemplate=async builder=>{
+    const original=model;let mol;
+    try {
+      const next=builder(original),rd=await getRDKit();
+      if(modelRef.current!==original){setNotice("Drawing changed during template placement. Try again.");return;}
+      if(next.atoms.length>500)throw Error("A drawing supports up to 500 atoms.");
+      mol=rd.get_mol(structureMolfile(next));
+      if(!mol)throw Error("This attachment would create invalid valence or aromaticity. Choose another atom/bond.");
+      commit(next);setNotice("Template attached. Undo restores the previous drawing.");
+    }catch(e){setNotice(e.message);}finally{mol?.delete();}
+  };
   const addAt = (e) => {
     if (suppressCanvasClick.current) { suppressCanvasClick.current = false; return; }
     if (e.target !== svg.current || ["Rectangle select", "Lasso select", "Fragment select"].includes(tool)) return;
@@ -433,6 +453,7 @@ export default function StructureDrawPage({ onNavigate }) {
       return;
     }
     if (tool === "Erase") return;
+    if (tool === "Group template") {placeChemicalTemplate(m=>placeGroup(m,groupTemplate,null,{x,y}));return;}
     if (tool.includes("ring")) {
       commit(addRing(model, x, y, tool === "Benzene ring", ringSize));
       return;
@@ -459,6 +480,8 @@ export default function StructureDrawPage({ onNavigate }) {
   };
   const atomClick = (e, a) => {
     e.stopPropagation();
+    if(tool.includes("ring")){placeChemicalTemplate(m=>attachRing(m,a.id,ringSize,tool==="Benzene ring"));return;}
+    if(tool==="Group template"){placeChemicalTemplate(m=>placeGroup(m,groupTemplate,a.id));return;}
     if (["Rectangle select", "Lasso select", "Fragment select"].includes(tool) || (tool === "Select / Move" && e.shiftKey)) {
       const ids = tool === "Fragment select" ? connectedAtoms(model, a.id) : [a.id];
       setSelection(previous => e.shiftKey ? (ids.every(id => previous.includes(id)) ? previous.filter(id => !ids.includes(id)) : [...new Set([...previous,...ids])]) : ids);
@@ -541,18 +564,21 @@ export default function StructureDrawPage({ onNavigate }) {
       return;
     }
     try {
+      const saved=Object.fromEntries(sourceDocuments.map(d=>[d.id,documentStamp(d)]));
+      const data={...workspaceData(),savedDocuments:saved};
       localStorage.setItem(
         "chemistry-drawing",
         JSON.stringify({ model, name }),
       );
       sessionStorage.setItem(
         "chemistry-draw-workspace",
-        JSON.stringify(workspaceData()),
+        JSON.stringify(data),
       );
       localStorage.setItem(
         "chemistry-draw-workspace",
-        JSON.stringify(workspaceData()),
+        JSON.stringify(data),
       );
+      setSavedDocuments(saved);
       setNotice("Drawing and all document tabs saved locally.");
     } catch {
       setNotice("Local storage unavailable. Export a workspace backup.");
@@ -590,53 +616,50 @@ export default function StructureDrawPage({ onNavigate }) {
       .readText()
       .then((text) => load(text, "Pasted structure"))
       .catch(() => openDialog("Load SMILES / MOL"));
-  const switchDocument = (id) => {
-    if (id === documentId) return;
-    ++loadSequence.current;
-    setBusy(false);
-    setDocuments((ds) =>
-      ds.map((d) => (d.id === documentId ? { ...d, model, name, sdfText } : d)),
-    );
-    const doc = documents.find((d) => d.id === id);
-    setDocumentId(id);
-    setModel(doc.model || emptyStructure());
-    setSdfText(doc.sdfText || "");
-    setHighlightAtoms([]);
-    setName(doc.name);
-    setUndo([]);
-    setRedo([]);
-    setSelected(null); setSelection([]);
+  const activateDocument = doc => {
+    ++loadSequence.current;setBusy(false);setDocumentId(doc.id);setModel(doc.model||emptyStructure());
+    setSdfText(doc.sdfText||"");setName(doc.name);setHighlightAtoms([]);setUndo([]);setRedo([]);setSelected(null);setSelection([]);
+  };
+  const allocateDocumentId=()=>nextDocumentId.current=Math.max(nextDocumentId.current,...documents.map(d=>d.id))+1;
+  const switchDocument = id => {
+    if(id===documentId)return;
+    const doc=sourceDocuments.find(d=>d.id===id);if(!doc)return;
+    setDocuments(sourceDocuments);activateDocument(doc);
   };
   const newDocument = () => {
-    if (documents.length >= 30) {
-      setNotice(
-        "This workspace supports up to 30 documents. Export a backup before starting another workspace.",
-      );
-      return;
-    }
-    setFeature("Draw");
-    ++loadSequence.current;
-    setBusy(false);
-    const id = Math.max(...documents.map((d) => d.id)) + 1;
-    setDocuments((ds) => [
-      ...ds.map((d) =>
-        d.id === documentId ? { ...d, model, name, sdfText } : d,
-      ),
-      {
-        id,
-        title: `Untitled-${id}`,
-        model: emptyStructure(),
-        name: "Untitled structure",
-      },
-    ]);
-    setDocumentId(id);
-    setModel(emptyStructure());
-    setName("Untitled structure");
-    setSdfText("");
-    setHighlightAtoms([]);
-    setUndo([]);
-    setRedo([]);
-    setSelected(null); setSelection([]);
+    if(documents.length>=30){setNotice("This workspace supports up to 30 documents. Close a tab or export a backup first.");return;}
+    const id=allocateDocumentId(),doc={id,title:`Untitled-${id}`,model:emptyStructure(),name:"Untitled structure",sdfText:""};
+    setDocuments([...sourceDocuments,doc]);activateDocument(doc);setFeature("Draw");
+  };
+  const renameDocument=(id,title)=>setDocuments(sourceDocuments.map(d=>d.id===id?{...d,title:title.slice(0,200)}:d));
+  const duplicateDocument=id=>{
+    if(documents.length>=30){setNotice("Close a tab before duplicating; the limit is 30 documents.");return;}
+    const source=sourceDocuments.find(d=>d.id===id);if(!source)return;
+    const copy=duplicateDrawing(source,allocateDocumentId());
+    const next=[...sourceDocuments],index=next.findIndex(d=>d.id===id);next.splice(index+1,0,copy);
+    setDocuments(next);activateDocument(copy);setFeature("Draw");setNotice("Drawing duplicated into a new tab.");
+  };
+  const closeDocument=id=>{
+    let next=sourceDocuments.filter(d=>d.id!==id);
+    if(!next.length){const newId=allocateDocumentId();next=[{id:newId,title:`Untitled-${newId}`,name:"Untitled structure",model:emptyStructure(),sdfText:""}];}
+    setDocuments(next);
+    setReactionWorkspace(value=>({...value,participants:value.participants.filter(p=>p.documentId!==id)}));
+    setSavedDocuments(previous=>{const result={...previous};delete result[id];return result;});
+    if(id===documentId){const index=sourceDocuments.findIndex(d=>d.id===id);activateDocument(next[Math.max(0,Math.min(index-1,next.length-1))]);}
+    setDialog("");setCloseTarget(null);setNotice("Document closed. Other drawings are retained.");
+  };
+  const requestCloseDocument=id=>{
+    const doc=sourceDocuments.find(d=>d.id===id);if(!doc)return;
+    if(savedDocuments[id]!==documentStamp(doc)||reactionWorkspace.participants.some(p=>p.documentId===id)){setCloseTarget(id);setDialog("Close document");}
+    else closeDocument(id);
+  };
+  const importReactionWorkspace=async text=>{
+    const parsed=importReaction(await getRDKit(),text);
+    if(documents.length+parsed.components.length>30)throw Error(`Import needs ${parsed.components.length} new tabs; close tabs to stay within the 30-document limit.`);
+    const created=parsed.components.map(component=>{const id=allocateDocumentId();return {id,title:component.name,name:component.name,model:component.model,sdfText:""};});
+    setDocuments([...sourceDocuments,...created]);
+    setReactionWorkspace({conditions:parsed.conditions,arrow:parsed.arrow,balancing:"auto",participants:parsed.components.map((component,i)=>({id:i+1,documentId:created[i].id,role:component.role,coefficient:1,amount:"",unit:"g",maps:component.maps}))});
+    setNotice(`Imported reaction into ${created.length} new drawing tabs.`);
   };
   const hydrogen = async (add) => {
     let mol;
@@ -670,11 +693,14 @@ export default function StructureDrawPage({ onNavigate }) {
     annotation,
     settings: { grid, labels, snap },
     reaction: reactionWorkspace,
+    savedDocuments,
   });
   const restoreWorkspace = (data) => {
     ++loadSequence.current;
     const doc = data.documents.find((d) => d.id === data.activeDocumentId);
     setDocuments(data.documents);
+    nextDocumentId.current=Math.max(...data.documents.map(d=>d.id));
+    setSavedDocuments(data.savedDocuments||Object.fromEntries(data.documents.map(d=>[d.id,documentStamp(d)])));
     setDocumentId(doc.id);
     setModel(doc.model);
     setName(doc.name);
@@ -802,6 +828,7 @@ export default function StructureDrawPage({ onNavigate }) {
     labels,
     snap,
     reactionWorkspace,
+    savedDocuments,
   ]);
   useEffect(() => {
     const key = (e) => {
@@ -1132,22 +1159,7 @@ export default function StructureDrawPage({ onNavigate }) {
         </aside>
         <main className="draw-workspace">
           <div className="draw-documents">
-            <div role="tablist">
-              {documents.map((d) => (
-                <button
-                  key={d.id}
-                  role="tab"
-                  aria-selected={documentId === d.id}
-                  onClick={() => switchDocument(d.id)}
-                >
-                  <Hexagon size={16} />
-                  {d.title}*<i />
-                </button>
-              ))}
-              <button aria-label="New document" onClick={newDocument}>
-                <Plus size={21} />
-              </button>
-            </div>
+            <DrawDocumentTabs documents={sourceDocuments} activeId={documentId} saved={savedDocuments} onSelect={switchDocument} onNew={newDocument} onRename={renameDocument} onDuplicate={duplicateDocument} onClose={requestCloseDocument} onReorder={(id,offset)=>setDocuments(reorderDocument(sourceDocuments,id,offset))} />
             <button onClick={() => openDialog("Canvas settings")}>
               <Settings size={17} />
               Canvas settings
@@ -1267,7 +1279,7 @@ export default function StructureDrawPage({ onNavigate }) {
               }
             }}
           />
-          {feature === "Reaction" && <DrawReactionCanvas documents={sourceDocuments} currentId={documentId} value={reactionWorkspace} onChange={setReactionWorkspace} onEdit={id => { switchDocument(id); setFeature("Draw"); }} />}
+          {feature === "Reaction" && <DrawReactionCanvas documents={sourceDocuments} currentId={documentId} value={reactionWorkspace} onChange={setReactionWorkspace} onEdit={id => { switchDocument(id); setFeature("Draw"); }} onImport={importReactionWorkspace} />}
           <div className="draw-fragment-toolbar" hidden={feature !== "Draw"} aria-label="Fragment editing">
             {["Select / Move", "Rectangle select", "Lasso select", "Fragment select"].map(value => <button key={value} aria-pressed={tool === value} onClick={() => { setTool(value); setSelected(null); }}>{value}</button>)}
             <button onClick={() => setSelection(model.atoms.map(a => a.id))}>Select all atoms</button>
@@ -1279,6 +1291,10 @@ export default function StructureDrawPage({ onNavigate }) {
             <button disabled={!selection.length} onClick={() => editFragment("duplicate")}>Duplicate fragment</button>
             <button disabled={!selection.length} onClick={() => editFragment("delete")}>Delete fragment</button>
             <label><input type="checkbox" checked={snap} onChange={e => setSnap(e.target.checked)} />Snap bonds to 30°</label>
+            <label>Reusable group<select aria-label="Reusable group" value={groupTemplate} onChange={e=>{setGroupTemplate(e.target.value);setTool("Group template");setSelected(null);}}>{Object.keys(GROUP_TEMPLATES).map(key=><option key={key}>{key}</option>)}</select></label>
+            <button aria-pressed={tool==="Group template"} onClick={()=>{setTool("Group template");setSelected(null);}}>Attach group</button>
+            <label>Ring fusion side<select aria-label="Ring fusion side" value={fusionSide} onChange={e=>setFusionSide(e.target.value)}><option value="auto">Auto</option><option value="left">Left</option><option value="right">Right</option></select></label>
+            <small>Choose Ring/Aromatic: click an atom to attach, a bond to fuse, or empty canvas for a separate ring. Group templates expand into editable atoms.</small>
             <small>Shift-click adds/removes atoms. Drag a box or lasso from empty canvas. Use Select / Move to drag a selected group.</small>
           </div>
           <div className="draw-editor-grid" hidden={feature !== "Draw"}>
@@ -1357,6 +1373,7 @@ export default function StructureDrawPage({ onNavigate }) {
                           key={i}
                           onClick={(e) => {
                             e.stopPropagation();
+                            if(tool.includes("ring")){placeChemicalTemplate(m=>fuseRing(m,i,ringSize,tool==="Benzene ring",fusionSide));return;}
                             if (tool === "Erase")
                               commit({
                                 ...model,
@@ -1390,7 +1407,7 @@ export default function StructureDrawPage({ onNavigate }) {
                           {[1, 6].includes(b.stereo) ? (
                             <StereoBond a={a} b={c} stereo={b.stereo} />
                           ) : (
-                            bondSegments(a, c, b.order).map((seg, j) => (
+                            bondSegments(a, c, b.order, b.stereo).map((seg, j) => (
                               <line
                                 key={j}
                                 {...seg}
@@ -1711,7 +1728,12 @@ export default function StructureDrawPage({ onNavigate }) {
                 ×
               </button>
             </h2>
-            {dialog === "Export drawing" ? (
+            {dialog === "Close document" ? <>
+              <p>Close “{sourceDocuments.find(d=>d.id===closeTarget)?.title}”?</p>
+              {savedDocuments[closeTarget]!==documentStamp(sourceDocuments.find(d=>d.id===closeTarget)||{})&&<p>This tab has unsaved edits. Save or export it first if you want to keep it.</p>}
+              {reactionWorkspace.participants.some(p=>p.documentId===closeTarget)&&<p>This drawing is linked to the reaction. Closing it also removes its reaction entries and their atom maps.</p>}
+              <button onClick={()=>closeDocument(closeTarget)}>Close drawing and remove links</button><button onClick={()=>{setDialog("");setCloseTarget(null);}}>Keep drawing</button>
+            </> : dialog === "Export drawing" ? (
               <>
                 <p>
                   Export the active molecule, image, or all document tabs.

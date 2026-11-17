@@ -1,3 +1,4 @@
+import "./labResponsive.css";
 import { useState } from "react";
 import {
   Beaker,
@@ -30,10 +31,12 @@ export default function SaltAnalysisTargetPage() {
   ]);
   const [step, setStep] = useState("Group V");
   const [notice, setNotice] = useState("");
-  const [lastEvidence, setLastEvidence] = useState(reagentEvidence[reagents[3]]);
+  const [confirmed, setConfirmed] = useState(false);
+  const [lastEvidence, setLastEvidence] = useState({observation:"Apple-green flame suggests barium; add sulfate for a confirmatory test.",equation:"Flame observation alone is preliminary evidence.",confidence:55});
   const add = () => {
     const evidence = reagentEvidence[reagents[reagent]];
     setLastEvidence(evidence);
+    if (reagents[reagent] === "H₂SO₄ (1 M)") setConfirmed(true);
     setLogs((l) => [
       ...l,
       `10:24　Added ${reagents[reagent]}: ${evidence.observation}`,
@@ -42,7 +45,7 @@ export default function SaltAnalysisTargetPage() {
   };
   return (
     <div
-      className="min-h-screen overflow-hidden bg-[#071522] text-slate-100"
+      className="salt-analysis min-h-screen overflow-hidden bg-[#071522] text-slate-100"
       style={{ fontFamily: "Inter,ui-sans-serif,system-ui" }}
     >
       <header className="flex h-[70px] items-center gap-4 border-b border-white/10 bg-[#091b2b] px-5">
@@ -139,8 +142,8 @@ export default function SaltAnalysisTargetPage() {
                 HCl　 NaOH　 NH₃　 H₂SO₄
               </div>
             </div>
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded bg-slate-950/90 px-5 py-2 text-center text-sm">
-              Unknown salt B　•　Ba²⁺ confirmed
+            <div className="absolute bottom-0 inset-x-0 rounded bg-slate-950/90 px-3 py-2 text-center text-xs">
+              Unknown salt B · {confirmed ? "Ba²⁺ confirmed by sulfate test" : "Ba²⁺ suspected — confirmation required"}
             </div>
           </div>
         </main>
@@ -188,7 +191,7 @@ export default function SaltAnalysisTargetPage() {
           <div className="mt-3 flex items-center gap-4">
             <CheckCircle2 size={45} className="text-emerald-400" />
             <div>
-              <b className="text-xl text-emerald-300">{lastEvidence.confidence >= 90 ? "Ba²⁺ confirmed" : "Evidence in progress"}</b>
+              <b className="text-xl text-emerald-300">{confirmed ? "Ba²⁺ confirmed" : "Evidence in progress"}</b>
               <p className="text-xs text-slate-400">Confidence: {lastEvidence.confidence}%　•　Apple-green flame and reagent evidence</p>
             </div>
           </div>

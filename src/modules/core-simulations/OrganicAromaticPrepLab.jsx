@@ -69,6 +69,7 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination", onN
   );
 
   const go = (n) => {
+    if (n < 0) { completeLab(onNavigate); return; }
     if (n > 5) { completeLab(); return; }
     n = Math.max(0, Math.min(5, n));
     setStep(n);
@@ -112,7 +113,7 @@ export default function OrganicAromaticPrepLab({ experiment = "bromination", onN
             <h2>{spec.title}</h2>
             <p className="lead">{spec.lead}</p>
             <div className="ap-eq">{spec.equation}</div>
-            <p>{spec.hazard}</p>
+
             <button className="primary" onClick={() => go(1)}><FlaskConical /> Start Experiment <ChevronRight /></button>
           </section>
           <section className="ap-hero">

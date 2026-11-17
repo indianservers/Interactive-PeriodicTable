@@ -51,7 +51,7 @@ export function validateDrawWorkspace(data) {
         !atomIds.has(b.b) ||
         b.a === b.b ||
         ![1, 2, 3, 4].includes(b.order) ||
-        (b.stereo !== undefined && ![0, 1, 6].includes(b.stereo))
+        (b.stereo !== undefined && ![0, 1, 3, 4, 6].includes(b.stereo))
       )
         throw Error("Invalid bond in workspace.");
     parseMolfile(structureMolfile(m));
@@ -72,6 +72,7 @@ export function validateDrawWorkspace(data) {
     documents,
     activeDocumentId: data.activeDocumentId,
     reaction: validateReaction(data.reaction, ids),
+    ...(data.savedDocuments && typeof data.savedDocuments === "object" ? {savedDocuments:Object.fromEntries(Object.entries(data.savedDocuments).filter(([id,stamp])=>ids.has(Number(id))&&typeof stamp==="string"&&/^v1:\d+:\d+:\d+$/.test(stamp)))} : {}),
     annotation: String(data.annotation || "").slice(0, 10000),
     settings: {
       grid: Boolean(data.settings?.grid),

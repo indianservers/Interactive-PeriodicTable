@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage.js";
 import { elements } from "../data/elements.js";
 import { ElectronShellDiagram } from "../components/visualizers/ElectronShellDiagram.jsx";
 import LabMoleculeStage from "../modules/core-simulations/LabMoleculeStage.jsx";
@@ -243,11 +244,13 @@ export const learningUnits = {
 };
 
 export default function LearningLesson({ unit, onBack, onNavigate }) {
-  const [index, setIndex] = useState(0),
-    [section, setSection] = useState("Study"),
-    [atom, setAtom] = useState(10),
-    [mass, setMass] = useState(36.03),
-    [molecule, setMolecule] = useState("H2O");
+  const [workspace, setWorkspace] = useLocalStorage(`chemistry-lesson-workspace:${unit}`, {});
+  const [index, setIndex] = useState(() => Number.isInteger(workspace.index) && workspace.index >= 0 && workspace.index < learningUnits[unit].lessons.length ? workspace.index : 0),
+    [section, setSection] = useState(() => ["Study", "Explore", "Tools", "Progress", "Resources"].includes(workspace.section) ? workspace.section : "Study"),
+    [atom, setAtom] = useState(workspace.atom ?? 10),
+    [mass, setMass] = useState(workspace.mass ?? 36.03),
+    [molecule, setMolecule] = useState(workspace.molecule ?? "H2O");
+  useEffect(() => { setWorkspace({index,section,atom,mass,molecule}); }, [index,section,atom,mass,molecule,setWorkspace]);
   const [done, setDone] = useState(() => {
     try {
       return JSON.parse(
